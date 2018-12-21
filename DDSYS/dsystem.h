@@ -37,7 +37,7 @@ public:
 	void buildGroundMotionVector();
 	void solveEigen(bool norm = true);
 	void solveComplexEigen();
-	void solveStochasticResponse(const double f_h=20.0, const int nf=1000, const char method='d');
+	void solveStochasticResponse(const double f_h=20.0, const int nf=1000, const char method='c');
 	
 	std::map<int, dof *> dofs;
 	std::map<int, int> dofMapEqn;
