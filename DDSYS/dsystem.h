@@ -7,6 +7,7 @@
 #include "spring.h"
 #include "dashpot.h"
 #include "inerter.h"
+#include "spis2.h"
 
 using namespace arma;
 
@@ -26,6 +27,8 @@ public:
 	void addDashpot(const int n, const int ni, const int nj, const double c);
 	void addInerter(inerter *in);
 	void addInerter(const int n, const int ni, const int nj, const double m);
+	void addSPIS2(spis2 *s);
+	void addSPIS2(const int n, const int ni, const int nj, const int nin, const double m, const double c, const double k);
 
 	void buildDofEqnMap();
 	void assembleMassMatrix();
@@ -45,6 +48,7 @@ public:
 	std::map<int, spring *> springs;
 	std::map<int, dashpot *> dashpots;
 	std::map<int, inerter *> inerters;
+	std::map<int, spis2 *> spis2s;
 
 	double zeta;
 	int eqnCount;

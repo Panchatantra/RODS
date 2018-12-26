@@ -63,6 +63,20 @@ void dsystem::addInerter(const int n, const int ni, const int nj, const double m
 	addInerter(in);
 }
 
+void dsystem::addSPIS2(spis2 * s)
+{
+	spis2s[s->num] = s;
+}
+
+void dsystem::addSPIS2(const int n, const int ni, const int nj, const int nin, const double m, const double c, const double k)
+{
+	dof *i = dofs[ni];
+	dof *j = dofs[nj];
+	dof *in = dofs[nin];
+	spis2 *s = new spis2(n, i, j, in, m, c, k);
+	addSPIS2(s);
+}
+
 void dsystem::buildDofEqnMap()
 {
 	std::map<int, dof *>::iterator it;
@@ -122,7 +136,17 @@ void dsystem::assembleMassMatrix()
 		}
 	}
 	
-
+	if (!(spis2s.empty()))
+	{
+		std::map<int, spis2 *>::iterator it;
+		for (it = spis2s.begin(); it != spis2s.end(); it++)
+		{
+			spis2 *s = it->second;
+			int in_local = 1;
+			int in_global = dofMapEqn[s->dofJ->num];
+			M(in_global, in_global) += s->M(in_local, in_local);
+		}
+	}
 }
 
 void dsystem::assembleStiffnessMatrix()
@@ -161,7 +185,51 @@ void dsystem::assembleStiffnessMatrix()
 		}
 	}
 
-	
+	if (!(spis2s.empty()))
+	{
+		std::map<int, spis2 *>::iterator it;
+		for (it = spis2s.begin(); it != spis2s.end(); it++)
+		{
+			spis2 *s = it->second;
+			int in_local = 1;
+			int in_global = dofMapEqn[s->dofJ->num];
+
+			int i_local = 0;
+			int j_local = 2;
+
+			if (s->dofI->isFixed)
+			{
+				int j_global = dofMapEqn[s->dofJ->num];
+				K(in_global, in_global) += s->K(in_local, in_local);
+				K(in_global, j_global) += s->K(in_local, j_local);
+				K(j_global, in_global) += s->K(j_local, in_local);
+				K(j_global, j_global) += s->K(j_local, j_local);
+			}
+			else if (s->dofJ->isFixed)
+			{
+				int i_global = dofMapEqn[s->dofI->num];
+				K(in_global, in_global) += s->K(in_local, in_local);
+				K(in_global, i_global) += s->K(in_local, i_local);
+				K(i_global, in_global) += s->K(i_local, in_local);
+				K(i_global, i_global) += s->K(i_local, i_local);
+			}
+			else
+			{
+				int i_global = dofMapEqn[s->dofI->num];
+				int j_global = dofMapEqn[s->dofJ->num];
+
+				K(i_global, i_global) += s->K(i_local, i_local);
+				K(i_global, j_global) += s->K(i_local, j_local);
+				K(i_global, in_global) += s->K(i_local, in_local);
+				K(j_global, i_global) += s->K(j_local, i_local);
+				K(j_global, j_global) += s->K(j_local, j_local);
+				K(j_global, in_global) += s->K(j_local, in_local);
+				K(in_global, i_global) += s->K(in_local, i_local);
+				K(in_global, j_global) += s->K(in_local, j_local);
+				K(in_global, in_global) += s->K(in_local, in_local);
+			}
+		}
+	}
 }
 
 void dsystem::buildInherentDampingMatrix(const int n)
@@ -248,6 +316,18 @@ void dsystem::assembleDampingMatrix()
 				C(j_global, i_global) += d->C(j_local, i_local);
 				C(j_global, j_global) += d->C(j_local, j_local);
 			}
+		}
+	}
+
+	if (!(spis2s.empty()))
+	{
+		std::map<int, spis2 *>::iterator it;
+		for (it = spis2s.begin(); it != spis2s.end(); it++)
+		{
+			spis2 *s = it->second;
+			int in_local = 1;
+			int in_global = dofMapEqn[s->dofJ->num];
+			C(in_global, in_global) += s->C(in_local, in_local);
 		}
 	}
 	

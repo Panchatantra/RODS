@@ -33,6 +33,9 @@
     <ClCompile Include="inerter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="spis2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dof.h">
@@ -48,6 +51,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inerter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spis2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

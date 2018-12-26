@@ -163,6 +163,7 @@
     <ClCompile Include="DDSYS.cpp" />
     <ClCompile Include="dof.cpp" />
     <ClCompile Include="inerter.cpp" />
+    <ClCompile Include="spis2.cpp" />
     <ClCompile Include="spring.cpp" />
     <ClCompile Include="dsystem.cpp" />
   </ItemGroup>
@@ -170,6 +171,7 @@
     <ClInclude Include="dashpot.h" />
     <ClInclude Include="dof.h" />
     <ClInclude Include="inerter.h" />
+    <ClInclude Include="spis2.h" />
     <ClInclude Include="spring.h" />
     <ClInclude Include="dsystem.h" />
   </ItemGroup>
