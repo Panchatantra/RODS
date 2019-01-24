@@ -1,5 +1,5 @@
 #include "dsystem.h"
-
+#include "numeric.h"
 
 dsystem::dsystem(const double z)
 {
@@ -21,6 +21,12 @@ void dsystem::addDof(dof * d)
 void dsystem::addDof(const int n, const double m, const bool fixed)
 {
 	dof *d = new dof(n, m, fixed);
+	addDof(d);
+}
+
+void dsystem::addDof(const int n, const bool rel)
+{
+	dof *d = new dof(n, rel);
 	addDof(d);
 }
 
@@ -143,7 +149,7 @@ void dsystem::assembleMassMatrix()
 		{
 			spis2 *s = it->second;
 			int in_local = 1;
-			int in_global = dofMapEqn[s->dofJ->num];
+			int in_global = dofMapEqn[s->dofIN->num];
 			M(in_global, in_global) += s->M(in_local, in_local);
 		}
 	}
@@ -191,10 +197,10 @@ void dsystem::assembleStiffnessMatrix()
 		for (it = spis2s.begin(); it != spis2s.end(); it++)
 		{
 			spis2 *s = it->second;
-			int in_local = 1;
-			int in_global = dofMapEqn[s->dofJ->num];
+			int in_global = dofMapEqn[s->dofIN->num];
 
 			int i_local = 0;
+			int in_local = 1;
 			int j_local = 2;
 
 			if (s->dofI->isFixed)
@@ -249,7 +255,7 @@ void dsystem::buildInherentDampingMatrix(const int n)
 		else
 		{
 			C = diagmat(2.0*zeta*omg / diagvec(Phi.t()*MPhi));
-			C = MPhi * C*MPhi.t();
+			C = MPhi*C*MPhi.t();
 		}
 	}
 	
@@ -326,11 +332,10 @@ void dsystem::assembleDampingMatrix()
 		{
 			spis2 *s = it->second;
 			int in_local = 1;
-			int in_global = dofMapEqn[s->dofJ->num];
+			int in_global = dofMapEqn[s->dofIN->num];
 			C(in_global, in_global) += s->C(in_local, in_local);
 		}
 	}
-	
 }
 
 void dsystem::buildGroundMotionVector()
@@ -347,24 +352,16 @@ void dsystem::buildGroundMotionVector()
 	}
 }
 
-void dsystem::solveEigen(bool norm)
+void dsystem::solveEigen()
 {
-	Phi = zeros<mat>(eqnCount, eqnCount);
+
 	omg = zeros<vec>(eqnCount);
+	Phi = zeros<mat>(eqnCount, eqnCount);
 
-	mat K_eig = solve(M, K);
-	eig_sym(omg, Phi, K_eig);
+	eig_sym(K, M, omg, Phi);
 
-	if (norm)
-	{
-		for (int i = 0; i < eqnCount; i++)
-		{
-			Phi.col(i) = Phi.col(i) / sqrt(M(i,i));
-		}
-		eigenVectorNormed = true;
-	}
+	eigenVectorNormed = true;
 
-	omg = sqrt(omg);
 	P = 2.0*PI / omg;
 }
 
@@ -418,8 +415,7 @@ void dsystem::solveStochasticResponse(const double f_h, const int nf, const char
 		cx_mat X = Y.head_rows(eqnCount);
 		mat Sx = real(conj(X) % X);
 
-		vec sigma_x = sqrt(trapz(omg, Sx, 1));
-		sigma_x.print();
+		dsp = sqrt(trapz(omg, Sx, 1));
 	}
 	else if (method=='d')
 	{
@@ -434,7 +430,14 @@ void dsystem::solveStochasticResponse(const double f_h, const int nf, const char
 		}
 		mat Sx = real(conj(X) % X);
 
-		vec sigma_x = sqrt(trapz(omg, Sx, 1));
-		sigma_x.print();
+		dsp = sqrt(trapz(omg, Sx, 1));
+	}
+}
+
+void dsystem::setDofResponse()
+{
+	for (int i = 0; i < eqnCount; i++)
+	{
+		dofs[eqnMapDof[i]]->dsp = dsp(i);
 	}
 }

@@ -56,5 +56,8 @@
     <ClInclude Include="spis2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="numeric.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -39,9 +39,9 @@ spis2::~spis2()
 
 void spis2::buildMatrix()
 {
-	M = 0.0;
-	C = 0.0;
-	K = stiff;
+	M = zeros<mat>(3, 3);
+	C = zeros<mat>(3, 3);
+	K = stiff*ones<mat>(3, 3);
 	
 	M(1, 1) = inertance;
 	C(1, 1) = damping;

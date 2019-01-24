@@ -21,6 +21,7 @@ public:
 
     void addDof(dof *d);
 	void addDof(const int n, const double m, const bool fixed = false);
+	void addDof(const int n, const bool rel);
     void addSpring(spring *s);
 	void addSpring(const int n, const int ni, const int nj, const double k);
 	void addDashpot(dashpot *d);
@@ -38,9 +39,10 @@ public:
 	void buildRayleighDampingMatrix(const int md1, const int md2);
 	void assembleDampingMatrix();
 	void buildGroundMotionVector();
-	void solveEigen(bool norm = true);
+	void solveEigen();
 	void solveComplexEigen();
 	void solveStochasticResponse(const double f_h=20.0, const int nf=1000, const char method='c');
+	void setDofResponse();
 	
 	std::map<int, dof *> dofs;
 	std::map<int, int> dofMapEqn;
@@ -58,6 +60,10 @@ public:
 	mat M, K, C, Mi;
 	mat Phi;
 	vec omg, P;
-	vec E;	
+	vec E;
+	vec dsp, vel, acc;
+
+	vec time;
+	double t;
 
 };

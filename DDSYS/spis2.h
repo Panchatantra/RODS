@@ -22,9 +22,7 @@ public:
 	double damping;
 	double stiff;
 
-	mat::fixed<3, 3> M;
-	mat::fixed<3, 3> C;
-	mat::fixed<3, 3> K;
+	mat M, C, K;
 
 	double force;
 };
