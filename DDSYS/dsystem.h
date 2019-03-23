@@ -46,6 +46,7 @@ public:
 	void solveEigen();
 	void solveComplexEigen();
 	void solveStochasticResponse(const double f_h=20.0, const int nf=1000, const char method='c');
+	void solveTimeDomainSeismicResponse(const int tsn, const double s, const char method = 'n');
 	void setDofResponse();
 	
 	std::map<int, dof *> dofs;
@@ -68,6 +69,7 @@ public:
 	vec omg, P;
 	vec E;
 	vec dsp, vel, acc;
+	mat u, v, a;
 
 	vec time;
 	double t;

@@ -445,6 +445,49 @@ void dsystem::solveStochasticResponse(const double f_h, const int nf, const char
 	}
 }
 
+void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, const char method)
+{
+	int nstep = tss[tsn]->nsteps;
+	double dt = tss[tsn]->dt;
+	vec ag = s*tss[tsn]->series;
+
+	vec u0 = zeros<vec>(eqnCount);
+	vec v0 = zeros<vec>(eqnCount);
+	vec a0 = solve(M, -C*v0 - K*u0);
+
+	u = zeros<mat>(eqnCount, nstep);
+	v = zeros<mat>(eqnCount, nstep);
+	a = zeros<mat>(eqnCount, nstep);
+
+	double gma = 0.5;
+	double bta = 0.25;
+	double c1 = 1.0 / bta / dt / dt;
+	double c2 = 1.0 / bta / dt;
+	double c3 = gma / bta / dt;
+	double c4 = 1.0 - gma / bta;
+	double c5 = 1.0 - 0.5*gma / bta;
+	double c6 = 0.5 / bta - 1.0;
+
+	mat c7 = c1*M + c3*C;
+	mat c8 = c2*M - c4*C;
+	mat c9 = c6*M - dt*c5*C;
+
+	mat K_h = c1*M + c3*C + K;
+
+	vec p_h = -M*E*ag(0) + c7*u0 + c8*v0 + c9*a0;
+	u.col(0) = solve(K_h, p_h);
+	v.col(0) = c3*(u.col(0) - u0) + c4*v0 + dt*c5*a0;
+	a.col(0) = solve(M, -M*E*ag(0) - C*v0 - K * u0);
+
+	for (int i = 0; i < nstep; i++)
+	{
+		p_h = -M*E*ag(i+1) + c7*u.col(i) + c8*v.col(i) + c9*a.col(i);
+		u.col(i+1) = solve(K_h, p_h);
+		v.col(i+1) = c3*(u.col(i+1) - u0.col(i)) + c4*v.col(i) + dt*c5*a.col(i);
+		a.col(i+1) = solve(M, -M*E*ag(i+1) - C*v.col(i) - K*u.col(i));
+	}
+}
+
 void dsystem::setDofResponse()
 {
 	for (int i = 0; i < eqnCount; i++)
