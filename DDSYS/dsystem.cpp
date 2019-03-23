@@ -83,6 +83,17 @@ void dsystem::addSPIS2(const int n, const int ni, const int nj, const int nin, c
 	addSPIS2(s);
 }
 
+void dsystem::addTimeseries(timeseries * ts)
+{
+	tss[ts->id] = ts;
+}
+
+void dsystem::addTimeseries(const int n, const double dt, const char* fileName)
+{
+	timeseries *ts = new timeseries(n, dt, fileName);
+	addTimeseries(ts);
+}
+
 void dsystem::buildDofEqnMap()
 {
 	std::map<int, dof *>::iterator it;

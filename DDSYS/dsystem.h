@@ -8,6 +8,7 @@
 #include "dashpot.h"
 #include "inerter.h"
 #include "spis2.h"
+#include "timeseries.h"
 
 using namespace arma;
 
@@ -31,6 +32,9 @@ public:
 	void addSPIS2(spis2 *s);
 	void addSPIS2(const int n, const int ni, const int nj, const int nin, const double m, const double c, const double k);
 
+	void addTimeseries(timeseries *ts);
+	void addTimeseries(const int n, const double dt, const char* fileName);
+
 	void buildDofEqnMap();
 	void assembleMassMatrix();
 	void assembleStiffnessMatrix();
@@ -51,6 +55,8 @@ public:
 	std::map<int, dashpot *> dashpots;
 	std::map<int, inerter *> inerters;
 	std::map<int, spis2 *> spis2s;
+
+	std::map<int, timeseries *> tss;
 
 	double zeta;
 	int eqnCount;
