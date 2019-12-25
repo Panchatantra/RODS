@@ -24,12 +24,6 @@ void dsystem::addDof(const int n, const double m, const bool fixed)
 	addDof(d);
 }
 
-void dsystem::addDof(const int n, const bool rel)
-{
-	dof *d = new dof(n, rel);
-	addDof(d);
-}
-
 void dsystem::addSpring(spring * s)
 {
 	springs[s->num] = s;
@@ -88,6 +82,12 @@ void dsystem::addTimeseries(timeseries * ts)
 	tss[ts->id] = ts;
 }
 
+void dsystem::addTimeseries(const int n, const double dt, const vec & s)
+{
+	timeseries *ts = new timeseries(n, dt, s);
+	addTimeseries(ts);
+}
+
 void dsystem::addTimeseries(const int n, const double dt, const char* fileName)
 {
 	timeseries *ts = new timeseries(n, dt, fileName);
@@ -118,8 +118,8 @@ void dsystem::assembleMassMatrix()
 	{
 		m(i) = dofs[eqnMapDof[i]]->mass;
 	}
+	Mp = diagmat(m);
 	M = diagmat(m);
-	Mi = diagmat(m);
 
 	if ( !(inerters.empty()) )
 	{
@@ -133,22 +133,22 @@ void dsystem::assembleMassMatrix()
 			if (in->dofI->isFixed)
 			{
 				int j_global = dofMapEqn[in->dofJ->num];
-				Mi(j_global, j_global) += in->M(j_local, j_local);
+				M(j_global, j_global) += in->M(j_local, j_local);
 			}
 			else if (in->dofJ->isFixed)
 			{
 				int i_global = dofMapEqn[in->dofI->num];
-				Mi(i_global, i_global) += in->M(i_local, i_local);
+				M(i_global, i_global) += in->M(i_local, i_local);
 			}
 			else
 			{
 				int i_global = dofMapEqn[in->dofI->num];
 				int j_global = dofMapEqn[in->dofJ->num];
 
-				Mi(i_global, i_global) += in->M(i_local, i_local);
-				Mi(i_global, j_global) += in->M(i_local, j_local);
-				Mi(j_global, i_global) += in->M(j_local, i_local);
-				Mi(j_global, j_global) += in->M(j_local, j_local);
+				M(i_global, i_global) += in->M(i_local, i_local);
+				M(i_global, j_global) += in->M(i_local, j_local);
+				M(j_global, i_global) += in->M(j_local, i_local);
+				M(j_global, j_global) += in->M(j_local, j_local);
 			}
 		}
 	}
@@ -257,7 +257,7 @@ void dsystem::buildInherentDampingMatrix(const int n)
 	}
 	else
 	{
-		mat MPhi = M * Phi;
+		mat MPhi = Mp * Phi;
 		if (eigenVectorNormed)
 		{
 			C = diagmat(2.0*zeta*omg);
@@ -282,7 +282,7 @@ void dsystem::buildRayleighDampingMatrix(const double omg1, const double omg2)
 	{
 		double a0 = zeta * 2.0*omg1*omg2 / (omg1 + omg2);
 		double a1 = zeta * 2.0 / (omg1 + omg2);
-		C = a0 * M + a1 * K;
+		C = a0 * Mp + a1 * K;
 	}
 }
 
@@ -352,15 +352,15 @@ void dsystem::assembleDampingMatrix()
 void dsystem::buildGroundMotionVector()
 {
 	E = ones<vec>(eqnCount);
-	std::map<int, dof *>::iterator it;
-	for (it = dofs.begin(); it != dofs.end(); it++)
-	{
-		dof *d = it->second;
-		if (d->isRelative)
-		{
-			E(dofMapEqn[d->num]) = 0.0;
-		}
-	}
+	//std::map<int, dof *>::iterator it;
+	//for (it = dofs.begin(); it != dofs.end(); it++)
+	//{
+	//	dof *d = it->second;
+	//	if (d->isRelative)
+	//	{
+	//		E(dofMapEqn[d->num]) = 0.0;
+	//	}
+	//}
 }
 
 void dsystem::solveEigen()
@@ -379,8 +379,8 @@ void dsystem::solveEigen()
 void dsystem::solveComplexEigen()
 {
 	mat O = zeros<mat>(eqnCount, eqnCount);
-	mat A = join_cols(join_rows(C, Mi), join_rows(Mi, O));
-	mat B = join_cols(join_rows(K, O), join_rows(O, -Mi));
+	mat A = join_cols(join_rows(C, M), join_rows(M, O));
+	mat B = join_cols(join_rows(K, O), join_rows(O, -M));
 
 	mat B_eig = solve(A, -B);
 
@@ -399,11 +399,11 @@ void dsystem::solveStochasticResponse(const double f_h, const int nf, const char
 	{
 		buildGroundMotionVector();
 		vec F = zeros<vec>(2*eqnCount);
-		F.head(eqnCount) = -M*E;
+		F.head(eqnCount) = -Mp*E;
 
 		mat O = zeros<mat>(eqnCount, eqnCount);
-		mat A = join_cols(join_rows(C, Mi), join_rows(Mi, O));
-		mat B = join_cols(join_rows(K, O), join_rows(O, -Mi));
+		mat A = join_cols(join_rows(C, M), join_rows(M, O));
+		mat B = join_cols(join_rows(K, O), join_rows(O, -M));
 
 		mat B_eig = solve(A, -B);
 		cx_vec cx_lbd;
@@ -431,12 +431,12 @@ void dsystem::solveStochasticResponse(const double f_h, const int nf, const char
 	else if (method=='d')
 	{
 		buildGroundMotionVector();
-		cx_mat P = cx_vec(-M*E, zeros<vec>(eqnCount));
+		cx_mat P = cx_vec(-Mp*E, zeros<vec>(eqnCount));
 
 		cx_mat X = zeros<cx_mat>(eqnCount, nf+1);
 		for (int i = 0; i < nf+1; i++)
 		{
-			cx_mat Q = -omg(i)*omg(i)*Mi + omg(i)*cx_I*C + K;
+			cx_mat Q = -omg(i)*omg(i)*M + omg(i)*cx_I*C + K;
 			X.col(i) = solve(Q, P);
 		}
 		mat Sx = real(conj(X) % X);
@@ -453,7 +453,6 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 
 	vec u0 = zeros<vec>(eqnCount);
 	vec v0 = zeros<vec>(eqnCount);
-	vec a0 = solve(M, -C*v0 - K*u0);
 
 	u = zeros<mat>(eqnCount, nstep);
 	v = zeros<mat>(eqnCount, nstep);
@@ -474,17 +473,17 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 
 	mat K_h = c1*M + c3*C + K;
 
-	vec p_h = -M*E*ag(0) + c7*u0 + c8*v0 + c9*a0;
-	u.col(0) = solve(K_h, p_h);
-	v.col(0) = c3*(u.col(0) - u0) + c4*v0 + dt*c5*a0;
-	a.col(0) = solve(M, -M*E*ag(0) - C*v0 - K * u0);
+	u.col(0) = u0;
+	v.col(0) = v0;
+	a.col(0) = solve(M, -Mp*E*ag(0) - C*v0 - K*u0);
 
-	for (int i = 0; i < nstep; i++)
+	vec p_h;
+	for (int i = 0; i < nstep-1; i++)
 	{
-		p_h = -M*E*ag(i+1) + c7*u.col(i) + c8*v.col(i) + c9*a.col(i);
+		p_h = -Mp*E*ag(i+1) + c7*u.col(i) + c8*v.col(i) + c9*a.col(i);
 		u.col(i+1) = solve(K_h, p_h);
-		v.col(i+1) = c3*(u.col(i+1) - u0.col(i)) + c4*v.col(i) + dt*c5*a.col(i);
-		a.col(i+1) = solve(M, -M*E*ag(i+1) - C*v.col(i) - K*u.col(i));
+		v.col(i+1) = c3*(u.col(i+1) - u.col(i)) + c4*v.col(i) + dt*c5*a.col(i);
+		a.col(i+1) = solve(M, -Mp*E*ag(i+1)-C*v.col(i+1)-K*u.col(i+1));
 	}
 }
 

@@ -22,7 +22,6 @@ public:
 
     void addDof(dof *d);
 	void addDof(const int n, const double m, const bool fixed = false);
-	void addDof(const int n, const bool rel);
     void addSpring(spring *s);
 	void addSpring(const int n, const int ni, const int nj, const double k);
 	void addDashpot(dashpot *d);
@@ -33,6 +32,7 @@ public:
 	void addSPIS2(const int n, const int ni, const int nj, const int nin, const double m, const double c, const double k);
 
 	void addTimeseries(timeseries *ts);
+	void addTimeseries(const int n, const double dt, const vec &s);
 	void addTimeseries(const int n, const double dt, const char* fileName);
 
 	void buildDofEqnMap();
@@ -46,7 +46,7 @@ public:
 	void solveEigen();
 	void solveComplexEigen();
 	void solveStochasticResponse(const double f_h=20.0, const int nf=1000, const char method='c');
-	void solveTimeDomainSeismicResponse(const int tsn, const double s, const char method = 'n');
+	void solveTimeDomainSeismicResponse(const int tsn, const double s=1.0, const char method = 'n');
 	void setDofResponse();
 	
 	std::map<int, dof *> dofs;
@@ -64,7 +64,7 @@ public:
 
 	bool eigenVectorNormed;
 
-	mat M, K, C, Mi;
+	mat Mp, K, C, M;
 	mat Phi;
 	vec omg, P;
 	vec E;
