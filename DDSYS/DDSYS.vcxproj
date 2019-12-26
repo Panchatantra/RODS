@@ -163,6 +163,7 @@
     <ClCompile Include="DDSYS.cpp" />
     <ClCompile Include="dof.cpp" />
     <ClCompile Include="inerter.cpp" />
+    <ClCompile Include="node.cpp" />
     <ClCompile Include="spis2.cpp" />
     <ClCompile Include="spring.cpp" />
     <ClCompile Include="dsystem.cpp" />
@@ -172,15 +173,12 @@
     <ClInclude Include="dashpot.h" />
     <ClInclude Include="dof.h" />
     <ClInclude Include="inerter.h" />
+    <ClInclude Include="node.h" />
     <ClInclude Include="numeric.h" />
     <ClInclude Include="spis2.h" />
     <ClInclude Include="spring.h" />
     <ClInclude Include="dsystem.h" />
     <ClInclude Include="timeseries.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="ReleaseNotes.css" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

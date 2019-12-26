@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "node.h"
 
 class dof
 {
@@ -11,6 +12,7 @@ public:
 
 	int num;
 	double mass;
+	node *loc;
 
 	bool isFixed;
 
