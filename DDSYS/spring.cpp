@@ -4,7 +4,7 @@
 
 spring::spring(const int n, dof *i, dof *j)
 {
-	num = n;
+	id = n;
 	stiff = 1.0e-9;
 
 	dofI = i;
@@ -17,7 +17,7 @@ spring::spring(const int n, dof *i, dof *j)
 
 spring::spring(const int n, dof *i, dof *j, const double k)
 {
-	num = n;
+	id = n;
 	stiff = k;
 
 	dofI = i;

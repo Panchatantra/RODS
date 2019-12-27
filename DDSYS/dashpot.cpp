@@ -4,7 +4,7 @@
 
 dashpot::dashpot(const int n, dof *i, dof *j)
 {
-    num = n;
+    id = n;
     damping = 1.0e-9;
 
     dofI = i;
@@ -16,7 +16,7 @@ dashpot::dashpot(const int n, dof *i, dof *j)
 
 dashpot::dashpot(const int n, dof * i, dof * j, const double c)
 {
-    num = n;
+    id = n;
     damping = c;
 
     dofI = i;

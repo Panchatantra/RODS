@@ -6,6 +6,8 @@ dsystem::dsystem(const double z)
 	zeta = z;
 	eqnCount = 0;
 	eigenVectorNormed = false;
+
+	o = new location(0);
 }
 
 
@@ -13,20 +15,37 @@ dsystem::~dsystem()
 {
 }
 
+void dsystem::addLocation(location * loc)
+{
+	locs[loc->id] = loc;
+}
+
+void dsystem::addLocation(int id, double x, double y, double z)
+{
+	location *loc = new location(id, x, y, z);
+	addLocation(loc);
+}
+
 void dsystem::addDof(dof * d)
 {
-	dofs[d->num] = d;
+	dofs[d->id] = d;
 }
 
 void dsystem::addDof(const int n, const double m, const bool fixed)
 {
-	dof *d = new dof(n, m, fixed);
+	dof *d = new dof(n, o, X, m, fixed);
+	addDof(d);
+}
+
+void dsystem::addDof(const int n, location * loc, direction dir, const double m, const bool fixed)
+{
+	dof *d = new dof(n, loc, dir, m, fixed);
 	addDof(d);
 }
 
 void dsystem::addSpring(spring * s)
 {
-	springs[s->num] = s;
+	springs[s->id] = s;
 }
 
 void dsystem::addSpring(const int n, const int ni, const int nj, const double k)
@@ -39,7 +58,7 @@ void dsystem::addSpring(const int n, const int ni, const int nj, const double k)
 
 void dsystem::addDashpot(dashpot * d)
 {
-	dashpots[d->num] = d;
+	dashpots[d->id] = d;
 }
 
 void dsystem::addDashpot(const int n, const int ni, const int nj, const double c)
@@ -52,7 +71,7 @@ void dsystem::addDashpot(const int n, const int ni, const int nj, const double c
 
 void dsystem::addInerter(inerter * in)
 {
-	inerters[in->num] = in;
+	inerters[in->id] = in;
 }
 
 void dsystem::addInerter(const int n, const int ni, const int nj, const double m)
@@ -65,7 +84,7 @@ void dsystem::addInerter(const int n, const int ni, const int nj, const double m
 
 void dsystem::addSPIS2(spis2 * s)
 {
-	spis2s[s->num] = s;
+	spis2s[s->id] = s;
 }
 
 void dsystem::addSPIS2(const int n, const int ni, const int nj, const int nin, const double m, const double c, const double k)
@@ -97,15 +116,15 @@ void dsystem::addTimeseries(const int n, const double dt, const char* fileName)
 void dsystem::buildDofEqnMap()
 {
 	std::map<int, dof *>::iterator it;
-
+	eqnCount = 0;
 	for (it = dofs.begin(); it != dofs.end(); it++)
 	{
 		dof *d = it->second;
 		if (!(d->isFixed))
 		{
 			eqnCount += 1;
-			dofMapEqn[d->num] = eqnCount - 1;
-			eqnMapDof[eqnCount - 1] = d->num;
+			dofMapEqn[d->id] = eqnCount - 1;
+			eqnMapDof[eqnCount - 1] = d->id;
 		}
 	}
 }
@@ -133,18 +152,18 @@ void dsystem::assembleMassMatrix()
 
 			if (in->dofI->isFixed)
 			{
-				int j_global = dofMapEqn[in->dofJ->num];
+				int j_global = dofMapEqn[in->dofJ->id];
 				M(j_global, j_global) += in->M(j_local, j_local);
 			}
 			else if (in->dofJ->isFixed)
 			{
-				int i_global = dofMapEqn[in->dofI->num];
+				int i_global = dofMapEqn[in->dofI->id];
 				M(i_global, i_global) += in->M(i_local, i_local);
 			}
 			else
 			{
-				int i_global = dofMapEqn[in->dofI->num];
-				int j_global = dofMapEqn[in->dofJ->num];
+				int i_global = dofMapEqn[in->dofI->id];
+				int j_global = dofMapEqn[in->dofJ->id];
 
 				M(i_global, i_global) += in->M(i_local, i_local);
 				M(i_global, j_global) += in->M(i_local, j_local);
@@ -161,7 +180,7 @@ void dsystem::assembleMassMatrix()
 		{
 			spis2 *s = it->second;
 			int in_local = 1;
-			int in_global = dofMapEqn[s->dofIN->num];
+			int in_global = dofMapEqn[s->dofIN->id];
 			M(in_global, in_global) += s->M(in_local, in_local);
 		}
 	}
@@ -182,18 +201,18 @@ void dsystem::assembleStiffnessMatrix()
 
 			if (s->dofI->isFixed)
 			{
-				int j_global = dofMapEqn[s->dofJ->num];
+				int j_global = dofMapEqn[s->dofJ->id];
 				K(j_global, j_global) += s->K(j_local, j_local);
 			}
 			else if (s->dofJ->isFixed)
 			{
-				int i_global = dofMapEqn[s->dofI->num];
+				int i_global = dofMapEqn[s->dofI->id];
 				K(i_global, i_global) += s->K(i_local, i_local);
 			}
 			else
 			{
-				int i_global = dofMapEqn[s->dofI->num];
-				int j_global = dofMapEqn[s->dofJ->num];
+				int i_global = dofMapEqn[s->dofI->id];
+				int j_global = dofMapEqn[s->dofJ->id];
 
 				K(i_global, i_global) += s->K(i_local, i_local);
 				K(i_global, j_global) += s->K(i_local, j_local);
@@ -209,7 +228,7 @@ void dsystem::assembleStiffnessMatrix()
 		for (it = spis2s.begin(); it != spis2s.end(); it++)
 		{
 			spis2 *s = it->second;
-			int in_global = dofMapEqn[s->dofIN->num];
+			int in_global = dofMapEqn[s->dofIN->id];
 
 			int i_local = 0;
 			int in_local = 1;
@@ -217,7 +236,7 @@ void dsystem::assembleStiffnessMatrix()
 
 			if (s->dofI->isFixed)
 			{
-				int j_global = dofMapEqn[s->dofJ->num];
+				int j_global = dofMapEqn[s->dofJ->id];
 				K(in_global, in_global) += s->K(in_local, in_local);
 				K(in_global, j_global) += s->K(in_local, j_local);
 				K(j_global, in_global) += s->K(j_local, in_local);
@@ -225,7 +244,7 @@ void dsystem::assembleStiffnessMatrix()
 			}
 			else if (s->dofJ->isFixed)
 			{
-				int i_global = dofMapEqn[s->dofI->num];
+				int i_global = dofMapEqn[s->dofI->id];
 				K(in_global, in_global) += s->K(in_local, in_local);
 				K(in_global, i_global) += s->K(in_local, i_local);
 				K(i_global, in_global) += s->K(i_local, in_local);
@@ -233,8 +252,8 @@ void dsystem::assembleStiffnessMatrix()
 			}
 			else
 			{
-				int i_global = dofMapEqn[s->dofI->num];
-				int j_global = dofMapEqn[s->dofJ->num];
+				int i_global = dofMapEqn[s->dofI->id];
+				int j_global = dofMapEqn[s->dofJ->id];
 
 				K(i_global, i_global) += s->K(i_local, i_local);
 				K(i_global, j_global) += s->K(i_local, j_local);
@@ -316,18 +335,18 @@ void dsystem::assembleDampingMatrix()
 
 			if (d->dofI->isFixed)
 			{
-				int j_global = dofMapEqn[d->dofJ->num];
+				int j_global = dofMapEqn[d->dofJ->id];
 				C(j_global, j_global) += d->C(j_local, j_local);
 			}
 			else if (d->dofJ->isFixed)
 			{
-				int i_global = dofMapEqn[d->dofI->num];
+				int i_global = dofMapEqn[d->dofI->id];
 				C(i_global, i_global) += d->C(i_local, i_local);
 			}
 			else
 			{
-				int i_global = dofMapEqn[d->dofI->num];
-				int j_global = dofMapEqn[d->dofJ->num];
+				int i_global = dofMapEqn[d->dofI->id];
+				int j_global = dofMapEqn[d->dofJ->id];
 
 				C(i_global, i_global) += d->C(i_local, i_local);
 				C(i_global, j_global) += d->C(i_local, j_local);
@@ -344,7 +363,7 @@ void dsystem::assembleDampingMatrix()
 		{
 			spis2 *s = it->second;
 			int in_local = 1;
-			int in_global = dofMapEqn[s->dofIN->num];
+			int in_global = dofMapEqn[s->dofIN->id];
 			C(in_global, in_global) += s->C(in_local, in_local);
 		}
 	}

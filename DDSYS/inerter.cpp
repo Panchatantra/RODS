@@ -4,7 +4,7 @@
 
 inerter::inerter(const int n, dof *i, dof *j)
 {
-	num = n;
+	id = n;
 	inertance = 1.0e-9;
 
 	dofI = i;
@@ -17,7 +17,7 @@ inerter::inerter(const int n, dof *i, dof *j)
 
 inerter::inerter(const int n, dof *i, dof *j, const double m)
 {
-	num = n;
+	id = n;
 	inertance = m;
 
 	dofI = i;

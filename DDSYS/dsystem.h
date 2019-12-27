@@ -20,8 +20,12 @@ public:
 	dsystem(const double z = 0.05);
 	~dsystem();
 
+	void addLocation(location *loc);
+	void addLocation(int id, double x = 0, double y = 0, double z = 0);
+
     void addDof(dof *d);
-	void addDof(const int n, const double m, const bool fixed = false);
+	void addDof(const int n, const double m=0.0, const bool fixed = false);
+	void addDof(const int n, location *loc, direction dir=X, const double m=0.0, const bool fixed = false);
     void addSpring(spring *s);
 	void addSpring(const int n, const int ni, const int nj, const double k);
 	void addDashpot(dashpot *d);
@@ -48,6 +52,7 @@ public:
 	void solveTimeDomainSeismicResponse(const int tsn, const double s=1.0, const char method = 'n');
 	void setDofResponse();
 	
+	std::map<int, location *> locs;
 	std::map<int, dof *> dofs;
 	std::map<int, int> dofMapEqn;
 	std::map<int, int> eqnMapDof;
@@ -72,5 +77,7 @@ public:
 
 	vec time;
 	double t;
+
+	location *o;
 
 };

@@ -14,7 +14,7 @@ public:
 
 	void buildMatrix();
 
-	int num;
+	int id;
 	dof *dofI;
 	dof *dofJ;
 	dof *dofIN;

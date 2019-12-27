@@ -1,18 +1,21 @@
 #pragma once
 
 #include <string>
-#include "node.h"
+#include "location.h"
+
+enum direction { X,Y,Z,RX,RY,RZ };
 
 class dof
 {
 public:
-	dof(const int n);
-	dof(const int n, const double m, const bool fixed = false);
+	dof(const int n, location *loc, direction dir);
+	dof(const int n, location *loc, direction dir, const double m, const bool fixed = false);
 	~dof();
 
-	int num;
+	int id;
 	double mass;
-	node *loc;
+	location *loc;
+	direction dir;
 
 	bool isFixed;
 

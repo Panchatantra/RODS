@@ -4,7 +4,7 @@
 
 spis2::spis2(const int n, dof *i, dof *j, dof *in)
 {
-	num = n;
+	id = n;
 	inertance = 1.0e-9;
 	damping = 1.0e-9;
 	stiff = 1.0e-9;
@@ -19,7 +19,7 @@ spis2::spis2(const int n, dof *i, dof *j, dof *in)
 
 spis2::spis2(const int n, dof * i, dof * j, dof *in, const double m, const double c, const double k)
 {
-	num = n;
+	id = n;
 	inertance = m;
 	damping = c;
 	stiff = k;

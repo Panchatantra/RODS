@@ -2,9 +2,10 @@
 
 
 
-dof::dof(const int n)
+dof::dof(const int n, location *loc, direction dir)
 {
-	num = n;
+	id = n;
+	this->loc = loc;
 	mass = 1.0e-9;
 
 	isFixed = false;
@@ -14,9 +15,10 @@ dof::dof(const int n)
 	acc = 0.0;
 }
 
-dof::dof(const int n, const double m, const bool fixed)
+dof::dof(const int n, location *loc, direction dir, const double m, const bool fixed)
 {
-	num = n;
+	id = n;
+	this->loc = loc;
 	mass = m;
 
 	isFixed = fixed;
