@@ -120,6 +120,7 @@ void dsystem::assembleMassMatrix()
 	}
 	Mp = diagmat(m);
 	M = diagmat(m);
+	E = ones<vec>(eqnCount);
 
 	if ( !(inerters.empty()) )
 	{
@@ -349,20 +350,6 @@ void dsystem::assembleDampingMatrix()
 	}
 }
 
-void dsystem::buildGroundMotionVector()
-{
-	E = ones<vec>(eqnCount);
-	//std::map<int, dof *>::iterator it;
-	//for (it = dofs.begin(); it != dofs.end(); it++)
-	//{
-	//	dof *d = it->second;
-	//	if (d->isRelative)
-	//	{
-	//		E(dofMapEqn[d->num]) = 0.0;
-	//	}
-	//}
-}
-
 void dsystem::solveEigen()
 {
 
@@ -389,7 +376,7 @@ void dsystem::solveComplexEigen()
 	eig_gen(cx_lbd, cx_Phi, B_eig);
 }
 
-void dsystem::solveStochasticResponse(const double f_h, const int nf, const char method)
+void dsystem::solveStochasticSeismicResponse(const double f_h, const int nf, const char method)
 {
 	double omg_h = 2.0*PI*f_h;
 	vec omg = linspace(0, omg_h, nf+1);
@@ -397,7 +384,6 @@ void dsystem::solveStochasticResponse(const double f_h, const int nf, const char
 
 	if (method=='c')
 	{
-		buildGroundMotionVector();
 		vec F = zeros<vec>(2*eqnCount);
 		F.head(eqnCount) = -Mp*E;
 
@@ -430,7 +416,6 @@ void dsystem::solveStochasticResponse(const double f_h, const int nf, const char
 	}
 	else if (method=='d')
 	{
-		buildGroundMotionVector();
 		cx_mat P = cx_vec(-Mp*E, zeros<vec>(eqnCount));
 
 		cx_mat X = zeros<cx_mat>(eqnCount, nf+1);

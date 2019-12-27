@@ -42,10 +42,9 @@ public:
 	void buildRayleighDampingMatrix(const double omg1, const double omg2);
 	void buildRayleighDampingMatrix(const int md1, const int md2);
 	void assembleDampingMatrix();
-	void buildGroundMotionVector();
 	void solveEigen();
 	void solveComplexEigen();
-	void solveStochasticResponse(const double f_h=20.0, const int nf=1000, const char method='c');
+	void solveStochasticSeismicResponse(const double f_h=50.0, const int nf=10000, const char method='c');
 	void solveTimeDomainSeismicResponse(const int tsn, const double s=1.0, const char method = 'n');
 	void setDofResponse();
 	
