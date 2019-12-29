@@ -5,6 +5,7 @@
 class solver
 {
 public:
+	solver();
 	solver(dsystem *ds);
 	~solver();
 
@@ -12,6 +13,10 @@ public:
 };
 
 
+solver::solver()
+{
+	ds = new dsystem();
+}
 
 solver::solver(dsystem *ds)
 {

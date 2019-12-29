@@ -49,7 +49,9 @@ public:
 	void solveEigen();
 	void solveComplexEigen();
 	void solveStochasticSeismicResponse(const double f_h=50.0, const int nf=10000, const char method='c');
-	void solveTimeDomainSeismicResponse(const int tsn, const double s=1.0, const char method = 'n');
+	void solveTimeDomainSeismicResponse(const int tsn, const double s=1.0, const int nsub=1);
+	void solveTimeDomainSeismicResponseStateSpace(const int tsn, const double s=1.0, const int nsub=1);
+	void solveTimeDomainSeismicResponseRK4(const int tsn, const double s = 1.0, const int nsub = 1);
 	void setDofResponse();
 	
 	std::map<int, location *> locs;

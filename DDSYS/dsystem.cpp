@@ -449,7 +449,7 @@ void dsystem::solveStochasticSeismicResponse(const double f_h, const int nf, con
 	}
 }
 
-void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, const char method)
+void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, const int nsub)
 {
 	int nstep = tss[tsn]->nsteps;
 	double dt = tss[tsn]->dt;
@@ -457,10 +457,13 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 
 	vec u0 = zeros<vec>(eqnCount);
 	vec v0 = zeros<vec>(eqnCount);
+	vec a0 = zeros<vec>(eqnCount);
 
 	u = zeros<mat>(eqnCount, nstep);
 	v = zeros<mat>(eqnCount, nstep);
 	a = zeros<mat>(eqnCount, nstep);
+
+	dt = dt / nsub;
 
 	double gma = 0.5;
 	double bta = 0.25;
@@ -479,16 +482,63 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 
 	u.col(0) = u0;
 	v.col(0) = v0;
-	a.col(0) = solve(M, -Mp*E*ag(0) - C*v0 - K*u0);
+	a0 = solve(M, -Mp*E*ag(0) - C*v0 - K*u0);
+	a.col(0) = a0;
 
 	vec p_h;
+	vec u_p;
+	double agd, agi, agj;
 	for (int i = 0; i < nstep-1; i++)
 	{
-		p_h = -Mp*E*ag(i+1) + c7*u.col(i) + c8*v.col(i) + c9*a.col(i);
-		u.col(i+1) = solve(K_h, p_h);
-		v.col(i+1) = c3*(u.col(i+1) - u.col(i)) + c4*v.col(i) + dt*c5*a.col(i);
-		a.col(i+1) = solve(M, -Mp*E*ag(i+1)-C*v.col(i+1)-K*u.col(i+1));
+		agd = (ag(i + 1) - ag(i)) / nsub;
+		agi = ag(i);
+		for (int j = 1; j < nsub+1; j++)
+		{
+			agj = agi + agd*j;
+			p_h = -Mp*E*agj + c7*u0 + c8*v0 + c9*a0;
+			u_p = u0*1.0;
+			u0 = solve(K_h, p_h);
+			v0 = c3*(u0-u_p) + c4*v0 + dt*c5*a0;
+			a0 = solve(M, -Mp*E*agj-C*v0-K*u0);
+		}
+		u.col(i+1) = u0;
+		v.col(i+1) = v0;
+		a.col(i+1) = a0;
 	}
+}
+
+void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const double s, const int nsub)
+{
+	int nstep = tss[tsn]->nsteps;
+	double dt = tss[tsn]->dt;
+	vec ag = s * tss[tsn]->series;
+
+	vec u0 = zeros<vec>(eqnCount);
+	vec v0 = zeros<vec>(eqnCount);
+	vec a0 = zeros<vec>(eqnCount);
+
+	u = zeros<mat>(eqnCount, nstep);
+	v = zeros<mat>(eqnCount, nstep);
+	a = zeros<mat>(eqnCount, nstep);
+
+	dt = dt / nsub;
+}
+
+void dsystem::solveTimeDomainSeismicResponseRK4(const int tsn, const double s, const int nsub)
+{
+	int nstep = tss[tsn]->nsteps;
+	double dt = tss[tsn]->dt;
+	vec ag = s * tss[tsn]->series;
+
+	vec u0 = zeros<vec>(eqnCount);
+	vec v0 = zeros<vec>(eqnCount);
+	vec a0 = zeros<vec>(eqnCount);
+
+	u = zeros<mat>(eqnCount, nstep);
+	v = zeros<mat>(eqnCount, nstep);
+	a = zeros<mat>(eqnCount, nstep);
+
+	dt = dt / nsub;
 }
 
 void dsystem::setDofResponse()
