@@ -513,15 +513,40 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const doub
 	double dt = tss[tsn]->dt;
 	vec ag = s * tss[tsn]->series;
 
-	vec u0 = zeros<vec>(eqnCount);
-	vec v0 = zeros<vec>(eqnCount);
-	vec a0 = zeros<vec>(eqnCount);
+	vec x0 = zeros<vec>(2*eqnCount);
+	vec F = zeros<vec>(2*eqnCount);
 
 	u = zeros<mat>(eqnCount, nstep);
 	v = zeros<mat>(eqnCount, nstep);
 	a = zeros<mat>(eqnCount, nstep);
 
 	dt = dt / nsub;
+
+	mat O = zeros<mat>(eqnCount, eqnCount);
+	mat I = eye<mat>(eqnCount, eqnCount);
+	mat A = -solve(M,K);
+	mat B = -solve(M,C);
+	mat H = join_cols(join_rows(O, I), join_rows(A, B));
+
+	double h = dt;
+	mat T = expmat(H*h);
+
+	double agd, agi, agj;
+	for (int i = 0; i < nstep - 1; i++)
+	{
+		agd = (ag(i + 1) - ag(i)) / nsub;
+		agi = ag(i);
+		for (int j = 0; j < nsub; j++)
+		{
+			agj = agi + agd * j;
+			F.tail_rows(eqnCount) = solve(M, -Mp*E*agj);
+			x0 = T*(x0 + F*h);
+		}
+		u.col(i + 1) = x0.tail_rows(eqnCount);
+		v.col(i + 1) = x0.head_rows(eqnCount);
+		a.col(i + 1) = solve(M, -Mp*E*agj - C*v.col(i + 1) - K*u.col(i + 1));
+	}
+
 }
 
 void dsystem::solveTimeDomainSeismicResponseRK4(const int tsn, const double s, const int nsub)
