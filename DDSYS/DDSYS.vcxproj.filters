@@ -42,6 +42,15 @@
     <ClCompile Include="location.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="material1D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element1D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="section.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dof.h">
@@ -72,6 +81,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="solver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material1D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element1D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="section.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

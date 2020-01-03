@@ -1,11 +1,12 @@
 #pragma once
 
 #include "dof.h"
+#include "element1D.h"
 #include <armadillo>
 
 using namespace arma;
 
-class spis2
+class spis2 : public element1D
 {
 public:
 	spis2(const int n, dof *i, dof *j, dof *in);
