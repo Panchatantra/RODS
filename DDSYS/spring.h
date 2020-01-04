@@ -9,15 +9,11 @@ using namespace arma;
 class spring : public element1D
 {
 public:
-	spring(const int n, dof *i, dof *j);
 	spring(const int n, dof *i, dof *j, const double k);
 	~spring();
 
 	void buildMatrix();
 
-	int id;
-	dof *dofI;
-	dof *dofJ;
 	double stiff;
 
 	mat::fixed<2,2> K;

@@ -1,20 +1,6 @@
 #include "inerter.h"
 
 
-
-inerter::inerter(const int n, dof *i, dof *j)
-{
-	id = n;
-	inertance = 1.0e-9;
-
-	dofI = i;
-	dofJ = j;
-
-	force = 0.0;
-	buildMatrix();
-}
-
-
 inerter::inerter(const int n, dof *i, dof *j, const double m)
 {
 	id = n;

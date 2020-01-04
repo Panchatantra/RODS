@@ -1,20 +1,6 @@
 #include "spring.h"
 
 
-
-spring::spring(const int n, dof *i, dof *j)
-{
-	id = n;
-	stiff = 1.0e-9;
-
-	dofI = i;
-	dofJ = j;
-
-	force = 0.0;
-	buildMatrix();
-}
-
-
 spring::spring(const int n, dof *i, dof *j, const double k)
 {
 	id = n;

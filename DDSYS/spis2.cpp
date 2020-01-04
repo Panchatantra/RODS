@@ -1,22 +1,5 @@
 #include "spis2.h"
 
-
-
-spis2::spis2(const int n, dof *i, dof *j, dof *in)
-{
-	id = n;
-	inertance = 1.0e-9;
-	damping = 1.0e-9;
-	stiff = 1.0e-9;
-
-	dofI = i;
-	dofJ = j;
-	dofIN = in;
-
-	force = 0.0;
-	buildMatrix();
-}
-
 spis2::spis2(const int n, dof * i, dof * j, dof *in, const double m, const double c, const double k)
 {
 	id = n;

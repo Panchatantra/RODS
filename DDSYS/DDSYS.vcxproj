@@ -162,11 +162,16 @@
     <ClCompile Include="dashpot.cpp" />
     <ClCompile Include="DDSYS.cpp" />
     <ClCompile Include="dof.cpp" />
+    <ClCompile Include="elastic1D.cpp" />
+    <ClCompile Include="element.cpp" />
+    <ClCompile Include="element2D.cpp" />
     <ClCompile Include="inerter.cpp" />
     <ClCompile Include="location.cpp" />
+    <ClCompile Include="material.cpp" />
     <ClCompile Include="material1D.cpp" />
     <ClCompile Include="element1D.cpp" />
     <ClCompile Include="section.cpp" />
+    <ClCompile Include="sectionElasticBar.cpp" />
     <ClCompile Include="spis2.cpp" />
     <ClCompile Include="spring.cpp" />
     <ClCompile Include="dsystem.cpp" />
@@ -175,12 +180,18 @@
   <ItemGroup>
     <ClInclude Include="dashpot.h" />
     <ClInclude Include="dof.h" />
+    <ClInclude Include="elastic1D.h" />
+    <ClInclude Include="element.h" />
+    <ClInclude Include="element2D.h" />
     <ClInclude Include="inerter.h" />
     <ClInclude Include="location.h" />
+    <ClInclude Include="material.h" />
     <ClInclude Include="material1D.h" />
     <ClInclude Include="numeric.h" />
     <ClInclude Include="element1D.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="section.h" />
+    <ClInclude Include="sectionElasticBar.h" />
     <ClInclude Include="solver.h" />
     <ClInclude Include="spis2.h" />
     <ClInclude Include="spring.h" />
