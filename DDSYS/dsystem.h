@@ -4,6 +4,7 @@
 #include <map>
 #include <armadillo>
 #include "dof.h"
+#include "node.h"
 #include "spring.h"
 #include "dashpot.h"
 #include "inerter.h"
@@ -17,16 +18,20 @@ constexpr double PI = 3.14159265;
 class dsystem
 {
 public:
-	dsystem(const double z = 0.05);
+	dsystem(const double z=0.05);
 	~dsystem();
 
-	void addLocation(node *loc);
-	void addLocation(int id, double x = 0, double y = 0, double z = 0);
+	void addNode(node *nd);
+	void addNode(const int id, const double x=0.0, const double y=0.0, const double z=0.0);
 
     void addDof(dof *d);
-	void addDof(const int n, const double m=0.0, const bool fixed = false);
-	void addDof(const int n, node *loc, direction dir=X, const double m=0.0, const bool fixed = false);
-    void addSpring(spring *s);
+	void addDof(const int n, const double m=0.0, const bool fixed=false);
+	void addDof(const int n, direction dir=X, const double m=0.0, const bool fixed=false);
+    
+	void mapDofNode(dof *d, node *nd);
+	void mapDofNode(const int id_d, const int id_nd);
+
+	void addSpring(spring *s);
 	void addSpring(const int n, const int ni, const int nj, const double k);
 	void addDashpot(dashpot *d);
 	void addDashpot(const int n, const int ni, const int nj, const double c);
@@ -54,10 +59,11 @@ public:
 	void solveTimeDomainSeismicResponseRK4(const int tsn, const double s = 1.0, const int nsub = 1);
 	void setDofResponse();
 	
-	std::map<int, node *> locs;
+	std::map<int, node *> nodes;
 	std::map<int, dof *> dofs;
 	std::map<int, int> dofMapEqn;
 	std::map<int, int> eqnMapDof;
+	std::map<int, int> dofMapNode;
 	std::map<int, spring *> springs;
 	std::map<int, dashpot *> dashpots;
 	std::map<int, inerter *> inerters;

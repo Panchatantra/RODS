@@ -176,6 +176,7 @@
     <ClCompile Include="spring.cpp" />
     <ClCompile Include="dsystem.cpp" />
     <ClCompile Include="timeseries.cpp" />
+    <ClCompile Include="truss2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dashpot.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="spring.h" />
     <ClInclude Include="dsystem.h" />
     <ClInclude Include="timeseries.h" />
+    <ClInclude Include="truss2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

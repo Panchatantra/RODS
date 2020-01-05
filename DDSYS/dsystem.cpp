@@ -15,15 +15,15 @@ dsystem::~dsystem()
 {
 }
 
-void dsystem::addLocation(node * loc)
+void dsystem::addNode(node * nd)
 {
-	locs[loc->id] = loc;
+	nodes[nd->id] = nd;
 }
 
-void dsystem::addLocation(int id, double x, double y, double z)
+void dsystem::addNode(const int id, const double x, const double y, const double z)
 {
-	node *loc = new node(id, x, y, z);
-	addLocation(loc);
+	node *nd = new node(id, x, y, z);
+	addNode(nd);
 }
 
 void dsystem::addDof(dof * d)
@@ -33,14 +33,28 @@ void dsystem::addDof(dof * d)
 
 void dsystem::addDof(const int n, const double m, const bool fixed)
 {
-	dof *d = new dof(n, o, X, m, fixed);
+	dof *d = new dof(n, X, m, fixed);
 	addDof(d);
 }
 
-void dsystem::addDof(const int n, node * loc, direction dir, const double m, const bool fixed)
+void dsystem::addDof(const int n, direction dir, const double m, const bool fixed)
 {
-	dof *d = new dof(n, loc, dir, m, fixed);
+	dof *d = new dof(n, dir, m, fixed);
 	addDof(d);
+}
+
+void dsystem::mapDofNode(dof * d, node * nd)
+{
+	nd->setDof(d);
+	dofMapNode[d->id] = nd->id;
+}
+
+void dsystem::mapDofNode(const int id_d, const int id_nd)
+{
+	node *nd = nodes.at(id_nd);
+	dof *d = dofs.at(id_d);
+	nd->setDof(d);
+	dofMapNode[id_d] = id_nd;
 }
 
 void dsystem::addSpring(spring * s)

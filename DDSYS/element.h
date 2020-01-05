@@ -1,4 +1,8 @@
 #pragma once
+#include <armadillo>
+
+using namespace arma;
+
 class element
 {
 public:
