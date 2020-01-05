@@ -2,7 +2,8 @@
 
 
 
-element::element()
+element::element() :
+	id(0)
 {
 }
 

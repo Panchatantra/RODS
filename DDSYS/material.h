@@ -3,9 +3,10 @@ class material
 {
 public:
 	material();
-	material(const double E, const double nv, const double G);
+	material(const int id, const double E);
 	~material();
 
-	double E, G, nv;
+	int id;
+	double E;
 };
 
