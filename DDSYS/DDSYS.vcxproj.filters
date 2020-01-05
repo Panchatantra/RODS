@@ -35,9 +35,6 @@
     <ClCompile Include="timeseries.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="location.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="material1D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -60,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="element2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,9 +86,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="timeseries.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="location.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="solver.h">
@@ -119,6 +116,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

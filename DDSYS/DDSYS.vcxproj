@@ -166,7 +166,7 @@
     <ClCompile Include="element.cpp" />
     <ClCompile Include="element2D.cpp" />
     <ClCompile Include="inerter.cpp" />
-    <ClCompile Include="location.cpp" />
+    <ClCompile Include="node.cpp" />
     <ClCompile Include="material.cpp" />
     <ClCompile Include="material1D.cpp" />
     <ClCompile Include="element1D.cpp" />
@@ -184,7 +184,7 @@
     <ClInclude Include="element.h" />
     <ClInclude Include="element2D.h" />
     <ClInclude Include="inerter.h" />
-    <ClInclude Include="location.h" />
+    <ClInclude Include="node.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="material1D.h" />
     <ClInclude Include="numeric.h" />

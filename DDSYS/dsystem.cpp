@@ -7,7 +7,7 @@ dsystem::dsystem(const double z)
 	eqnCount = 0;
 	eigenVectorNormed = false;
 
-	o = new location(0);
+	o = new node(0);
 }
 
 
@@ -15,14 +15,14 @@ dsystem::~dsystem()
 {
 }
 
-void dsystem::addLocation(location * loc)
+void dsystem::addLocation(node * loc)
 {
 	locs[loc->id] = loc;
 }
 
 void dsystem::addLocation(int id, double x, double y, double z)
 {
-	location *loc = new location(id, x, y, z);
+	node *loc = new node(id, x, y, z);
 	addLocation(loc);
 }
 
@@ -37,7 +37,7 @@ void dsystem::addDof(const int n, const double m, const bool fixed)
 	addDof(d);
 }
 
-void dsystem::addDof(const int n, location * loc, direction dir, const double m, const bool fixed)
+void dsystem::addDof(const int n, node * loc, direction dir, const double m, const bool fixed)
 {
 	dof *d = new dof(n, loc, dir, m, fixed);
 	addDof(d);

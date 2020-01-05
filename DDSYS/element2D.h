@@ -11,4 +11,3 @@ public:
 	dof *dofIX, *dofIY;
 	dof *dofJX, *dofJY;
 };
-
