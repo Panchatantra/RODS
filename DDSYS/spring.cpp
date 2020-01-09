@@ -1,15 +1,15 @@
 #include "spring.h"
 
 
-spring::spring(const int n, dof *i, dof *j, const double k)
+spring::spring(const int id, dof *i, dof *j, const double k)
 {
-	id = n;
-	stiff = k;
+	this->id = id;
+	this->k = k;
 
 	dofI = i;
 	dofJ = j;
 
-	force = 0.0;
+	f = 0.0;
 
 	buildMatrix();
 }
@@ -20,8 +20,14 @@ spring::~spring()
 
 void spring::buildMatrix()
 {
-	K(0, 0) = stiff;
-	K(0, 1) = -stiff;
-	K(1, 0) = -stiff;
-	K(1, 1) = stiff;
+	K(0, 0) = k;
+	K(0, 1) = -k;
+	K(1, 0) = -k;
+	K(1, 1) = k;
+}
+
+void spring::getResponse()
+{
+	double u = dofJ->dsp - dofI->dsp;
+	f = k * u;
 }

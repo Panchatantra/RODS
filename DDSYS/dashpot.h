@@ -14,11 +14,11 @@ public:
 
 	void buildMatrix();
 
-	double damping;
+	double c;
 
 	mat::fixed<2, 2> C;
 
-	double force;
+	double f;
 	
 };
 

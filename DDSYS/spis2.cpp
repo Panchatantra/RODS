@@ -3,15 +3,15 @@
 spis2::spis2(const int n, dof * i, dof * j, dof *in, const double m, const double c, const double k)
 {
 	id = n;
-	inertance = m;
-	damping = c;
-	stiff = k;
+	this->m = m;
+	this->c = c;
+	this->k = k;
 
 	dofI = i;
 	dofJ = j;
 	dofIN = in;
 
-	force = 0.0;
+	f = 0.0;
 	buildMatrix();
 }
 
@@ -24,10 +24,10 @@ void spis2::buildMatrix()
 {
 	M = zeros<mat>(3, 3);
 	C = zeros<mat>(3, 3);
-	K = stiff*ones<mat>(3, 3);
+	K = k*ones<mat>(3, 3);
 	
-	M(1, 1) = inertance;
-	C(1, 1) = damping;
+	M(1, 1) = m;
+	C(1, 1) = c;
 
 	K(0, 2) *= -1.0;
 	K(1, 2) *= -1.0;

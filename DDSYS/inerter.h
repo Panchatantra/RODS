@@ -14,10 +14,10 @@ public:
 
 	void buildMatrix();
 
-	double inertance;
+	double m;
 
 	mat::fixed<2,2> M;
 
-	double force;
+	double f;
 };
 

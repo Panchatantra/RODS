@@ -15,12 +15,12 @@ public:
 	void buildMatrix();
 
 	dof *dofIN;
-	double inertance;
-	double damping;
-	double stiff;
+	double m;
+	double c;
+	double k;
 
 	mat M, C, K;
 
-	double force;
+	double f;
 };
 

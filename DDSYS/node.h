@@ -10,6 +10,7 @@ public:
 	~node();
 
 	void setDof(dof *d);
+	bool isActivated(direction dir);
 
 	int id;
 	double x0, y0, z0;

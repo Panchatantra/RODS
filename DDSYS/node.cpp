@@ -52,3 +52,40 @@ void node::setDof(dof * d)
 		break;
 	}
 }
+
+bool node::isActivated(direction dir)
+{
+	dof *d = nullptr;
+	switch (dir)
+	{
+	case X:
+		d = dofX;
+		break;
+	case Y:
+		d = dofY;
+		break;
+	case Z:
+		d = dofZ;
+		break;
+	case RX:
+		d = dofRX;
+		break;
+	case RY:
+		d = dofRY;
+		break;
+	case RZ:
+		d = dofRZ;
+		break;
+	default:
+		break;
+	}
+
+	if (d == nullptr)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}

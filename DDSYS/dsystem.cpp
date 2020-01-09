@@ -1,13 +1,11 @@
 #include "dsystem.h"
 #include "numeric.h"
 
-dsystem::dsystem(const double z)
+
+dsystem::dsystem(const double z) :
+	eqnCount(0), eigenVectorNormed(false)
 {
 	zeta = z;
-	eqnCount = 0;
-	eigenVectorNormed = false;
-
-	o = new node(0);
 }
 
 
@@ -68,6 +66,19 @@ void dsystem::addSpring(const int n, const int ni, const int nj, const double k)
 	dof *j = dofs[nj];
 	spring *s = new spring(n, i, j, k);
 	addSpring(s);
+}
+
+void dsystem::addSpringBL(springBilinear * s)
+{
+	springBLs[s->id] = s;
+}
+
+void dsystem::addSpringBL(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha)
+{
+	dof *i = dofs[ni];
+	dof *j = dofs[nj];
+	springBilinear *s = new springBilinear(n, i, j, k0, uy, alpha);
+	addSpringBL(s);
 }
 
 void dsystem::addDashpot(dashpot * d)
@@ -212,6 +223,40 @@ void dsystem::assembleStiffnessMatrix()
 			spring *s = it->second;
 			int i_local = 0;
 			int j_local = 1;
+
+			if (s->dofI->isFixed)
+			{
+				int j_global = dofMapEqn[s->dofJ->id];
+				K(j_global, j_global) += s->K(j_local, j_local);
+			}
+			else if (s->dofJ->isFixed)
+			{
+				int i_global = dofMapEqn[s->dofI->id];
+				K(i_global, i_global) += s->K(i_local, i_local);
+			}
+			else
+			{
+				int i_global = dofMapEqn[s->dofI->id];
+				int j_global = dofMapEqn[s->dofJ->id];
+
+				K(i_global, i_global) += s->K(i_local, i_local);
+				K(i_global, j_global) += s->K(i_local, j_local);
+				K(j_global, i_global) += s->K(j_local, i_local);
+				K(j_global, j_global) += s->K(j_local, j_local);
+			}
+		}
+	}
+
+	if (!(springBLs.empty()))
+	{
+		std::map<int, springBilinear *>::iterator it;
+		for (it = springBLs.begin(); it != springBLs.end(); it++)
+		{
+			springBilinear *s = it->second;
+			int i_local = 0;
+			int j_local = 1;
+
+			s->buildMatrix();
 
 			if (s->dofI->isFixed)
 			{
@@ -586,4 +631,9 @@ void dsystem::setDofResponse()
 	{
 		dofs[eqnMapDof[i]]->dsp = dsp(i);
 	}
+}
+
+void dsystem::generateNonlinearForceVector()
+{
+
 }

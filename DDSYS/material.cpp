@@ -11,6 +11,7 @@ material::material(const int id, const double E)
 {
 	this->id = id;
 	this->E = E;
+	this->E0 = E;
 }
 
 

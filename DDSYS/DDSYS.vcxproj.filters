@@ -65,6 +65,12 @@
     <ClCompile Include="truss2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="spring2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="springBilinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dof.h">
@@ -125,6 +131,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="truss2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spring2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="springBilinear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

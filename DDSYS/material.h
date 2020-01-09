@@ -7,6 +7,6 @@ public:
 	~material();
 
 	int id;
-	double E;
+	double E, E0;
 };
 

@@ -6,6 +6,7 @@
 #include "dof.h"
 #include "node.h"
 #include "spring.h"
+#include "springBilinear.h"
 #include "dashpot.h"
 #include "inerter.h"
 #include "spis2.h"
@@ -33,6 +34,8 @@ public:
 
 	void addSpring(spring *s);
 	void addSpring(const int n, const int ni, const int nj, const double k);
+	void addSpringBL(springBilinear *s);
+	void addSpringBL(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
 	void addDashpot(dashpot *d);
 	void addDashpot(const int n, const int ni, const int nj, const double c);
 	void addInerter(inerter *in);
@@ -58,6 +61,7 @@ public:
 	void solveTimeDomainSeismicResponseStateSpace(const int tsn, const double s=1.0, const int nsub=1);
 	void solveTimeDomainSeismicResponseRK4(const int tsn, const double s = 1.0, const int nsub = 1);
 	void setDofResponse();
+	void generateNonlinearForceVector();
 	
 	std::map<int, node *> nodes;
 	std::map<int, dof *> dofs;
@@ -65,6 +69,7 @@ public:
 	std::map<int, int> eqnMapDof;
 	std::map<int, int> dofMapNode;
 	std::map<int, spring *> springs;
+	std::map<int, springBilinear *> springBLs;
 	std::map<int, dashpot *> dashpots;
 	std::map<int, inerter *> inerters;
 	std::map<int, spis2 *> spis2s;
@@ -83,9 +88,9 @@ public:
 	vec dsp, vel, acc;
 	mat u, v, a;
 
+	vec q;
+
 	vec time;
 	double t;
-
-	node *o;
 
 };
