@@ -26,6 +26,33 @@ void spring::buildMatrix()
 	K(1, 1) = k;
 }
 
+void spring::assembleStiffnessMatrix(mat & K)
+{
+	int i_local = 0;
+	int j_local = 1;
+
+	if (this->dofI->isFixed)
+	{
+		int j_global = this->dofJ->eqnId;
+		K(j_global, j_global) += this->K(j_local, j_local);
+	}
+	else if (this->dofJ->isFixed)
+	{
+		int i_global = this->dofI->eqnId;
+		K(i_global, i_global) += this->K(i_local, i_local);
+	}
+	else
+	{
+		int i_global = this->dofI->eqnId;
+		int j_global = this->dofJ->eqnId;
+
+		K(i_global, i_global) += this->K(i_local, i_local);
+		K(i_global, j_global) += this->K(i_local, j_local);
+		K(j_global, i_global) += this->K(j_local, i_local);
+		K(j_global, j_global) += this->K(j_local, j_local);
+	}
+}
+
 void spring::getResponse()
 {
 	double u = dofJ->dsp - dofI->dsp;

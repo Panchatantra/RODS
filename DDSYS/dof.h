@@ -12,6 +12,7 @@ public:
 	~dof();
 
 	int id;
+	int eqnId;
 	double mass;
 	direction dir;
 

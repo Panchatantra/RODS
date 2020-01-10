@@ -13,6 +13,9 @@ public:
 	~spis2();
 
 	void buildMatrix();
+	void assembleMassMatrix(mat & M);
+	void assembleStiffnessMatrix(mat & K);
+	void assembleDampingMatrix(mat & C);
 
 	dof *dofIN;
 	double m;

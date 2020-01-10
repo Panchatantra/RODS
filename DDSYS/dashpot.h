@@ -13,6 +13,7 @@ public:
 	~dashpot();
 
 	void buildMatrix();
+	void assembleDampingMatrix(mat & C);
 
 	double c;
 

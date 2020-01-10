@@ -149,6 +149,7 @@ void dsystem::buildDofEqnMap()
 		{
 			eqnCount += 1;
 			dofMapEqn[d->id] = eqnCount - 1;
+			d->eqnId = eqnCount - 1;
 			eqnMapDof[eqnCount - 1] = d->id;
 		}
 	}
@@ -172,29 +173,7 @@ void dsystem::assembleMassMatrix()
 		for (it = inerters.begin(); it != inerters.end(); it++)
 		{
 			inerter *in = it->second;
-			int i_local = 0;
-			int j_local = 1;
-
-			if (in->dofI->isFixed)
-			{
-				int j_global = dofMapEqn[in->dofJ->id];
-				M(j_global, j_global) += in->M(j_local, j_local);
-			}
-			else if (in->dofJ->isFixed)
-			{
-				int i_global = dofMapEqn[in->dofI->id];
-				M(i_global, i_global) += in->M(i_local, i_local);
-			}
-			else
-			{
-				int i_global = dofMapEqn[in->dofI->id];
-				int j_global = dofMapEqn[in->dofJ->id];
-
-				M(i_global, i_global) += in->M(i_local, i_local);
-				M(i_global, j_global) += in->M(i_local, j_local);
-				M(j_global, i_global) += in->M(j_local, i_local);
-				M(j_global, j_global) += in->M(j_local, j_local);
-			}
+			in->assembleMassMatrix(M);
 		}
 	}
 	
@@ -204,9 +183,7 @@ void dsystem::assembleMassMatrix()
 		for (it = spis2s.begin(); it != spis2s.end(); it++)
 		{
 			spis2 *s = it->second;
-			int in_local = 1;
-			int in_global = dofMapEqn[s->dofIN->id];
-			M(in_global, in_global) += s->M(in_local, in_local);
+			s->assembleMassMatrix(M);
 		}
 	}
 }
@@ -221,29 +198,7 @@ void dsystem::assembleStiffnessMatrix()
 		for (it = springs.begin(); it != springs.end(); it++)
 		{
 			spring *s = it->second;
-			int i_local = 0;
-			int j_local = 1;
-
-			if (s->dofI->isFixed)
-			{
-				int j_global = dofMapEqn[s->dofJ->id];
-				K(j_global, j_global) += s->K(j_local, j_local);
-			}
-			else if (s->dofJ->isFixed)
-			{
-				int i_global = dofMapEqn[s->dofI->id];
-				K(i_global, i_global) += s->K(i_local, i_local);
-			}
-			else
-			{
-				int i_global = dofMapEqn[s->dofI->id];
-				int j_global = dofMapEqn[s->dofJ->id];
-
-				K(i_global, i_global) += s->K(i_local, i_local);
-				K(i_global, j_global) += s->K(i_local, j_local);
-				K(j_global, i_global) += s->K(j_local, i_local);
-				K(j_global, j_global) += s->K(j_local, j_local);
-			}
+			s->assembleStiffnessMatrix(K);
 		}
 	}
 
@@ -253,31 +208,8 @@ void dsystem::assembleStiffnessMatrix()
 		for (it = springBLs.begin(); it != springBLs.end(); it++)
 		{
 			springBilinear *s = it->second;
-			int i_local = 0;
-			int j_local = 1;
-
 			s->buildMatrix();
-
-			if (s->dofI->isFixed)
-			{
-				int j_global = dofMapEqn[s->dofJ->id];
-				K(j_global, j_global) += s->K(j_local, j_local);
-			}
-			else if (s->dofJ->isFixed)
-			{
-				int i_global = dofMapEqn[s->dofI->id];
-				K(i_global, i_global) += s->K(i_local, i_local);
-			}
-			else
-			{
-				int i_global = dofMapEqn[s->dofI->id];
-				int j_global = dofMapEqn[s->dofJ->id];
-
-				K(i_global, i_global) += s->K(i_local, i_local);
-				K(i_global, j_global) += s->K(i_local, j_local);
-				K(j_global, i_global) += s->K(j_local, i_local);
-				K(j_global, j_global) += s->K(j_local, j_local);
-			}
+			s->assembleStiffnessMatrix(K);
 		}
 	}
 
@@ -287,60 +219,26 @@ void dsystem::assembleStiffnessMatrix()
 		for (it = spis2s.begin(); it != spis2s.end(); it++)
 		{
 			spis2 *s = it->second;
-			int in_global = dofMapEqn[s->dofIN->id];
-
-			int i_local = 0;
-			int in_local = 1;
-			int j_local = 2;
-
-			if (s->dofI->isFixed)
-			{
-				int j_global = dofMapEqn[s->dofJ->id];
-				K(in_global, in_global) += s->K(in_local, in_local);
-				K(in_global, j_global) += s->K(in_local, j_local);
-				K(j_global, in_global) += s->K(j_local, in_local);
-				K(j_global, j_global) += s->K(j_local, j_local);
-			}
-			else if (s->dofJ->isFixed)
-			{
-				int i_global = dofMapEqn[s->dofI->id];
-				K(in_global, in_global) += s->K(in_local, in_local);
-				K(in_global, i_global) += s->K(in_local, i_local);
-				K(i_global, in_global) += s->K(i_local, in_local);
-				K(i_global, i_global) += s->K(i_local, i_local);
-			}
-			else
-			{
-				int i_global = dofMapEqn[s->dofI->id];
-				int j_global = dofMapEqn[s->dofJ->id];
-
-				K(i_global, i_global) += s->K(i_local, i_local);
-				K(i_global, j_global) += s->K(i_local, j_local);
-				K(i_global, in_global) += s->K(i_local, in_local);
-				K(j_global, i_global) += s->K(j_local, i_local);
-				K(j_global, j_global) += s->K(j_local, j_local);
-				K(j_global, in_global) += s->K(j_local, in_local);
-				K(in_global, i_global) += s->K(in_local, i_local);
-				K(in_global, j_global) += s->K(in_local, j_local);
-				K(in_global, in_global) += s->K(in_local, in_local);
-			}
+			s->assembleStiffnessMatrix(K);
 		}
 	}
 }
 
 void dsystem::buildInherentDampingMatrix(const int n)
 {
+	int eigenNum = n>0 ? n: eqnCount;
 	if (zeta == 0.0)
 	{
 		C = zeros<mat>(eqnCount, eqnCount);
 	}
 	else
 	{
-		mat MPhi = Mp * Phi;
+		mat Phi_ = Phi.head_cols(eigenNum);
+		mat MPhi = Mp * Phi_;
 		if (eigenVectorNormed)
 		{
 			C = diagmat(2.0*zeta*omg);
-			C = MPhi * C*MPhi.t();
+			C = MPhi*C*MPhi.t();
 		}
 		else
 		{
@@ -382,36 +280,13 @@ void dsystem::buildRayleighDampingMatrix(const int md1, const int md2)
 
 void dsystem::assembleDampingMatrix()
 {
-
 	if (!(dashpots.empty()))
 	{
 		std::map<int, dashpot *>::iterator it;
 		for (it = dashpots.begin(); it != dashpots.end(); it++)
 		{
 			dashpot *d = it->second;
-			int i_local = 0;
-			int j_local = 1;
-
-			if (d->dofI->isFixed)
-			{
-				int j_global = dofMapEqn[d->dofJ->id];
-				C(j_global, j_global) += d->C(j_local, j_local);
-			}
-			else if (d->dofJ->isFixed)
-			{
-				int i_global = dofMapEqn[d->dofI->id];
-				C(i_global, i_global) += d->C(i_local, i_local);
-			}
-			else
-			{
-				int i_global = dofMapEqn[d->dofI->id];
-				int j_global = dofMapEqn[d->dofJ->id];
-
-				C(i_global, i_global) += d->C(i_local, i_local);
-				C(i_global, j_global) += d->C(i_local, j_local);
-				C(j_global, i_global) += d->C(j_local, i_local);
-				C(j_global, j_global) += d->C(j_local, j_local);
-			}
+			d->assembleDampingMatrix(C);
 		}
 	}
 
@@ -421,9 +296,7 @@ void dsystem::assembleDampingMatrix()
 		for (it = spis2s.begin(); it != spis2s.end(); it++)
 		{
 			spis2 *s = it->second;
-			int in_local = 1;
-			int in_global = dofMapEqn[s->dofIN->id];
-			C(in_global, in_global) += s->C(in_local, in_local);
+			s->assembleDampingMatrix(C);
 		}
 	}
 }

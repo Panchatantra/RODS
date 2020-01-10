@@ -13,6 +13,7 @@ public:
 	~inerter();
 
 	void buildMatrix();
+	void assembleMassMatrix(mat & M);
 
 	double m;
 

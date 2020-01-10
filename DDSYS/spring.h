@@ -13,6 +13,7 @@ public:
 	~spring();
 
 	void buildMatrix();
+	void assembleStiffnessMatrix(mat &K);
 	void getResponse();
 
 	double k;
