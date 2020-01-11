@@ -134,6 +134,12 @@ void springBilinear::getResponse(const bool update)
 		}
 	}
 
+	//q(0) = -(f - k*u);
+	q(0) = -f;
+	q(1) = f;
+
+	buildMatrix();
+
 	if (update)
 	{
 		up = u;
@@ -141,5 +147,30 @@ void springBilinear::getResponse(const bool update)
 		fp = f;
 		kp = k;
 		sp = status;
+	}
+}
+
+void springBilinear::assembleNonlinearForceVector(vec & q)
+{
+	int i_local = 0;
+	int j_local = 1;
+
+	if (this->dofI->isFixed)
+	{
+		int j_global = this->dofJ->eqnId;
+		q(j_global) += this->q(j_local);
+	}
+	else if (this->dofJ->isFixed)
+	{
+		int i_global = this->dofI->eqnId;
+		q(i_global) += this->q(i_local);
+	}
+	else
+	{
+		int i_global = this->dofI->eqnId;
+		int j_global = this->dofJ->eqnId;
+
+		q(i_global) += this->q(i_local);
+		q(j_global) += this->q(j_local);
 	}
 }

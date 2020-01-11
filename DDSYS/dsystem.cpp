@@ -202,23 +202,24 @@ void dsystem::assembleStiffnessMatrix()
 		}
 	}
 
-	if (!(springBLs.empty()))
-	{
-		std::map<int, springBilinear *>::iterator it;
-		for (it = springBLs.begin(); it != springBLs.end(); it++)
-		{
-			springBilinear *s = it->second;
-			s->buildMatrix();
-			s->assembleStiffnessMatrix(K);
-		}
-	}
-
 	if (!(spis2s.empty()))
 	{
 		std::map<int, spis2 *>::iterator it;
 		for (it = spis2s.begin(); it != spis2s.end(); it++)
 		{
 			spis2 *s = it->second;
+			s->assembleStiffnessMatrix(K);
+		}
+	}
+
+	K0 = K;
+
+	if (!(springBLs.empty()))
+	{
+		std::map<int, springBilinear *>::iterator it;
+		for (it = springBLs.begin(); it != springBLs.end(); it++)
+		{
+			springBilinear *s = it->second;
 			s->assembleStiffnessMatrix(K);
 		}
 	}
@@ -481,6 +482,61 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const doub
 
 }
 
+void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const double s, const int nsub)
+{
+	int nstep = tss[tsn]->nsteps;
+	double dt = tss[tsn]->dt;
+	vec ag = s * tss[tsn]->series;
+
+	vec x0 = zeros<vec>(2 * eqnCount);
+	vec F = zeros<vec>(2 * eqnCount);
+
+	u = zeros<mat>(eqnCount, nstep);
+	v = zeros<mat>(eqnCount, nstep);
+	a = zeros<mat>(eqnCount, nstep);
+
+	dt = dt / nsub;
+
+	mat O = zeros<mat>(eqnCount, eqnCount);
+	mat I = eye<mat>(eqnCount, eqnCount);
+	mat A = -solve(M, K0);
+	mat B = -solve(M, C);
+	mat H = join_cols(join_rows(O, I), join_rows(A, B));
+
+	double h = dt;
+	mat T = expmat(H*h);
+
+	dsp = u.col(0);
+	vel = v.col(0);
+	acc = a.col(0);
+
+	setDofResponse();
+	assembleNonlinearForceVector(true);
+
+	double agd, agi, agj;
+	for (int i = 0; i < nstep - 1; i++)
+	{
+		agd = (ag(i + 1) - ag(i)) / nsub;
+		agi = ag(i);
+		for (int j = 0; j < nsub; j++)
+		{
+			agj = agi + agd * j;
+			F.tail_rows(eqnCount) = solve(M, -Mp * E*agj - q);
+			x0 = T * (x0 + F * h);
+		}
+		u.col(i + 1) = x0.tail_rows(eqnCount);
+		v.col(i + 1) = x0.head_rows(eqnCount);
+		a.col(i + 1) = solve(M, -Mp * E*agj - q - C * v.col(i + 1) - K * u.col(i + 1));
+
+		dsp = u.col(i + 1);
+		vel = v.col(i + 1);
+		acc = a.col(i + 1);
+
+		setDofResponse();
+		assembleNonlinearForceVector(true);
+	}
+}
+
 void dsystem::solveTimeDomainSeismicResponseRK4(const int tsn, const double s, const int nsub)
 {
 	int nstep = tss[tsn]->nsteps;
@@ -503,10 +559,23 @@ void dsystem::setDofResponse()
 	for (int i = 0; i < eqnCount; i++)
 	{
 		dofs[eqnMapDof[i]]->dsp = dsp(i);
+		dofs[eqnMapDof[i]]->vel = vel(i);
+		dofs[eqnMapDof[i]]->acc = acc(i);
 	}
 }
 
-void dsystem::generateNonlinearForceVector()
+void dsystem::assembleNonlinearForceVector(const bool update)
 {
+	q = zeros<vec>(eqnCount);
 
+	if (!(springBLs.empty()))
+	{
+		std::map<int, springBilinear *>::iterator it;
+		for (it = springBLs.begin(); it != springBLs.end(); it++)
+		{
+			springBilinear *s = it->second;
+			s->getResponse(update);
+			s->assembleNonlinearForceVector(q);
+		}
+	}
 }

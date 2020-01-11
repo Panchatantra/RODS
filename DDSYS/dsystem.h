@@ -59,9 +59,10 @@ public:
 	void solveStochasticSeismicResponse(const double f_h=50.0, const int nf=10000, const char method='c');
 	void solveTimeDomainSeismicResponse(const int tsn, const double s=1.0, const int nsub=1);
 	void solveTimeDomainSeismicResponseStateSpace(const int tsn, const double s=1.0, const int nsub=1);
+	void solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const double s=1.0, const int nsub=1);
 	void solveTimeDomainSeismicResponseRK4(const int tsn, const double s = 1.0, const int nsub = 1);
 	void setDofResponse();
-	void generateNonlinearForceVector();
+	void assembleNonlinearForceVector(const bool update=false);
 	
 	std::map<int, node *> nodes;
 	std::map<int, dof *> dofs;
@@ -88,6 +89,7 @@ public:
 	vec dsp, vel, acc;
 	mat u, v, a;
 
+	mat K0;
 	vec q;
 
 	vec time;

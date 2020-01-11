@@ -1,6 +1,7 @@
 #include "truss2D.h"
 
-truss2D::truss2D(const int id, node * nodeI, node * nodeJ, section *sec)
+truss2D::truss2D(const int id, node * nodeI, node * nodeJ, section *sec):
+	ue(0.0), f(0.0)
 {
 	this->id = id;
 	this->nodeI = nodeI;
