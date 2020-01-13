@@ -475,8 +475,9 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const doub
 			F.tail_rows(eqnCount) = solve(M, -Mp*E*agj);
 			x0 = T*(x0 + F*h);
 		}
-		u.col(i + 1) = x0.tail_rows(eqnCount);
-		v.col(i + 1) = x0.head_rows(eqnCount);
+
+		u.col(i + 1) = x0.head_rows(eqnCount);
+		v.col(i + 1) = x0.tail_rows(eqnCount);
 		a.col(i + 1) = solve(M, -Mp*E*agj - C*v.col(i + 1) - K*u.col(i + 1));
 	}
 
@@ -524,8 +525,8 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const do
 			F.tail_rows(eqnCount) = solve(M, -Mp * E*agj - q);
 			x0 = T * (x0 + F * h);
 		}
-		u.col(i + 1) = x0.tail_rows(eqnCount);
-		v.col(i + 1) = x0.head_rows(eqnCount);
+		u.col(i + 1) = x0.head_rows(eqnCount);
+		v.col(i + 1) = x0.tail_rows(eqnCount);
 		a.col(i + 1) = solve(M, -Mp * E*agj - q - C * v.col(i + 1) - K * u.col(i + 1));
 
 		dsp = u.col(i + 1);
