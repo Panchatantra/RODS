@@ -74,6 +74,9 @@
     <ClCompile Include="springBoucWen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dashpotExp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dof.h">
@@ -140,6 +143,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="springBoucWen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dashpotExp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

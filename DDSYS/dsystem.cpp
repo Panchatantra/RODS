@@ -29,15 +29,15 @@ void dsystem::addDof(dof * d)
 	dofs[d->id] = d;
 }
 
-void dsystem::addDof(const int n, const double m, const bool fixed)
+void dsystem::addDof(const int id, const double m, const bool fixed)
 {
-	dof *d = new dof(n, X, m, fixed);
+	dof *d = new dof(id, X, m, fixed);
 	addDof(d);
 }
 
-void dsystem::addDof(const int n, direction dir, const double m, const bool fixed)
+void dsystem::addDof(const int id, direction dir, const double m, const bool fixed)
 {
-	dof *d = new dof(n, dir, m, fixed);
+	dof *d = new dof(id, dir, m, fixed);
 	addDof(d);
 }
 
@@ -79,6 +79,19 @@ void dsystem::addSpringBL(const int n, const int ni, const int nj, const double 
 	dof *j = dofs[nj];
 	springBilinear *s = new springBilinear(n, i, j, k0, uy, alpha);
 	addSpringBL(s);
+}
+
+void dsystem::addSpringBW(springBoucWen * s)
+{
+	springBWs[s->id] = s;
+}
+
+void dsystem::addSpringBW(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha)
+{
+	dof *i = dofs[ni];
+	dof *j = dofs[nj];
+	springBoucWen *s = new springBoucWen(n, i, j, k0, uy, alpha);
+	addSpringBW(s);
 }
 
 void dsystem::addDashpot(dashpot * d)
@@ -220,6 +233,16 @@ void dsystem::assembleStiffnessMatrix()
 		for (it = springBLs.begin(); it != springBLs.end(); it++)
 		{
 			springBilinear *s = it->second;
+			s->assembleStiffnessMatrix(K);
+		}
+	}
+
+	if (!(springBWs.empty()))
+	{
+		std::map<int, springBoucWen *>::iterator it;
+		for (it = springBWs.begin(); it != springBWs.end(); it++)
+		{
+			springBoucWen *s = it->second;
 			s->assembleStiffnessMatrix(K);
 		}
 	}
@@ -579,6 +602,17 @@ void dsystem::assembleNonlinearForceVector(const bool update)
 		for (it = springBLs.begin(); it != springBLs.end(); it++)
 		{
 			springBilinear *s = it->second;
+			s->getResponse(update);
+			s->assembleNonlinearForceVector(q);
+		}
+	}
+
+	if (!(springBWs.empty()))
+	{
+		std::map<int, springBoucWen *>::iterator it;
+		for (it = springBWs.begin(); it != springBWs.end(); it++)
+		{
+			springBoucWen *s = it->second;
 			s->getResponse(update);
 			s->assembleNonlinearForceVector(q);
 		}

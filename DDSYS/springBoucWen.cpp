@@ -2,7 +2,7 @@
 
 
 springBoucWen::springBoucWen(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha) :
-	u(0), f(0), up(0), dup(0), fp(0), status(0), sp(0)
+	u(0), f(0), v(0), z(0), n(20), beta(0.5), zp(0)
 {
 	this->id = id;
 	
@@ -16,7 +16,6 @@ springBoucWen::springBoucWen(const int id, dof *i, dof *j, const double k0, cons
 	k1 = alpha*k0;
 	fy = k0*uy;
 	k = k0;
-	kp = k0;
 
 	buildMatrix();
 }
@@ -64,76 +63,13 @@ void springBoucWen::assembleStiffnessMatrix(mat & K)
 void springBoucWen::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
+	v = dofJ->vel - dofI->vel;
 
-	double du = u - up;
-	double f_try = fp + du * kp;
-	double bup = fy + k1 * (u - uy);
-	double bdn = -fy + k1 * (u + uy);
+	double dt = dofI->dt;
 
-	status = sp;
-
-	if (du == 0.0)
-	{	
-		k = kp;
-		f = fp;
-	}
-	else if (status == 0)
-	{	
-		if (du > 0.0)
-		{
-			if (f_try > bup)
-			{	
-				f = bup;
-				k = k1;
-				status = 1;
-			}
-			else
-			{
-				k = k0;
-				f = f_try;
-			}
-		}
-		else
-		{
-			if (f_try < bdn)
-			{
-				f = bdn;
-				k = k1;
-				status = 1;
-			}
-			else
-			{	
-				k = k0;
-				f = f_try;
-			}
-		}
-	}
-	else if (status == 1)
-	{
-		if (dup*du > 0)
-		{
-			f = f_try;
-			k = k1;
-		}
-		else
-		{
-			k = k0;
-			f = fp + k * du;
-			status = 0;
-			if (f > bup)
-			{
-				f = bup;
-				k = k1;
-				status = 1;
-			}
-			else if (f < bdn)
-			{
-				f = bdn;
-				k = k1;
-				status = 1;
-			}
-		}
-	}
+	z = zp;
+	f = alpha*k0*u + (1.0-alpha)*fy*z;
+	z += dt*k0/fy*(v-beta*fabs(v)*pow(fabs(z),(n-1))*z-(1.0-beta)*v*pow(fabs(z),n));
 
 	//q(0) = -(f - k*u);
 	q(0) = -f;
@@ -143,11 +79,7 @@ void springBoucWen::getResponse(const bool update)
 
 	if (update)
 	{
-		up = u;
-		dup = du;
-		fp = f;
-		kp = k;
-		sp = status;
+		zp = z;
 	}
 }
 

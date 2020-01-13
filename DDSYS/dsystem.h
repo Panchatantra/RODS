@@ -7,6 +7,7 @@
 #include "node.h"
 #include "spring.h"
 #include "springBilinear.h"
+#include "springBoucWen.h"
 #include "dashpot.h"
 #include "inerter.h"
 #include "spis2.h"
@@ -19,15 +20,15 @@ constexpr double PI = 3.14159265;
 class dsystem
 {
 public:
-	dsystem(const double z=0.05);
+	dsystem(const double z=0.0);
 	~dsystem();
 
 	void addNode(node *nd);
 	void addNode(const int id, const double x=0.0, const double y=0.0, const double z=0.0);
 
     void addDof(dof *d);
-	void addDof(const int n, const double m=0.0, const bool fixed=false);
-	void addDof(const int n, direction dir=X, const double m=0.0, const bool fixed=false);
+	void addDof(const int id, const double m=0.0, const bool fixed=false);
+	void addDof(const int id, direction dir, const double m=0.0, const bool fixed=false);
     
 	void mapDofNode(dof *d, node *nd);
 	void mapDofNode(const int id_d, const int id_nd);
@@ -36,6 +37,8 @@ public:
 	void addSpring(const int n, const int ni, const int nj, const double k);
 	void addSpringBL(springBilinear *s);
 	void addSpringBL(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
+	void addSpringBW(springBoucWen *s);
+	void addSpringBW(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
 	void addDashpot(dashpot *d);
 	void addDashpot(const int n, const int ni, const int nj, const double c);
 	void addInerter(inerter *in);
@@ -71,6 +74,7 @@ public:
 	std::map<int, int> dofMapNode;
 	std::map<int, spring *> springs;
 	std::map<int, springBilinear *> springBLs;
+	std::map<int, springBoucWen *> springBWs;
 	std::map<int, dashpot *> dashpots;
 	std::map<int, inerter *> inerters;
 	std::map<int, spis2 *> spis2s;
