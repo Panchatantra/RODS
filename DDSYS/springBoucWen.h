@@ -6,11 +6,11 @@
 
 using namespace arma;
 
-class springBilinear : public element1D
+class springBoucWen : public element1D
 {
 public:
-	springBilinear(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha);
-	~springBilinear();
+	springBoucWen(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha);
+	~springBoucWen();
 
 	void buildMatrix();
 	void assembleStiffnessMatrix(mat &K);

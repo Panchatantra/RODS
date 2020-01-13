@@ -71,6 +71,9 @@
     <ClCompile Include="springBilinear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="springBoucWen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dof.h">
@@ -118,9 +121,6 @@
     <ClInclude Include="material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="sectionElasticBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -137,6 +137,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="springBilinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="springBoucWen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

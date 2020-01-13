@@ -15,10 +15,10 @@ public:
 	int eqnId;
 	double mass;
 	direction dir;
+	double dt;
 
 	bool isFixed;
 
 	double dsp, vel, acc;
-	
 };
 

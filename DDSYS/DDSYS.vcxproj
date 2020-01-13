@@ -177,6 +177,7 @@
     <ClCompile Include="spring.cpp" />
     <ClCompile Include="dsystem.cpp" />
     <ClCompile Include="springBilinear.cpp" />
+    <ClCompile Include="springBoucWen.cpp" />
     <ClCompile Include="timeseries.cpp" />
     <ClCompile Include="truss2D.cpp" />
   </ItemGroup>
@@ -193,7 +194,6 @@
     <ClInclude Include="material1D.h" />
     <ClInclude Include="numeric.h" />
     <ClInclude Include="element1D.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="section.h" />
     <ClInclude Include="sectionElasticBar.h" />
     <ClInclude Include="solver.h" />
@@ -201,6 +201,7 @@
     <ClInclude Include="spring.h" />
     <ClInclude Include="dsystem.h" />
     <ClInclude Include="springBilinear.h" />
+    <ClInclude Include="springBoucWen.h" />
     <ClInclude Include="timeseries.h" />
     <ClInclude Include="truss2D.h" />
   </ItemGroup>

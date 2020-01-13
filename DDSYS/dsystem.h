@@ -92,7 +92,5 @@ public:
 	mat K0;
 	vec q;
 
-	vec time;
-	double t;
-
+	double dt;
 };

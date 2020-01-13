@@ -1,7 +1,7 @@
-#include "springBilinear.h"
+#include "springBoucWen.h"
 
 
-springBilinear::springBilinear(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha) :
+springBoucWen::springBoucWen(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha) :
 	u(0), f(0), up(0), dup(0), fp(0), status(0), sp(0)
 {
 	this->id = id;
@@ -22,11 +22,11 @@ springBilinear::springBilinear(const int id, dof *i, dof *j, const double k0, co
 }
 
 
-springBilinear::~springBilinear()
+springBoucWen::~springBoucWen()
 {
 }
 
-void springBilinear::buildMatrix()
+void springBoucWen::buildMatrix()
 {
 	K(0, 0) = k;
 	K(0, 1) = -k;
@@ -34,7 +34,7 @@ void springBilinear::buildMatrix()
 	K(1, 1) = k;
 }
 
-void springBilinear::assembleStiffnessMatrix(mat & K)
+void springBoucWen::assembleStiffnessMatrix(mat & K)
 {
 	int i_local = 0;
 	int j_local = 1;
@@ -61,7 +61,7 @@ void springBilinear::assembleStiffnessMatrix(mat & K)
 	}
 }
 
-void springBilinear::getResponse(const bool update)
+void springBoucWen::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 
@@ -151,7 +151,7 @@ void springBilinear::getResponse(const bool update)
 	}
 }
 
-void springBilinear::assembleNonlinearForceVector(vec & q)
+void springBoucWen::assembleNonlinearForceVector(vec & q)
 {
 	int i_local = 0;
 	int j_local = 1;

@@ -385,7 +385,7 @@ void dsystem::solveStochasticSeismicResponse(const double f_h, const int nf, con
 void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, const int nsub)
 {
 	int nstep = tss[tsn]->nsteps;
-	double dt = tss[tsn]->dt;
+	dt = tss[tsn]->dt;
 	vec ag = s*tss[tsn]->series;
 
 	vec u0 = zeros<vec>(eqnCount);
@@ -443,7 +443,7 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const double s, const int nsub)
 {
 	int nstep = tss[tsn]->nsteps;
-	double dt = tss[tsn]->dt;
+	dt = tss[tsn]->dt;
 	vec ag = s * tss[tsn]->series;
 
 	vec x0 = zeros<vec>(2*eqnCount);
@@ -479,6 +479,10 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const doub
 		u.col(i + 1) = x0.head_rows(eqnCount);
 		v.col(i + 1) = x0.tail_rows(eqnCount);
 		a.col(i + 1) = solve(M, -Mp*E*agj - C*v.col(i + 1) - K*u.col(i + 1));
+
+		dsp = u.col(i + 1);
+		vel = v.col(i + 1);
+		acc = a.col(i + 1);
 	}
 
 }
@@ -486,7 +490,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const doub
 void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const double s, const int nsub)
 {
 	int nstep = tss[tsn]->nsteps;
-	double dt = tss[tsn]->dt;
+	dt = tss[tsn]->dt;
 	vec ag = s * tss[tsn]->series;
 
 	vec x0 = zeros<vec>(2 * eqnCount);
@@ -517,6 +521,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const do
 	double agd, agi, agj;
 	for (int i = 0; i < nstep - 1; i++)
 	{
+		//q.print();
 		agd = (ag(i + 1) - ag(i)) / nsub;
 		agi = ag(i);
 		for (int j = 0; j < nsub; j++)
@@ -524,17 +529,14 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const do
 			agj = agi + agd * j;
 			F.tail_rows(eqnCount) = solve(M, -Mp * E*agj - q);
 			x0 = T * (x0 + F * h);
+			dsp = x0.head_rows(eqnCount);
+			vel = x0.tail_rows(eqnCount);
+			setDofResponse();
+			assembleNonlinearForceVector(true);
 		}
 		u.col(i + 1) = x0.head_rows(eqnCount);
 		v.col(i + 1) = x0.tail_rows(eqnCount);
-		a.col(i + 1) = solve(M, -Mp * E*agj - q - C * v.col(i + 1) - K * u.col(i + 1));
-
-		dsp = u.col(i + 1);
-		vel = v.col(i + 1);
-		acc = a.col(i + 1);
-
-		setDofResponse();
-		assembleNonlinearForceVector(true);
+		a.col(i + 1) = solve(M, -Mp * E*agj - q - C * v.col(i + 1) - K0 * u.col(i + 1));
 	}
 }
 
@@ -559,9 +561,11 @@ void dsystem::setDofResponse()
 {
 	for (int i = 0; i < eqnCount; i++)
 	{
-		dofs[eqnMapDof[i]]->dsp = dsp(i);
-		dofs[eqnMapDof[i]]->vel = vel(i);
-		dofs[eqnMapDof[i]]->acc = acc(i);
+		dof *d = dofs[eqnMapDof[i]];
+		d->dsp = dsp(i);
+		d->vel = vel(i);
+		d->acc = acc(i);
+		d->dt = dt;
 	}
 }
 
