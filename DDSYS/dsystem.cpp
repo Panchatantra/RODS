@@ -186,6 +186,24 @@ void dsystem::addTimeseries(const int n, const double dt, const char* fileName)
 	addTimeseries(ts);
 }
 
+void dsystem::addDofRecorder(dofRecorder * dr)
+{
+	drs[dr->id] = dr;
+}
+
+void dsystem::addDofRecorder(const int id, int *dofIds, const int n, char * fileName)
+{
+	std::vector<dof *> rdofs(n);
+
+	for (size_t i = 0; i < n; i++)
+	{
+		rdofs[i] = dofs[dofIds[i]];
+	}
+
+	dofRecorder *dr = new dofRecorder(id, rdofs, fileName);
+	addDofRecorder(dr);
+}
+
 void dsystem::buildDofEqnMap()
 {
 	std::map<int, dof *>::iterator it;
@@ -442,7 +460,7 @@ void dsystem::solveStochasticSeismicResponse(const double f_h, const int nf, con
 
 void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, const int nsub)
 {
-	int nstep = tss[tsn]->nsteps;
+	nsteps = tss[tsn]->nsteps;
 	dt = tss[tsn]->dt;
 	vec ag = s*tss[tsn]->series;
 
@@ -450,9 +468,13 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 	vec v0 = zeros<vec>(eqnCount);
 	vec a0 = zeros<vec>(eqnCount);
 
-	u = zeros<mat>(eqnCount, nstep);
-	v = zeros<mat>(eqnCount, nstep);
-	a = zeros<mat>(eqnCount, nstep);
+	u = zeros<mat>(eqnCount, nsteps);
+	v = zeros<mat>(eqnCount, nsteps);
+	a = zeros<mat>(eqnCount, nsteps);
+
+	cstep = 0;
+	ctime = 0;
+	initRecorders();
 
 	dt = dt / nsub;
 
@@ -479,7 +501,7 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 	vec p_h;
 	vec u_p;
 	double agd, agi, agj;
-	for (int i = 0; i < nstep-1; i++)
+	for (int i = 0; i < nsteps-1; i++)
 	{
 		agd = (ag(i + 1) - ag(i)) / nsub;
 		agi = ag(i);
@@ -491,25 +513,34 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 			u0 = solve(K_h, p_h);
 			v0 = c3*(u0-u_p) + c4*v0 + dt*c5*a0;
 			a0 = solve(M, -Mp*E*agj-C*v0-K*u0);
+			ctime += dt;
 		}
 		u.col(i+1) = u0;
 		v.col(i+1) = v0;
 		a.col(i+1) = a0;
+
+		cstep += 1;
+		recordResponse();
 	}
+	saveResponse();
 }
 
 void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const double s, const int nsub)
 {
-	int nstep = tss[tsn]->nsteps;
+	nsteps = tss[tsn]->nsteps;
 	dt = tss[tsn]->dt;
 	vec ag = s * tss[tsn]->series;
 
 	vec x0 = zeros<vec>(2*eqnCount);
 	vec F = zeros<vec>(2*eqnCount);
 
-	u = zeros<mat>(eqnCount, nstep);
-	v = zeros<mat>(eqnCount, nstep);
-	a = zeros<mat>(eqnCount, nstep);
+	u = zeros<mat>(eqnCount, nsteps);
+	v = zeros<mat>(eqnCount, nsteps);
+	a = zeros<mat>(eqnCount, nsteps);
+
+	cstep = 0;
+	ctime = 0;
+	initRecorders();
 
 	dt = dt / nsub;
 
@@ -522,8 +553,19 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const doub
 	double h = dt;
 	mat T = expmat(H*h);
 
+	u.col(0) = x0.head_rows(eqnCount);
+	v.col(0) = x0.tail_rows(eqnCount);
+	a.col(0) = solve(M, -Mp * E*ag(0) - C * v.col(0) - K * u.col(0));
+
+	dsp = u.col(0);
+	vel = v.col(0);
+	acc = a.col(0);
+
+	setDofResponse();
+	recordResponse();
+
 	double agd, agi, agj;
-	for (int i = 0; i < nstep - 1; i++)
+	for (int i = 0; i < nsteps - 1; i++)
 	{
 		agd = (ag(i + 1) - ag(i)) / nsub;
 		agi = ag(i);
@@ -532,6 +574,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const doub
 			agj = agi + agd * j;
 			F.tail_rows(eqnCount) = solve(M, -Mp*E*agj);
 			x0 = T*(x0 + F*h);
+			ctime += dt;
 		}
 
 		u.col(i + 1) = x0.head_rows(eqnCount);
@@ -541,22 +584,30 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const doub
 		dsp = u.col(i + 1);
 		vel = v.col(i + 1);
 		acc = a.col(i + 1);
-	}
 
+		cstep += 1;
+		setDofResponse();
+		recordResponse();
+	}
+	saveResponse();
 }
 
 void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const double s, const int nsub)
 {
-	int nstep = tss[tsn]->nsteps;
+	nsteps = tss[tsn]->nsteps;
 	dt = tss[tsn]->dt;
 	vec ag = s * tss[tsn]->series;
 
 	vec x0 = zeros<vec>(2 * eqnCount);
 	vec F = zeros<vec>(2 * eqnCount);
 
-	u = zeros<mat>(eqnCount, nstep);
-	v = zeros<mat>(eqnCount, nstep);
-	a = zeros<mat>(eqnCount, nstep);
+	u = zeros<mat>(eqnCount, nsteps);
+	v = zeros<mat>(eqnCount, nsteps);
+	a = zeros<mat>(eqnCount, nsteps);
+
+	cstep = 0;
+	ctime = 0;
+	initRecorders();
 
 	dt = dt / nsub;
 
@@ -569,15 +620,20 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const do
 	double h = dt;
 	mat T = expmat(H*h);
 
+	u.col(0) = x0.head_rows(eqnCount);
+	v.col(0) = x0.tail_rows(eqnCount);
+	a.col(0) = solve(M, -Mp * E*ag(0) - C * v.col(0) - K * u.col(0));
+
 	dsp = u.col(0);
 	vel = v.col(0);
 	acc = a.col(0);
 
 	setDofResponse();
 	assembleNonlinearForceVector(true);
+	recordResponse();
 
 	double agd, agi, agj;
-	for (int i = 0; i < nstep - 1; i++)
+	for (int i = 0; i < nsteps - 1; i++)
 	{
 		//q.print();
 		agd = (ag(i + 1) - ag(i)) / nsub;
@@ -591,11 +647,16 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const do
 			vel = x0.tail_rows(eqnCount);
 			setDofResponse();
 			assembleNonlinearForceVector(true);
+			ctime += dt;
 		}
 		u.col(i + 1) = x0.head_rows(eqnCount);
 		v.col(i + 1) = x0.tail_rows(eqnCount);
 		a.col(i + 1) = solve(M, -Mp * E*agj - q - C * v.col(i + 1) - K0 * u.col(i + 1));
+
+		cstep += 1;
+		recordResponse();
 	}
+	saveResponse();
 }
 
 void dsystem::solveTimeDomainSeismicResponseRK4(const int tsn, const double s, const int nsub)
@@ -661,6 +722,45 @@ void dsystem::assembleNonlinearForceVector(const bool update)
 			dashpotExp *s = it->second;
 			s->getResponse(update);
 			s->assembleNonlinearForceVector(q);
+		}
+	}
+}
+
+void dsystem::initRecorders()
+{
+	if (!(drs.empty()))
+	{
+		std::map<int, dofRecorder *>::iterator it;
+		for (it = drs.begin(); it != drs.end(); it++)
+		{
+			dofRecorder *dr = it->second;
+			dr->init(nsteps);
+		}
+	}
+}
+
+void dsystem::recordResponse()
+{
+	if (!(drs.empty()))
+	{
+		std::map<int, dofRecorder *>::iterator it;
+		for (it = drs.begin(); it != drs.end(); it++)
+		{
+			dofRecorder *dr = it->second;
+			dr->record(cstep, ctime);
+		}
+	}
+}
+
+void dsystem::saveResponse()
+{
+	if (!(drs.empty()))
+	{
+		std::map<int, dofRecorder *>::iterator it;
+		for (it = drs.begin(); it != drs.end(); it++)
+		{
+			dofRecorder *dr = it->second;
+			dr->save();
 		}
 	}
 }

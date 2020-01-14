@@ -1,26 +1,32 @@
 #include "dofRecorder.h"
 
-dofRecorder::dofRecorder(dof * dofs, const int n, char * fileName, const int nsteps)
+dofRecorder::dofRecorder(const int id, std::vector<dof *> dofs, char * fileName) :
+	nsteps(0)
 {
+	this->id = id;
 	this->dofs = dofs;
-	this->n = n;
+	this->n = dofs.size();
 
 	this->fileName = fileName;
-	this->nsteps = nsteps;
-
-	Res = zeros<mat>(nsteps, n+1);
 }
 
 dofRecorder::~dofRecorder()
 {
 }
 
+void dofRecorder::init(const int nsteps)
+{
+	this->nsteps = nsteps;
+	Res = zeros<mat>(nsteps, n+1);
+}
+
 void dofRecorder::record(const int cstep, const double ctime)
 {
 	Res(cstep, 0) = ctime;
-	for (dof * d = dofs; d < dofs+n; d++)
+	for (int i = 0; i < n; i++)
 	{
-		Res(cstep, (int)(d-dofs)) = d->dsp;
+		dof * d = dofs[i];
+		Res(cstep, i+1) = d->dsp;
 	}
 }
 

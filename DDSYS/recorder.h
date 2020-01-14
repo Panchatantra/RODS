@@ -4,5 +4,7 @@ class recorder
 public:
 	recorder();
 	~recorder();
+
+	int id;
 };
 

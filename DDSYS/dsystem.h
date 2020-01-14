@@ -13,6 +13,7 @@
 #include "inerter.h"
 #include "spis2.h"
 #include "timeseries.h"
+#include "dofRecorder.h"
 
 using namespace arma;
 
@@ -53,6 +54,9 @@ public:
 	void addTimeseries(const int n, const double dt, const vec &s);
 	void addTimeseries(const int n, const double dt, const char* fileName);
 
+	void addDofRecorder(dofRecorder *dr);
+	void addDofRecorder(const int id, int *dofIds, const int n, char * fileName);
+
 	void buildDofEqnMap();
 	void assembleMassMatrix();
 	void assembleStiffnessMatrix();
@@ -69,6 +73,9 @@ public:
 	void solveTimeDomainSeismicResponseRK4(const int tsn, const double s = 1.0, const int nsub = 1);
 	void setDofResponse();
 	void assembleNonlinearForceVector(const bool update=false);
+	void initRecorders();
+	void recordResponse();
+	void saveResponse();
 	
 	std::map<int, node *> nodes;
 	std::map<int, dof *> dofs;
@@ -84,6 +91,7 @@ public:
 	std::map<int, spis2 *> spis2s;
 
 	std::map<int, timeseries *> tss;
+	std::map<int, dofRecorder *> drs;
 
 	double zeta;
 	int eqnCount;
@@ -100,5 +108,6 @@ public:
 	mat K0;
 	vec q;
 
-	double dt;
+	double dt, ctime;
+	int nsteps, cstep;
 };
