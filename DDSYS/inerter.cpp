@@ -1,15 +1,14 @@
 #include "inerter.h"
 
 
-inerter::inerter(const int n, dof *i, dof *j, const double m)
+inerter::inerter(const int n, dof *i, dof *j, const double m) :
+	u(0.0), f(0.0)
 {
 	id = n;
 	this->m = m;
 
 	dofI = i;
 	dofJ = j;
-
-	f = 0.0;
 
 	buildMatrix();
 }
@@ -51,4 +50,11 @@ void inerter::assembleMassMatrix(mat & M)
 		M(j_global, i_global) += this->M(j_local, i_local);
 		M(j_global, j_global) += this->M(j_local, j_local);
 	}
+}
+
+void inerter::getResponse()
+{
+	u = dofJ->dsp - dofI->dsp;
+	double a = dofJ->acc - dofI->acc;
+	f = m * a;
 }

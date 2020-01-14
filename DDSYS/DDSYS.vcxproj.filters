@@ -77,6 +77,12 @@
     <ClCompile Include="dashpotExp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="recorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dofRecorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dof.h">
@@ -146,6 +152,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dashpotExp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="recorder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dofRecorder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -22,7 +22,7 @@ public:
 
 	mat::fixed<2, 2> C;
 
-	double v, f;
+	double u, f;
 
 	vec::fixed<2> q;
 };

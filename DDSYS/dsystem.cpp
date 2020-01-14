@@ -3,7 +3,7 @@
 
 
 dsystem::dsystem(const double z) :
-	eqnCount(0), eigenVectorNormed(false)
+	eqnCount(0), eigenVectorNormed(false), dt(0.02)
 {
 	zeta = z;
 }
@@ -26,7 +26,15 @@ void dsystem::addNode(const int id, const double x, const double y, const double
 
 void dsystem::addDof(dof * d)
 {
-	dofs[d->id] = d;
+	if (dofs.count(d->id) == 0)
+	{
+		dofs[d->id] = d;
+	}
+	else
+	{
+		cout << "dof ID: " << d->id << " already exists!"<< endl;
+	}
+	
 }
 
 void dsystem::addDof(const int id, const double m, const bool fixed)
@@ -96,7 +104,14 @@ void dsystem::addSpringBW(const int n, const int ni, const int nj, const double 
 
 void dsystem::addDashpot(dashpot * d)
 {
-	dashpots[d->id] = d;
+	if (dashpots.count(d->id) == 0)
+	{
+		dashpots[d->id] = d;
+	}
+	else
+	{
+		cout << "dashpot ID: " << d->id << " already exists!" << endl;
+	}
 }
 
 void dsystem::addDashpot(const int n, const int ni, const int nj, const double c)
@@ -105,6 +120,26 @@ void dsystem::addDashpot(const int n, const int ni, const int nj, const double c
 	dof *j = dofs[nj];
 	dashpot *d = new dashpot(n, i, j, c);
 	addDashpot(d);
+}
+
+void dsystem::addDashpotExp(dashpotExp * d)
+{
+	if (dashpotExps.count(d->id) == 0)
+	{
+		dashpotExps[d->id] = d;
+	}
+	else
+	{
+		cout << "dashpotExp ID: " << d->id << " already exists!" << endl;
+	}
+}
+
+void dsystem::addDashpotExp(const int n, const int ni, const int nj, const double c, const double alpha)
+{
+	dof *i = dofs[ni];
+	dof *j = dofs[nj];
+	dashpotExp *d = new dashpotExp(n, i, j, c, alpha);
+	addDashpotExp(d);
 }
 
 void dsystem::addInerter(inerter * in)
@@ -613,6 +648,17 @@ void dsystem::assembleNonlinearForceVector(const bool update)
 		for (it = springBWs.begin(); it != springBWs.end(); it++)
 		{
 			springBoucWen *s = it->second;
+			s->getResponse(update);
+			s->assembleNonlinearForceVector(q);
+		}
+	}
+
+	if (!(dashpotExps.empty()))
+	{
+		std::map<int, dashpotExp *>::iterator it;
+		for (it = dashpotExps.begin(); it != dashpotExps.end(); it++)
+		{
+			dashpotExp *s = it->second;
 			s->getResponse(update);
 			s->assembleNonlinearForceVector(q);
 		}

@@ -14,11 +14,12 @@ public:
 
 	void buildMatrix();
 	void assembleMassMatrix(mat & M);
+	void getResponse();
 
 	double m;
 
 	mat::fixed<2,2> M;
 
-	double f;
+	double u, f;
 };
 

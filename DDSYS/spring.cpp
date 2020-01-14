@@ -1,15 +1,14 @@
 #include "spring.h"
 
 
-spring::spring(const int id, dof *i, dof *j, const double k)
+spring::spring(const int id, dof *i, dof *j, const double k) :
+	u(0.0), f(0.0)
 {
 	this->id = id;
 	this->k = k;
 
 	dofI = i;
 	dofJ = j;
-
-	f = 0.0;
 
 	buildMatrix();
 }
@@ -55,6 +54,6 @@ void spring::assembleStiffnessMatrix(mat & K)
 
 void spring::getResponse()
 {
-	double u = dofJ->dsp - dofI->dsp;
+	u = dofJ->dsp - dofI->dsp;
 	f = k * u;
 }

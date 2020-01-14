@@ -1,14 +1,13 @@
 #include "dashpotExp.h"
 
-dashpotExp::dashpotExp(const int n, dof * i, dof * j, const double c, const double alpha)
+dashpotExp::dashpotExp(const int n, dof * i, dof * j, const double c, const double alpha) :
+	u(0.0), f(0.0)
 {
     id = n;
     this->c = c;
 
     dofI = i;
     dofJ = j;
-
-    f = 0.0;
 
     buildMatrix();
 }
@@ -55,7 +54,7 @@ void dashpotExp::assembleDampingMatrix(mat & C)
 
 void dashpotExp::getResponse(const bool update)
 {
-	v = dofJ->vel - dofI->vel;
+	double v = dofJ->vel - dofI->vel;
 	f = c * pow(abs(v), alpha);
 
 	q(0) = -f;

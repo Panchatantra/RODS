@@ -14,12 +14,13 @@ public:
 
 	void buildMatrix();
 	void assembleDampingMatrix(mat & C);
+	void getResponse();
 
 	double c;
 
 	mat::fixed<2, 2> C;
 
-	double f;
+	double u, f;
 	
 };
 

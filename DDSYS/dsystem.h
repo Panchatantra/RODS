@@ -9,6 +9,7 @@
 #include "springBilinear.h"
 #include "springBoucWen.h"
 #include "dashpot.h"
+#include "dashpotExp.h"
 #include "inerter.h"
 #include "spis2.h"
 #include "timeseries.h"
@@ -41,6 +42,8 @@ public:
 	void addSpringBW(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
 	void addDashpot(dashpot *d);
 	void addDashpot(const int n, const int ni, const int nj, const double c);
+	void addDashpotExp(dashpotExp *d);
+	void addDashpotExp(const int n, const int ni, const int nj, const double c, const double alpha);
 	void addInerter(inerter *in);
 	void addInerter(const int n, const int ni, const int nj, const double m);
 	void addSPIS2(spis2 *s);
@@ -76,6 +79,7 @@ public:
 	std::map<int, springBilinear *> springBLs;
 	std::map<int, springBoucWen *> springBWs;
 	std::map<int, dashpot *> dashpots;
+	std::map<int, dashpotExp *> dashpotExps;
 	std::map<int, inerter *> inerters;
 	std::map<int, spis2 *> spis2s;
 

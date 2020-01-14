@@ -1,6 +1,7 @@
 #include "spis2.h"
 
-spis2::spis2(const int n, dof * i, dof * j, dof *in, const double m, const double c, const double k)
+spis2::spis2(const int n, dof * i, dof * j, dof *in, const double m, const double c, const double k) :
+	u(0.0), u_in(0.0), f(0.0), f_c(0.0), f_m(0.0)
 {
 	id = n;
 	this->m = m;
@@ -11,7 +12,6 @@ spis2::spis2(const int n, dof * i, dof * j, dof *in, const double m, const doubl
 	dofJ = j;
 	dofIN = in;
 
-	f = 0.0;
 	buildMatrix();
 }
 
@@ -88,4 +88,13 @@ void spis2::assembleDampingMatrix(mat & C)
 	int in_local = 1;
 	int in_global = this->dofIN->eqnId;
 	C(in_global, in_global) += this->C(in_local, in_local);
+}
+
+void spis2::getResponse()
+{
+	u = dofJ->dsp - dofI->dsp;
+	u_in = dofIN->dsp;
+	f = k * (u - u_in);
+	f_c = c * dofIN->vel;
+	f_m = f - f_c;
 }

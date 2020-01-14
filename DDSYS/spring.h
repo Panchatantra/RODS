@@ -20,6 +20,6 @@ public:
 
 	mat::fixed<2,2> K;
 
-	double f;
+	double u, f;
 };
 

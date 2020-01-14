@@ -1,14 +1,13 @@
 #include "dashpot.h"
 
-dashpot::dashpot(const int n, dof * i, dof * j, const double c)
+dashpot::dashpot(const int n, dof * i, dof * j, const double c) :
+	u(0.0), f(0.0)
 {
     id = n;
     this->c = c;
 
     dofI = i;
     dofJ = j;
-
-    f = 0.0;
 
     buildMatrix();
 }
@@ -51,4 +50,11 @@ void dashpot::assembleDampingMatrix(mat & C)
 		C(j_global, i_global) += this->C(j_local, i_local);
 		C(j_global, j_global) += this->C(j_local, j_local);
 	}
+}
+
+void dashpot::getResponse()
+{
+	u = dofJ->dsp - dofI->dsp;
+	double v = dofJ->vel - dofI->vel;
+	f = c*v;
 }

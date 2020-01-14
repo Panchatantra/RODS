@@ -16,6 +16,7 @@ public:
 	void assembleMassMatrix(mat & M);
 	void assembleStiffnessMatrix(mat & K);
 	void assembleDampingMatrix(mat & C);
+	void getResponse();
 
 	dof *dofIN;
 	double m;
@@ -24,6 +25,6 @@ public:
 
 	mat M, C, K;
 
-	double f;
+	double u, u_in, f, f_c, f_m;
 };
 
