@@ -260,3 +260,6 @@ paket-files/
 __pycache__/
 *.pyc
 *.0
+
+# Dynamic library
+*.dll
