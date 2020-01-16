@@ -14,7 +14,7 @@ public:
 
 	void buildMatrix();
 	void assembleDampingMatrix(mat & C);
-	void getResponse();
+	void getResponse(const bool update = false);
 
 	double c;
 

@@ -139,6 +139,9 @@ void springBilinear::getResponse(const bool update)
 	q(0) = -f;
 	q(1) = f;
 
+	force = &f;
+	deformation = &u;
+
 	buildMatrix();
 
 	if (update)

@@ -13,10 +13,17 @@ plt.rcParams['mathtext.fontset']='cm'
 def loadcsv(filename):
     return sp.loadtxt(filename, delimiter=',')
 
+data = loadcsv("disp.csv")
+t = data[:,0]
+dsp = data[:,1]
 
-t = loadcsv("t.csv")
-dsp = loadcsv("dsp.csv")
+data = loadcsv("force.csv")
+df = data[:,2]
 
 plt.figure(1,(12,6))
 plt.plot(t, dsp)
+
+plt.figure(2,(6,6))
+plt.plot(dsp, df)
+
 plt.show()

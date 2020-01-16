@@ -52,9 +52,12 @@ void dashpot::assembleDampingMatrix(mat & C)
 	}
 }
 
-void dashpot::getResponse()
+void dashpot::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	double v = dofJ->vel - dofI->vel;
 	f = c*v;
+
+	force = &f;
+	deformation = &u;
 }

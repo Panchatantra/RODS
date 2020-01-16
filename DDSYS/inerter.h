@@ -14,7 +14,7 @@ public:
 
 	void buildMatrix();
 	void assembleMassMatrix(mat & M);
-	void getResponse();
+	void getResponse(const bool update = false);
 
 	double m;
 

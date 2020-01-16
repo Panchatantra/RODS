@@ -52,9 +52,12 @@ void inerter::assembleMassMatrix(mat & M)
 	}
 }
 
-void inerter::getResponse()
+void inerter::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	double a = dofJ->acc - dofI->acc;
 	f = m * a;
+
+	force = &f;
+	deformation = &u;
 }

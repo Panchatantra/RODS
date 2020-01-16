@@ -90,11 +90,14 @@ void spis2::assembleDampingMatrix(mat & C)
 	C(in_global, in_global) += this->C(in_local, in_local);
 }
 
-void spis2::getResponse()
+void spis2::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	u_in = dofIN->dsp;
 	f = k * (u - u_in);
 	f_c = c * dofIN->vel;
 	f_m = f - f_c;
+
+	force = &f;
+	deformation = &u;
 }

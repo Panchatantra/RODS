@@ -233,6 +233,7 @@
     <ClCompile Include="elastic1D.cpp" />
     <ClCompile Include="element.cpp" />
     <ClCompile Include="element2D.cpp" />
+    <ClCompile Include="elementRecorder.cpp" />
     <ClCompile Include="inerter.cpp" />
     <ClCompile Include="recorder.cpp" />
     <ClCompile Include="spring2D.cpp" />
@@ -258,6 +259,7 @@
     <ClInclude Include="elastic1D.h" />
     <ClInclude Include="element.h" />
     <ClInclude Include="element2D.h" />
+    <ClInclude Include="elementRecorder.h" />
     <ClInclude Include="inerter.h" />
     <ClInclude Include="recorder.h" />
     <ClInclude Include="spring2D.h" />

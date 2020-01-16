@@ -14,7 +14,7 @@ public:
 
 	void buildMatrix();
 	void assembleStiffnessMatrix(mat &K);
-	void getResponse();
+	void getResponse(const bool update = false);
 
 	double k;
 

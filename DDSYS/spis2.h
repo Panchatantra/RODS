@@ -16,7 +16,7 @@ public:
 	void assembleMassMatrix(mat & M);
 	void assembleStiffnessMatrix(mat & K);
 	void assembleDampingMatrix(mat & C);
-	void getResponse();
+	void getResponse(const bool update = false);
 
 	dof *dofIN;
 	double m;

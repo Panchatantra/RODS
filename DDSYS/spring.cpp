@@ -52,8 +52,11 @@ void spring::assembleStiffnessMatrix(mat & K)
 	}
 }
 
-void spring::getResponse()
+void spring::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	f = k * u;
+
+	force = &f;
+	deformation = &u;
 }

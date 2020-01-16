@@ -30,7 +30,7 @@ void dsystem::addDof(dof * d)
 	{
 		dofs[d->id] = d;
 	}
-	else
+	else 
 	{
 		cout << "dof ID: " << d->id << " already exists!"<< endl;
 	}
@@ -63,108 +63,108 @@ void dsystem::mapDofNode(const int id_d, const int id_nd)
 	dofMapNode[id_d] = id_nd;
 }
 
+bool dsystem::addElement(element * e)
+{
+	if (eles.count(e->id) == 0)
+	{
+		eles[e->id] = e;
+		return true;
+	}
+	else
+	{
+		cout << "element ID: " << e->id << " already exists!" << endl;
+		return false;
+	}
+}
+
 void dsystem::addSpring(spring * s)
 {
-	springs[s->id] = s;
+	if (addElement(s)) springs[s->id] = s;
 }
 
 void dsystem::addSpring(const int n, const int ni, const int nj, const double k)
 {
-	dof *i = dofs[ni];
-	dof *j = dofs[nj];
+	dof *i = dofs.at(ni);
+	dof *j = dofs.at(nj);
 	spring *s = new spring(n, i, j, k);
 	addSpring(s);
 }
 
 void dsystem::addSpringBL(springBilinear * s)
 {
-	springBLs[s->id] = s;
+	if (addElement(s)) springBLs[s->id] = s;
 }
 
 void dsystem::addSpringBL(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha)
 {
-	dof *i = dofs[ni];
-	dof *j = dofs[nj];
+	dof *i = dofs.at(ni);
+	dof *j = dofs.at(nj);
 	springBilinear *s = new springBilinear(n, i, j, k0, uy, alpha);
 	addSpringBL(s);
 }
 
 void dsystem::addSpringBW(springBoucWen * s)
 {
-	springBWs[s->id] = s;
+	if (addElement(s)) springBWs[s->id] = s;
 }
 
 void dsystem::addSpringBW(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha)
 {
-	dof *i = dofs[ni];
-	dof *j = dofs[nj];
+	dof *i = dofs.at(ni);
+	dof *j = dofs.at(nj);
 	springBoucWen *s = new springBoucWen(n, i, j, k0, uy, alpha);
 	addSpringBW(s);
 }
 
 void dsystem::addDashpot(dashpot * d)
 {
-	if (dashpots.count(d->id) == 0)
-	{
-		dashpots[d->id] = d;
-	}
-	else
-	{
-		cout << "dashpot ID: " << d->id << " already exists!" << endl;
-	}
+	if (addElement(d)) dashpots[d->id] = d;
 }
 
 void dsystem::addDashpot(const int n, const int ni, const int nj, const double c)
 {
-	dof *i = dofs[ni];
-	dof *j = dofs[nj];
+	dof *i = dofs.at(ni);
+	dof *j = dofs.at(nj);
 	dashpot *d = new dashpot(n, i, j, c);
 	addDashpot(d);
 }
 
 void dsystem::addDashpotExp(dashpotExp * d)
 {
-	if (dashpotExps.count(d->id) == 0)
-	{
-		dashpotExps[d->id] = d;
-	}
-	else
-	{
-		cout << "dashpotExp ID: " << d->id << " already exists!" << endl;
-	}
+	if (addElement(d)) dashpotExps[d->id] = d;
 }
 
 void dsystem::addDashpotExp(const int n, const int ni, const int nj, const double c, const double alpha)
 {
-	dof *i = dofs[ni];
-	dof *j = dofs[nj];
+	dof *i = dofs.at(ni);
+	dof *j = dofs.at(nj);
 	dashpotExp *d = new dashpotExp(n, i, j, c, alpha);
 	addDashpotExp(d);
 }
 
 void dsystem::addInerter(inerter * in)
 {
-	inerters[in->id] = in;
+	if (addElement(in)) inerters[in->id] = in;
 }
 
 void dsystem::addInerter(const int n, const int ni, const int nj, const double m)
 {
-	dof *i = dofs[ni];
-	dof *j = dofs[nj];
+	dof *i = dofs.at(ni);
+	dof *j = dofs.at(nj);
 	inerter *in = new inerter(n, i, j, m);
 	addInerter(in);
 }
 
 void dsystem::addSPIS2(spis2 * s)
 {
-	spis2s[s->id] = s;
+	if (addElement(s)) spis2s[s->id] = s;
 }
 
 void dsystem::addSPIS2(const int n, const int ni, const int nj, const int nin, const double m, const double c, const double k)
 {
-	dof *i = dofs[ni];
-	dof *j = dofs[nj];
-	dof *in = dofs[nin];
+	dof *i = dofs.at(ni);
+	dof *j = dofs.at(nj);
+	dof *in = dofs.at(nin);
 	spis2 *s = new spis2(n, i, j, in, m, c, k);
 	addSPIS2(s);
 }
@@ -191,17 +191,74 @@ void dsystem::addDofRecorder(dofRecorder * dr)
 	drs[dr->id] = dr;
 }
 
-void dsystem::addDofRecorder(const int id, int *dofIds, const int n, char * fileName)
+void dsystem::addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName)
 {
 	std::vector<dof *> rdofs(n);
 
 	for (size_t i = 0; i < n; i++)
 	{
-		rdofs[i] = dofs[dofIds[i]];
+		rdofs[i] = dofs.at(dofIds[i]);
 	}
 
-	dofRecorder *dr = new dofRecorder(id, rdofs, fileName);
+	dofRecorder *dr = new dofRecorder(id, rdofs, rtype, fileName);
 	addDofRecorder(dr);
+}
+
+void dsystem::addElementRecorder(elementRecorder * er)
+{
+	ers[er->id] = er;
+}
+
+void dsystem::addElementRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
+{
+	std::vector<element *> reles(n);
+
+	for (size_t i = 0; i < n; i++)
+	{
+		reles[i] = eles.at(eleIds[i]);
+	}
+
+	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);
+	addElementRecorder(er);
+}
+
+void dsystem::addSpringRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
+{
+	std::vector<element *> reles(n);
+
+	for (size_t i = 0; i < n; i++)
+	{
+		reles[i] = springs.at(eleIds[i]);
+	}
+
+	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);
+	addElementRecorder(er);
+}
+
+void dsystem::addDashpotRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
+{
+	std::vector<element *> reles(n);
+
+	for (size_t i = 0; i < n; i++)
+	{
+		reles[i] = dashpots.at(eleIds[i]);
+	}
+
+	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);
+	addElementRecorder(er);
+}
+
+void dsystem::addInerterRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
+{
+	std::vector<element *> reles(n);
+
+	for (size_t i = 0; i < n; i++)
+	{
+		reles[i] = inerters.at(eleIds[i]);
+	}
+
+	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);
+	addElementRecorder(er);
 }
 
 void dsystem::buildDofEqnMap()
@@ -227,7 +284,7 @@ void dsystem::assembleMassMatrix()
 	vec m(eqnCount);
 	for (int i = 0; i < eqnCount; i++)
 	{
-		m(i) = dofs[eqnMapDof[i]]->mass;
+		m(i) = dofs.at(eqnMapDof[i])->mass;
 	}
 	Mp = diagmat(m);
 	M = diagmat(m);
@@ -460,9 +517,9 @@ void dsystem::solveStochasticSeismicResponse(const double f_h, const int nf, con
 
 void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, const int nsub)
 {
-	nsteps = tss[tsn]->nsteps;
-	dt = tss[tsn]->dt;
-	vec ag = s*tss[tsn]->series;
+	nsteps = tss.at(tsn)->nsteps;
+	dt = tss.at(tsn)->dt;
+	vec ag = s*tss.at(tsn)->series;
 
 	vec u0 = zeros<vec>(eqnCount);
 	vec v0 = zeros<vec>(eqnCount);
@@ -498,6 +555,14 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 	a0 = solve(M, -Mp*E*ag(0) - C*v0 - K*u0);
 	a.col(0) = a0;
 
+	dsp = u.col(0);
+	vel = v.col(0);
+	acc = a.col(0);
+
+	setDofResponse();
+	getElementResponse();
+	recordResponse();
+
 	vec p_h;
 	vec u_p;
 	double agd, agi, agj;
@@ -519,7 +584,13 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 		v.col(i+1) = v0;
 		a.col(i+1) = a0;
 
+		dsp = u.col(i + 1);
+		vel = v.col(i + 1);
+		acc = a.col(i + 1);
+
 		cstep += 1;
+		setDofResponse();
+		getElementResponse();
 		recordResponse();
 	}
 	saveResponse();
@@ -527,9 +598,9 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 
 void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const double s, const int nsub)
 {
-	nsteps = tss[tsn]->nsteps;
-	dt = tss[tsn]->dt;
-	vec ag = s * tss[tsn]->series;
+	nsteps = tss.at(tsn)->nsteps;
+	dt = tss.at(tsn)->dt;
+	vec ag = s * tss.at(tsn)->series;
 
 	vec x0 = zeros<vec>(2*eqnCount);
 	vec F = zeros<vec>(2*eqnCount);
@@ -562,6 +633,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const doub
 	acc = a.col(0);
 
 	setDofResponse();
+	getElementResponse();
 	recordResponse();
 
 	double agd, agi, agj;
@@ -587,6 +659,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const doub
 
 		cstep += 1;
 		setDofResponse();
+		getElementResponse();
 		recordResponse();
 	}
 	saveResponse();
@@ -594,9 +667,9 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const doub
 
 void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const double s, const int nsub)
 {
-	nsteps = tss[tsn]->nsteps;
-	dt = tss[tsn]->dt;
-	vec ag = s * tss[tsn]->series;
+	nsteps = tss.at(tsn)->nsteps;
+	dt = tss.at(tsn)->dt;
+	vec ag = s * tss.at(tsn)->series;
 
 	vec x0 = zeros<vec>(2 * eqnCount);
 	vec F = zeros<vec>(2 * eqnCount);
@@ -629,6 +702,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const do
 	acc = a.col(0);
 
 	setDofResponse();
+	getElementResponse();
 	assembleNonlinearForceVector(true);
 	recordResponse();
 
@@ -646,6 +720,11 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const do
 			dsp = x0.head_rows(eqnCount);
 			vel = x0.tail_rows(eqnCount);
 			setDofResponse();
+			getElementResponse();
+			if (j == (nsub-1))
+			{
+				recordResponse();
+			}
 			assembleNonlinearForceVector(true);
 			ctime += dt;
 		}
@@ -654,16 +733,15 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const do
 		a.col(i + 1) = solve(M, -Mp * E*agj - q - C * v.col(i + 1) - K0 * u.col(i + 1));
 
 		cstep += 1;
-		recordResponse();
 	}
 	saveResponse();
 }
 
 void dsystem::solveTimeDomainSeismicResponseRK4(const int tsn, const double s, const int nsub)
 {
-	int nstep = tss[tsn]->nsteps;
-	double dt = tss[tsn]->dt;
-	vec ag = s * tss[tsn]->series;
+	int nstep = tss.at(tsn)->nsteps;
+	double dt = tss.at(tsn)->dt;
+	vec ag = s * tss.at(tsn)->series;
 
 	vec u0 = zeros<vec>(eqnCount);
 	vec v0 = zeros<vec>(eqnCount);
@@ -680,11 +758,24 @@ void dsystem::setDofResponse()
 {
 	for (int i = 0; i < eqnCount; i++)
 	{
-		dof *d = dofs[eqnMapDof[i]];
+		dof *d = dofs.at(eqnMapDof.at(i));
 		d->dsp = dsp(i);
 		d->vel = vel(i);
 		d->acc = acc(i);
 		d->dt = dt;
+	}
+}
+
+void dsystem::getElementResponse()
+{
+	if (!(eles.empty()))
+	{
+		std::map<int, element *>::iterator it;
+		for (it = eles.begin(); it != eles.end(); it++)
+		{
+			element *e = it->second;
+			e->getResponse();
+		}
 	}
 }
 
@@ -730,11 +821,21 @@ void dsystem::initRecorders()
 {
 	if (!(drs.empty()))
 	{
-		std::map<int, dofRecorder *>::iterator it;
+		std::map<int, recorder *>::iterator it;
 		for (it = drs.begin(); it != drs.end(); it++)
 		{
-			dofRecorder *dr = it->second;
+			recorder *dr = it->second;
 			dr->init(nsteps);
+		}
+	}
+
+	if (!(ers.empty()))
+	{
+		std::map<int, recorder *>::iterator it;
+		for (it = ers.begin(); it != ers.end(); it++)
+		{
+			recorder *er = it->second;
+			er->init(nsteps);
 		}
 	}
 }
@@ -743,11 +844,21 @@ void dsystem::recordResponse()
 {
 	if (!(drs.empty()))
 	{
-		std::map<int, dofRecorder *>::iterator it;
+		std::map<int, recorder *>::iterator it;
 		for (it = drs.begin(); it != drs.end(); it++)
 		{
-			dofRecorder *dr = it->second;
+			recorder *dr = it->second;
 			dr->record(cstep, ctime);
+		}
+	}
+
+	if (!(ers.empty()))
+	{
+		std::map<int, recorder *>::iterator it;
+		for (it = ers.begin(); it != ers.end(); it++)
+		{
+			recorder *er = it->second;
+			er->record(cstep, ctime);
 		}
 	}
 }
@@ -756,11 +867,21 @@ void dsystem::saveResponse()
 {
 	if (!(drs.empty()))
 	{
-		std::map<int, dofRecorder *>::iterator it;
+		std::map<int, recorder *>::iterator it;
 		for (it = drs.begin(); it != drs.end(); it++)
 		{
-			dofRecorder *dr = it->second;
+			recorder *dr = it->second;
 			dr->save();
+		}
+	}
+
+	if (!(ers.empty()))
+	{
+		std::map<int, recorder *>::iterator it;
+		for (it = ers.begin(); it != ers.end(); it++)
+		{
+			recorder *er = it->second;
+			er->save();
 		}
 	}
 }

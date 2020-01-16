@@ -1,23 +1,16 @@
 #include "dofRecorder.h"
 
-dofRecorder::dofRecorder(const int id, std::vector<dof *> dofs, char * fileName) :
-	nsteps(0)
+dofRecorder::dofRecorder(const int id, std::vector<dof *> dofs, response rtype, char * fileName)
 {
 	this->id = id;
 	this->dofs = dofs;
 	this->n = dofs.size();
-
+	this->rtype = rtype;
 	this->fileName = fileName;
 }
 
 dofRecorder::~dofRecorder()
 {
-}
-
-void dofRecorder::init(const int nsteps)
-{
-	this->nsteps = nsteps;
-	Res = zeros<mat>(nsteps, n+1);
 }
 
 void dofRecorder::record(const int cstep, const double ctime)
@@ -26,11 +19,23 @@ void dofRecorder::record(const int cstep, const double ctime)
 	for (int i = 0; i < n; i++)
 	{
 		dof * d = dofs[i];
-		Res(cstep, i+1) = d->dsp;
+		switch (rtype)
+		{
+		case DISP:
+			Res(cstep, i + 1) = d->dsp;
+			break;
+		case VEL:
+			Res(cstep, i + 1) = d->vel;
+			break;
+		case ACC:
+			Res(cstep, i + 1) = d->acc;
+			break;
+		case FORCE:
+			break;
+		case DEF:
+			break;
+		default:
+			break;
+		}
 	}
-}
-
-void dofRecorder::save()
-{
-	Res.save(fileName, csv_ascii);
 }

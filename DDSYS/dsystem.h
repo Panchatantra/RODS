@@ -13,7 +13,9 @@
 #include "inerter.h"
 #include "spis2.h"
 #include "timeseries.h"
+#include "recorder.h"
 #include "dofRecorder.h"
+#include "elementRecorder.h"
 
 using namespace arma;
 
@@ -35,6 +37,7 @@ public:
 	void mapDofNode(dof *d, node *nd);
 	void mapDofNode(const int id_d, const int id_nd);
 
+	bool addElement(element *e);
 	void addSpring(spring *s);
 	void addSpring(const int n, const int ni, const int nj, const double k);
 	void addSpringBL(springBilinear *s);
@@ -55,7 +58,13 @@ public:
 	void addTimeseries(const int n, const double dt, const char* fileName);
 
 	void addDofRecorder(dofRecorder *dr);
-	void addDofRecorder(const int id, int *dofIds, const int n, char * fileName);
+	void addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName);
+	void addElementRecorder(elementRecorder *er);
+	void addElementRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
+	void addSpringRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
+	void addDashpotRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
+	void addInerterRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
+
 
 	void buildDofEqnMap();
 	void assembleMassMatrix();
@@ -72,13 +81,16 @@ public:
 	void solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const double s=1.0, const int nsub=1);
 	void solveTimeDomainSeismicResponseRK4(const int tsn, const double s = 1.0, const int nsub = 1);
 	void setDofResponse();
+	void getElementResponse();
 	void assembleNonlinearForceVector(const bool update=false);
+
 	void initRecorders();
 	void recordResponse();
 	void saveResponse();
 	
 	std::map<int, node *> nodes;
 	std::map<int, dof *> dofs;
+	std::map<int, element *> eles;
 	std::map<int, int> dofMapEqn;
 	std::map<int, int> eqnMapDof;
 	std::map<int, int> dofMapNode;
@@ -91,7 +103,8 @@ public:
 	std::map<int, spis2 *> spis2s;
 
 	std::map<int, timeseries *> tss;
-	std::map<int, dofRecorder *> drs;
+	std::map<int, recorder *> drs;
+	std::map<int, recorder *> ers;
 
 	double zeta;
 	int eqnCount;
