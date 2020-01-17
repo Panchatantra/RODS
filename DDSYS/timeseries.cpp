@@ -11,7 +11,7 @@ timeseries::timeseries(const int id, const double dt, const vec &s)
 	time = linspace(0.0, dt*(this->nsteps - 1), this->nsteps);
 }
 
-timeseries::timeseries(const int id, const double dt, const char* fileName)
+timeseries::timeseries(const int id, const double dt, char* fileName)
 {
 	this->id = id;
 	this->dt = dt;

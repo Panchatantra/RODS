@@ -174,13 +174,13 @@ void dsystem::addTimeseries(timeseries * ts)
 	tss[ts->id] = ts;
 }
 
-void dsystem::addTimeseries(const int n, const double dt, const vec & s)
+void dsystem::addTimeseries(const int n, const double dt, const vec &s)
 {
 	timeseries *ts = new timeseries(n, dt, s);
 	addTimeseries(ts);
 }
 
-void dsystem::addTimeseries(const int n, const double dt, const char* fileName)
+void dsystem::addTimeseries(const int n, const double dt, char* fileName)
 {
 	timeseries *ts = new timeseries(n, dt, fileName);
 	addTimeseries(ts);
@@ -596,6 +596,133 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsn, const double s, cons
 	saveResponse();
 }
 
+void dsystem::solveTimeDomainSeismicResponseNL(const int tsn, const double s, const int nsub, const double tol, const int maxiter)
+{
+	nsteps = tss.at(tsn)->nsteps;
+	dt = tss.at(tsn)->dt;
+	vec ag = s * tss.at(tsn)->series;
+
+	vec u0 = zeros<vec>(eqnCount);
+	vec v0 = zeros<vec>(eqnCount);
+	vec a0 = zeros<vec>(eqnCount);
+
+	u = zeros<mat>(eqnCount, nsteps);
+	v = zeros<mat>(eqnCount, nsteps);
+	a = zeros<mat>(eqnCount, nsteps);
+
+	cstep = 0;
+	ctime = 0;
+	initRecorders();
+
+	dt = dt / nsub;
+
+	double gma = 0.5;
+	double bta = 0.25;
+	double c1 = 1.0 / bta / dt / dt;
+	double c2 = 1.0 / bta / dt;
+	double c3 = gma / bta / dt;
+	double c4 = 1.0 - gma / bta;
+	double c5 = 1.0 - 0.5*gma / bta;
+	double c6 = 0.5 / bta - 1.0;
+
+	mat c7 = c1 * M + c3 * C;
+	mat c8 = c2 * M - c4 * C;
+	mat c9 = c6 * M - dt * c5*C;
+
+	mat K_h_ = c1 * M + c3 * C;
+	mat K_h = K_h_ + K0;
+
+	u.col(0) = u0;
+	v.col(0) = v0;
+	a0 = solve(M, -Mp*E*ag(0) - C*v0 - K0*u0);
+	a.col(0) = a0;
+
+	dsp = u.col(0);
+	vel = v.col(0);
+	acc = a.col(0);
+
+	setDofResponse();
+	getElementResponse();
+	assembleNonlinearForceVector(true);
+	recordResponse();
+
+	vec p_h;
+	vec u_p, v_p, a_p;
+	vec du;
+	double agd, agi, agj;
+	double error;
+	for (int i = 0; i < nsteps - 1; i++)
+	{
+		agd = (ag(i + 1) - ag(i)) / nsub;
+		agi = ag(i);
+		for (int j = 1; j < nsub + 1; j++)
+		{
+			agj = agi + agd * j;
+			p_h = -Mp * E*agj + c7 * u0 + c8 * v0 + c9 * a0;
+			u_p = u0 * 1.0;
+			v_p = v0 * 1.0;
+			a_p = a0 * 1.0;
+			error = 1;
+			for (size_t l = 0; l < maxiter; l++)
+			{
+				du = solve(K_h_+K, -K_h*u0-q+p_h);
+				u0 = u0 + du;
+				v0 = c3*(u0-u_p) + c4*v_p + dt*c5*a_p;
+				a0 = solve(M, -Mp*E*agj - q - C*v0 - K0*u0);
+
+				dsp = u0;
+				vel = v0;
+				acc = a0;
+
+				setDofResponse();
+
+				if (norm(du)/norm(u0)>tol)
+				{
+					if (l < maxiter-1)
+					{
+						assembleNonlinearForceVector(false);
+						assembleStiffnessMatrix();
+					}
+					else
+					{
+						cout << "Fail to Converge after " << maxiter << "iterations, "
+							 << "norm error = " << error <<endl;
+						if (j == (nsub - 1))
+						{
+							getElementResponse();
+							recordResponse();
+						}
+						assembleNonlinearForceVector(true);
+						assembleStiffnessMatrix();
+					}
+				}
+				else
+				{
+					if (j == (nsub - 1))
+					{
+						getElementResponse();
+						recordResponse();
+					}
+					assembleNonlinearForceVector(true);
+					assembleStiffnessMatrix();
+					break;
+				}
+			}
+			ctime += dt;
+		}
+		u.col(i + 1) = u0;
+		v.col(i + 1) = v0;
+		a.col(i + 1) = a0;
+
+		dsp = u.col(i + 1);
+		vel = v.col(i + 1);
+		acc = a.col(i + 1);
+
+		cstep += 1;
+	}
+	saveResponse();
+}
+
 void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsn, const double s, const int nsub)
 {
 	nsteps = tss.at(tsn)->nsteps;
@@ -695,7 +822,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const do
 
 	u.col(0) = x0.head_rows(eqnCount);
 	v.col(0) = x0.tail_rows(eqnCount);
-	a.col(0) = solve(M, -Mp * E*ag(0) - C * v.col(0) - K * u.col(0));
+	a.col(0) = solve(M, -Mp * E*ag(0) - C * v.col(0) - K0 * u.col(0));
 
 	dsp = u.col(0);
 	vel = v.col(0);

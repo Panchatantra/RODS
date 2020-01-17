@@ -8,7 +8,7 @@ class timeseries
 {
 public:
 	timeseries(const int id, const double dt, const vec &s);
-	timeseries(const int id, const double dt, const char* fileName);
+	timeseries(const int id, const double dt, char* fileName);
 	~timeseries();
 
 	int id;

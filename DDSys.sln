@@ -11,6 +11,8 @@ Global
 		Debug|x86 = Debug|x86
 		DLLDebug|x64 = DLLDebug|x64
 		DLLDebug|x86 = DLLDebug|x86
+		DLLRelease|x64 = DLLRelease|x64
+		DLLRelease|x86 = DLLRelease|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
@@ -23,6 +25,10 @@ Global
 		{83EC6A93-9284-4755-A5C0-2EF681B1432C}.DLLDebug|x64.Build.0 = DLLDebug|x64
 		{83EC6A93-9284-4755-A5C0-2EF681B1432C}.DLLDebug|x86.ActiveCfg = DLLDebug|Win32
 		{83EC6A93-9284-4755-A5C0-2EF681B1432C}.DLLDebug|x86.Build.0 = DLLDebug|Win32
+		{83EC6A93-9284-4755-A5C0-2EF681B1432C}.DLLRelease|x64.ActiveCfg = DLLRelease|x64
+		{83EC6A93-9284-4755-A5C0-2EF681B1432C}.DLLRelease|x64.Build.0 = DLLRelease|x64
+		{83EC6A93-9284-4755-A5C0-2EF681B1432C}.DLLRelease|x86.ActiveCfg = DLLRelease|Win32
+		{83EC6A93-9284-4755-A5C0-2EF681B1432C}.DLLRelease|x86.Build.0 = DLLRelease|Win32
 		{83EC6A93-9284-4755-A5C0-2EF681B1432C}.Release|x64.ActiveCfg = Release|x64
 		{83EC6A93-9284-4755-A5C0-2EF681B1432C}.Release|x64.Build.0 = Release|x64
 		{83EC6A93-9284-4755-A5C0-2EF681B1432C}.Release|x86.ActiveCfg = Release|Win32

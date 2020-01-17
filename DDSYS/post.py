@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 
 plt.rcParams['font.sans-serif']=['SimSun Roman'] #正常显示中文
-plt.rcParams['font.size']=16 #字体大小 
+plt.rcParams['font.size']=16 #字体大小
 plt.rcParams['axes.unicode_minus']=False #正常显示负号
 # plt.rcParams['grid.linestyle']='--'
 plt.rcParams['mathtext.fontset']='cm'
@@ -15,7 +15,7 @@ def loadcsv(filename):
 
 data = loadcsv("disp.csv")
 t = data[:,0]
-dsp = data[:,1]
+dsp = data[:,2]
 
 data = loadcsv("force.csv")
 df = data[:,2]

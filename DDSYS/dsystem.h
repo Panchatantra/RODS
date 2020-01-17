@@ -55,13 +55,13 @@ public:
 
 	void addTimeseries(timeseries *ts);
 	void addTimeseries(const int n, const double dt, const vec &s);
-	void addTimeseries(const int n, const double dt, const char* fileName);
+	void addTimeseries(const int n, const double dt, char * fileName);
 
 	void addDofRecorder(dofRecorder *dr);
 	void addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName);
 	void addElementRecorder(elementRecorder *er);
 	void addElementRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
-	void addSpringRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
+	void addSpringRecorder(const int id, int *eleIds, const int n, response rtype, char *  fileName);
 	void addDashpotRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 	void addInerterRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 
@@ -77,12 +77,15 @@ public:
 	void solveComplexEigen();
 	void solveStochasticSeismicResponse(const double f_h=50.0, const int nf=10000, const char method='c');
 	void solveTimeDomainSeismicResponse(const int tsn, const double s=1.0, const int nsub=1);
+	void solveTimeDomainSeismicResponseNL(const int tsn, const double s=1.0, const int nsub=1, const double tol=1.0e-6, const int maxiter=10);
 	void solveTimeDomainSeismicResponseStateSpace(const int tsn, const double s=1.0, const int nsub=1);
 	void solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const double s=1.0, const int nsub=1);
 	void solveTimeDomainSeismicResponseRK4(const int tsn, const double s = 1.0, const int nsub = 1);
 	void setDofResponse();
 	void getElementResponse();
 	void assembleNonlinearForceVector(const bool update=false);
+
+	//void solveNonlinearEquation();
 
 	void initRecorders();
 	void recordResponse();

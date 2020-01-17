@@ -2,7 +2,7 @@
 
 
 
-elementRecorder::elementRecorder(const int id, std::vector<element *> eles, response rtype, char *fileName)
+elementRecorder::elementRecorder(const int id, std::vector<element *> eles, response rtype, char * fileName)
 {
 	this->id = id;
 	this->eles = eles;

@@ -6,7 +6,7 @@ class elementRecorder :
 	public recorder
 {
 public:
-	elementRecorder(const int id, std::vector<element *> eles, response rtype, char *fileName);
+	elementRecorder(const int id, std::vector<element *> eles, response rtype, char * fileName);
 	~elementRecorder();
 
 	void record(const int cstep, const double ctime);

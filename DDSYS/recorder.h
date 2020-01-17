@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include <armadillo>
 using namespace arma;
 
@@ -19,6 +20,6 @@ public:
 	int id;
 	size_t n, nsteps;
 	response rtype;
-	char *fileName;
+	char * fileName;
 	mat Res;
 };
