@@ -20,6 +20,10 @@
 using namespace arma;
 
 constexpr double PI = 3.14159265;
+enum dsolver
+{
+	Newmark, Newmark_NL, StateSpace, StateSpace_NL
+};
 
 class dsystem
 {
@@ -65,8 +69,8 @@ public:
 	void addDashpotRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 	void addInerterRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 
-
 	void buildDofEqnMap();
+	void assembleMatrix();
 	void assembleMassMatrix();
 	void assembleStiffnessMatrix();
 	void buildInherentDampingMatrix(const int n = 0);
@@ -76,11 +80,14 @@ public:
 	void solveEigen();
 	void solveComplexEigen();
 	void solveStochasticSeismicResponse(const double f_h=50.0, const int nf=10000, const char method='c');
-	void solveTimeDomainSeismicResponse(const int tsn, const double s=1.0, const int nsub=1);
-	void solveTimeDomainSeismicResponseNL(const int tsn, const double s=1.0, const int nsub=1, const double tol=1.0e-6, const int maxiter=10);
-	void solveTimeDomainSeismicResponseStateSpace(const int tsn, const double s=1.0, const int nsub=1);
-	void solveTimeDomainSeismicResponseStateSpaceNL(const int tsn, const double s=1.0, const int nsub=1);
-	void solveTimeDomainSeismicResponseRK4(const int tsn, const double s = 1.0, const int nsub = 1);
+	
+	void setDynamicSolver(dsolver s) { this->dynamicSolver = s; }
+	void solveTimeDomainSeismicResponse(const int tsId, const double s=1.0, const int nsub=1);
+	void solveTimeDomainSeismicResponseNMK(const int tsId, const double s=1.0, const int nsub=1);
+	void solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s=1.0, const int nsub=1, const double tol=1.0e-6, const int maxiter=10);
+	void solveTimeDomainSeismicResponseStateSpace(const int tsId, const double s=1.0, const int nsub=1);
+	void solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, const double s=1.0, const int nsub=1);
+	void solveTimeDomainSeismicResponseRK4(const int tsId, const double s = 1.0, const int nsub = 1);
 	void setDofResponse();
 	void getElementResponse();
 	void assembleNonlinearForceVector(const bool update=false);
@@ -123,6 +130,8 @@ public:
 
 	mat K0;
 	vec q;
+
+	dsolver dynamicSolver;
 
 	double dt, ctime;
 	int nsteps, cstep;
