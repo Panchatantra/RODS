@@ -43,23 +43,23 @@ public:
 
 	bool addElement(element *e);
 	void addSpring(spring *s);
-	void addSpring(const int n, const int ni, const int nj, const double k);
+	void addSpring(const int id, const int ni, const int nj, const double k);
 	void addSpringBL(springBilinear *s);
-	void addSpringBL(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
+	void addSpringBL(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
 	void addSpringBW(springBoucWen *s);
-	void addSpringBW(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
+	void addSpringBW(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta = 0.5, const double n=2);
 	void addDashpot(dashpot *d);
-	void addDashpot(const int n, const int ni, const int nj, const double c);
+	void addDashpot(const int id, const int ni, const int nj, const double c);
 	void addDashpotExp(dashpotExp *d);
-	void addDashpotExp(const int n, const int ni, const int nj, const double c, const double alpha);
+	void addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha=0.1);
 	void addInerter(inerter *in);
-	void addInerter(const int n, const int ni, const int nj, const double m);
+	void addInerter(const int id, const int ni, const int nj, const double m);
 	void addSPIS2(spis2 *s);
-	void addSPIS2(const int n, const int ni, const int nj, const int nin, const double m, const double c, const double k);
+	void addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k);
 
 	void addTimeseries(timeseries *ts);
-	void addTimeseries(const int n, const double dt, const vec &s);
-	void addTimeseries(const int n, const double dt, char * fileName);
+	void addTimeseries(const int id, const double dt, const vec &s);
+	void addTimeseries(const int id, const double dt, char * fileName);
 
 	void addDofRecorder(dofRecorder *dr);
 	void addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName);

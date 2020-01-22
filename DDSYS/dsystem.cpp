@@ -82,11 +82,11 @@ void dsystem::addSpring(spring * s)
 	if (addElement(s)) springs[s->id] = s;
 }
 
-void dsystem::addSpring(const int n, const int ni, const int nj, const double k)
+void dsystem::addSpring(const int id, const int ni, const int nj, const double k)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
-	spring *s = new spring(n, i, j, k);
+	spring *s = new spring(id, i, j, k);
 	addSpring(s);
 }
 
@@ -95,11 +95,11 @@ void dsystem::addSpringBL(springBilinear * s)
 	if (addElement(s)) springBLs[s->id] = s;
 }
 
-void dsystem::addSpringBL(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha)
+void dsystem::addSpringBL(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
-	springBilinear *s = new springBilinear(n, i, j, k0, uy, alpha);
+	springBilinear *s = new springBilinear(id, i, j, k0, uy, alpha);
 	addSpringBL(s);
 }
 
@@ -108,11 +108,11 @@ void dsystem::addSpringBW(springBoucWen * s)
 	if (addElement(s)) springBWs[s->id] = s;
 }
 
-void dsystem::addSpringBW(const int n, const int ni, const int nj, const double k0, const double uy, const double alpha)
+void dsystem::addSpringBW(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
-	springBoucWen *s = new springBoucWen(n, i, j, k0, uy, alpha);
+	springBoucWen *s = new springBoucWen(id, i, j, k0, uy, alpha);
 	addSpringBW(s);
 }
 
@@ -121,11 +121,11 @@ void dsystem::addDashpot(dashpot * d)
 	if (addElement(d)) dashpots[d->id] = d;
 }
 
-void dsystem::addDashpot(const int n, const int ni, const int nj, const double c)
+void dsystem::addDashpot(const int id, const int ni, const int nj, const double c)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
-	dashpot *d = new dashpot(n, i, j, c);
+	dashpot *d = new dashpot(id, i, j, c);
 	addDashpot(d);
 }
 
@@ -134,11 +134,11 @@ void dsystem::addDashpotExp(dashpotExp * d)
 	if (addElement(d)) dashpotExps[d->id] = d;
 }
 
-void dsystem::addDashpotExp(const int n, const int ni, const int nj, const double c, const double alpha)
+void dsystem::addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
-	dashpotExp *d = new dashpotExp(n, i, j, c, alpha);
+	dashpotExp *d = new dashpotExp(id, i, j, c, alpha);
 	addDashpotExp(d);
 }
 
@@ -147,11 +147,11 @@ void dsystem::addInerter(inerter * in)
 	if (addElement(in)) inerters[in->id] = in;
 }
 
-void dsystem::addInerter(const int n, const int ni, const int nj, const double m)
+void dsystem::addInerter(const int id, const int ni, const int nj, const double m)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
-	inerter *in = new inerter(n, i, j, m);
+	inerter *in = new inerter(id, i, j, m);
 	addInerter(in);
 }
 
@@ -160,12 +160,12 @@ void dsystem::addSPIS2(spis2 * s)
 	if (addElement(s)) spis2s[s->id] = s;
 }
 
-void dsystem::addSPIS2(const int n, const int ni, const int nj, const int nin, const double m, const double c, const double k)
+void dsystem::addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
 	dof *in = dofs.at(nin);
-	spis2 *s = new spis2(n, i, j, in, m, c, k);
+	spis2 *s = new spis2(id, i, j, in, m, c, k);
 	addSPIS2(s);
 }
 
@@ -174,15 +174,15 @@ void dsystem::addTimeseries(timeseries * ts)
 	tss[ts->id] = ts;
 }
 
-void dsystem::addTimeseries(const int n, const double dt, const vec &s)
+void dsystem::addTimeseries(const int id, const double dt, const vec &s)
 {
-	timeseries *ts = new timeseries(n, dt, s);
+	timeseries *ts = new timeseries(id, dt, s);
 	addTimeseries(ts);
 }
 
-void dsystem::addTimeseries(const int n, const double dt, char* fileName)
+void dsystem::addTimeseries(const int id, const double dt, char* fileName)
 {
-	timeseries *ts = new timeseries(n, dt, fileName);
+	timeseries *ts = new timeseries(id, dt, fileName);
 	addTimeseries(ts);
 }
 
@@ -537,7 +537,7 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsId, const double s, con
 		solveTimeDomainSeismicResponseStateSpace(tsId, s, nsub);
 		break;
 	case StateSpace_NL:
-		solveTimeDomainSeismicResponseStateSpace(tsId, s, nsub);
+		solveTimeDomainSeismicResponseStateSpaceNL(tsId, s, nsub);
 		break;
 	default:
 		break;
@@ -563,6 +563,7 @@ void dsystem::solveTimeDomainSeismicResponseNMK(const int tsId, const double s, 
 	initRecorders();
 
 	dt = dt / nsub;
+	element::dt = dt;
 
 	double gma = 0.5;
 	double bta = 0.25;
@@ -645,6 +646,7 @@ void dsystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s
 	initRecorders();
 
 	dt = dt / nsub;
+	element::dt = dt;
 
 	double gma = 0.5;
 	double bta = 0.25;
@@ -707,8 +709,8 @@ void dsystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s
 				acc = a0;
 
 				setDofResponse();
-
-				if (norm(du)/norm(u0)>tol)
+				error = norm(du) / norm(u0);
+				if (error>tol)
 				{
 					if (l < maxiter-1)
 					{
@@ -767,6 +769,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, const dou
 	initRecorders();
 
 	dt = dt / nsub;
+	element::dt = dt;
 
 	mat O = zeros<mat>(eqnCount, eqnCount);
 	mat I = eye<mat>(eqnCount, eqnCount);
@@ -837,6 +840,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, const d
 	initRecorders();
 
 	dt = dt / nsub;
+	element::dt = dt;
 
 	mat O = zeros<mat>(eqnCount, eqnCount);
 	mat I = eye<mat>(eqnCount, eqnCount);
@@ -905,6 +909,7 @@ void dsystem::solveTimeDomainSeismicResponseRK4(const int tsId, const double s, 
 	a = zeros<mat>(eqnCount, nstep);
 
 	dt = dt / nsub;
+	element::dt = dt;
 }
 
 void dsystem::setDofResponse()
@@ -915,7 +920,6 @@ void dsystem::setDofResponse()
 		d->dsp = dsp(i);
 		d->vel = vel(i);
 		d->acc = acc(i);
-		d->dt = dt;
 	}
 }
 

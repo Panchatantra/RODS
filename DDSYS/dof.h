@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 enum direction { X,Y,Z,RX,RY,RZ };
 
 class dof
@@ -15,7 +13,6 @@ public:
 	int eqnId;
 	double mass;
 	direction dir;
-	double dt;
 
 	bool isFixed;
 

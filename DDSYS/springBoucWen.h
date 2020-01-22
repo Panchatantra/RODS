@@ -9,7 +9,7 @@ using namespace arma;
 class springBoucWen : public element1D
 {
 public:
-	springBoucWen(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha);
+	springBoucWen(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha, const double beta=0.5, const double n=20);
 	~springBoucWen();
 
 	void buildMatrix();

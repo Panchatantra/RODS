@@ -5,6 +5,7 @@ dashpotExp::dashpotExp(const int n, dof * i, dof * j, const double c, const doub
 {
     id = n;
     this->c = c;
+    this->alpha = alpha;
 
     dofI = i;
     dofJ = j;
@@ -55,7 +56,7 @@ void dashpotExp::assembleDampingMatrix(mat & C)
 void dashpotExp::getResponse(const bool update)
 {
 	double v = dofJ->vel - dofI->vel;
-	f = c * pow(abs(v), alpha);
+	f = c * sign(v)*pow(abs(v), alpha);
 
 	q(0) = -f;
 	q(1) = f;

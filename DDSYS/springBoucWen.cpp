@@ -1,8 +1,8 @@
 #include "springBoucWen.h"
 
 
-springBoucWen::springBoucWen(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha) :
-	u(0), f(0), v(0), z(0), n(20), beta(0.5), zp(0)
+springBoucWen::springBoucWen(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha, const double beta, const double n) :
+	u(0), f(0), v(0), z(0), zp(0)
 {
 	this->id = id;
 	
@@ -12,6 +12,8 @@ springBoucWen::springBoucWen(const int id, dof *i, dof *j, const double k0, cons
 	this->k0 = k0;
 	this->uy = uy;
 	this->alpha = alpha;
+	this->beta = beta;
+	this->n = n;
 
 	k1 = alpha*k0;
 	fy = k0*uy;
@@ -65,7 +67,7 @@ void springBoucWen::getResponse(const bool update)
 	u = dofJ->dsp - dofI->dsp;
 	v = dofJ->vel - dofI->vel;
 
-	double dt = dofI->dt;
+	double dt = this->dt;
 
 	z = zp;
 	f = alpha*k0*u + (1.0-alpha)*fy*z;
