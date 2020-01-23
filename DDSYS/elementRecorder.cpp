@@ -28,14 +28,14 @@ void elementRecorder::record(const int cstep, const double ctime)
 		switch (rtype)
 		{
 		case FORCE:
-			for (size_t j = 0; j < nv; j++)
+			for (int j = 0; j < nv; j++)
 			{
 				Res(cstep, k) = ele->force[j];
 				k++;
 			}
 			break;
 		case DEF:
-			for (size_t j = 0; j < nv; j++)
+			for (int j = 0; j < nv; j++)
 			{
 				Res(cstep, k) = ele->deformation[j];
 				k++;

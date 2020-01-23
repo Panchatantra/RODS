@@ -195,7 +195,7 @@ void dsystem::addDofRecorder(const int id, int *dofIds, const int n, response rt
 {
 	std::vector<dof *> rdofs(n);
 
-	for (size_t i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 	{
 		rdofs[i] = dofs.at(dofIds[i]);
 	}
@@ -213,7 +213,7 @@ void dsystem::addElementRecorder(const int id, int * eleIds, const int n, respon
 {
 	std::vector<element *> reles(n);
 
-	for (size_t i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 	{
 		reles[i] = eles.at(eleIds[i]);
 	}
@@ -226,7 +226,7 @@ void dsystem::addSpringRecorder(const int id, int * eleIds, const int n, respons
 {
 	std::vector<element *> reles(n);
 
-	for (size_t i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 	{
 		reles[i] = springs.at(eleIds[i]);
 	}
@@ -239,7 +239,7 @@ void dsystem::addDashpotRecorder(const int id, int * eleIds, const int n, respon
 {
 	std::vector<element *> reles(n);
 
-	for (size_t i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 	{
 		reles[i] = dashpots.at(eleIds[i]);
 	}
@@ -252,7 +252,7 @@ void dsystem::addInerterRecorder(const int id, int * eleIds, const int n, respon
 {
 	std::vector<element *> reles(n);
 
-	for (size_t i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 	{
 		reles[i] = inerters.at(eleIds[i]);
 	}
@@ -697,7 +697,7 @@ void dsystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s
 			v_p = v0 * 1.0;
 			a_p = a0 * 1.0;
 			error = 1;
-			for (size_t l = 0; l < maxiter; l++)
+			for (int l = 0; l < maxiter; l++)
 			{
 				du = solve(K_h_+K, -K_h*u0-q+p_h);
 				u0 = u0 + du;

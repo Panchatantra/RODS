@@ -16,7 +16,7 @@ dofRecorder::~dofRecorder()
 void dofRecorder::record(const int cstep, const double ctime)
 {
 	Res(cstep, 0) = ctime;
-	for (int i = 0; i < n; i++)
+	for (size_t i = 0; i < n; i++)
 	{
 		dof * d = dofs[i];
 		switch (rtype)
