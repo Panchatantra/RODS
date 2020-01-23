@@ -1,6 +1,8 @@
 #pragma once
+
 #include "element2D.h"
 #include "node.h"
+
 class spring2D :
 	public element2D
 {

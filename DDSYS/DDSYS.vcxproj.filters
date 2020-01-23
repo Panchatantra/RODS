@@ -112,9 +112,6 @@
     <ClInclude Include="timeseries.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="solver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="material1D.h">
       <Filter>Header Files</Filter>
     </ClInclude>

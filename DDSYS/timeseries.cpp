@@ -1,7 +1,5 @@
 #include "timeseries.h"
 
-
-
 timeseries::timeseries(const int id, const double dt, const vec &s)
 {
 	this->id = id;

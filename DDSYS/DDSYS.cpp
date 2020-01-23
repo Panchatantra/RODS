@@ -2,10 +2,8 @@
 //
 
 #include <iostream>
-#include <string>
 #include "dof.h"
 #include "dsystem.h"
-#include "solver.h"
 
 #ifdef __GNUC__
 #define DLLEXPORT

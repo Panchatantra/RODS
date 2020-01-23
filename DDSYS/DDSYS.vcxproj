@@ -346,7 +346,6 @@
     <ClInclude Include="element1D.h" />
     <ClInclude Include="section.h" />
     <ClInclude Include="sectionElasticBar.h" />
-    <ClInclude Include="solver.h" />
     <ClInclude Include="spis2.h" />
     <ClInclude Include="spring.h" />
     <ClInclude Include="dsystem.h" />
