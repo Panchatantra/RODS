@@ -1,6 +1,11 @@
 #pragma once
 
+#ifdef __GNUC__
+#include <lapacke.h>
+#else
 #include <mkl.h>
+#endif
+
 #include <armadillo>
 
 using namespace arma;

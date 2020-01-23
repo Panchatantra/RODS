@@ -263,3 +263,6 @@ __pycache__/
 
 # Dynamic library
 *.dll
+
+# Output file
+*.csv
