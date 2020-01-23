@@ -19,7 +19,6 @@ void example_sdof()
 	double zeta = 0.02;
 	double c = 2.0*zeta*sqrt(m*k);
 
-	int ndof = 1;
 	dsystem *ds = new dsystem();
 
 	ds->addDof(0, m, FIXED);
@@ -73,7 +72,6 @@ void example_sdof_bl()
 	double uy = 0.01;
 	double alpha = 0.1;
 
-	int ndof = 1;
 	dsystem *ds = new dsystem();
 
 	ds->addDof(0, m, FIXED);
@@ -167,7 +165,8 @@ void example_shear_building()
 	double Omg = 0.9*ds->omg(0);
 	vec ag = arma::sin(Omg*t);
 	ds->addTimeseries(1, dt, ag);
-	ds->addTimeseries(2, 0.005, "EQ-S-1.txt");
+	char eq[] = "EQ-S-1.txt";
+	ds->addTimeseries(2, 0.005, eq);
 
 	int ts = 2;
 	ds->solveTimeDomainSeismicResponseStateSpace(ts,1,10);
@@ -181,7 +180,6 @@ void example_shear_building_spis2()
 {
 	double m = 1.0;
 	double k = 2025.0;
-	double c = 1.0;
 	double zeta = 0.0;
 	int ndof = 3;
 	dsystem *ds = new dsystem(zeta);
