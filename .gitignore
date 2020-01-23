@@ -266,3 +266,5 @@ __pycache__/
 
 # Output file
 *.csv
+*.o
+*.exe
