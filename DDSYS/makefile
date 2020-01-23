@@ -14,10 +14,10 @@ Objects=$(IntermediateDirectory)/node$(ObjectSuffix) $(IntermediateDirectory)/ma
 all: $(OutputFile)
 
 $(OutputFile): $(Objects)
-	$(Linker) -o $(OutputFile) $(Objects) -lopenblas
+	$(Linker) -o $(OutputFile) $(Objects)  -L../../OpenBLAS/bin -lopenblas
 
 %.o:%.cpp
-	$(CXX) -fPIC -c $< -o $@ -I. -I/mingw64/include/OpenBLAS -I../../armadillo/include
+	$(CXX) -fPIC -c $< -o $@ -I. -I../../OpenBLAS/include -I../../armadillo/include
 
 clean:
 	rm -rvf *.exe *.dll *.o *.csv
