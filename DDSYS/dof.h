@@ -18,4 +18,3 @@ public:
 
 	double dsp, vel, acc;
 };
-

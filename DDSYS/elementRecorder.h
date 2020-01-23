@@ -13,4 +13,3 @@ public:
 
 	std::vector<element *> eles;
 };
-

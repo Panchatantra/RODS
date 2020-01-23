@@ -7,6 +7,12 @@
 #include "dsystem.h"
 #include "solver.h"
 
+#ifdef __GNUC__
+#define DLLEXPORT
+#else
+#define DLLEXPORT __declspec(dllexport)
+#endif
+
 constexpr bool FIXED = true;
 constexpr bool NORM = true;
 
@@ -238,56 +244,56 @@ int main()
 extern "C" {
 	dsystem *ds = new dsystem();
 
-	__declspec(dllexport) void set_damping_ratio(const double z) {
+	DLLEXPORT void set_damping_ratio(const double z) {
 		ds->zeta = z;
 	}
 
-	__declspec(dllexport) size_t add_dof(const int id, const double m) {
+	DLLEXPORT size_t add_dof(const int id, const double m) {
 		ds->addDof(id, m);
 		return ds->dofs.size();
 	}
 
-	__declspec(dllexport) size_t add_dof_fixed(const int id, const double m) {
+	DLLEXPORT size_t add_dof_fixed(const int id, const double m) {
 		ds->addDof(id, m, FIXED);
 		return ds->dofs.size();
 	}
 
-	__declspec(dllexport) size_t add_spring(const int id, const int i, const int j, const double k) {
+	DLLEXPORT size_t add_spring(const int id, const int i, const int j, const double k) {
 		ds->addSpring(id, i, j, k);
 		return ds->springs.size();
 	}
 
-	__declspec(dllexport) size_t add_dashpot(const int id, const int i, const int j, const double c) {
+	DLLEXPORT size_t add_dashpot(const int id, const int i, const int j, const double c) {
 		ds->addDashpot(id, i, j, c);
 		return ds->dashpots.size();
 	}
 
-	__declspec(dllexport) size_t add_timeseries(const int id, const double dt, char* fileName) {
+	DLLEXPORT size_t add_timeseries(const int id, const double dt, char* fileName) {
 		ds->addTimeseries(id, dt, fileName);
 		return ds->tss.size();
 	}
 
-	__declspec(dllexport) size_t assemble_matrix() {
+	DLLEXPORT size_t assemble_matrix() {
 		ds->assembleMatrix();
 		return ds->eqnCount;
 	}
 
-	__declspec(dllexport) size_t add_dof_recorder(const int id, int *dofIds, const int n, const int rtype, char * fileName) {
+	DLLEXPORT size_t add_dof_recorder(const int id, int *dofIds, const int n, const int rtype, char * fileName) {
 		ds->addDofRecorder(id, dofIds, n, response(rtype), fileName);
 		return ds->drs.size();
 	}
 
-	__declspec(dllexport) size_t add_ele_recorder(const int id, int *eleIds, const int n, const int rtype, char * fileName) {
+	DLLEXPORT size_t add_ele_recorder(const int id, int *eleIds, const int n, const int rtype, char * fileName) {
 		ds->addElementRecorder(id, eleIds, n, response(rtype), fileName);
 		return ds->ers.size();
 	}
 
-	__declspec(dllexport) size_t set_dynamic_solver(const int s) {
+	DLLEXPORT size_t set_dynamic_solver(const int s) {
 		ds->setDynamicSolver(dsolver(s));
 		return ds->dynamicSolver;
 	}
 
-	__declspec(dllexport) size_t solve_seismic_response(const int tsId, const double s = 1.0, const int nsub = 1) {
+	DLLEXPORT size_t solve_seismic_response(const int tsId, const double s = 1.0, const int nsub = 1) {
 		ds->solveTimeDomainSeismicResponse(tsId, s, nsub);
 		return ds->cstep;
 	}

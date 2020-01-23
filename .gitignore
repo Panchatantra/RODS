@@ -24,6 +24,7 @@ bld/
 
 # Cmake files
 cmake-build-Debug/
+cmake-build-Release/
 DDSYS/CMakeLists.txt
 DDSYS/compile_flags.txt
 

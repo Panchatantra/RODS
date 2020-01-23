@@ -2,7 +2,7 @@
 <CodeLite_Workspace Name="DDSys" Database="" Version="10000">
   <Project Name="DDSys" Path="DDSYS/DDSys.project" Active="Yes"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
+    <WorkspaceConfiguration Name="Debug" Selected="no">
       <Environment/>
       <Project Name="DDSys" ConfigName="Debug"/>
     </WorkspaceConfiguration>
