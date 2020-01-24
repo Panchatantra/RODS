@@ -155,6 +155,19 @@ void dsystem::addInerter(const int id, const int ni, const int nj, const double 
 	addInerter(in);
 }
 
+void dsystem::addSlider(slider * s)
+{
+	if (addElement(s)) sliders[s->id] = s;
+}
+
+void dsystem::addSlider(const int id, const int ni, const int nj, const double muN)
+{
+	dof *i = dofs.at(ni);
+	dof *j = dofs.at(nj);
+	slider *s = new slider(id, i, j, muN);
+	addSlider(s);
+}
+
 void dsystem::addSPIS2(spis2 * s)
 {
 	if (addElement(s)) spis2s[s->id] = s;

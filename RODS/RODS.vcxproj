@@ -38,8 +38,9 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{83EC6A93-9284-4755-A5C0-2EF681B1432C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>DDSYS</RootNamespace>
+    <RootNamespace>RODS</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <ProjectName>RODS</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -303,7 +304,7 @@
   <ItemGroup>
     <ClCompile Include="dashpot.cpp" />
     <ClCompile Include="dashpotExp.cpp" />
-    <ClCompile Include="DDSYS.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="dof.cpp" />
     <ClCompile Include="dofRecorder.cpp" />
     <ClCompile Include="elastic1D.cpp" />
@@ -312,6 +313,7 @@
     <ClCompile Include="elementRecorder.cpp" />
     <ClCompile Include="inerter.cpp" />
     <ClCompile Include="recorder.cpp" />
+    <ClCompile Include="slider.cpp" />
     <ClCompile Include="spring2D.cpp" />
     <ClCompile Include="node.cpp" />
     <ClCompile Include="material.cpp" />
@@ -338,6 +340,7 @@
     <ClInclude Include="elementRecorder.h" />
     <ClInclude Include="inerter.h" />
     <ClInclude Include="recorder.h" />
+    <ClInclude Include="slider.h" />
     <ClInclude Include="spring2D.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="material.h" />

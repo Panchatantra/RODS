@@ -10,6 +10,7 @@
 #include "dashpot.h"
 #include "dashpotExp.h"
 #include "inerter.h"
+#include "slider.h"
 #include "spis2.h"
 #include "timeseries.h"
 #include "recorder.h"
@@ -53,6 +54,8 @@ public:
 	void addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha=0.1);
 	void addInerter(inerter *in);
 	void addInerter(const int id, const int ni, const int nj, const double m);
+	void addSlider(slider *s);
+	void addSlider(const int id, const int ni, const int nj, const double muN);
 	void addSPIS2(spis2 *s);
 	void addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k);
 
@@ -110,6 +113,7 @@ public:
 	std::map<int, dashpotExp *> dashpotExps;
 	std::map<int, inerter *> inerters;
 	std::map<int, spis2 *> spis2s;
+	std::map<int, slider *> sliders;
 
 	std::map<int, timeseries *> tss;
 	std::map<int, recorder *> drs;

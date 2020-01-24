@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.28010.2026
+VisualStudioVersion = 15.0.28307.852
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DDSYS", "DDSYS\DDSYS.vcxproj", "{83EC6A93-9284-4755-A5C0-2EF681B1432C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RODS", "RODS\RODS.vcxproj", "{83EC6A93-9284-4755-A5C0-2EF681B1432C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +38,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B4F5BB77-C370-4B4B-83E5-93B6AB53DA22}
+		SolutionGuid = {28E8E59B-34A6-4B16-98EB-699B550040BE}
 	EndGlobalSection
 EndGlobal
