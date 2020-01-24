@@ -86,7 +86,7 @@
     <ClCompile Include="slider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="RODS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

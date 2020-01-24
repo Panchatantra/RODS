@@ -61,7 +61,7 @@ void slider::getResponse(const bool update)
 
 	double dt = this->dt;
 
-	f = -sign(v)*muN;
+	f = sign(v)*muN;
 	k = f/u;
 
 	//q(0) = -(f - k*u);

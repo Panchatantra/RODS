@@ -55,6 +55,7 @@ void dashpotExp::assembleDampingMatrix(mat & C)
 
 void dashpotExp::getResponse(const bool update)
 {
+	u = dofJ->dsp - dofI->dsp;
 	double v = dofJ->vel - dofI->vel;
 	f = c * sign(v)*pow(abs(v), alpha);
 

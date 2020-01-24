@@ -304,7 +304,6 @@
   <ItemGroup>
     <ClCompile Include="dashpot.cpp" />
     <ClCompile Include="dashpotExp.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="dof.cpp" />
     <ClCompile Include="dofRecorder.cpp" />
     <ClCompile Include="elastic1D.cpp" />
@@ -313,6 +312,7 @@
     <ClCompile Include="elementRecorder.cpp" />
     <ClCompile Include="inerter.cpp" />
     <ClCompile Include="recorder.cpp" />
+    <ClCompile Include="RODS.cpp" />
     <ClCompile Include="slider.cpp" />
     <ClCompile Include="spring2D.cpp" />
     <ClCompile Include="node.cpp" />

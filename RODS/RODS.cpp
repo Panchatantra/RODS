@@ -81,13 +81,12 @@ void example_sdof_bl()
 	ds->addDof(0, m, FIXED);
 	ds->addDof(1, m);
 
-	//ds->addSpring(0, 0, 1, k);
-	ds->addSpring(2, 0, 1, k);
-	ds->addSlider(0, 0, 1, k*uy);
+	ds->addSpring(10, 0, 1, k);
+	ds->addSlider(0, 0, 1, 0.1);
 	//ds->addSpringBL(0, 0, 1, k, uy, alpha);
 	//ds->addSpringBW(0, 0, 1, k, uy, alpha);
 	ds->addDashpot(1, 0, 1, c);
-	//ds->addDashpotExp(1, 0, 1, c*2, 0.2);
+	//ds->addDashpotExp(1, 0, 1, c, 0.2);
 
 	ds->assembleMatrix();
 	ds->solveEigen();
