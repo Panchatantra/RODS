@@ -1,7 +1,7 @@
 CXX = g++
 Linker = g++
-OutputFile = DDSys.exe
-DynamicLib = DDSys.dll
+OutputFile = RODS.exe
+DynamicLib = RODS.dll
 
 SourceFiles = $(wildcard *.cpp)
 Objects = $(subst .cpp,.o,$(SourceFiles))
