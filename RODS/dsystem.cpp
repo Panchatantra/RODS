@@ -985,6 +985,17 @@ void dsystem::assembleNonlinearForceVector(const bool update)
 			s->assembleNonlinearForceVector(q);
 		}
 	}
+	
+	if (!(sliders.empty()))
+	{
+		std::map<int, slider *>::iterator it;
+		for (it = sliders.begin(); it != sliders.end(); it++)
+		{
+			slider *s = it->second;
+			s->getResponse(update);
+			s->assembleNonlinearForceVector(q);
+		}
+	}
 }
 
 void dsystem::initRecorders()
