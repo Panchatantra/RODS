@@ -21,12 +21,14 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+RODS/x64/
+RODS/x86/
 
 # Cmake files
 cmake-build-Debug/
 cmake-build-Release/
-DDSYS/CMakeLists.txt
-DDSYS/compile_flags.txt
+RODS/CMakeLists.txt
+RODS/compile_flags.txt
 
 .codelite/
 
