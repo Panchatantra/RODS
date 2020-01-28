@@ -2,16 +2,13 @@
 
 
 material::material() :
-	id(0), E(0.0)
+	E(0.0)
 {
 }
 
 
-material::material(const int id, const double E)
+material::material(const int id, const double E): basis(id), E(E)
 {
-	this->id = id;
-	this->E = E;
-	this->E0 = E;
 }
 
 

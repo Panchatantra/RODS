@@ -4,15 +4,15 @@
 #include "node.h"
 #include "section.h"
 
-class truss2D :
+class truss :
 	public element2D
 {
 public:
-	truss2D(const int id, node * nodeI, node * nodeJ, section *sec);
-	~truss2D();
+	truss(const int id, node * nodeI, node * nodeJ, section *sec);
+	~truss();
 
 	void buildMatrix();
-	void getResponse();
+	void getResponse(const bool update = false);
 
 	node * nodeI, * nodeJ;
 	section * sec;

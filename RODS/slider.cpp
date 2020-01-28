@@ -2,15 +2,9 @@
 
 
 slider::slider(const int id, dof *i, dof *j, const double muN) :
-	u(0), f(0), v(0), k(0.0)
+	element1D(id, i, j), muN(muN),
+	u(0.0), f(0.0), v(0.0), k(0.0)
 {
-	this->id = id;
-	
-	dofI = i;
-	dofJ = j;
-
-	this->muN = muN;
-
 	buildMatrix();
 }
 

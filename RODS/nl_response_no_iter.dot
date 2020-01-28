@@ -1,0 +1,28 @@
+digraph response {
+	node[shape=ellipse];
+	System[ label = "system response"];
+	DOFDef[ label = "DOF deformation"];
+	DOFForce[ label = "DOF force"];
+	ElementDef[ label = "element deformation"];
+	ElementForce[ label = "element force"];
+	SectionDef[ label = "section deformation"];
+	SectionForce[ label = "section force"];
+	FiberDef[ label = "fiber deformation"];
+	FiberForce[ label = "fiber force"];
+	MaterialStrain[ label = "material strain"];
+	MaterialStress[ label = "material stress"];
+	MaterialUpdate[ label = "update material state variables"];
+	{rank=same; DOFDef, DOFForce}
+	{rank=same; ElementDef, ElementForce}
+	{rank=same; SectionDef, SectionForce}
+	{rank=same; FiberDef, FiberForce}
+	{rank=same; MaterialStrain, MaterialStress}
+	System -> DOFDef
+	DOFDef -> ElementDef
+	ElementDef -> SectionDef
+	SectionDef -> FiberDef
+	FiberDef -> MaterialStrain
+	MaterialStrain -> MaterialStress -> MaterialUpdate
+	MaterialStress -> FiberForce -> SectionForce -> ElementForce -> DOFForce
+	DOFForce -> System
+}

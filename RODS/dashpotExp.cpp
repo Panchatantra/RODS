@@ -1,15 +1,9 @@
 #include "dashpotExp.h"
 
-dashpotExp::dashpotExp(const int n, dof * i, dof * j, const double c, const double alpha) :
+dashpotExp::dashpotExp(const int id, dof * i, dof * j, const double c, const double alpha) :
+	element1D(id, i, j), c(c), alpha(alpha),
 	u(0.0), f(0.0)
 {
-    id = n;
-    this->c = c;
-    this->alpha = alpha;
-
-    dofI = i;
-    dofJ = j;
-
     buildMatrix();
 }
 

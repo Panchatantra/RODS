@@ -2,6 +2,7 @@
 
 #include <map>
 #include <armadillo>
+#include "basis.h"
 #include "dof.h"
 #include "node.h"
 #include "spring.h"
@@ -20,12 +21,13 @@
 using namespace arma;
 
 constexpr double PI = 3.14159265;
+
 enum dsolver
 {
 	Newmark, Newmark_NL, StateSpace, StateSpace_NL
 };
 
-class dsystem
+class dsystem : public basis
 {
 public:
 	dsystem(const double z=0.0);

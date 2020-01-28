@@ -9,7 +9,7 @@ public:
 	elementRecorder(const int id, std::vector<element *> eles, response rtype, char * fileName);
 	~elementRecorder();
 
-	void record(const int cstep, const double ctime);
+	virtual void record(const int cstep, const double ctime);
 
 	std::vector<element *> eles;
 };

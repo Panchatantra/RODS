@@ -2,23 +2,10 @@
 
 
 springBoucWen::springBoucWen(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha, const double beta, const double n) :
+	element1D(id, i, j), k0(k0), uy(uy), alpha(alpha), beta(beta), n(n),
+	k1(alpha*k0), fy(k0*uy), k(k0),
 	u(0), f(0), v(0), z(0), zp(0)
 {
-	this->id = id;
-	
-	dofI = i;
-	dofJ = j;
-
-	this->k0 = k0;
-	this->uy = uy;
-	this->alpha = alpha;
-	this->beta = beta;
-	this->n = n;
-
-	k1 = alpha*k0;
-	fy = k0*uy;
-	k = k0;
-
 	buildMatrix();
 }
 

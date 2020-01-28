@@ -1,9 +1,10 @@
 #pragma once
 
 #include <map>
+#include "basis.h"
 #include "dof.h"
 
-class node
+class node : public basis
 {
 public:
 	node(int id, double x=0, double y=0, double z=0);
@@ -12,7 +13,6 @@ public:
 	void setDof(dof *d);
 	bool isActivated(direction dir);
 
-	int id;
 	double x0, y0, z0;
 	double x, y, z;
 

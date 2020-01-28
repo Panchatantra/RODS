@@ -10,7 +10,7 @@ public:
 	dofRecorder(const int id, std::vector<dof *> dofs, response rtype, char * fileName);
 	~dofRecorder();
 
-	void record(const int cstep, const double ctime);
+	virtual void record(const int cstep, const double ctime);
 
 	std::vector<dof *> dofs;
 };

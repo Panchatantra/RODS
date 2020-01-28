@@ -2,22 +2,10 @@
 
 
 springBilinear::springBilinear(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha) :
+	element1D(id,i,j), k0(k0), uy(uy), alpha(alpha),
+	k1(alpha*k0), fy(k0*uy), k(k0), kp(k0),
 	u(0), f(0), up(0), dup(0), fp(0), status(0), sp(0)
 {
-	this->id = id;
-	
-	dofI = i;
-	dofJ = j;
-
-	this->k0 = k0;
-	this->uy = uy;
-	this->alpha = alpha;
-
-	k1 = alpha*k0;
-	fy = k0*uy;
-	k = k0;
-	kp = k0;
-
 	buildMatrix();
 }
 

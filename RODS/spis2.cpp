@@ -1,17 +1,9 @@
 #include "spis2.h"
 
-spis2::spis2(const int n, dof * i, dof * j, dof *in, const double m, const double c, const double k) :
+spis2::spis2(const int id, dof * i, dof * j, dof *in, const double m, const double c, const double k) :
+	element1D(id, i, j), m(m), c(c), k(k), dofIN(in),
 	u(0.0), u_in(0.0), f(0.0), f_c(0.0), f_m(0.0)
 {
-	id = n;
-	this->m = m;
-	this->c = c;
-	this->k = k;
-
-	dofI = i;
-	dofJ = j;
-	dofIN = in;
-
 	buildMatrix();
 }
 

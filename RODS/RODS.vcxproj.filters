@@ -41,9 +41,6 @@
     <ClCompile Include="section.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="elastic1D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="element.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -57,9 +54,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="node.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="truss2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="spring2D.cpp">
@@ -87,6 +81,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RODS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="basis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="truss.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="elastoplastic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -124,9 +130,6 @@
     <ClInclude Include="section.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="elastic1D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="element.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -140,9 +143,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="truss2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="spring2D.h">
@@ -167,6 +167,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="slider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="basis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="elastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="truss.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="elastoplastic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

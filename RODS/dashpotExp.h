@@ -9,7 +9,7 @@ using namespace arma;
 class dashpotExp : public element1D
 {
 public:
-	dashpotExp(const int n, dof *i, dof *j, const double c, const double alpha);
+	dashpotExp(const int id, dof *i, dof *j, const double c, const double alpha);
 	~dashpotExp();
 
 	void buildMatrix();

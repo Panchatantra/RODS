@@ -9,7 +9,7 @@ using namespace arma;
 class dashpot : public element1D
 {
 public:
-	dashpot(const int n, dof *i, dof *j, const double c);
+	dashpot(const int id, dof *i, dof *j, const double c);
 	~dashpot();
 
 	void buildMatrix();
@@ -21,6 +21,5 @@ public:
 	mat::fixed<2, 2> C;
 
 	double u, f;
-	
 };
 

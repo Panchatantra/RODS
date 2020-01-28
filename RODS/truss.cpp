@@ -1,6 +1,6 @@
-#include "truss2D.h"
+#include "truss.h"
 
-truss2D::truss2D(const int id, node * nodeI, node * nodeJ, section *sec):
+truss::truss(const int id, node * nodeI, node * nodeJ, section *sec):
 	ue(0.0), f(0.0)
 {
 	this->id = id;
@@ -12,7 +12,7 @@ truss2D::truss2D(const int id, node * nodeI, node * nodeJ, section *sec):
 	double dy = nodeJ->y - nodeI->y;
 	L = sqrt(dx*dx + dy*dy);
 
-	k = sec->mat->E0*sec->A / L;
+	k = sec->mat->E*sec->A / L;
 
 	lxx = dx / L;
 	lxy = dy / L;
@@ -21,25 +21,27 @@ truss2D::truss2D(const int id, node * nodeI, node * nodeJ, section *sec):
 }
 
 
-truss2D::~truss2D()
+truss::~truss()
 {
 }
 
-void truss2D::buildMatrix()
+void truss::buildMatrix()
 {
 	K = T.t()*k*T;
 }
 
-void truss2D::getResponse()
+void truss::getResponse(const bool update)
 {
 	u = vec( { nodeI->dofX->dsp, nodeI->dofY->dsp, nodeJ->dofX->dsp, nodeJ->dofY->dsp } );
 
 	ue = 0.0;
-
 	for (size_t i = 0; i < 4; i++)
 	{
 		ue += T(i)*u(i);
 	}
 
 	f = k * ue;
+
+	force = &f;
+	deformation = &ue;
 }

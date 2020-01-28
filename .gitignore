@@ -278,3 +278,5 @@ __pycache__/
 *.csv
 *.o
 *.exe
+/compile_commands.json
+*.pdf

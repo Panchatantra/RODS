@@ -8,6 +8,8 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <File Name="basis.cpp"/>
+    <File Name="basis.h"/>
     <File Name="slider.h"/>
     <File Name="slider.cpp"/>
     <File Name="truss2D.cpp"/>

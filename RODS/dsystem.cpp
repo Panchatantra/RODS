@@ -377,6 +377,16 @@ void dsystem::assembleStiffnessMatrix()
 			s->assembleStiffnessMatrix(K);
 		}
 	}
+
+	if (!(sliders.empty()))
+	{
+		std::map<int, slider *>::iterator it;
+		for (it = sliders.begin(); it != sliders.end(); it++)
+		{
+			slider *s = it->second;
+			s->assembleStiffnessMatrix(K);
+		}
+	}
 }
 
 void dsystem::buildInherentDampingMatrix(const int n)

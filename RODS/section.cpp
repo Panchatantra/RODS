@@ -3,7 +3,7 @@
 
 
 section::section() :
-	id(0), mat(new material()), A(0.0)
+	mat(nullptr), A(0.0)
 {
 }
 

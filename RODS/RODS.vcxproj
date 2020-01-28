@@ -302,11 +302,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="basis.cpp" />
     <ClCompile Include="dashpot.cpp" />
     <ClCompile Include="dashpotExp.cpp" />
     <ClCompile Include="dof.cpp" />
     <ClCompile Include="dofRecorder.cpp" />
-    <ClCompile Include="elastic1D.cpp" />
+    <ClCompile Include="elastic.cpp" />
+    <ClCompile Include="elastoplastic.cpp" />
     <ClCompile Include="element.cpp" />
     <ClCompile Include="element2D.cpp" />
     <ClCompile Include="elementRecorder.cpp" />
@@ -327,14 +329,16 @@
     <ClCompile Include="springBilinear.cpp" />
     <ClCompile Include="springBoucWen.cpp" />
     <ClCompile Include="timeseries.cpp" />
-    <ClCompile Include="truss2D.cpp" />
+    <ClCompile Include="truss.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="basis.h" />
     <ClInclude Include="dashpot.h" />
     <ClInclude Include="dashpotExp.h" />
     <ClInclude Include="dof.h" />
     <ClInclude Include="dofRecorder.h" />
-    <ClInclude Include="elastic1D.h" />
+    <ClInclude Include="elastic.h" />
+    <ClInclude Include="elastoplastic.h" />
     <ClInclude Include="element.h" />
     <ClInclude Include="element2D.h" />
     <ClInclude Include="elementRecorder.h" />
@@ -355,7 +359,7 @@
     <ClInclude Include="springBilinear.h" />
     <ClInclude Include="springBoucWen.h" />
     <ClInclude Include="timeseries.h" />
-    <ClInclude Include="truss2D.h" />
+    <ClInclude Include="truss.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,7 +9,7 @@ using namespace arma;
 class inerter : public element1D
 {
 public:
-	inerter(const int n, dof *i, dof *j, const double m);
+	inerter(const int id, dof *i, dof *j, const double m);
 	~inerter();
 
 	void buildMatrix();

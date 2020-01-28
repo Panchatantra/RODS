@@ -1,15 +1,10 @@
 #include "inerter.h"
 
 
-inerter::inerter(const int n, dof *i, dof *j, const double m) :
+inerter::inerter(const int id, dof *i, dof *j, const double m) :
+	element1D(id, i, j), m(m),
 	u(0.0), f(0.0)
 {
-	id = n;
-	this->m = m;
-
-	dofI = i;
-	dofJ = j;
-
 	buildMatrix();
 }
 
