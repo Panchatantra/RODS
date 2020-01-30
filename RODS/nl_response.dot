@@ -1,0 +1,39 @@
+digraph G {
+	node[shape=ellipse];
+	System[ label = "system response\n (current step)"];
+	SystemNext[ label = "system response\n (next step)"];
+	DOFDef[ label = "DOF\n deformation"];
+	DOFForce[ label = "DOF force"];
+	ElementDef[ label = "element\n deformation"];
+	ElementForce[ label = "element force\n and tangent"];
+	SectionDef[ label = "section\n deformation"];
+	SectionForce[ label = "section force\n and tangent"];
+	FiberDef[ label = "fiber\n deformation"];
+	FiberForce[ label = "fiber force\n and tangent"];
+	MaterialStrain[ label = "material strain"];
+	MaterialStress[ label = "material stress\n and tangent"];
+	MaterialUpdate[ label = "update material\n history variables"];
+	CheckConv[ label = "check if\n converged or not"];
+	NLForceAndJacobian[ label = "assemble nonlinear\n force vector\n and Jacobian matrix"]
+	{rank=same; DOFDef, DOFForce}
+	{rank=same; CheckConv, NLForceAndJacobian}
+	{rank=same; System, SystemNext}
+	{rank=same; ElementDef, ElementForce}
+	{rank=same; SectionDef, SectionForce}
+	{rank=same; FiberDef, FiberForce}
+	{rank=same; MaterialStrain, MaterialStress, MaterialUpdate}
+	System -> CheckConv -> DOFDef
+	DOFDef -> ElementDef[label = "geometric\n transformation"]
+	ElementDef -> SectionDef[ label = " shape\n function"]
+	SectionDef -> FiberDef
+	FiberDef -> MaterialStrain
+	MaterialStrain -> MaterialStress
+	MaterialStress -> MaterialUpdate[label = "if converged"]
+	MaterialStress -> FiberForce
+	FiberForce -> SectionForce[ label = "integrate\n through section"]
+	SectionForce -> ElementForce[ label = "integrate\n along element"]
+	ElementForce -> DOFForce[label = "geometric\n transformation"]
+	DOFForce -> NLForceAndJacobian
+	NLForceAndJacobian -> System[ label = " if not\n converged"]
+	NLForceAndJacobian -> SystemNext[ label = " if converged"]
+}

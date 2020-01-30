@@ -328,6 +328,7 @@
     <ClCompile Include="dsystem.cpp" />
     <ClCompile Include="springBilinear.cpp" />
     <ClCompile Include="springBoucWen.cpp" />
+    <ClCompile Include="steelBilinear.cpp" />
     <ClCompile Include="timeseries.cpp" />
     <ClCompile Include="truss.cpp" />
   </ItemGroup>
@@ -358,6 +359,7 @@
     <ClInclude Include="dsystem.h" />
     <ClInclude Include="springBilinear.h" />
     <ClInclude Include="springBoucWen.h" />
+    <ClInclude Include="steelBilinear.h" />
     <ClInclude Include="timeseries.h" />
     <ClInclude Include="truss.h" />
   </ItemGroup>

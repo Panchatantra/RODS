@@ -1,5 +1,11 @@
 #pragma once
 #include "material1D.h"
+
+enum elastoplasticState
+{
+	ELASTIC, YIELD
+};
+
 class elastoplastic :
 	public material1D
 {
@@ -8,13 +14,13 @@ public:
 	~elastoplastic();
 
 	virtual void setStrain(const double *strain) { epsilon = *strain; }
-	virtual void getResponse(const bool update = false) { sigma = E * epsilon; }
+	virtual void getResponse(const bool update = false);
 
 	virtual material *copy() { return new elastoplastic(id, E, fy, alpha); }
 
 	double fy, alpha;
-	double E_t, epsilon_y, E1;
+	double E0, epsilon_y, E1;
 	double E_p, epsilon_p, depsilon_p, sigma_p;
-	size_t status, status_p;
+	elastoplasticState status, status_p;
 };
 

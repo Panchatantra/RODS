@@ -704,8 +704,8 @@ void dsystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s
 	vec p_h;
 	vec u_p, v_p, a_p;
 	vec du;
-	double agd, agi, agj;
-	double error;
+	double agd=0.0, agi=0.0, agj=0.0;
+	double error = 1.0;
 	for (int i = 0; i < nsteps - 1; i++)
 	{
 		cstep += 1;

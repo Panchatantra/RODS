@@ -1,0 +1,31 @@
+digraph G {
+	node[shape=ellipse];
+	status0[label="ELASTIC"]
+	status1_plus[label="YIELD+"]
+	status1_minus[label="YIELD-"]
+	status2_plus[label="UNLOAD+"]
+	status2_minus[label="UNLOAD-"]
+	status3_plus[label="RECOVER+"]
+	status3_minus[label="RECOVER-"]
+	{rank=same status1_plus status1_minus}
+	{rank=same status2_plus status2_minus}
+	{rank=same status3_plus status3_minus}
+	status0 -> status1_plus[label=" stress >\n strength"]
+	status1_plus -> status1_plus[label=" update\n max stress"]
+	status1_plus -> status2_plus[label=" unload"]
+	status2_plus -> status2_plus[label=" update\n original"]
+	status2_plus -> status1_plus[label=" stress >\n max stress"]
+	status2_plus -> status3_plus[label=" stress <\n -ref stress"]
+	status2_plus -> status1_minus[label=" stress <\n min stress"]
+	status3_plus -> status2_minus[label=" unload"]
+	status3_plus -> status1_minus[label=" stress <\n min stress"]
+	status0 -> status1_minus[label=" stress <\n -strength"]
+	status1_minus -> status1_minus[label=" update\n min stress"]
+	status1_minus -> status2_minus[label=" unload"]
+	status2_minus -> status2_minus[label=" update\n original"]
+	status2_minus -> status1_minus[label=" stress <\n min stress"]
+	status2_minus -> status3_minus[label=" stress >\n ref stress"]
+	status2_minus -> status1_plus[label=" stress >\n max stress"]
+	status3_minus -> status2_plus[label=" unload"]
+	status3_minus -> status1_plus[label=" stress >\n max stress"]
+}

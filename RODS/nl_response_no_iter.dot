@@ -1,4 +1,4 @@
-digraph response {
+digraph G {
 	node[shape=ellipse];
 	System[ label = "system response"];
 	DOFDef[ label = "DOF deformation"];
@@ -11,18 +11,21 @@ digraph response {
 	FiberForce[ label = "fiber force"];
 	MaterialStrain[ label = "material strain"];
 	MaterialStress[ label = "material stress"];
-	MaterialUpdate[ label = "update material state variables"];
+	MaterialUpdate[ label = "update material history variables"];
 	{rank=same; DOFDef, DOFForce}
 	{rank=same; ElementDef, ElementForce}
 	{rank=same; SectionDef, SectionForce}
 	{rank=same; FiberDef, FiberForce}
 	{rank=same; MaterialStrain, MaterialStress}
 	System -> DOFDef
-	DOFDef -> ElementDef
-	ElementDef -> SectionDef
+	DOFDef -> ElementDef[label = "geometric\ntransformation"]
+	ElementDef -> SectionDef[ label = "shape function"]
 	SectionDef -> FiberDef
 	FiberDef -> MaterialStrain
 	MaterialStrain -> MaterialStress -> MaterialUpdate
-	MaterialStress -> FiberForce -> SectionForce -> ElementForce -> DOFForce
-	DOFForce -> System
+	MaterialStress -> FiberForce
+	FiberForce -> SectionForce[ label = "integrate\nthrough section"]
+	SectionForce -> ElementForce[ label = "integrate\nalong element"]
+	ElementForce -> DOFForce[label = "geometric\ntransformation"]
+	DOFForce -> System[ label = "assemble nonlinear\nforce vector\nfor next step"]
 }
