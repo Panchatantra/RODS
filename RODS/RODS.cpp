@@ -4,6 +4,10 @@
 #include <iostream>
 #include "dof.h"
 #include "dsystem.h"
+#include "elastoplastic.h"
+#include "steelBilinear.h"
+#include "concreteTrilinear.h"
+#include "SMABilinear.h"
 
 #ifdef __GNUC__
 #define DLLEXPORT
@@ -43,7 +47,7 @@ void example_sdof()
 	double dt = 0.01;
 	int nsteps = 1000;
 	vec t = linspace(0.0, dt*(nsteps - 1), nsteps);
-	double Omg = 1*ds->omg(0);
+	double Omg = 1 * ds->omg(0);
 	vec ag = arma::sin(Omg*t);
 	ds->addTimeseries(1, dt, ag);
 
@@ -51,12 +55,12 @@ void example_sdof()
 	ds->addTimeseries(2, 0.005, eq);
 
 	int nrd = 2;
-	int *dofIds = new int[nrd]{ 0,1 };
+	int *dofIds = new int[nrd] { 0, 1 };
 	char dispOutput[] = "disp.csv";
 	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
 
 	int nre = 2;
-	int *eleIds = new int[nre]{ 0,1 };
+	int *eleIds = new int[nre] { 0, 1 };
 	char eleOutput[] = "force.csv";
 	ds->addElementRecorder(0, eleIds, nre, FORCE, eleOutput);
 
@@ -81,8 +85,13 @@ void example_sdof_bl()
 	ds->addDof(0, m, FIXED);
 	ds->addDof(1, m);
 
-	ds->addSpring(10, 0, 1, k);
-	ds->addSlider(0, 0, 1, 0.1);
+	ds->addMaterialElastoplastic(0, k, k*uy, alpha);
+	ds->addMaterialSMABilinear(1, k, k*uy, alpha, 0.5*k*uy);
+	ds->addSpringNL(0, 0, 1, 1);
+
+	//ds->addSpring(0, 0, 1, k);
+	//ds->addSpring(10, 0, 1, k);
+	//ds->addSlider(0, 0, 1, 0.1);
 	//ds->addSpringBL(0, 0, 1, k, uy, alpha);
 	//ds->addSpringBW(0, 0, 1, k, uy, alpha);
 	ds->addDashpot(1, 0, 1, c);
@@ -114,8 +123,8 @@ void example_sdof_bl()
 	int ts = 2;
 	ds->setDynamicSolver(StateSpace_NL);
 	ds->solveTimeDomainSeismicResponse(ts, 1.0, 1);
-	system("python post.py");
 
+	system("python post.py");
 }
 
 void example_shear_building()
@@ -145,12 +154,12 @@ void example_shear_building()
 	ds->omg.print("Natural Circular Frequencies:");
 
 	zeta = 0.02;
-	c = 2.0*zeta*k/ds->omg(0);
+	c = 2.0*zeta*k / ds->omg(0);
 	cout << "Damping Coefficient: " << c << endl;
 
 	for (int i = 1; i <= ndof; i++)
 	{
-		ds->addDashpot(i, i-1, i, c);
+		ds->addDashpot(i, i - 1, i, c);
 	}
 
 	cout << "Numbers of equations: " << ds->eqnCount << endl;
@@ -162,11 +171,11 @@ void example_shear_building()
 	//ds->solveComplexEigen();
 	ds->solveStochasticSeismicResponse();
 	ds->dsp.print("StochasticSeismicResponse:");
-	cout << "AnalyticalSolution: " << sqrt(PI/4/ds->omg(0)/zeta)/ds->omg(0) << endl;
+	cout << "AnalyticalSolution: " << sqrt(PI / 4 / ds->omg(0) / zeta) / ds->omg(0) << endl;
 
 	double dt = 0.02;
 	int nsteps = 1000;
-	vec t = linspace(0.0, dt*(nsteps-1), nsteps);
+	vec t = linspace(0.0, dt*(nsteps - 1), nsteps);
 	double Omg = 0.9*ds->omg(0);
 	vec ag = arma::sin(Omg*t);
 	ds->addTimeseries(1, dt, ag);
@@ -174,11 +183,10 @@ void example_shear_building()
 	ds->addTimeseries(2, 0.005, eq);
 
 	int ts = 2;
-	ds->solveTimeDomainSeismicResponseStateSpace(ts,1,10);
+	ds->solveTimeDomainSeismicResponseStateSpace(ts, 1, 10);
 	rowvec tt = ds->tss[ts]->time.t();
 	tt.save("t.csv", csv_ascii);
 	ds->u.save("dsp.csv", csv_ascii);
-
 }
 
 void example_shear_building_spis2()
@@ -193,17 +201,17 @@ void example_shear_building_spis2()
 	double xi = 0.005;
 	double kp = 0.05;
 
-	double m_in = mu*m;
+	double m_in = mu * m;
 	double c_d = 2.0*xi*sqrt(m*k);
-	double k_s = kp*k;
+	double k_s = kp * k;
 
 	ds->addDof(0, m, FIXED);
 	for (int i = 1; i <= ndof; i++)
 	{
-		ds->addDof(i*10, m);
-		ds->addSpring(i, (i-1)*10, i*10, k);
-		ds->addDof(i*10+1, 0.0);
-		ds->addSPIS2(i, (i-1)*10, i*10, i*10+1, m_in, c_d, k_s);
+		ds->addDof(i * 10, m);
+		ds->addSpring(i, (i - 1) * 10, i * 10, k);
+		ds->addDof(i * 10 + 1, 0.0);
+		ds->addSPIS2(i, (i - 1) * 10, i * 10, i * 10 + 1, m_in, c_d, k_s);
 	}
 
 	ds->assembleMassMatrix();
@@ -228,7 +236,40 @@ void example_shear_building_spis2()
 
 	//ds->solveStochasticSeismicResponse();
 	//ds->dsp.print();
+}
 
+void test_material()
+{
+	double E = 2.0e5, fy = 400.0;
+	double eps_y = fy / E;
+	double alpha = 0.02;
+	material1D *tmat;
+	elastoplastic *mat0 = new elastoplastic(0, E, fy, alpha);
+	steelBilinear *mat1 = new steelBilinear(1, E, fy, alpha);
+
+	double Ec = 3.0e4, fc = 30.0;
+	double eps_c = 0.002, eps_u = 0.0033;
+	double sigma_cr = 0.4*fc, sigma_u = 0.85*fc;
+	concreteTrilinear *mat2 = new concreteTrilinear(2, Ec, fc, eps_c, sigma_cr, sigma_u, eps_u);
+
+	double sigma_shift = 0.5*fy;
+	SMABilinear *mat3 = new SMABilinear(3, E, fy, alpha, sigma_shift);
+
+	tmat = mat3->copy();
+	int n = 1001;
+	mat s = zeros<mat>(n, 2);
+	vec t = linspace(0, 10, n);
+	s.col(0) = eps_y * t%arma::sin(2.0*PI / 1.0*t);
+
+	for (size_t i = 0; i < n; i++)
+	{
+		tmat->setStrain(&s(i, 0));
+		tmat->getResponse(true);
+		s(i, 1) = tmat->sigma;
+	}
+
+	s.save("mat.txt", raw_ascii);
+	system("gnuplot -e \"set term pdf; set output \\\"mat.pdf\\\"; plot \\\"mat.txt\\\" using 1:2 with line\" ");
 }
 
 int main()
@@ -237,6 +278,7 @@ int main()
 	example_sdof_bl();
 	//example_shear_building();
 	//example_shear_building_spis2();
+	//test_material();
 	return 0;
 }
 
@@ -296,5 +338,4 @@ extern "C" {
 		ds->solveTimeDomainSeismicResponse(tsId, s, nsub);
 		return ds->cstep;
 	}
-
 }

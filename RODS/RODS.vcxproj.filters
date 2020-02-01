@@ -98,6 +98,15 @@
     <ClCompile Include="steelBilinear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="concreteTrilinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SMABilinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="springNonlinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dof.h">
@@ -185,6 +194,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="steelBilinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="concreteTrilinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SMABilinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="springNonlinear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

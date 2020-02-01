@@ -1,6 +1,11 @@
 #include "dsystem.h"
 #include "numeric.h"
 
+#include "elastic.h"
+#include "elastoplastic.h"
+#include "steelBilinear.h"
+#include "concreteTrilinear.h"
+#include "SMABilinear.h"
 
 dsystem::dsystem(const double z) :
 	eqnCount(0), eigenVectorNormed(false), dt(0.02), dynamicSolver(StateSpace)
@@ -63,6 +68,51 @@ void dsystem::mapDofNode(const int id_d, const int id_nd)
 	dofMapNode[id_d] = id_nd;
 }
 
+bool dsystem::addMaterial1D(material1D * mtrl)
+{
+	if (material1Ds.count(mtrl->id) == 0)
+	{
+		material1Ds[mtrl->id] = mtrl;
+		return true;
+	}
+	else
+	{
+		cout << "material1D ID: " << mtrl->id << " already exists!" << endl;
+		return false;
+	}
+}
+
+bool dsystem::addMaterialElastic(const int id, const double E0)
+{
+	material1D *mtrl = new elastic(id, E0);
+	return addMaterial1D(mtrl);
+}
+
+bool dsystem::addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha)
+{
+	material1D *mtrl = new elastoplastic(id, E0, fy, alpha);
+	return addMaterial1D(mtrl);
+}
+
+bool dsystem::addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha, const double beta)
+{
+	material1D *mtrl = new steelBilinear(id, E0, fy, alpha, beta);
+	return addMaterial1D(mtrl);
+}
+
+bool dsystem::addMaterialConcreteTrilinear(const int id, const double E0, const double fc, const double epsilon_c, const double sigma_cr, const double sigma_u, const double epsilon_u)
+{
+	material1D *mtrl = new concreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u);
+	return addMaterial1D(mtrl);
+}
+
+bool dsystem::addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift)
+{
+	material1D *mtrl = new SMABilinear(id, E0, fy, alpha, sigma_shift);
+	return addMaterial1D(mtrl);
+}
+
+
 bool dsystem::addElement(element * e)
 {
 	if (eles.count(e->id) == 0)
@@ -101,6 +151,19 @@ void dsystem::addSpringBL(const int id, const int ni, const int nj, const double
 	dof *j = dofs.at(nj);
 	springBilinear *s = new springBilinear(id, i, j, k0, uy, alpha);
 	addSpringBL(s);
+}
+
+void dsystem::addSpringNL(springNonlinear * s)
+{
+	if (addElement(s)) springNLs[s->id] = s;
+}
+
+void dsystem::addSpringNL(const int id, const int ni, const int nj, const int matId)
+{
+	dof *i = dofs.at(ni);
+	dof *j = dofs.at(nj);
+	springNonlinear *s = new springNonlinear(id, i, j, material1Ds.at(matId));
+	addSpringNL(s);
 }
 
 void dsystem::addSpringBW(springBoucWen * s)
@@ -374,6 +437,16 @@ void dsystem::assembleStiffnessMatrix()
 		for (it = springBWs.begin(); it != springBWs.end(); it++)
 		{
 			springBoucWen *s = it->second;
+			s->assembleStiffnessMatrix(K);
+		}
+	}
+
+	if (!(springNLs.empty()))
+	{
+		std::map<int, springNonlinear *>::iterator it;
+		for (it = springNLs.begin(); it != springNLs.end(); it++)
+		{
+			springNonlinear *s = it->second;
 			s->assembleStiffnessMatrix(K);
 		}
 	}
@@ -980,6 +1053,17 @@ void dsystem::assembleNonlinearForceVector(const bool update)
 		for (it = springBWs.begin(); it != springBWs.end(); it++)
 		{
 			springBoucWen *s = it->second;
+			s->getResponse(update);
+			s->assembleNonlinearForceVector(q);
+		}
+	}
+
+	if (!(springNLs.empty()))
+	{
+		std::map<int, springNonlinear *>::iterator it;
+		for (it = springNLs.begin(); it != springNLs.end(); it++)
+		{
+			springNonlinear *s = it->second;
 			s->getResponse(update);
 			s->assembleNonlinearForceVector(q);
 		}

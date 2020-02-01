@@ -17,6 +17,9 @@
 #include "recorder.h"
 #include "dofRecorder.h"
 #include "elementRecorder.h"
+#include "material.h"
+#include "springNonlinear.h"
+#include "material1D.h"
 
 using namespace arma;
 
@@ -25,6 +28,11 @@ constexpr double PI = 3.14159265;
 enum dsolver
 {
 	Newmark, Newmark_NL, StateSpace, StateSpace_NL
+};
+
+enum MATERIAL
+{
+	ELASTIC, ELASTOPLASTIC, STEELBILINEAR, CONCRETETRILINEAR, SMABILINEAR
 };
 
 class dsystem : public basis
@@ -43,11 +51,21 @@ public:
 	void mapDofNode(dof *d, node *nd);
 	void mapDofNode(const int id_d, const int id_nd);
 
+	bool addMaterial1D(material1D *mtrl);
+	bool addMaterialElastic(const int id, const double E0);
+	bool addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha=0.02);
+	bool addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha=0.02, const double beta=0.5);
+	bool addMaterialConcreteTrilinear(const int id, const double E0, const double fc, const double epsilon_c,
+		const double sigma_cr, const double sigma_u, const double epsilon_u);
+	bool addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift);
+
 	bool addElement(element *e);
 	void addSpring(spring *s);
 	void addSpring(const int id, const int ni, const int nj, const double k);
 	void addSpringBL(springBilinear *s);
 	void addSpringBL(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
+	void addSpringNL(springNonlinear *s);
+	void addSpringNL(const int id, const int ni, const int nj, const int matId);
 	void addSpringBW(springBoucWen *s);
 	void addSpringBW(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta = 0.5, const double n=2);
 	void addDashpot(dashpot *d);
@@ -110,12 +128,15 @@ public:
 	std::map<int, int> dofMapNode;
 	std::map<int, spring *> springs;
 	std::map<int, springBilinear *> springBLs;
+	std::map<int, springNonlinear *> springNLs;
 	std::map<int, springBoucWen *> springBWs;
 	std::map<int, dashpot *> dashpots;
 	std::map<int, dashpotExp *> dashpotExps;
 	std::map<int, inerter *> inerters;
 	std::map<int, spis2 *> spis2s;
 	std::map<int, slider *> sliders;
+
+	std::map<int, material1D *> material1Ds;
 
 	std::map<int, timeseries *> tss;
 	std::map<int, recorder *> drs;

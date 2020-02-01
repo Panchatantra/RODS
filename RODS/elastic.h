@@ -11,6 +11,6 @@ public:
 	virtual void setStrain(const double *strain) { epsilon = *strain; }
 	virtual void getResponse(const bool update = false) { sigma = E * epsilon; }
 
-	virtual material *copy() { return new elastic(id, E); }
+	virtual material1D *copy() { return new elastic(id, E); }
 };
 

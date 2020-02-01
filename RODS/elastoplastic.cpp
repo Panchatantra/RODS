@@ -1,7 +1,10 @@
 #include "elastoplastic.h"
 
+using namespace MAT_EP;
+
 elastoplastic::elastoplastic(const int id, const double E, const double fy, const double alpha) :
 	material1D(id, E), fy(fy), alpha(alpha), E0(E), epsilon_y(fy / E), E1(E*alpha),
+	E_p(E), epsilon_p(0.0), depsilon_p(0.0), sigma_p(0.0),
 	status(ELASTIC), status_p(ELASTIC)
 {
 }
@@ -12,21 +15,21 @@ elastoplastic::~elastoplastic()
 
 void elastoplastic::getResponse(const bool update)
 {
-	double depslion = epsilon - epsilon_p;
-	double f_try = sigma_p + depslion * E_p;
+	double depsilon = epsilon - epsilon_p;
+	double f_try = sigma_p + depsilon * E_p;
 	double bup = fy + E1 * (epsilon - epsilon_y);
 	double bdn = -fy + E1 * (epsilon + epsilon_y);
 
 	status = status_p;
 
-	if (depslion == 0.0)
+	if (depsilon == 0.0)
 	{
 		E = E_p;
 		sigma = sigma_p;
 	}
 	else if (status == ELASTIC)
 	{
-		if (depslion > 0.0)
+		if (depsilon > 0.0)
 		{
 			if (f_try > bup)
 			{
@@ -57,7 +60,7 @@ void elastoplastic::getResponse(const bool update)
 	}
 	else if (status == YIELD)
 	{
-		if (depsilon_p*depslion > 0)
+		if (depsilon_p*depsilon > 0)
 		{
 			sigma = f_try;
 			E = E1;
@@ -65,7 +68,7 @@ void elastoplastic::getResponse(const bool update)
 		else
 		{
 			E = E0;
-			sigma = sigma_p + E * depslion;
+			sigma = sigma_p + E * depsilon;
 			status = ELASTIC;
 			if (sigma > bup)
 			{
@@ -85,7 +88,7 @@ void elastoplastic::getResponse(const bool update)
 	if (update)
 	{
 		epsilon_p = epsilon;
-		depsilon_p = depslion;
+		depsilon_p = depsilon;
 		sigma_p = sigma;
 		E_p = E;
 		status_p = status;
