@@ -42,37 +42,18 @@ void spis2::assembleStiffnessMatrix(mat & K)
 	int in_local = 1;
 	int j_local = 2;
 
-	if (this->dofI->isFixed)
-	{
-		int j_global = this->dofJ->eqnId;
-		K(in_global, in_global) += this->K(in_local, in_local);
-		K(in_global, j_global) += this->K(in_local, j_local);
-		K(j_global, in_global) += this->K(j_local, in_local);
-		K(j_global, j_global) += this->K(j_local, j_local);
-	}
-	else if (this->dofJ->isFixed)
-	{
-		int i_global = this->dofI->eqnId;
-		K(in_global, in_global) += this->K(in_local, in_local);
-		K(in_global, i_global) += this->K(in_local, i_local);
-		K(i_global, in_global) += this->K(i_local, in_local);
-		K(i_global, i_global) += this->K(i_local, i_local);
-	}
-	else
-	{
-		int i_global = this->dofI->eqnId;
-		int j_global = this->dofJ->eqnId;
+	int i_global = this->dofI->eqnId;
+	int j_global = this->dofJ->eqnId;
 
-		K(i_global, i_global) += this->K(i_local, i_local);
-		K(i_global, j_global) += this->K(i_local, j_local);
-		K(i_global, in_global) += this->K(i_local, in_local);
-		K(j_global, i_global) += this->K(j_local, i_local);
-		K(j_global, j_global) += this->K(j_local, j_local);
-		K(j_global, in_global) += this->K(j_local, in_local);
-		K(in_global, i_global) += this->K(in_local, i_local);
-		K(in_global, j_global) += this->K(in_local, j_local);
-		K(in_global, in_global) += this->K(in_local, in_local);
-	}
+	K(i_global, i_global) += this->K(i_local, i_local);
+	K(i_global, j_global) += this->K(i_local, j_local);
+	K(i_global, in_global) += this->K(i_local, in_local);
+	K(j_global, i_global) += this->K(j_local, i_local);
+	K(j_global, j_global) += this->K(j_local, j_local);
+	K(j_global, in_global) += this->K(j_local, in_local);
+	K(in_global, i_global) += this->K(in_local, i_local);
+	K(in_global, j_global) += this->K(in_local, j_local);
+	K(in_global, in_global) += this->K(in_local, in_local);
 }
 
 void spis2::assembleDampingMatrix(mat & C)

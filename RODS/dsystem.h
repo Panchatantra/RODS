@@ -5,6 +5,7 @@
 #include "basis.h"
 #include "dof.h"
 #include "node.h"
+#include "line.h"
 #include "spring.h"
 #include "springBilinear.h"
 #include "springBoucWen.h"
@@ -42,12 +43,21 @@ public:
 	~dsystem();
 
 	void addNode(node *nd);
-	void addNode(const int id, const double x=0.0, const double y=0.0, const double z=0.0);
+	void addNode(const int id, const double x, const int dofId);
+	void addNode(const int id, const double x, const double y, const double z);
+
+	void addLine(line *l);
+	void addLine(const int id, const int ni, const int nj);
+
+	void fixDof(const int id);
+	void fixNode(const int id);
+
+	void draw();
 
     void addDof(dof *d);
 	void addDof(const int id, const double m=0.0, const bool fixed=false);
 	void addDof(const int id, direction dir, const double m=0.0, const bool fixed=false);
-    
+
 	void mapDofNode(dof *d, node *nd);
 	void mapDofNode(const int id_d, const int id_nd);
 
@@ -94,11 +104,13 @@ public:
 	void buildDofEqnMap();
 	void assembleMatrix();
 	void assembleMassMatrix();
+	void applyConstraint();
 	void assembleStiffnessMatrix();
 	void buildInherentDampingMatrix(const int n = 0);
 	void buildRayleighDampingMatrix(const double omg1, const double omg2);
 	void buildRayleighDampingMatrix(const int md1, const int md2);
 	void assembleDampingMatrix();
+
 	void solveEigen();
 	void solveComplexEigen();
 	void solveStochasticSeismicResponse(const double f_h=50.0, const int nf=10000, const char method='c');
@@ -121,6 +133,7 @@ public:
 	void saveResponse();
 	
 	std::map<int, node *> nodes;
+	std::map<int, line *> lines;
 	std::map<int, dof *> dofs;
 	std::map<int, element *> eles;
 	std::map<int, int> dofMapEqn;
@@ -144,6 +157,7 @@ public:
 
 	double zeta;
 	int eqnCount;
+	int fixedDofCount;
 
 	bool eigenVectorNormed;
 

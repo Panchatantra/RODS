@@ -1,16 +1,16 @@
 #pragma once
 
-#include <map>
 #include "basis.h"
 #include "dof.h"
 
 class node : public basis
 {
 public:
-	node(int id, double x=0, double y=0, double z=0);
+	node(const int id, const double x=0.0, const double y=0.0, const double z=0.0);
 	~node();
 
 	void setDof(dof *d);
+	void fixDof();
 	bool isActivated(direction dir);
 
 	double x0, y0, z0;

@@ -24,27 +24,14 @@ void inerter::assembleMassMatrix(mat & M)
 {
 	int i_local = 0;
 	int j_local = 1;
+	
+	int i_global = this->dofI->eqnId;
+	int j_global = this->dofJ->eqnId;
 
-	if (this->dofI->isFixed)
-	{
-		int j_global = this->dofJ->eqnId;
-		M(j_global, j_global) += this->M(j_local, j_local);
-	}
-	else if (this->dofJ->isFixed)
-	{
-		int i_global = this->dofI->eqnId;
-		M(i_global, i_global) += this->M(i_local, i_local);
-	}
-	else
-	{
-		int i_global = this->dofI->eqnId;
-		int j_global = this->dofJ->eqnId;
-
-		M(i_global, i_global) += this->M(i_local, i_local);
-		M(i_global, j_global) += this->M(i_local, j_local);
-		M(j_global, i_global) += this->M(j_local, i_local);
-		M(j_global, j_global) += this->M(j_local, j_local);
-	}
+	M(i_global, i_global) += this->M(i_local, i_local);
+	M(i_global, j_global) += this->M(i_local, j_local);
+	M(j_global, i_global) += this->M(j_local, i_local);
+	M(j_global, j_global) += this->M(j_local, j_local);
 }
 
 void inerter::getResponse(const bool update)

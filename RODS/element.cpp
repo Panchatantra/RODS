@@ -4,6 +4,7 @@
 
 element::element()
 {
+	nv = 1;
 }
 
 

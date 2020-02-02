@@ -1,14 +1,9 @@
 #include "spring2D.h"
 
 
-spring2D::spring2D(const int id, node * nodeI, node * nodeJ, double k1, double k2)
+spring2D::spring2D(const int id, node * nodeI, node * nodeJ, double k1, double k2) :
+	element2D(id, nodeI, nodeJ), k1(k1), k2(k2)
 {
-	this->id = id;
-	this->nodeI = nodeI;
-	this->nodeJ = nodeJ;
-	this->k1 = k1;
-	this->k2 = k2;
-
 	double dx = nodeJ->x - nodeI->x;
 	double dy = nodeJ->y - nodeI->y;
 	L = sqrt(dx*dx + dy*dy);

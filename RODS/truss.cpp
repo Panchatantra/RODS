@@ -1,7 +1,7 @@
 #include "truss.h"
 
 truss::truss(const int id, node * nodeI, node * nodeJ, section *sec):
-	ue(0.0), f(0.0)
+	element2D(id, nodeI, nodeJ), ue(0.0), f(0.0)
 {
 	this->id = id;
 	this->nodeI = nodeI;

@@ -8,7 +8,7 @@
 #include "SMABilinear.h"
 
 dsystem::dsystem(const double z) :
-	eqnCount(0), eigenVectorNormed(false), dt(0.02), dynamicSolver(StateSpace)
+	eqnCount(0), eigenVectorNormed(false), dt(0.02), dynamicSolver(StateSpace), fixedDofCount(0)
 {
 	zeta = z;
 }
@@ -20,13 +20,59 @@ dsystem::~dsystem()
 
 void dsystem::addNode(node * nd)
 {
-	nodes[nd->id] = nd;
+	auto it = nodes.insert(std::make_pair(nd->id, nd));
+	if (!it.second)
+	{
+		cout << "Node ID: " << nd->id << " already exists!" << endl;
+	}
+}
+
+void dsystem::addNode(const int id, const double x, const int dofId)
+{
+	dof *d = dofs.at(dofId);
+	node *nd = new node(id, x);
+	nd->setDof(d);
+	addNode(nd);
 }
 
 void dsystem::addNode(const int id, const double x, const double y, const double z)
 {
 	node *nd = new node(id, x, y, z);
 	addNode(nd);
+}
+
+void dsystem::addLine(line *l)
+{
+	auto it = lines.insert(std::make_pair(l->id, l));
+	if (!it.second)
+	{
+		cout << "Line ID: " << l->id << " already exists!" << endl;
+	}
+}
+
+void dsystem::addLine(const int id, const int ni, const int nj)
+{
+	line *l = new line(id, nodes.at(ni), nodes.at(nj));
+	addLine(l);
+}
+
+void dsystem::fixDof(const int id)
+{
+	dofs.at(id)->isFixed = true;
+}
+
+void dsystem::fixNode(const int id)
+{
+	nodes.at(id)->fixDof();
+}
+
+void dsystem::draw()
+{
+	//FILE* gp = _popen("gnuplot.exe", "w");
+	//fprintf(gp, "set term wxt\n");
+	//fprintf(gp, "plot sin(x)\n");
+	//fprintf(gp, "pause mouse\n");
+	//_pclose(gp);
 }
 
 void dsystem::addDof(dof * d)
@@ -341,16 +387,19 @@ void dsystem::buildDofEqnMap()
 {
 	std::map<int, dof *>::iterator it;
 	eqnCount = 0;
+	fixedDofCount = 0;
+	dofMapEqn.clear();
+	eqnMapDof.clear();
+
 	for (it = dofs.begin(); it != dofs.end(); it++)
 	{
 		dof *d = it->second;
-		if (!(d->isFixed))
-		{
-			eqnCount += 1;
-			dofMapEqn[d->id] = eqnCount - 1;
-			d->eqnId = eqnCount - 1;
-			eqnMapDof[eqnCount - 1] = d->id;
-		}
+		if ((d->isFixed)) fixedDofCount += 1;
+		
+		dofMapEqn[d->id] = eqnCount;
+		d->eqnId = eqnCount;
+		eqnMapDof[eqnCount] = d->id;
+		eqnCount += 1;
 	}
 }
 
@@ -360,6 +409,7 @@ void dsystem::assembleMatrix()
 	assembleStiffnessMatrix();
 	buildInherentDampingMatrix();
 	assembleDampingMatrix();
+	applyConstraint();
 }
 
 void dsystem::assembleMassMatrix()
@@ -393,6 +443,46 @@ void dsystem::assembleMassMatrix()
 			s->assembleMassMatrix(M);
 		}
 	}
+}
+
+void dsystem::applyConstraint()
+{
+	eqnCount = 0;
+	dofMapEqn.clear();
+	eqnMapDof.clear();
+
+	uvec fixedIds = zeros<uvec>(fixedDofCount);
+	int fixedDofCount_ = 0;
+
+	for (auto it = dofs.begin(); it != dofs.end(); it++)
+	{
+		dof *d = it->second;
+		if ( (d->isFixed) )
+		{
+			fixedIds(fixedDofCount_) = d->eqnId;
+			fixedDofCount_ += 1;
+		}
+		else
+		{
+			dofMapEqn[d->id] = eqnCount;
+			d->eqnId = eqnCount;
+			eqnMapDof[eqnCount] = d->id;
+			eqnCount += 1;
+		}
+	}
+
+	M.shed_cols(fixedIds);
+	M.shed_rows(fixedIds);
+	Mp.shed_cols(fixedIds);
+	Mp.shed_rows(fixedIds);
+	K.shed_cols(fixedIds);
+	K.shed_rows(fixedIds);
+	K0.shed_cols(fixedIds);
+	K0.shed_rows(fixedIds);
+	C.shed_cols(fixedIds);
+	C.shed_rows(fixedIds);
+
+	E = ones<vec>(eqnCount);
 }
 
 void dsystem::assembleStiffnessMatrix()

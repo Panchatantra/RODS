@@ -11,6 +11,12 @@ public:
 	element1D(const int id, dof *i, dof *j);
 	~element1D();
 
-	dof *dofI;
-	dof *dofJ;
+	virtual void buildMatrix() {}
+	virtual void getResponse(const bool update = false) {}
+	virtual void assembleStiffnessMatrix(mat &K) {}
+	virtual void assembleDampingMatrix(mat &C) {}
+	virtual void assembleMassMatrix(mat &M) {}
+	virtual void assembleNonlinearForceVector(vec &q) {}
+
+	dof *dofI, *dofJ;
 };

@@ -1,19 +1,17 @@
 #pragma once
 
 #include "element2D.h"
-#include "section.h"
 
-class truss :
+class trussElastic :
 	public element2D
 {
 public:
-	truss(const int id, node * nodeI, node * nodeJ, section *sec);
-	~truss();
+	trussElastic(const int id, node * nodeI, node * nodeJ, const double EA);
+	~trussElastic();
 
 	void buildMatrix();
 	void getResponse(const bool update = false);
-
-	section * sec;
+	void assembleStiffnessMatrix(mat &K);
 
 	vec::fixed<4> u;
 
@@ -25,5 +23,4 @@ public:
 
 	rowvec::fixed<4> T;
 	mat::fixed<4, 4> K;
-
 };

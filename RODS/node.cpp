@@ -53,6 +53,17 @@ void node::setDof(dof * d)
 	}
 }
 
+void node::fixDof()
+{
+	if (dofX != nullptr) dofX->isFixed = true;
+	if (dofY != nullptr) dofY->isFixed = true;
+	if (dofZ != nullptr) dofZ->isFixed = true;
+	if (dofRX != nullptr) dofRX->isFixed = true;
+	if (dofRY != nullptr) dofRY->isFixed = true;
+	if (dofRZ != nullptr) dofRZ->isFixed = true;
+	
+}
+
 bool node::isActivated(direction dir)
 {
 	dof *d = nullptr;

@@ -87,7 +87,7 @@ void example_sdof_bl()
 
 	ds->addMaterialElastoplastic(0, k, k*uy, alpha);
 	ds->addMaterialSMABilinear(1, k, k*uy, alpha, 0.5*k*uy);
-	ds->addSpringNL(0, 0, 1, 1);
+	ds->addSpringNL(0, 0, 1, 0);
 
 	//ds->addSpring(0, 0, 1, k);
 	//ds->addSpring(10, 0, 1, k);

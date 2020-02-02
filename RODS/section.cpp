@@ -3,15 +3,13 @@
 
 
 section::section() :
-	mat(nullptr), A(0.0)
+	mat(nullptr), A(0.0), nv(1)
 {
 }
 
-section::section(const int id, material * mat, const double A)
+section::section(const int id, material * mat, const double A):
+	basis(id), mat(mat->copy()), A(A), nv(1)
 {
-	this->id = id;
-	this->mat = mat;
-	this->A = A;
 }
 
 

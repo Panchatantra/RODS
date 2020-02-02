@@ -107,6 +107,12 @@
     <ClCompile Include="springNonlinear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trussElastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dof.h">
@@ -203,6 +209,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="springNonlinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="trussElastic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

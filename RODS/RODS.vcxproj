@@ -314,6 +314,7 @@
     <ClCompile Include="element2D.cpp" />
     <ClCompile Include="elementRecorder.cpp" />
     <ClCompile Include="inerter.cpp" />
+    <ClCompile Include="line.cpp" />
     <ClCompile Include="recorder.cpp" />
     <ClCompile Include="RODS.cpp" />
     <ClCompile Include="slider.cpp" />
@@ -334,6 +335,7 @@
     <ClCompile Include="steelBilinear.cpp" />
     <ClCompile Include="timeseries.cpp" />
     <ClCompile Include="truss.cpp" />
+    <ClCompile Include="trussElastic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basis.h" />
@@ -348,6 +350,7 @@
     <ClInclude Include="element2D.h" />
     <ClInclude Include="elementRecorder.h" />
     <ClInclude Include="inerter.h" />
+    <ClInclude Include="line.h" />
     <ClInclude Include="recorder.h" />
     <ClInclude Include="slider.h" />
     <ClInclude Include="SMABilinear.h" />
@@ -368,6 +371,7 @@
     <ClInclude Include="steelBilinear.h" />
     <ClInclude Include="timeseries.h" />
     <ClInclude Include="truss.h" />
+    <ClInclude Include="trussElastic.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
