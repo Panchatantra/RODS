@@ -3,18 +3,7 @@
 trussElastic::trussElastic(const int id, node * nodeI, node * nodeJ, const double EA):
 	element2D(id, nodeI, nodeJ), EA(EA), ue(0.0), f(0.0)
 {
-	double dx = nodeJ->x - nodeI->x;
-	double dy = nodeJ->y - nodeI->y;
-
-	L = sqrt(dx*dx + dy*dy);
-
-	k = EA / L;
-
-	lxx = dx / L;
-	lxy = dy / L;
-
 	T = rowvec( {-lxx, -lxy, lxx, lxy} );
-
 	buildMatrix();
 }
 

@@ -5,21 +5,11 @@ frameElastic::frameElastic(const int id, node * nodeI, node * nodeJ, const doubl
 	ue(new double[3]{ 0.0, 0.0, 0.0 }),
 	f(new double[3]{ 0.0, 0.0, 0.0 })
 {
-	double dx = nodeJ->x - nodeI->x;
-	double dy = nodeJ->y - nodeI->y;
-
-	L = sqrt(dx*dx + dy*dy);
-
 	k = mat({
 				{EA/L, 0.0,    0.0},
 				{0.0,  4*EI/L, 2*EI/L},
 			  	{0.0,  2*EI/L, 4*EI/L}
 			});
-
-	lxx = dx / L;
-	lxy = dy / L;
-	lyx = -lxy;
-	lyy = lxx;
 
 	T = mat({
 				{-lxx,  lxy,   0.0,  lxx, lxy, 0.0},

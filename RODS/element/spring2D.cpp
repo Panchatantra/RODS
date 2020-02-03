@@ -1,18 +1,9 @@
 #include "spring2D.h"
 
-spring2D::spring2D(const int id, node * nodeI, node * nodeJ, double k, ELE::localAxis un) :
+spring2D::spring2D(const int id, node * nodeI, node * nodeJ, double k, ELE::localAxis axis) :
 	element2D(id, nodeI, nodeJ), k(k)
 {
-	double dx = nodeJ->x - nodeI->x;
-	double dy = nodeJ->y - nodeI->y;
-	L = sqrt(dx*dx + dy*dy);
-
-	lxx = dx / L;
-	lxy = dy / L;
-	lyx = -lxy;
-	lyy = lxx;
-
-	if (un == ELE::U1)
+	if (axis == ELE::U1)
 	{
 		T = rowvec({ -lxx , -lxy , lxx , lxy });
 	}
@@ -20,6 +11,8 @@ spring2D::spring2D(const int id, node * nodeI, node * nodeJ, double k, ELE::loca
 	{
 		T = rowvec({ -lyx , -lyy , lyx , lyy });
 	}
+
+	buildMatrix();
 }
 
 
@@ -46,4 +39,19 @@ void spring2D::getResponse()
 
 	force = &f;
 	deformation = &ue;
+}
+
+void spring2D::assembleStiffnessMatrix(mat &K)
+{
+	int local[4] = { 0,1,2,3 };
+	int global[4] = { nodeI->dofX->eqnId, nodeI->dofY->eqnId,
+					 nodeJ->dofX->eqnId, nodeJ->dofY->eqnId };
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			K(global[i], global[j]) += this->K(local[i], local[j]);
+		}
+	}
 }

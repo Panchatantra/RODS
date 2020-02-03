@@ -17,4 +17,7 @@ public:
 	virtual void assembleNonlinearForceVector(vec &q) {}
 
 	node *nodeI, *nodeJ;
+
+	double L;
+	double lxx, lxy, lyx, lyy;
 };

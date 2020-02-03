@@ -119,6 +119,9 @@
     <ClCompile Include="section\sectionElasticBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="element\inerter2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dof.h">
@@ -227,6 +230,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="section\sectionElasticBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\inerter2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

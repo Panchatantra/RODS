@@ -3,20 +3,8 @@
 beamElastic::beamElastic(const int id, node * nodeI, node * nodeJ, const double EI):
 	element2D(id, nodeI, nodeJ), EI(EI), ue(new double[2]{ 0.0, 0.0 }), f(new double[2]{ 0.0, 0.0 })
 {
-	double dx = nodeJ->x - nodeI->x;
-	double dy = nodeJ->y - nodeI->y;
-
-	L = sqrt(dx*dx + dy*dy);
-
-	k = mat({ {4*EI/L, 2*EI/L},
-			  {2*EI/L, 4*EI/L} });
-
-	lyx = -dy / L;
-	lyy = dx / L;
-
 	T = mat( {{lyx/L, lyy/L, 1.0, -lyy, lyx, 0.0},
 		      {lyx/L, lyy/L, 0.0, -lyy, lyx, 1.0} });
-
 	buildMatrix();
 
 	nv = 2;

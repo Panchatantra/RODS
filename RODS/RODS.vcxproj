@@ -312,6 +312,7 @@
     <ClCompile Include="element\element2D.cpp" />
     <ClCompile Include="element\frameElastic.cpp" />
     <ClCompile Include="element\inerter.cpp" />
+    <ClCompile Include="element\inerter2D.cpp" />
     <ClCompile Include="element\slider.cpp" />
     <ClCompile Include="element\spis2.cpp" />
     <ClCompile Include="element\spring.cpp" />
@@ -350,6 +351,7 @@
     <ClInclude Include="element\element2D.h" />
     <ClInclude Include="element\frameElastic.h" />
     <ClInclude Include="element\inerter.h" />
+    <ClInclude Include="element\inerter2D.h" />
     <ClInclude Include="element\slider.h" />
     <ClInclude Include="element\spis2.h" />
     <ClInclude Include="element\spring.h" />
