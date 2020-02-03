@@ -18,6 +18,7 @@ public:
 	double ue, f;
 
 	double L;
+	double EA;
 	double lxx, lxy;
 	double k;
 

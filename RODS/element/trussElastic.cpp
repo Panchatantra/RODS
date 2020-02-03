@@ -1,7 +1,7 @@
 #include "trussElastic.h"
 
 trussElastic::trussElastic(const int id, node * nodeI, node * nodeJ, const double EA):
-	element2D(id, nodeI, nodeJ), ue(0.0), f(0.0)
+	element2D(id, nodeI, nodeJ), EA(EA), ue(0.0), f(0.0)
 {
 	double dx = nodeJ->x - nodeI->x;
 	double dy = nodeJ->y - nodeI->y;
@@ -38,7 +38,7 @@ void trussElastic::getResponse(const bool update)
 		ue += T(i)*u(i);
 	}
 
-	f = k * ue;
+	f = k*ue;
 
 	force = &f;
 	deformation = &ue;

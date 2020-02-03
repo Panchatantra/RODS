@@ -14,70 +14,13 @@
     <ClCompile Include="dof.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spring.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dsystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dashpot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="inerter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spis2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="timeseries.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="material1D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="element1D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="section.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="element.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sectionElasticBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="element2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="node.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="spring2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="springBilinear.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="springBoucWen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dashpotExp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="recorder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dofRecorder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="elementRecorder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="slider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RODS.cpp">
@@ -86,31 +29,94 @@
     <ClCompile Include="basis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="elastic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="truss.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="elastoplastic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="steelBilinear.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="concreteTrilinear.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SMABilinear.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="springNonlinear.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="line.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="trussElastic.cpp">
+    <ClCompile Include="material\concreteTrilinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\elastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\elastoplastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\material1D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\SMABilinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\steelBilinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\beamElastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\dashpot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\dashpotExp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\element.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\element1D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\element2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\frameElastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\inerter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\slider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\spis2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\spring.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\spring2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\springBilinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\springBoucWen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\springNonlinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\truss.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\trussElastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="recorder\dofRecorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="recorder\elementRecorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="recorder\recorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="section\section.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="section\sectionElasticBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -118,19 +124,7 @@
     <ClInclude Include="dof.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spring.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="dsystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dashpot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inerter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spis2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="numeric.h">
@@ -139,82 +133,100 @@
     <ClInclude Include="timeseries.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="material1D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="element1D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="section.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="element.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sectionElasticBar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="element2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="spring2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="springBilinear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="springBoucWen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dashpotExp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="recorder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dofRecorder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="elementRecorder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="slider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="basis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="elastic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="truss.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="elastoplastic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="steelBilinear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="concreteTrilinear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SMABilinear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="springNonlinear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="trussElastic.h">
+    <ClInclude Include="material\concreteTrilinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material\elastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material\elastoplastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material\material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material\material1D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material\SMABilinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material\steelBilinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\beamElastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\dashpot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\dashpotExp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\element.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\element1D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\element2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\frameElastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\inerter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\slider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\spis2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\spring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\spring2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\springBilinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\springBoucWen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\springNonlinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\truss.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\trussElastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="recorder\dofRecorder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="recorder\elementRecorder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="recorder\recorder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="section\section.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="section\sectionElasticBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -193,7 +193,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\armadillo\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;.\material;.\section;.\element;.\recorder;..\..\armadillo\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -211,7 +211,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\armadillo\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;.\material;.\section;.\element;.\recorder;..\..\armadillo\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -269,7 +269,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\armadillo\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;.\material;.\section;.\element;.\recorder;..\..\armadillo\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -291,7 +291,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\armadillo\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;.\material;.\section;.\element;.\recorder;..\..\armadillo\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -303,75 +303,79 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="basis.cpp" />
-    <ClCompile Include="concreteTrilinear.cpp" />
-    <ClCompile Include="dashpot.cpp" />
-    <ClCompile Include="dashpotExp.cpp" />
     <ClCompile Include="dof.cpp" />
-    <ClCompile Include="dofRecorder.cpp" />
-    <ClCompile Include="elastic.cpp" />
-    <ClCompile Include="elastoplastic.cpp" />
-    <ClCompile Include="element.cpp" />
-    <ClCompile Include="element2D.cpp" />
-    <ClCompile Include="elementRecorder.cpp" />
-    <ClCompile Include="inerter.cpp" />
+    <ClCompile Include="element\beamElastic.cpp" />
+    <ClCompile Include="element\dashpot.cpp" />
+    <ClCompile Include="element\dashpotExp.cpp" />
+    <ClCompile Include="element\element.cpp" />
+    <ClCompile Include="element\element1D.cpp" />
+    <ClCompile Include="element\element2D.cpp" />
+    <ClCompile Include="element\frameElastic.cpp" />
+    <ClCompile Include="element\inerter.cpp" />
+    <ClCompile Include="element\slider.cpp" />
+    <ClCompile Include="element\spis2.cpp" />
+    <ClCompile Include="element\spring.cpp" />
+    <ClCompile Include="element\spring2D.cpp" />
+    <ClCompile Include="element\springBilinear.cpp" />
+    <ClCompile Include="element\springBoucWen.cpp" />
+    <ClCompile Include="element\springNonlinear.cpp" />
+    <ClCompile Include="element\truss.cpp" />
+    <ClCompile Include="element\trussElastic.cpp" />
     <ClCompile Include="line.cpp" />
-    <ClCompile Include="recorder.cpp" />
+    <ClCompile Include="material\concreteTrilinear.cpp" />
+    <ClCompile Include="material\elastic.cpp" />
+    <ClCompile Include="material\elastoplastic.cpp" />
+    <ClCompile Include="material\material.cpp" />
+    <ClCompile Include="material\material1D.cpp" />
+    <ClCompile Include="material\SMABilinear.cpp" />
+    <ClCompile Include="material\steelBilinear.cpp" />
+    <ClCompile Include="recorder\dofRecorder.cpp" />
+    <ClCompile Include="recorder\elementRecorder.cpp" />
+    <ClCompile Include="recorder\recorder.cpp" />
     <ClCompile Include="RODS.cpp" />
-    <ClCompile Include="slider.cpp" />
-    <ClCompile Include="SMABilinear.cpp" />
-    <ClCompile Include="spring2D.cpp" />
     <ClCompile Include="node.cpp" />
-    <ClCompile Include="material.cpp" />
-    <ClCompile Include="material1D.cpp" />
-    <ClCompile Include="element1D.cpp" />
-    <ClCompile Include="section.cpp" />
-    <ClCompile Include="sectionElasticBar.cpp" />
-    <ClCompile Include="spis2.cpp" />
-    <ClCompile Include="spring.cpp" />
     <ClCompile Include="dsystem.cpp" />
-    <ClCompile Include="springBilinear.cpp" />
-    <ClCompile Include="springBoucWen.cpp" />
-    <ClCompile Include="springNonlinear.cpp" />
-    <ClCompile Include="steelBilinear.cpp" />
+    <ClCompile Include="section\section.cpp" />
+    <ClCompile Include="section\sectionElasticBar.cpp" />
     <ClCompile Include="timeseries.cpp" />
-    <ClCompile Include="truss.cpp" />
-    <ClCompile Include="trussElastic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basis.h" />
-    <ClInclude Include="concreteTrilinear.h" />
-    <ClInclude Include="dashpot.h" />
-    <ClInclude Include="dashpotExp.h" />
     <ClInclude Include="dof.h" />
-    <ClInclude Include="dofRecorder.h" />
-    <ClInclude Include="elastic.h" />
-    <ClInclude Include="elastoplastic.h" />
-    <ClInclude Include="element.h" />
-    <ClInclude Include="element2D.h" />
-    <ClInclude Include="elementRecorder.h" />
-    <ClInclude Include="inerter.h" />
+    <ClInclude Include="element\beamElastic.h" />
+    <ClInclude Include="element\dashpot.h" />
+    <ClInclude Include="element\dashpotExp.h" />
+    <ClInclude Include="element\element.h" />
+    <ClInclude Include="element\element1D.h" />
+    <ClInclude Include="element\element2D.h" />
+    <ClInclude Include="element\frameElastic.h" />
+    <ClInclude Include="element\inerter.h" />
+    <ClInclude Include="element\slider.h" />
+    <ClInclude Include="element\spis2.h" />
+    <ClInclude Include="element\spring.h" />
+    <ClInclude Include="element\spring2D.h" />
+    <ClInclude Include="element\springBilinear.h" />
+    <ClInclude Include="element\springBoucWen.h" />
+    <ClInclude Include="element\springNonlinear.h" />
+    <ClInclude Include="element\truss.h" />
+    <ClInclude Include="element\trussElastic.h" />
     <ClInclude Include="line.h" />
-    <ClInclude Include="recorder.h" />
-    <ClInclude Include="slider.h" />
-    <ClInclude Include="SMABilinear.h" />
-    <ClInclude Include="spring2D.h" />
+    <ClInclude Include="material\concreteTrilinear.h" />
+    <ClInclude Include="material\elastic.h" />
+    <ClInclude Include="material\elastoplastic.h" />
+    <ClInclude Include="material\material.h" />
+    <ClInclude Include="material\material1D.h" />
+    <ClInclude Include="material\SMABilinear.h" />
+    <ClInclude Include="material\steelBilinear.h" />
     <ClInclude Include="node.h" />
-    <ClInclude Include="material.h" />
-    <ClInclude Include="material1D.h" />
     <ClInclude Include="numeric.h" />
-    <ClInclude Include="element1D.h" />
-    <ClInclude Include="section.h" />
-    <ClInclude Include="sectionElasticBar.h" />
-    <ClInclude Include="spis2.h" />
-    <ClInclude Include="spring.h" />
     <ClInclude Include="dsystem.h" />
-    <ClInclude Include="springBilinear.h" />
-    <ClInclude Include="springBoucWen.h" />
-    <ClInclude Include="springNonlinear.h" />
-    <ClInclude Include="steelBilinear.h" />
+    <ClInclude Include="recorder\dofRecorder.h" />
+    <ClInclude Include="recorder\elementRecorder.h" />
+    <ClInclude Include="recorder\recorder.h" />
+    <ClInclude Include="section\section.h" />
+    <ClInclude Include="section\sectionElasticBar.h" />
     <ClInclude Include="timeseries.h" />
-    <ClInclude Include="truss.h" />
-    <ClInclude Include="trussElastic.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

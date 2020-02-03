@@ -4,6 +4,13 @@
 
 using namespace arma;
 
+namespace ELE {
+	enum localAxis
+	{
+		U1, U2, U3, R1, R2, R3
+	};
+};
+
 class element : public basis
 {
 public:
