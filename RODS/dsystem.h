@@ -14,6 +14,9 @@
 #include "inerter.h"
 #include "slider.h"
 #include "spis2.h"
+#include "trussElastic.h"
+#include "beamElastic.h"
+#include "frameElastic.h"
 #include "timeseries.h"
 #include "recorder.h"
 #include "dofRecorder.h"
@@ -44,7 +47,10 @@ public:
 
 	void addNode(node *nd);
 	void addNode(const int id, const double x, const int dofId);
+	void addNode(const int id, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId);
 	void addNode(const int id, const double x, const double y, const double z);
+
+	void addNodeWithDof(const int id, const double x, const int dofId);
 
 	void addLine(line *l);
 	void addLine(const int id, const int ni, const int nj);
@@ -53,6 +59,7 @@ public:
 	void fixNode(const int id);
 
 	void draw();
+	void exportGmsh(char * fileName);
 
     void addDof(dof *d);
 	void addDof(const int id, const double m=0.0, const bool fixed=false);
@@ -70,6 +77,7 @@ public:
 	bool addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift);
 
 	bool addElement(element *e);
+
 	void addSpring(spring *s);
 	void addSpring(const int id, const int ni, const int nj, const double k);
 	void addSpringBL(springBilinear *s);
@@ -89,6 +97,13 @@ public:
 	void addSPIS2(spis2 *s);
 	void addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k);
 
+	void addTrussElastic(trussElastic *truss);
+	void addTrussElastic(const int id, const int ni, const int nj, const double EA);
+	void addBeamElastic(beamElastic *beam);
+	void addBeamElastic(const int id, const int ni, const int nj, const double EI);
+	void addFrameElastic(frameElastic *frame);
+	void addFrameElastic(const int id, const int ni, const int nj, const double EA, const double EI);
+
 	void addTimeseries(timeseries *ts);
 	void addTimeseries(const int id, const double dt, const vec &s);
 	void addTimeseries(const int id, const double dt, char * fileName);
@@ -104,7 +119,7 @@ public:
 	void buildDofEqnMap();
 	void assembleMatrix();
 	void assembleMassMatrix();
-	void applyConstraint();
+	void applyRestraint();
 	void assembleStiffnessMatrix();
 	void buildInherentDampingMatrix(const int n = 0);
 	void buildRayleighDampingMatrix(const double omg1, const double omg2);
@@ -136,6 +151,7 @@ public:
 	std::map<int, line *> lines;
 	std::map<int, dof *> dofs;
 	std::map<int, element *> eles;
+	std::map<int, element2D *> ele2Ds;
 	std::map<int, int> dofMapEqn;
 	std::map<int, int> eqnMapDof;
 	std::map<int, int> dofMapNode;
@@ -148,6 +164,10 @@ public:
 	std::map<int, inerter *> inerters;
 	std::map<int, spis2 *> spis2s;
 	std::map<int, slider *> sliders;
+
+	std::map<int, trussElastic *> trussElastics;
+	std::map<int, beamElastic *> beamElastics;
+	std::map<int, frameElastic *> frameElastics;
 
 	std::map<int, material1D *> material1Ds;
 

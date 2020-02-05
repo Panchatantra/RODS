@@ -272,13 +272,242 @@ void test_material()
 	system("gnuplot -e \"set term pdf; set output \\\"mat.pdf\\\"; plot \\\"mat.txt\\\" using 1:2 with line\" ");
 }
 
+void example_truss()
+{
+	dsystem *ds = new dsystem();
+	
+	double mass = 0.01;
+	double E = 206.0;
+	double A = 2148.84937505542;
+	double EA = E * A;
+
+	int nnd = 7;
+	int ne = 11;
+
+	double nodeCoord[7][2] {	{-4500 , 0},
+								{-1500 , 0},
+								{1500  , 0},
+								{4500  , 0},
+								{-3000 , 3000},
+								{0     , 3000},
+								{3000  , 3000} };
+
+	double x = 0, z = 0;
+
+	for (int i = 0; i < nnd; i++)
+	{
+		ds->addDof(2*i+1, X, mass);
+		ds->addDof(2*i+2, Z, mass);
+
+		x = nodeCoord[i][0];
+		z = nodeCoord[i][1];
+		ds->addNode(i+1, x, z, 2*i+1, 2*i+2, -1);
+	}
+
+	ds->fixNode(1);
+	ds->fixNode(4);
+
+	int elementConnect[11][2] { {1, 2},
+								{2, 3},
+								{3, 4},
+								{5, 6},
+								{6, 7},
+								{1, 5},
+								{2, 6},
+								{3, 7},
+								{2, 5},
+								{3, 6},
+								{4, 7} };
+
+	int ni = 0, nj = 0;
+	for (int i = 0; i < ne; i++)
+	{
+		ni = elementConnect[i][0];
+		nj = elementConnect[i][1];
+		ds->addTrussElastic(i + 1, ni, nj, EA);
+	}
+
+	ds->assembleMatrix();
+	ds->solveEigen();
+
+	ds->M.print("Mass Matrix:");
+	ds->K.print("Stiffness Matrix:");
+	ds->K0.print("Stiffness Matrix:");
+	ds->P.print("Natural Periods:");
+	ds->Phi.print("Modes:");
+
+	char gmshFile[] = "truss.msh";
+	ds->exportGmsh(gmshFile);
+}
+
+void example_frame()
+{
+	dsystem *ds = new dsystem();
+
+	double mass = 0.005;
+	double E = 32.5;
+	double A_b = 80000.0, A_c = 160000.0;
+	double I_b = 1066666666.66667, I_c = 2133333333.33333;
+	double EA_b = E * A_b, EA_c = E * A_c;
+	double EI_b = E * I_b, EI_c = E * I_c;
+
+	int nnd = 12;
+	int ne = 15;
+
+	double nodeCoord[12][2]{	{-6000, 0},
+								{-6000, 3000},
+								{-6000, 6000},
+								{-6000, 9000},
+								{0    , 0},
+								{0    , 3000},
+								{0    , 6000},
+								{0    , 9000},
+								{6000 , 0},
+								{6000 , 3000},
+								{6000 , 6000},
+								{6000 , 9000} };
+
+	double x = 0, z = 0;
+
+	for (int i = 0; i < nnd; i++)
+	{
+		ds->addDof(3 * i + 1, X, mass);
+		ds->addDof(3 * i + 2, Z, mass);
+		ds->addDof(3 * i + 3, RY, mass*1.0e-1);
+
+		x = nodeCoord[i][0];
+		z = nodeCoord[i][1];
+		ds->addNode(i + 1, x, z, 3*i + 1, 3*i + 2, 3*i + 3);
+	}
+
+	ds->fixNode(1);
+	ds->fixNode(5);
+	ds->fixNode(9);
+
+	int elementConnect[15][3] { {1, 2, 1},
+								{2, 3, 1},
+								{3, 4, 1},
+								{5, 6, 1},
+								{6, 7, 1},
+								{7, 8, 1},
+								{9, 10, 1},
+								{10, 11, 1},
+								{11, 12, 1},
+								{2, 6, 2},
+								{3, 7, 2},
+								{4, 8, 2},
+								{6, 10, 2},
+								{7, 11, 2},
+								{8, 12, 2} };
+
+	int ni = 0, nj = 0, st = 0;
+	for (int i = 0; i < ne; i++)
+	{
+		ni = elementConnect[i][0];
+		nj = elementConnect[i][1];
+		st = elementConnect[i][2];
+		if (st == 1)
+		{
+			ds->addFrameElastic(i + 1, ni, nj, EA_c, EI_c);
+			//ds->addBeamElastic(i + 1, ni, nj, EI_c);
+		}
+		else
+		{
+			ds->addFrameElastic(i + 1, ni, nj, EA_b, EI_b);
+			//ds->addBeamElastic(i + 1, ni, nj, EI_b);
+		}
+	}
+
+	ds->assembleMatrix();
+	ds->solveEigen();
+	cout << ds->eqnCount <<endl;
+
+	//ds->M.print("Mass Matrix:");
+	//ds->K.print("Stiffness Matrix:");
+	//ds->K0.print("Stiffness Matrix:");
+	ds->P.print("Natural Periods:");
+	//ds->Phi.print("Modes:");
+
+	char gmshFile[] = "frame.msh";
+	ds->exportGmsh(gmshFile);
+}
+
+void example_cantilever()
+{
+	dsystem *ds = new dsystem();
+
+	double mass = 0.005;
+	double E = 32.5;
+	double A_b = 80000.0, A_c = 160000.0;
+	double I_b = 1066666666.66667, I_c = 2133333333.33333;
+	double EA_b = E * A_b, EA_c = E * A_c;
+	double EI_b = E * I_b, EI_c = E * I_c;
+
+	int nnd = 2;
+	int ne = 1;
+
+	double nodeCoord[2][2]{ {-6000, 0},
+							{0    , 0}
+						   };
+
+	double x = 0, z = 0;
+	for (int i = 0; i < nnd; i++)
+	{
+		ds->addDof(3 * i + 1, X, mass);
+		ds->addDof(3 * i + 2, Z, mass);
+		ds->addDof(3 * i + 3, RY, mass*1.0e-1);
+
+		x = nodeCoord[i][0];
+		z = nodeCoord[i][1];
+		ds->addNode(i + 1, x, z, 3 * i + 1, 3 * i + 2, 3 * i + 3);
+	}
+
+	ds->fixNode(1);
+
+	int elementConnect[1][3]{ {1, 2, 1} };
+
+	int ni = 0, nj = 0, st = 0;
+	for (int i = 0; i < ne; i++)
+	{
+		ni = elementConnect[i][0];
+		nj = elementConnect[i][1];
+		st = elementConnect[i][2];
+		if (st == 1)
+		{
+			ds->addFrameElastic(i + 1, ni, nj, EA_b, EI_b);
+			//ds->addBeamElastic(i + 1, ni, nj, EI_b);
+		}
+		else
+		{
+			ds->addFrameElastic(i + 1, ni, nj, EA_c, EI_c);
+			//ds->addBeamElastic(i + 1, ni, nj, EI_c);
+		}
+	}
+
+	ds->assembleMatrix();
+	ds->solveEigen();
+	cout << ds->eqnCount << endl;
+
+	ds->M.print("Mass Matrix:");
+	ds->K.print("Stiffness Matrix:");
+	//ds->K0.print("Stiffness Matrix:");
+	ds->P.print("Natural Periods:");
+	//ds->Phi.print("Modes:");
+
+	//char gmshFile[] = "frame.msh";
+	//ds->exportGmsh(gmshFile);
+}
+
 int main()
 {
 	//example_sdof();
-	example_sdof_bl();
+	//example_sdof_bl();
 	//example_shear_building();
 	//example_shear_building_spis2();
 	//test_material();
+	//example_truss();
+	example_frame();
+	//example_cantilever();
 	return 0;
 }
 

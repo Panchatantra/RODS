@@ -306,6 +306,7 @@
     <ClCompile Include="dof.cpp" />
     <ClCompile Include="element\beamElastic.cpp" />
     <ClCompile Include="element\dashpot.cpp" />
+    <ClCompile Include="element\dashpot2D.cpp" />
     <ClCompile Include="element\dashpotExp.cpp" />
     <ClCompile Include="element\element.cpp" />
     <ClCompile Include="element\element1D.cpp" />
@@ -345,6 +346,7 @@
     <ClInclude Include="dof.h" />
     <ClInclude Include="element\beamElastic.h" />
     <ClInclude Include="element\dashpot.h" />
+    <ClInclude Include="element\dashpot2D.h" />
     <ClInclude Include="element\dashpotExp.h" />
     <ClInclude Include="element\element.h" />
     <ClInclude Include="element\element1D.h" />

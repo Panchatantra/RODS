@@ -17,9 +17,7 @@ public:
 
 	double ue, f;
 
-	double L;
 	double EA;
-	double lxx, lxy;
 	double k;
 
 	rowvec::fixed<4> T;

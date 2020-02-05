@@ -27,7 +27,7 @@ void spring2D::buildMatrix()
 
 void spring2D::getResponse()
 {
-	u = vec({ nodeI->dofX->dsp, nodeI->dofY->dsp, nodeJ->dofX->dsp, nodeJ->dofY->dsp });
+	u = vec({ nodeI->dofX->dsp, nodeI->dofZ->dsp, nodeJ->dofX->dsp, nodeJ->dofZ->dsp });
 
 	ue = 0.0;
 	for (size_t i = 0; i < 4; i++)
@@ -44,8 +44,8 @@ void spring2D::getResponse()
 void spring2D::assembleStiffnessMatrix(mat &K)
 {
 	int local[4] = { 0,1,2,3 };
-	int global[4] = { nodeI->dofX->eqnId, nodeI->dofY->eqnId,
-					 nodeJ->dofX->eqnId, nodeJ->dofY->eqnId };
+	int global[4] = { nodeI->dofX->eqnId, nodeI->dofZ->eqnId,
+					  nodeJ->dofX->eqnId, nodeJ->dofZ->eqnId };
 
 	for (int i = 0; i < 4; i++)
 	{

@@ -3,8 +3,11 @@
 beamElastic::beamElastic(const int id, node * nodeI, node * nodeJ, const double EI):
 	element2D(id, nodeI, nodeJ), EI(EI), ue(new double[2]{ 0.0, 0.0 }), f(new double[2]{ 0.0, 0.0 })
 {
-	T = mat( {{lyx/L, lyy/L, 1.0, -lyy, lyx, 0.0},
-		      {lyx/L, lyy/L, 0.0, -lyy, lyx, 1.0} });
+	k = mat({	{4*EI/L, 2*EI/L},
+				{2*EI/L, 4*EI/L} });
+	T = mat( {{lyx/L, lyy/L, 1.0, -lyx/L, -lyy/L, 0.0},
+		      {lyx/L, lyy/L, 0.0, -lyx/L, -lyy/L, 1.0} });
+
 	buildMatrix();
 
 	nv = 2;
@@ -22,8 +25,8 @@ void beamElastic::buildMatrix()
 
 void beamElastic::getResponse(const bool update)
 {
-	u = vec( { nodeI->dofX->dsp, nodeI->dofY->dsp, nodeI->dofRZ->dsp,
-		       nodeJ->dofX->dsp, nodeJ->dofY->dsp, nodeJ->dofRZ->dsp } );
+	u = vec( { nodeI->dofX->dsp, nodeI->dofZ->dsp, nodeI->dofRY->dsp,
+		       nodeJ->dofX->dsp, nodeJ->dofZ->dsp, nodeJ->dofRY->dsp } );
 
 	for (size_t i = 0; i < 3; i++)
 	{
@@ -47,8 +50,8 @@ void beamElastic::getResponse(const bool update)
 void beamElastic::assembleStiffnessMatrix(mat &K)
 {
 	int local[6] = {0,1,2,3,4,5};
-	int global[6] = {nodeI->dofX->eqnId, nodeI->dofY->eqnId, nodeI->dofRZ->eqnId,
-					 nodeJ->dofX->eqnId, nodeJ->dofY->eqnId, nodeJ->dofRZ->eqnId };
+	int global[6] = {nodeI->dofX->eqnId, nodeI->dofZ->eqnId, nodeI->dofRY->eqnId,
+					 nodeJ->dofX->eqnId, nodeJ->dofZ->eqnId, nodeJ->dofRY->eqnId };
 
 	for (int i = 0; i < 6; i++)
 	{

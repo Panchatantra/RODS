@@ -17,10 +17,7 @@ public:
 
 	double *ue, *f;
 
-	double L;
 	double EA, EI;
-	double lxx, lxy;
-	double lyx, lyy;
 
 	mat::fixed<3, 3> k;
 	mat::fixed<3, 6> T;

@@ -11,6 +11,7 @@ public:
 
 	void setDof(dof *d);
 	void fixDof();
+	void fixDof(direction dir);
 	bool isActivated(direction dir);
 
 	double x0, y0, z0;

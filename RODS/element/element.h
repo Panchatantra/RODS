@@ -1,5 +1,6 @@
 #pragma once
 #include "basis.h"
+#include "node.h"
 #include <armadillo>
 
 using namespace arma;

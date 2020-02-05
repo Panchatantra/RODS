@@ -41,7 +41,7 @@ void springBoucWen::getResponse(const bool update)
 	u = dofJ->dsp - dofI->dsp;
 	v = dofJ->vel - dofI->vel;
 
-	double dt = this->dt;
+	double dt = element::dt;
 
 	z = zp;
 	f = alpha*k0*u + (1.0-alpha)*fy*z;

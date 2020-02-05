@@ -61,6 +61,36 @@ void node::fixDof()
 	if (dofRX != nullptr) dofRX->isFixed = true;
 	if (dofRY != nullptr) dofRY->isFixed = true;
 	if (dofRZ != nullptr) dofRZ->isFixed = true;
+}
+
+void node::fixDof(direction dir)
+{
+	if (isActivated(dir))
+	{
+		switch (dir)
+		{
+		case X:
+			dofX->isFixed = true;
+			break;
+		case Y:
+			dofY->isFixed = true;
+			break;
+		case Z:
+			dofZ->isFixed = true;
+			break;
+		case RX:
+			dofRX->isFixed = true;
+			break;
+		case RY:
+			dofRY->isFixed = true;
+			break;
+		case RZ:
+			dofRZ->isFixed = true;
+			break;
+		default:
+			break;
+		}
+	}
 	
 }
 

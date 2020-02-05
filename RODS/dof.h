@@ -13,6 +13,7 @@ public:
 	int eqnId;
 	double mass;
 	direction dir;
+	double load;
 
 	bool isFixed;
 

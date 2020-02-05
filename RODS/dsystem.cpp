@@ -1,6 +1,8 @@
 #include "dsystem.h"
 #include "numeric.h"
 
+#include <fstream>
+
 #include "elastic.h"
 #include "elastoplastic.h"
 #include "steelBilinear.h"
@@ -41,6 +43,28 @@ void dsystem::addNode(const int id, const double x, const double y, const double
 	addNode(nd);
 }
 
+void dsystem::addNode(const int id, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId)
+{
+	dof *dx = dofs.at(dofXId);
+	dof *dz = dofs.at(dofZId);
+	
+	node *nd = new node(id, x, 0.0, z);
+	nd->setDof(dx);
+	nd->setDof(dz);
+
+	if (dofRYId>=0)
+	{
+		nd->setDof(dofs.at(dofRYId));
+	}
+
+	addNode(nd);
+}
+
+void dsystem::addNodeWithDof(const int id, const double x, const int dofId)
+{
+
+}
+
 void dsystem::addLine(line *l)
 {
 	auto it = lines.insert(std::make_pair(l->id, l));
@@ -75,6 +99,56 @@ void dsystem::draw()
 	//_pclose(gp);
 }
 
+void dsystem::exportGmsh(char * fileName)
+{
+	std::ofstream outFile;
+	outFile.open(fileName, ios::out);
+
+	outFile << "$MeshFormat\n2.2 0 8\n$EndMeshFormat" << std::endl;
+	outFile << "$Nodes" << std::endl;
+	outFile << nodes.size() << std::endl;
+	for (auto it = nodes.begin(); it != nodes.end(); it++)
+	{
+		auto nd = it->second;
+		outFile << it->first << " " << nd->x0 << " " << nd->y0 << " " << nd->z0 << std::endl;
+	}
+	outFile << "$EndNodes" << std::endl;
+	outFile << "$Elements" << std::endl;
+	outFile << ele2Ds.size() << std::endl;
+	for (auto it = ele2Ds.begin(); it != ele2Ds.end(); it++)
+	{
+		auto ele = it->second;
+		outFile << it->first << " 1 1 1 " << ele->nodeI->id << " " << ele->nodeJ->id << std::endl;
+	}
+	outFile << "$EndElements" << std::endl;
+
+	outFile << "$NodeData" << std::endl;
+	dsp = Phi.col(0);
+	for (int i = 0; i < eqnCount; i++)
+	{
+		dof *d = dofs.at(eqnMapDof.at(i));
+		d->dsp = dsp(i);
+	}
+	outFile << "1" << std::endl;
+	outFile << "\"First Mode: T = " << P(0) << "\"" << std::endl;
+	outFile << "1" << std::endl;
+	outFile << "0.0" << std::endl;
+	outFile << "3" << std::endl;
+	outFile << "0" << std::endl;
+	outFile << "3" << std::endl;
+	outFile << nodes.size() << std::endl;
+
+	for (auto it = nodes.begin(); it != nodes.end(); it++)
+	{
+		auto nd = it->second;
+		outFile << it->first << " " << nd->dofX->dsp << " " << 0.0 << " " << nd->dofZ->dsp << std::endl;
+	}
+
+	outFile << "$EndNodeData" << std::endl;
+
+	outFile.close();
+}
+
 void dsystem::addDof(dof * d)
 {
 	if (dofs.count(d->id) == 0)
@@ -85,7 +159,6 @@ void dsystem::addDof(dof * d)
 	{
 		cout << "dof ID: " << d->id << " already exists!"<< endl;
 	}
-	
 }
 
 void dsystem::addDof(const int id, const double m, const bool fixed)
@@ -291,6 +364,48 @@ void dsystem::addSPIS2(const int id, const int ni, const int nj, const int nin, 
 	addSPIS2(s);
 }
 
+void dsystem::addTrussElastic(trussElastic *truss)
+{
+	if (addElement(truss)) {
+		ele2Ds[truss->id] = truss;
+		trussElastics[truss->id] = truss;
+	}
+}
+
+void dsystem::addTrussElastic(const int id, const int ni, const int nj, const double EA)
+{
+	trussElastic *truss = new trussElastic(id, nodes.at(ni), nodes.at(nj), EA);
+	addTrussElastic(truss);
+}
+
+void dsystem::addBeamElastic(beamElastic *beam)
+{
+	if (addElement(beam)) {
+		ele2Ds[beam->id] = beam;
+		beamElastics[beam->id] = beam;
+	}
+}
+
+void dsystem::addBeamElastic(const int id, const int ni, const int nj, const double EI)
+{
+	beamElastic *beam = new beamElastic(id, nodes.at(ni), nodes.at(nj), EI);
+	addBeamElastic(beam);
+}
+
+void dsystem::addFrameElastic(frameElastic *frame)
+{
+	if (addElement(frame)) {
+		ele2Ds[frame->id] = frame;
+		frameElastics[frame->id] = frame;
+	}
+}
+
+void dsystem::addFrameElastic(const int id, const int ni, const int nj, const double EA, const double EI)
+{
+	frameElastic *frame = new frameElastic(id, nodes.at(ni), nodes.at(nj), EA, EI);
+	addFrameElastic(frame);
+}
+
 void dsystem::addTimeseries(timeseries * ts)
 {
 	tss[ts->id] = ts;
@@ -409,7 +524,11 @@ void dsystem::assembleMatrix()
 	assembleStiffnessMatrix();
 	buildInherentDampingMatrix();
 	assembleDampingMatrix();
-	applyConstraint();
+	applyRestraint();
+
+	dsp = zeros<vec>(eqnCount);
+	vel = zeros<vec>(eqnCount);
+	acc = zeros<vec>(eqnCount);
 }
 
 void dsystem::assembleMassMatrix()
@@ -422,30 +541,27 @@ void dsystem::assembleMassMatrix()
 	}
 	Mp = diagmat(m);
 	M = diagmat(m);
-	E = ones<vec>(eqnCount);
 
 	if ( !(inerters.empty()) )
 	{
-		std::map<int, inerter *>::iterator it;
-		for (it = inerters.begin(); it != inerters.end(); it++)
+		for (auto it = inerters.begin(); it != inerters.end(); it++)
 		{
-			inerter *in = it->second;
+			auto *in = it->second;
 			in->assembleMassMatrix(M);
 		}
 	}
 	
 	if (!(spis2s.empty()))
 	{
-		std::map<int, spis2 *>::iterator it;
-		for (it = spis2s.begin(); it != spis2s.end(); it++)
+		for (auto it = spis2s.begin(); it != spis2s.end(); it++)
 		{
-			spis2 *s = it->second;
+			auto *s = it->second;
 			s->assembleMassMatrix(M);
 		}
 	}
 }
 
-void dsystem::applyConstraint()
+void dsystem::applyRestraint()
 {
 	eqnCount = 0;
 	dofMapEqn.clear();
@@ -491,20 +607,45 @@ void dsystem::assembleStiffnessMatrix()
 
 	if (!(springs.empty()))
 	{
-		std::map<int, spring *>::iterator it;
-		for (it = springs.begin(); it != springs.end(); it++)
+		for (auto it = springs.begin(); it != springs.end(); it++)
 		{
-			spring *s = it->second;
+			auto *s = it->second;
 			s->assembleStiffnessMatrix(K);
 		}
 	}
 
 	if (!(spis2s.empty()))
 	{
-		std::map<int, spis2 *>::iterator it;
-		for (it = spis2s.begin(); it != spis2s.end(); it++)
+		for (auto it = spis2s.begin(); it != spis2s.end(); it++)
 		{
-			spis2 *s = it->second;
+			auto *s = it->second;
+			s->assembleStiffnessMatrix(K);
+		}
+	}
+
+	if (!(trussElastics.empty()))
+	{
+		for (auto it = trussElastics.begin(); it != trussElastics.end(); it++)
+		{
+			auto *s = it->second;
+			s->assembleStiffnessMatrix(K);
+		}
+	}
+
+	if (!(beamElastics.empty()))
+	{
+		for (auto it = beamElastics.begin(); it != beamElastics.end(); it++)
+		{
+			auto *s = it->second;
+			s->assembleStiffnessMatrix(K);
+		}
+	}
+
+	if (!(frameElastics.empty()))
+	{
+		for (auto it = frameElastics.begin(); it != frameElastics.end(); it++)
+		{
+			auto *s = it->second;
 			s->assembleStiffnessMatrix(K);
 		}
 	}
@@ -513,40 +654,36 @@ void dsystem::assembleStiffnessMatrix()
 
 	if (!(springBLs.empty()))
 	{
-		std::map<int, springBilinear *>::iterator it;
-		for (it = springBLs.begin(); it != springBLs.end(); it++)
+		for (auto it = springBLs.begin(); it != springBLs.end(); it++)
 		{
-			springBilinear *s = it->second;
+			auto *s = it->second;
 			s->assembleStiffnessMatrix(K);
 		}
 	}
 
 	if (!(springBWs.empty()))
 	{
-		std::map<int, springBoucWen *>::iterator it;
-		for (it = springBWs.begin(); it != springBWs.end(); it++)
+		for (auto it = springBWs.begin(); it != springBWs.end(); it++)
 		{
-			springBoucWen *s = it->second;
+			auto *s = it->second;
 			s->assembleStiffnessMatrix(K);
 		}
 	}
 
 	if (!(springNLs.empty()))
 	{
-		std::map<int, springNonlinear *>::iterator it;
-		for (it = springNLs.begin(); it != springNLs.end(); it++)
+		for (auto it = springNLs.begin(); it != springNLs.end(); it++)
 		{
-			springNonlinear *s = it->second;
+			auto *s = it->second;
 			s->assembleStiffnessMatrix(K);
 		}
 	}
 
 	if (!(sliders.empty()))
 	{
-		std::map<int, slider *>::iterator it;
-		for (it = sliders.begin(); it != sliders.end(); it++)
+		for (auto it = sliders.begin(); it != sliders.end(); it++)
 		{
-			slider *s = it->second;
+			auto *s = it->second;
 			s->assembleStiffnessMatrix(K);
 		}
 	}
@@ -610,20 +747,18 @@ void dsystem::assembleDampingMatrix()
 {
 	if (!(dashpots.empty()))
 	{
-		std::map<int, dashpot *>::iterator it;
-		for (it = dashpots.begin(); it != dashpots.end(); it++)
+		for (auto it = dashpots.begin(); it != dashpots.end(); it++)
 		{
-			dashpot *d = it->second;
+			auto *d = it->second;
 			d->assembleDampingMatrix(C);
 		}
 	}
 
 	if (!(spis2s.empty()))
 	{
-		std::map<int, spis2 *>::iterator it;
-		for (it = spis2s.begin(); it != spis2s.end(); it++)
+		for (auto it = spis2s.begin(); it != spis2s.end(); it++)
 		{
-			spis2 *s = it->second;
+			auto *s = it->second;
 			s->assembleDampingMatrix(C);
 		}
 	}
@@ -631,7 +766,6 @@ void dsystem::assembleDampingMatrix()
 
 void dsystem::solveEigen()
 {
-
 	omg = zeros<vec>(eqnCount);
 	Phi = zeros<mat>(eqnCount, eqnCount);
 
@@ -1113,8 +1247,7 @@ void dsystem::getElementResponse()
 {
 	if (!(eles.empty()))
 	{
-		std::map<int, element *>::iterator it;
-		for (it = eles.begin(); it != eles.end(); it++)
+		for (auto it = eles.begin(); it != eles.end(); it++)
 		{
 			element *e = it->second;
 			e->getResponse();
