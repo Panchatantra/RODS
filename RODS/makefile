@@ -11,7 +11,7 @@ Objects = $(subst .cpp,.o,$(SourceFiles))
 SharedObjects = $(subst .cpp,.cpp.o,$(SourceFiles))
 
 CXXFLAGS = -Wall -O2
-INCLUDE = -I. -I./material -I./element -I./section -I./recorder -I../../armadillo/include -I../../OpenBLAS/include
+INCLUDE = -I. -I./material -I./element -I./section -I./recorder
 LIB = -lopenblas
 
 .PHONY: all dylib clean
