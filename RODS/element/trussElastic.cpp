@@ -4,7 +4,7 @@ trussElastic::trussElastic(const int id, node * nodeI, node * nodeJ, const doubl
 	element2D(id, nodeI, nodeJ), EA(EA), ue(0.0), f(0.0)
 {
 	T = rowvec( {-lxx, -lxy, lxx, lxy} );
-	k = EA / L;
+	k = EA/L;
 	buildMatrix();
 }
 

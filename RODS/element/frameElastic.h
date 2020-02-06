@@ -13,13 +13,11 @@ public:
 	void getResponse(const bool update = false);
 	void assembleStiffnessMatrix(mat &K);
 
-	vec::fixed<6> u;
-
-	double *ue, *f;
-
 	double EA, EI;
+	double *ue, *f;
 
 	mat::fixed<3, 3> k;
 	mat::fixed<3, 6> T;
 	mat::fixed<6, 6> K;
+	vec::fixed<6> u;
 };

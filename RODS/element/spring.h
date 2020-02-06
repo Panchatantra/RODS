@@ -17,9 +17,8 @@ public:
 	void getResponse(const bool update = false);
 
 	double k;
+	double u, f;
 
 	mat::fixed<2,2> K;
-
-	double u, f;
 };
 

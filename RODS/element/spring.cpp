@@ -1,8 +1,7 @@
 #include "spring.h"
 
 spring::spring(const int id, dof *i, dof *j, const double k) :
-	element1D(id, i, j), k(k),
-	u(0.0), f(0.0)
+	element1D(id, i, j), k(k), u(0.0), f(0.0)
 {
 	buildMatrix();
 }

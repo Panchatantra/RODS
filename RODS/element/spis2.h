@@ -19,12 +19,8 @@ public:
 	void getResponse(const bool update = false);
 
 	dof *dofIN;
-	double m;
-	double c;
-	double k;
-
-	mat M, C, K;
-
-	double u, u_in, f, f_c, f_m;
+	double m, c, k;
+	double *u, *f;
+	mat::fixed<3,3> M, C, K;
 };
 

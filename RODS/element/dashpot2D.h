@@ -17,10 +17,9 @@ public:
 	virtual void getResponse(const bool update = false);
 
 	double c;
+	double ue, f;
 
 	rowvec::fixed<4> T;
 	mat::fixed<4, 4> C;
-
-	double ue, f;
 };
 

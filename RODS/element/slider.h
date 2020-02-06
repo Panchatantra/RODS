@@ -15,7 +15,6 @@ public:
 	void buildMatrix();
 	void assembleStiffnessMatrix(mat &K);
 	void getResponse(const bool update=false);
-
 	void assembleNonlinearForceVector(vec &q);
 
 	double muN;

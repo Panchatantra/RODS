@@ -15,10 +15,8 @@ public:
 
 	vec::fixed<4> u;
 
+	double EA, k;
 	double ue, f;
-
-	double EA;
-	double k;
 
 	rowvec::fixed<4> T;
 	mat::fixed<4, 4> K;

@@ -18,9 +18,8 @@ public:
 
 	void assembleNonlinearForceVector(vec &q);
 
-	double k0, uy, k1, fy, alpha;
-	double k, u, f, v;
-	double z, n, beta, zp;
+	double k0, uy, k1, fy, alpha, beta, n;
+	double k, u, f, v, z, zp;
 
 	mat::fixed<2, 2> K;
 	vec::fixed<2> q;

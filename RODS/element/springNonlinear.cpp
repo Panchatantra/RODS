@@ -2,9 +2,8 @@
 
 
 springNonlinear::springNonlinear(const int id, dof *i, dof *j, material1D *smat) :
-	element1D(id,i,j), u(0.0), f(0.0)
+	element1D(id,i,j), smat(smat->copy()), u(0.0), f(0.0)
 {
-	this->smat = smat->copy();
 	buildMatrix();
 }
 
@@ -27,8 +26,8 @@ void springNonlinear::assembleStiffnessMatrix(mat & K)
 	int i_local = 0;
 	int j_local = 1;
 
-	int i_global = this->dofI->eqnId;
-	int j_global = this->dofJ->eqnId;
+	int i_global = dofI->eqnId;
+	int j_global = dofJ->eqnId;
 
 	K(i_global, i_global) += this->K(i_local, i_local);
 	K(i_global, j_global) += this->K(i_local, j_local);

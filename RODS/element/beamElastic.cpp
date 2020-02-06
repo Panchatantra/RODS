@@ -7,12 +7,9 @@ beamElastic::beamElastic(const int id, node * nodeI, node * nodeJ, const double 
 				{2*EI/L, 4*EI/L} });
 	T = mat( {{lyx/L, lyy/L, 1.0, -lyx/L, -lyy/L, 0.0},
 		      {lyx/L, lyy/L, 0.0, -lyx/L, -lyy/L, 1.0} });
-
 	buildMatrix();
-
 	nv = 2;
 }
-
 
 beamElastic::~beamElastic()
 {

@@ -16,7 +16,7 @@ class element : public basis
 {
 public:
 	element();
-	element(const int id) : basis(id) { nv = 1; }
+	element(const int id);
 	~element();
 
 	virtual void buildMatrix() = 0;

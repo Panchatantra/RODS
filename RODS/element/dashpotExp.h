@@ -19,11 +19,8 @@ public:
 	void assembleNonlinearForceVector(vec &q);
 
 	double c, alpha;
-
-	mat::fixed<2, 2> C;
-
 	double u, f;
 
+	mat::fixed<2, 2> C;
 	vec::fixed<2> q;
 };
-

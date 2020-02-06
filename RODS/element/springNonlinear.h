@@ -20,10 +20,9 @@ public:
 	void assembleNonlinearForceVector(vec &q);
 
 	material1D *smat;
+	double u, f;
 
 	mat::fixed<2, 2> K;
 	vec::fixed<2> q;
-
-	double u, f;
 };
 

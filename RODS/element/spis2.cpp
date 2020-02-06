@@ -1,10 +1,11 @@
 #include "spis2.h"
 
 spis2::spis2(const int id, dof * i, dof * j, dof *in, const double m, const double c, const double k) :
-	element1D(id, i, j), m(m), c(c), k(k), dofIN(in),
-	u(0.0), u_in(0.0), f(0.0), f_c(0.0), f_m(0.0)
+	element1D(id, i, j), dofIN(in), m(m), c(c), k(k),
+	u(new double[2] {0.0,0.0}), f(new double[2] {0.0,0.0})
 {
 	buildMatrix();
+	nv = 2;
 }
 
 
@@ -36,14 +37,14 @@ void spis2::assembleMassMatrix(mat & M)
 
 void spis2::assembleStiffnessMatrix(mat & K)
 {
-	int in_global = this->dofIN->eqnId;
+	int in_global = dofIN->eqnId;
 
 	int i_local = 0;
 	int in_local = 1;
 	int j_local = 2;
 
-	int i_global = this->dofI->eqnId;
-	int j_global = this->dofJ->eqnId;
+	int i_global = dofI->eqnId;
+	int j_global = dofJ->eqnId;
 
 	K(i_global, i_global) += this->K(i_local, i_local);
 	K(i_global, j_global) += this->K(i_local, j_local);
@@ -59,18 +60,17 @@ void spis2::assembleStiffnessMatrix(mat & K)
 void spis2::assembleDampingMatrix(mat & C)
 {
 	int in_local = 1;
-	int in_global = this->dofIN->eqnId;
+	int in_global = dofIN->eqnId;
 	C(in_global, in_global) += this->C(in_local, in_local);
 }
 
 void spis2::getResponse(const bool update)
 {
-	u = dofJ->dsp - dofI->dsp;
-	u_in = dofIN->dsp;
-	f = k * (u - u_in);
-	f_c = c * dofIN->vel;
-	f_m = f - f_c;
+	u[0] = dofJ->dsp - dofI->dsp;
+	u[1] = dofIN->dsp;
+	f[0] = k * (u[0] - u[1]);
+	f[1] = m*dofIN->acc;
 
-	force = &f;
-	deformation = &u;
+	force = f;
+	deformation = u;
 }

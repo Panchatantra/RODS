@@ -22,7 +22,6 @@ frameElastic::frameElastic(const int id, node * nodeI, node * nodeJ, const doubl
 	nv = 3;
 }
 
-
 frameElastic::~frameElastic()
 {
 }

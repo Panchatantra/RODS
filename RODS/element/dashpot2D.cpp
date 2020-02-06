@@ -1,8 +1,7 @@
 #include "dashpot2D.h"
 
 dashpot2D::dashpot2D(const int id, node * nodeI, node * nodeJ, double c, ELE::localAxis axis) :
-	element2D(id, nodeI, nodeJ), c(c),
-	ue(0.0), f(0.0)
+	element2D(id, nodeI, nodeJ), c(c), ue(0.0), f(0.0)
 {
 	if (axis == ELE::U1)
 	{

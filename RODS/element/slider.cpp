@@ -2,8 +2,8 @@
 
 
 slider::slider(const int id, dof *i, dof *j, const double muN) :
-	element1D(id, i, j), muN(muN),
-	u(0.0), f(0.0), v(0.0), k(0.0)
+	element1D(id, i, j), muN(muN), k(0.0),
+	u(0.0), f(0.0), v(0.0)
 {
 	buildMatrix();
 }
@@ -39,8 +39,6 @@ void slider::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	v = dofJ->vel - dofI->vel;
-
-	double dt = this->dt;
 
 	f = sign(v)*muN;
 	k = f/u;

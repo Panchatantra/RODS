@@ -7,7 +7,6 @@ dashpotExp::dashpotExp(const int id, dof * i, dof * j, const double c, const dou
     buildMatrix();
 }
 
-
 dashpotExp::~dashpotExp()
 {
 }

@@ -3,23 +3,11 @@
 truss::truss(const int id, node * nodeI, node * nodeJ, section *sec):
 	element2D(id, nodeI, nodeJ), ue(0.0), f(0.0)
 {
-	this->id = id;
-	this->nodeI = nodeI;
-	this->nodeJ = nodeJ;
 	this->sec = sec;
-
-	double dx = nodeJ->x - nodeI->x;
-	double dy = nodeJ->y - nodeI->y;
-	L = sqrt(dx*dx + dy*dy);
-
-	k = sec->mat->E*sec->A / L;
-
-	lxx = dx / L;
-	lxy = dy / L;
-
+	k = sec->mat->E*sec->A/L;
 	T = rowvec( {-lxx, -lxy, lxx, lxy} );
+	buildMatrix();
 }
-
 
 truss::~truss()
 {
