@@ -280,3 +280,5 @@ __pycache__/
 *.exe
 /compile_commands.json
 *.pdf
+*.msh
+*.png
