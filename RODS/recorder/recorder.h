@@ -18,6 +18,8 @@ public:
 	virtual void record(const int cstep, const double ctime) = 0;
 	void save();
 
+	void setFileName(char *fileName);
+
 	size_t n, nsteps;
 	response rtype;
 	char * fileName;

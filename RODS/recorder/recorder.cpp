@@ -18,3 +18,8 @@ void recorder::save()
 {
 	Res.save(fileName, csv_ascii);
 }
+
+void recorder::setFileName(char *fileName)
+{
+	this->fileName = fileName;
+}

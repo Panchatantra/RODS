@@ -36,6 +36,7 @@ void example_sdof()
 	ds->addDashpot(1, 0, 1, c);
 
 	ds->assembleMatrix();
+	ds->activeGroundMotion(X);
 
 	ds->solveEigen();
 	ds->P.print("Natural Periods:");
@@ -98,6 +99,7 @@ void example_sdof_bl()
 	//ds->addDashpotExp(1, 0, 1, c, 0.2);
 
 	ds->assembleMatrix();
+	ds->activeGroundMotion(X);
 	ds->solveEigen();
 
 	double dt = 0.01;
@@ -269,7 +271,7 @@ void test_material()
 	}
 
 	s.save("mat.txt", raw_ascii);
-	system("gnuplot -e \"set term pdf; set output \\\"mat.pdf\\\"; plot \\\"mat.txt\\\" using 1:2 with line\" ");
+	system(R"(gnuplot -e "set term pdf; set output \"mat.pdf\"; plot \"mat.txt\" using 1:2 with line" )");
 }
 
 void example_truss()
@@ -342,7 +344,7 @@ void example_truss()
 
 void example_frame()
 {
-	dsystem *ds = new dsystem();
+	dsystem *ds = new dsystem(0.05);
 
 	double mass = 0.005;
 	double E = 32.5;
@@ -373,7 +375,7 @@ void example_frame()
 	{
 		ds->addDof(3 * i + 1, X, mass);
 		ds->addDof(3 * i + 2, Z, mass);
-		ds->addDof(3 * i + 3, RY, mass*1.0e-1);
+		ds->addDof(3 * i + 3, RY, mass);
 
 		x = nodeCoord[i][0];
 		z = nodeCoord[i][1];
@@ -383,6 +385,11 @@ void example_frame()
 	ds->fixNode(1);
 	ds->fixNode(5);
 	ds->fixNode(9);
+
+	double lf = 5.0;
+	ds->addDofLoad(3*1+1, lf);
+	ds->addDofLoad(3*2+1, lf);
+	ds->addDofLoad(3*3+1, lf);
 
 	int elementConnect[15][3] { {1, 2, 1},
 								{2, 3, 1},
@@ -420,16 +427,30 @@ void example_frame()
 
 	ds->assembleMatrix();
 	ds->solveEigen();
-	cout << ds->eqnCount <<endl;
+	cout << ds->eqnCount << endl;
 
 	//ds->M.print("Mass Matrix:");
 	//ds->K.print("Stiffness Matrix:");
 	//ds->K0.print("Stiffness Matrix:");
 	ds->P.print("Natural Periods:");
-	//ds->Phi.print("Modes:");
 
 	char gmshFile[] = "frame.msh";
 	ds->exportGmsh(gmshFile);
+
+	int nrd = 3;
+	int *dofIds = new int[nrd] { 3*1+1, 3*2+1, 3*3+1 };
+	char dispOutput[] = "disp_frame.csv";
+	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
+
+	//ds->solveStaticResponse();
+	int eqId = 1;
+	double dt = 0.005;
+	char eqFile[] = "EQ-S-1.txt";
+	ds->addTimeseries(eqId, dt, eqFile);
+
+	ds->setDynamicSolver(StateSpace);
+	ds->activeGroundMotion(X);
+	ds->solveTimeDomainSeismicResponse(eqId, 700.0, 1);
 }
 
 void example_cantilever()

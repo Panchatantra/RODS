@@ -90,6 +90,11 @@ void dsystem::fixNode(const int id)
 	nodes.at(id)->fixDof();
 }
 
+void dsystem::addDofLoad(const int id, const double load)
+{
+	dofs.at(id)->setLoad(load);
+}
+
 void dsystem::draw()
 {
 	//FILE* gp = _popen("gnuplot.exe", "w");
@@ -147,6 +152,13 @@ void dsystem::exportGmsh(char * fileName)
 	outFile << "$EndNodeData" << std::endl;
 
 	outFile.close();
+
+	dsp = zeros<vec>(eqnCount);
+	for (int i = 0; i < eqnCount; i++)
+	{
+		dof *d = dofs.at(eqnMapDof.at(i));
+		d->dsp = 0.0;
+	}
 }
 
 void dsystem::addDof(dof * d)
@@ -498,6 +510,18 @@ void dsystem::addInerterRecorder(const int id, int * eleIds, const int n, respon
 	addElementRecorder(er);
 }
 
+void dsystem::activeGroundMotion(direction dir)
+{
+	for (int i = 0; i < eqnCount; i++)
+	{
+		dof *d = dofs.at(eqnMapDof.at(i));
+		if (d->dir == dir)
+		{
+			E(i) = 1.0;
+		}
+	}
+}
+
 void dsystem::buildDofEqnMap()
 {
 	std::map<int, dof *>::iterator it;
@@ -522,9 +546,11 @@ void dsystem::assembleMatrix()
 {
 	assembleMassMatrix();
 	assembleStiffnessMatrix();
-	buildInherentDampingMatrix();
+	// buildInherentDampingMatrix();
+	buildRayleighDampingMatrix(2*PI*2.778, 2*PI*10.0);
 	assembleDampingMatrix();
 	applyRestraint();
+	applyLoad();
 
 	dsp = zeros<vec>(eqnCount);
 	vel = zeros<vec>(eqnCount);
@@ -598,7 +624,29 @@ void dsystem::applyRestraint()
 	C.shed_cols(fixedIds);
 	C.shed_rows(fixedIds);
 
-	E = ones<vec>(eqnCount);
+	E = zeros<vec>(eqnCount);
+	Q = zeros<vec>(eqnCount);
+}
+
+void dsystem::applyLoad()
+{
+	for (int i = 0; i < eqnCount; i++)
+	{
+		dof *d = dofs.at(eqnMapDof.at(i));
+		Q(i) = d->load;
+	}
+}
+
+void dsystem::addGravity()
+{
+	for (auto it=dofs.begin(); it!=dofs.end(); it++)
+	{
+		auto *d = it->second;
+		if (d->dir == Z)
+		{
+			d->addLoad(d->mass*dof::g);
+		}
+	}
 }
 
 void dsystem::assembleStiffnessMatrix()
@@ -698,6 +746,10 @@ void dsystem::buildInherentDampingMatrix(const int n)
 	}
 	else
 	{
+		if (P.n_rows==0)
+		{
+			solveEigen();
+		}
 		mat Phi_ = Phi.head_cols(eigenNum);
 		mat MPhi = Mp * Phi_;
 		if (eigenVectorNormed)
@@ -740,7 +792,6 @@ void dsystem::buildRayleighDampingMatrix(const int md1, const int md2)
 		double omg2 = omg(md2 - 1);
 		buildRayleighDampingMatrix(omg1, omg2);
 	}
-	
 }
 
 void dsystem::assembleDampingMatrix()
@@ -843,6 +894,19 @@ void dsystem::solveStochasticSeismicResponse(const double f_h, const int nf, con
 	}
 }
 
+void dsystem::solveStaticResponse(const int nsub)
+{
+	dsp = solve(K, Q);
+	nsteps = nsub;
+	cstep = 0;
+	ctime = 0;
+	initRecorders();
+	setDofResponse();
+	getElementResponse();
+	recordResponse();
+	saveResponse();
+}
+
 void dsystem::solveTimeDomainSeismicResponse(const int tsId, const double s, const int nsub)
 {
 	switch (dynamicSolver)
@@ -870,9 +934,9 @@ void dsystem::solveTimeDomainSeismicResponseNMK(const int tsId, const double s, 
 	dt = tss.at(tsId)->dt;
 	vec ag = s*tss.at(tsId)->series;
 
-	vec u0 = zeros<vec>(eqnCount);
-	vec v0 = zeros<vec>(eqnCount);
-	vec a0 = zeros<vec>(eqnCount);
+	vec u0(dsp);
+	vec v0(vel);
+	vec a0(acc);
 
 	u = zeros<mat>(eqnCount, nsteps);
 	v = zeros<mat>(eqnCount, nsteps);
@@ -930,7 +994,6 @@ void dsystem::solveTimeDomainSeismicResponseNMK(const int tsId, const double s, 
 			u0 = solve(K_h, p_h);
 			v0 = c3*(u0-u_p) + c4*v0 + dt*c5*a0;
 			a0 = solve(M, -Mp*E*agj-C*v0-K*u0);
-			
 		}
 		u.col(i+1) = u0;
 		v.col(i+1) = v0;
@@ -953,9 +1016,9 @@ void dsystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s
 	dt = tss.at(tsId)->dt;
 	vec ag = s * tss.at(tsId)->series;
 
-	vec u0 = zeros<vec>(eqnCount);
-	vec v0 = zeros<vec>(eqnCount);
-	vec a0 = zeros<vec>(eqnCount);
+	vec u0(dsp);
+	vec v0(vel);
+	vec a0(acc);
 
 	u = zeros<mat>(eqnCount, nsteps);
 	v = zeros<mat>(eqnCount, nsteps);
@@ -1078,6 +1141,8 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, const dou
 	vec ag = s * tss.at(tsId)->series;
 
 	vec x0 = zeros<vec>(2*eqnCount);
+	x0.head_rows(eqnCount) = dsp;
+	x0.tail_rows(eqnCount) = vel;
 	vec F = zeros<vec>(2*eqnCount);
 
 	u = zeros<mat>(eqnCount, nsteps);
@@ -1098,7 +1163,8 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, const dou
 	mat H = join_cols(join_rows(O, I), join_rows(A, B));
 
 	double h = dt;
-	mat T = expmat(H*h);
+	//mat T = expmat(H*h);
+	mat T = expm(H, h);
 
 	u.col(0) = x0.head_rows(eqnCount);
 	v.col(0) = x0.tail_rows(eqnCount);
@@ -1124,7 +1190,6 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, const dou
 			agj = agi + agd * j;
 			F.tail_rows(eqnCount) = solve(M, -Mp*E*agj);
 			x0 = T*(x0 + F*h);
-			ctime += dt;
 		}
 
 		u.col(i + 1) = x0.head_rows(eqnCount);
@@ -1149,6 +1214,8 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, const d
 	vec ag = s * tss.at(tsId)->series;
 
 	vec x0 = zeros<vec>(2 * eqnCount);
+	x0.head_rows(eqnCount) = dsp;
+	x0.tail_rows(eqnCount) = vel;
 	vec F = zeros<vec>(2 * eqnCount);
 
 	u = zeros<mat>(eqnCount, nsteps);
@@ -1169,7 +1236,8 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, const d
 	mat H = join_cols(join_rows(O, I), join_rows(A, B));
 
 	double h = dt;
-	mat T = expmat(H*h);
+	//mat T = expmat(H*h);
+	mat T = expm(H, h);
 
 	u.col(0) = x0.head_rows(eqnCount);
 	v.col(0) = x0.tail_rows(eqnCount);
@@ -1185,7 +1253,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, const d
 	recordResponse();
 
 	double agd, agi, agj;
-	for (int i = 0; i < nsteps - 1; i++)
+	for (int i = 0; i < nsteps-1; i++)
 	{
 		cstep += 1;
 		ctime += dt * nsub;
@@ -1237,9 +1305,7 @@ void dsystem::setDofResponse()
 	for (int i = 0; i < eqnCount; i++)
 	{
 		dof *d = dofs.at(eqnMapDof.at(i));
-		d->dsp = dsp(i);
-		d->vel = vel(i);
-		d->acc = acc(i);
+		d->setResponse(dsp(i), vel(i), acc(i));
 	}
 }
 

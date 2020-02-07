@@ -29,3 +29,23 @@ static inline lapack_int eig_sym(const mat &K, const mat &M, vec &omg, mat &Phi)
 
 	return info;
 }
+
+static inline mat expm(const mat &H, const double h)
+{
+	int N = 20;
+	double tau = h/pow(2.0, N);
+	mat Ht1 = H*tau;
+	mat Ht2 = H*Ht1*tau;
+	mat Ht3 = H*Ht2*tau;
+	mat Ht4 = H*Ht3*tau;
+
+	mat Ta = Ht1 + Ht2*0.5 + Ht3/6.0 + Ht4/24.0;
+
+	for (int i = 0; i < N; i++)
+	{
+		Ta = 2.0*Ta + Ta*Ta;
+	}
+
+	mat T = eye(size(H)) + Ta;
+	return T;
+}

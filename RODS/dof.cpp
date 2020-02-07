@@ -18,3 +18,22 @@ dof::dof(const int n, direction dir, const double m, const bool fixed) :
 dof::~dof()
 {
 }
+
+void dof::setResponse(const double dsp, const double vel, const double acc)
+{
+	this->dsp = dsp;
+	this->vel = vel;
+	this->acc = acc;
+}
+
+void dof::setLoad(const double load)
+{
+	this->load = load;
+}
+
+void dof::addLoad(const double load)
+{
+	this->load += load;
+}
+
+double dof::g = 9800.0;

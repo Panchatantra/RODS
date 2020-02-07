@@ -58,6 +58,8 @@ public:
 	void fixDof(const int id);
 	void fixNode(const int id);
 
+	void addDofLoad(const int id, const double load);
+
 	void draw();
 	void exportGmsh(char * fileName);
 
@@ -116,10 +118,13 @@ public:
 	void addDashpotRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 	void addInerterRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 
+	void activeGroundMotion(direction dir);
 	void buildDofEqnMap();
 	void assembleMatrix();
 	void assembleMassMatrix();
 	void applyRestraint();
+	void applyLoad();
+	void addGravity();
 	void assembleStiffnessMatrix();
 	void buildInherentDampingMatrix(const int n = 0);
 	void buildRayleighDampingMatrix(const double omg1, const double omg2);
@@ -129,8 +134,9 @@ public:
 	void solveEigen();
 	void solveComplexEigen();
 	void solveStochasticSeismicResponse(const double f_h=50.0, const int nf=10000, const char method='c');
-	
+
 	void setDynamicSolver(dsolver s) { this->dynamicSolver = s; }
+	void solveStaticResponse(const int nsub=1);
 	void solveTimeDomainSeismicResponse(const int tsId, const double s=1.0, const int nsub=1);
 	void solveTimeDomainSeismicResponseNMK(const int tsId, const double s=1.0, const int nsub=1);
 	void solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s=1.0, const int nsub=1, const double tol=1.0e-6, const int maxiter=10);
@@ -146,7 +152,7 @@ public:
 	void initRecorders();
 	void recordResponse();
 	void saveResponse();
-	
+
 	std::map<int, node *> nodes;
 	std::map<int, line *> lines;
 	std::map<int, dof *> dofs;
@@ -184,7 +190,7 @@ public:
 	mat Mp, K, C, M;
 	mat Phi;
 	vec omg, P;
-	vec E;
+	vec E, Q;
 	vec dsp, vel, acc;
 	mat u, v, a;
 

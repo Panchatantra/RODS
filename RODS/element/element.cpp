@@ -1,7 +1,5 @@
 #include "element.h"
 
-
-
 element::element()
 {
 	nv = 1;
@@ -9,7 +7,7 @@ element::element()
 
 element::element(const int id) : basis(id)
 {
-    nv = 1;
+	nv = 1;
 }
 
 element::~element()
