@@ -283,3 +283,4 @@ __pycache__/
 *.msh
 *.png
 *.xlsx
+*.dat

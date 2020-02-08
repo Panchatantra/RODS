@@ -1,12 +1,10 @@
 #include "dofRecorder.h"
 
-dofRecorder::dofRecorder(const int id, std::vector<dof *> dofs, response rtype, char * fileName)
+dofRecorder::dofRecorder(const int id, std::vector<dof *> dofs, response rtype, char * fileName):
+	recorder(id, rtype, fileName), dofs(dofs)
+
 {
-	this->id = id;
-	this->dofs = dofs;
-	this->n = dofs.size();
-	this->rtype = rtype;
-	this->fileName = fileName;
+	n = dofs.size();
 }
 
 dofRecorder::~dofRecorder()

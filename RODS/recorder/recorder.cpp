@@ -1,6 +1,7 @@
 #include "recorder.h"
 
-recorder::recorder()
+recorder::recorder(const int id, response rtype, char * fileName) :
+basis(id), n(0), rtype(rtype), fileName(fileName)
 {
 }
 
@@ -16,7 +17,7 @@ void recorder::init(const int nsteps)
 
 void recorder::save()
 {
-	Res.save(fileName, csv_ascii);
+	Res.save(fileName, raw_ascii);
 }
 
 void recorder::setFileName(char *fileName)

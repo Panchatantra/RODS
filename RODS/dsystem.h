@@ -60,7 +60,6 @@ public:
 
 	void addDofLoad(const int id, const double load);
 
-	void draw();
 	void exportGmsh(char * fileName);
 
     void addDof(dof *d);
@@ -118,6 +117,7 @@ public:
 	void addDashpotRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 	void addInerterRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 
+	void setRayleighDamping(const double omg1, const double omg2);
 	void activeGroundMotion(direction dir);
 	void buildDofEqnMap();
 	void assembleMatrix();
@@ -126,7 +126,8 @@ public:
 	void applyLoad();
 	void addGravity();
 	void assembleStiffnessMatrix();
-	void buildInherentDampingMatrix(const int n = 0);
+	void setNumModesInherentDamping(const int n);
+	void buildInherentDampingMatrix();
 	void buildRayleighDampingMatrix(const double omg1, const double omg2);
 	void buildRayleighDampingMatrix(const int md1, const int md2);
 	void assembleDampingMatrix();
@@ -152,6 +153,8 @@ public:
 	void initRecorders();
 	void recordResponse();
 	void saveResponse();
+
+	void printInfo();
 
 	std::map<int, node *> nodes;
 	std::map<int, line *> lines;
@@ -201,4 +204,7 @@ public:
 
 	double dt, ctime;
 	int nsteps, cstep;
+	bool useRayleighDamping;
+	double RayleighOmg1, RayleighOmg2;
+	int NumModesInherentDamping;
 };

@@ -9,6 +9,8 @@
 #include "concreteTrilinear.h"
 #include "SMABilinear.h"
 
+#include "plot.h"
+
 #ifdef __GNUC__
 #define DLLEXPORT
 #else
@@ -57,12 +59,12 @@ void example_sdof()
 
 	int nrd = 2;
 	int *dofIds = new int[nrd] { 0, 1 };
-	char dispOutput[] = "disp.csv";
+	char dispOutput[] = "disp.dat";
 	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
 
 	int nre = 2;
 	int *eleIds = new int[nre] { 0, 1 };
-	char eleOutput[] = "force.csv";
+	char eleOutput[] = "force.dat";
 	ds->addElementRecorder(0, eleIds, nre, FORCE, eleOutput);
 
 	int ts = 2;
@@ -114,12 +116,12 @@ void example_sdof_bl()
 
 	int nrd = 2;
 	int *dofIds = new int[nrd] { 0, 1 };
-	char dispOutput[] = "disp.csv";
+	char dispOutput[] = "disp.dat";
 	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
 
 	int nre = 2;
 	int *eleIds = new int[nre] { 0, 1 };
-	char eleOutput[] = "force.csv";
+	char eleOutput[] = "force.dat";
 	ds->addElementRecorder(0, eleIds, nre, FORCE, eleOutput);
 
 	int ts = 2;
@@ -187,8 +189,8 @@ void example_shear_building()
 	int ts = 2;
 	ds->solveTimeDomainSeismicResponseStateSpace(ts, 1, 10);
 	rowvec tt = ds->tss[ts]->time.t();
-	tt.save("t.csv", csv_ascii);
-	ds->u.save("dsp.csv", csv_ascii);
+	tt.save("t.dat", csv_ascii);
+	ds->u.save("dsp.dat", csv_ascii);
 }
 
 void example_shear_building_spis2()
@@ -425,24 +427,23 @@ void example_frame()
 		}
 	}
 
+	ds->setRayleighDamping(2.0*PI/0.36, 2.0*PI/0.1);
+
 	ds->assembleMatrix();
 	ds->solveEigen();
-	cout << ds->eqnCount << endl;
 
-	//ds->M.print("Mass Matrix:");
-	//ds->K.print("Stiffness Matrix:");
-	//ds->K0.print("Stiffness Matrix:");
-	ds->P.print("Natural Periods:");
+	//ds->P.print("Natural Periods:");
 
 	char gmshFile[] = "frame.msh";
 	ds->exportGmsh(gmshFile);
 
 	int nrd = 3;
 	int *dofIds = new int[nrd] { 3*1+1, 3*2+1, 3*3+1 };
-	char dispOutput[] = "disp_frame.csv";
+	char dispOutput[] = "disp_frame.dat";
 	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
 
 	//ds->solveStaticResponse();
+
 	int eqId = 1;
 	double dt = 0.005;
 	char eqFile[] = "EQ-S-1.txt";
@@ -451,6 +452,10 @@ void example_frame()
 	ds->setDynamicSolver(StateSpace);
 	ds->activeGroundMotion(X);
 	ds->solveTimeDomainSeismicResponse(eqId, 700.0, 1);
+
+	plot(dispOutput, 4);
+
+	ds->printInfo();
 }
 
 void example_cantilever()

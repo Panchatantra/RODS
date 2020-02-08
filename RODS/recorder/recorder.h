@@ -6,12 +6,12 @@
 
 using namespace arma;
 
-enum response { DISP, VEL, ACC, FORCE, DEF };
+enum response { DISP, VEL, ACC, FORCE, DEF, ALL };
 
 class recorder : public basis
 {
 public:
-	recorder();
+	recorder(const int id, response rtype, char * fileName);
 	~recorder();
 
 	void init(const int nsteps);

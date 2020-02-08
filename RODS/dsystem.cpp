@@ -10,9 +10,10 @@
 #include "SMABilinear.h"
 
 dsystem::dsystem(const double z) :
-	eqnCount(0), eigenVectorNormed(false), dt(0.02), dynamicSolver(StateSpace), fixedDofCount(0)
+	zeta(z), eqnCount(0), eigenVectorNormed(false), dt(0.02), dynamicSolver(StateSpace), fixedDofCount(0),
+	useRayleighDamping(true), RayleighOmg1(2*PI/0.3), RayleighOmg2(2*PI/0.1),
+	NumModesInherentDamping(-1)
 {
-	zeta = z;
 }
 
 
@@ -95,15 +96,6 @@ void dsystem::addDofLoad(const int id, const double load)
 	dofs.at(id)->setLoad(load);
 }
 
-void dsystem::draw()
-{
-	//FILE* gp = _popen("gnuplot.exe", "w");
-	//fprintf(gp, "set term wxt\n");
-	//fprintf(gp, "plot sin(x)\n");
-	//fprintf(gp, "pause mouse\n");
-	//_pclose(gp);
-}
-
 void dsystem::exportGmsh(char * fileName)
 {
 	std::ofstream outFile;
@@ -128,14 +120,15 @@ void dsystem::exportGmsh(char * fileName)
 	outFile << "$EndElements" << std::endl;
 
 	outFile << "$NodeData" << std::endl;
-	dsp = Phi.col(0);
+
+	vec modeshape = Phi.col(0);
 	for (int i = 0; i < eqnCount; i++)
 	{
 		dof *d = dofs.at(eqnMapDof.at(i));
-		d->dsp = dsp(i);
+		d->dsp = modeshape(i);
 	}
 	outFile << "1" << std::endl;
-	outFile << "\"First Mode: T = " << P(0) << "\"" << std::endl;
+	outFile << "\"First Mode: T = " << P(0) << "s\"" << std::endl;
 	outFile << "1" << std::endl;
 	outFile << "0.0" << std::endl;
 	outFile << "3" << std::endl;
@@ -153,7 +146,6 @@ void dsystem::exportGmsh(char * fileName)
 
 	outFile.close();
 
-	dsp = zeros<vec>(eqnCount);
 	for (int i = 0; i < eqnCount; i++)
 	{
 		dof *d = dofs.at(eqnMapDof.at(i));
@@ -510,6 +502,13 @@ void dsystem::addInerterRecorder(const int id, int * eleIds, const int n, respon
 	addElementRecorder(er);
 }
 
+void dsystem::setRayleighDamping(const double omg1, const double omg2)
+{
+	useRayleighDamping = true;
+	RayleighOmg1 = omg1;
+	RayleighOmg2 = omg2;
+}
+
 void dsystem::activeGroundMotion(direction dir)
 {
 	for (int i = 0; i < eqnCount; i++)
@@ -546,8 +545,15 @@ void dsystem::assembleMatrix()
 {
 	assembleMassMatrix();
 	assembleStiffnessMatrix();
-	// buildInherentDampingMatrix();
-	buildRayleighDampingMatrix(2*PI*2.778, 2*PI*10.0);
+	if (useRayleighDamping)
+	{
+		buildRayleighDampingMatrix(RayleighOmg1, RayleighOmg2);
+	}
+	else
+	{
+		buildInherentDampingMatrix();
+	}
+	
 	assembleDampingMatrix();
 	applyRestraint();
 	applyLoad();
@@ -737,9 +743,15 @@ void dsystem::assembleStiffnessMatrix()
 	}
 }
 
-void dsystem::buildInherentDampingMatrix(const int n)
+void dsystem::setNumModesInherentDamping(const int n)
 {
-	int eigenNum = n>0 ? n: eqnCount;
+	NumModesInherentDamping = n;
+	useRayleighDamping = false;
+}
+
+void dsystem::buildInherentDampingMatrix()
+{
+	int eigenNum = NumModesInherentDamping>0 ? NumModesInherentDamping: eqnCount;
 	if (zeta == 0.0)
 	{
 		C = zeros<mat>(eqnCount, eqnCount);
@@ -1446,6 +1458,33 @@ void dsystem::saveResponse()
 		{
 			recorder *er = it->second;
 			er->save();
+		}
+	}
+}
+
+void dsystem::printInfo()
+{
+	cout << "=====================================" << endl;
+	cout << "      RRRR    OOO   DDD    SSS       " << endl;
+	cout << "      R   R  O   O  D  D  S          " << endl;
+	cout << "      RRRR   O   O  D  D   SSS       " << endl;
+	cout << "      R R    O   O  D  D      S      " << endl;
+	cout << "      R  RR   OOO   DDD   SSSS       " << endl;
+	cout << "      R  RR   OOO   DDD   SSSS       " << endl;
+	cout << "=====================================" << endl;
+
+	cout << "Number of DOFs:" << dofs.size() << endl;
+	cout << "Number of Nodes:" << nodes.size() << endl;
+	cout << "Number of Elements:" << eles.size() << endl;
+
+
+	int nModes = (int)P.n_rows;
+	if (nModes > 0)
+	{
+		cout << "Number of Modes:" << nModes << endl;
+		for (int i=0; i<nModes; i++)
+		{
+			cout << "Mode " << i+1 << ",\tT = " << P(i) << endl;
 		}
 	}
 }

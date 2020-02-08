@@ -1,16 +1,17 @@
 #include "elementRecorder.h"
 
-
-
-elementRecorder::elementRecorder(const int id, std::vector<element *> eles, response rtype, char * fileName)
+elementRecorder::elementRecorder(const int id, std::vector<element *> eles, response rtype, char * fileName):
+	recorder(id, rtype, fileName), eles(eles)
 {
-	this->id = id;
-	this->eles = eles;
-	this->n = eles.size()*eles[0]->nv;
-	this->rtype = rtype;
-	this->fileName = fileName;
+	if (rtype == ALL)
+	{
+		n = 2*eles.size()*eles[0]->nv;
+	}
+	else
+	{
+		n = eles.size()*eles[0]->nv;
+	}
 }
-
 
 elementRecorder::~elementRecorder()
 {
@@ -41,6 +42,17 @@ void elementRecorder::record(const int cstep, const double ctime)
 				k++;
 			}
 			break;
+		case ALL:
+			for (int j = 0; j < nv; j++)
+			{
+				Res(cstep, k) = ele->force[j];
+				k++;
+			}
+			for (int j = 0; j < nv; j++)
+			{
+				Res(cstep, k) = ele->deformation[j];
+				k++;
+			}
 		default:
 			break;
 		}

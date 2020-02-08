@@ -374,6 +374,7 @@
     <ClInclude Include="node.h" />
     <ClInclude Include="numeric.h" />
     <ClInclude Include="dsystem.h" />
+    <ClInclude Include="plot.h" />
     <ClInclude Include="recorder\dofRecorder.h" />
     <ClInclude Include="recorder\elementRecorder.h" />
     <ClInclude Include="recorder\recorder.h" />

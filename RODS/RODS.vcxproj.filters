@@ -241,5 +241,8 @@
     <ClInclude Include="element\dashpot2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="plot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
