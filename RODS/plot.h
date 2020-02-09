@@ -16,7 +16,7 @@ static inline void plot(char *fileName, int col)
 	//fprintf(gp, "pause mouse\n");
 	_pclose(gp);
 #else
-    FILE* gp = popen("gnuplot.exe", "w");
+    FILE* gp = popen("gnuplot", "w");
     fprintf(gp, "set term pdf font \"Times-New-Roman, 12\"\n");
     char str[80];
     sprintf(str, "set output \"%s.pdf\"\n", fileName);
