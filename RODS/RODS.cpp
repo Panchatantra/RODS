@@ -260,7 +260,7 @@ void test_material()
 	SMABilinear *mat3 = new SMABilinear(3, E, fy, alpha, sigma_shift);
 
 	tmat = mat3->copy();
-	int n = 1001;
+    size_t n = 1001;
 	mat s = zeros<mat>(n, 2);
 	vec t = linspace(0, 10, n);
 	s.col(0) = eps_y * t%arma::sin(2.0*PI / 1.0*t);

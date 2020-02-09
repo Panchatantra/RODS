@@ -3,11 +3,11 @@
 using namespace MAT_STBL;
 
 steelBilinear::steelBilinear(const int id, const double E, const double fy, const double alpha, const double beta) :
-	material1D(id, E), fy(fy), alpha(alpha), E0(E),
-	epsilon_y(fy / E), E1(E*alpha), sigma_ref(beta*fy),
+    material1D(id, E), fy(fy), alpha(alpha), sigma_ref(beta*fy),
+    E0(E), epsilon_y(fy/E), E1(E*alpha),
 	E_p(E), epsilon_p(0.0), sigma_p(0.0),
 	sigma_max(fy), sigma_min(-fy),
-	epsilon_max(fy / E), epsilon_min(-fy / E), epsilon_origin(0.0),
+    epsilon_max(fy/E), epsilon_min(-fy/E), epsilon_origin(0.0),
 	status(ELASTIC), status_p(ELASTIC)
 {
 }

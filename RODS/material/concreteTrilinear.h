@@ -23,12 +23,13 @@ public:
 
 	void compressionEnvelope(const double strain, double &stress, double &tangent, MAT_CTL::state &s);
 
-
-	double sigma_cr, fc, sigma_u;
-	double epsilon_c, epsilon_u;
-	double epsilon_origin, epsilon_max, sigma_max;
-	double E0, epsilon_cr, E1, E2;
-	double E_p, epsilon_p, sigma_p;
+    double fc, epsilon_c;
+    double sigma_cr, epsilon_cr;
+    double sigma_u, epsilon_u;
+    double E0, E1, E2;
+    double epsilon_origin;
+    double sigma_max, epsilon_max;
+    double E_p, sigma_p, epsilon_p;
 	MAT_CTL::state status, status_p;
 };
 

@@ -184,12 +184,6 @@ public:
 	std::map<int, recorder *> drs;
 	std::map<int, recorder *> ers;
 
-	double zeta;
-	int eqnCount;
-	int fixedDofCount;
-
-	bool eigenVectorNormed;
-
 	mat Mp, K, C, M;
 	mat Phi;
 	vec omg, P;
@@ -200,10 +194,14 @@ public:
 	mat K0;
 	vec q;
 
-	dsolver dynamicSolver;
+    double zeta;
+    int eqnCount, fixedDofCount;
+    bool eigenVectorNormed;
 
+	dsolver dynamicSolver;
 	double dt, ctime;
 	int nsteps, cstep;
+
 	bool useRayleighDamping;
 	double RayleighOmg1, RayleighOmg2;
 	int NumModesInherentDamping;

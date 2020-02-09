@@ -5,12 +5,17 @@ using namespace MAT_CTL;
 
 concreteTrilinear::concreteTrilinear(const int id, const double E, const double fc,
 	const double epsilon_c, const double sigma_cr, const double sigma_u, const double epsilon_u) :
-	material1D(id, E), fc(fc), epsilon_c(epsilon_c), sigma_cr(sigma_cr), sigma_u(sigma_u), epsilon_u(epsilon_u), E0(E),
-	E_p(E), epsilon_p(0.0), sigma_p(0.0), epsilon_origin(0.0), epsilon_cr(sigma_cr/E),
-	epsilon_max(sigma_cr/E), sigma_max(sigma_cr), status(ELASTIC), status_p(ELASTIC)
+    material1D(id, E),
+    fc(fc), epsilon_c(epsilon_c),
+    sigma_cr(sigma_cr), epsilon_cr(sigma_cr/E),
+    sigma_u(sigma_u), epsilon_u(epsilon_u),
+    E0(E), E1((fc - sigma_cr)/(epsilon_c - epsilon_cr)),
+    E2((sigma_u - fc)/(epsilon_u - epsilon_c)),
+    epsilon_origin(0.0),
+    sigma_max(sigma_cr), epsilon_max(sigma_cr/E),
+    E_p(E), sigma_p(0.0), epsilon_p(0.0),
+    status(ELASTIC), status_p(ELASTIC)
 {
-	E1 = (fc - sigma_cr) / (epsilon_c - epsilon_cr);
-	E2 = (sigma_u - fc) / (epsilon_u - epsilon_c);
 }
 
 concreteTrilinear::~concreteTrilinear()

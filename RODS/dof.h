@@ -14,14 +14,14 @@ public:
 	void setLoad(const double load);
 	void addLoad(const double load);
 
-	int eqnId;
+    int eqnId;
 	double mass;
 	direction dir;
 	double load;
-
 	bool isFixed;
 
 	double dsp, vel, acc;
+
 
 	static double g;
 };

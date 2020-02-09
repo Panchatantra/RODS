@@ -10,7 +10,8 @@
 #include "SMABilinear.h"
 
 dsystem::dsystem(const double z) :
-	zeta(z), eqnCount(0), eigenVectorNormed(false), dt(0.02), dynamicSolver(StateSpace), fixedDofCount(0),
+    zeta(z), eqnCount(0), fixedDofCount(0), eigenVectorNormed(false),
+    dynamicSolver(StateSpace), dt(0.02), ctime(0.0), nsteps(0), cstep(0),
 	useRayleighDamping(true), RayleighOmg1(2*PI/0.3), RayleighOmg2(2*PI/0.1),
 	NumModesInherentDamping(-1)
 {
@@ -63,7 +64,12 @@ void dsystem::addNode(const int id, const double x, const double z, const int do
 
 void dsystem::addNodeWithDof(const int id, const double x, const int dofId)
 {
+    dof *d = new dof(dofId, X);
+    node *nd = new node(id, x, 0.0, 0.0);
+    nd->setDof(d);
 
+    addDof(d);
+    addNode(nd);
 }
 
 void dsystem::addLine(line *l)
