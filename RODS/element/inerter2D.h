@@ -13,7 +13,7 @@ public:
 	~inerter2D();
 
 	virtual void buildMatrix();
-	virtual void assembleMassMatrix(mat & M);
+	virtual void assembleMassMatrix(mat &M);
 	virtual void getResponse(const bool update = false);
 
 	double m;

@@ -13,7 +13,7 @@ public:
 	~dashpot2D();
 
 	virtual void buildMatrix();
-	virtual void assembleMassMatrix(mat & C);
+	virtual void assembleDampingMatrix(mat &C);
 	virtual void getResponse(const bool update = false);
 
 	double c;

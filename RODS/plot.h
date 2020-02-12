@@ -26,5 +26,4 @@ static inline void plot(char *fileName, int col)
     //fprintf(gp, "pause mouse\n");
     pclose(gp);
 #endif
-
 }

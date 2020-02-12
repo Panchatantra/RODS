@@ -24,8 +24,8 @@ void dashpotExp::assembleDampingMatrix(mat & C)
 	int i_local = 0;
 	int j_local = 1;
 
-	int i_global = this->dofI->eqnId;
-	int j_global = this->dofJ->eqnId;
+	int i_global = dofI->eqnId;
+	int j_global = dofJ->eqnId;
 
 	C(i_global, i_global) += this->C(i_local, i_local);
 	C(i_global, j_global) += this->C(i_local, j_local);
@@ -51,20 +51,20 @@ void dashpotExp::assembleNonlinearForceVector(vec & q)
 	int i_local = 0;
 	int j_local = 1;
 
-	if (this->dofI->isFixed)
+	if (dofI->isFixed)
 	{
-		int j_global = this->dofJ->eqnId;
+		int j_global = dofJ->eqnId;
 		q(j_global) += this->q(j_local);
 	}
-	else if (this->dofJ->isFixed)
+	else if (dofJ->isFixed)
 	{
-		int i_global = this->dofI->eqnId;
+		int i_global = dofI->eqnId;
 		q(i_global) += this->q(i_local);
 	}
 	else
 	{
-		int i_global = this->dofI->eqnId;
-		int j_global = this->dofJ->eqnId;
+		int i_global = dofI->eqnId;
+		int j_global = dofJ->eqnId;
 
 		q(i_global) += this->q(i_local);
 		q(j_global) += this->q(j_local);

@@ -86,6 +86,10 @@
   <\big-figure|<image|sdof_seismic_nl_df.eps|204pt|192pt||>>
     \;
   </big-figure>
+
+  <\big-figure|<image|../disp_frame_damped.pdf|417pt|158pt||>>
+    \;
+  </big-figure>
 </body>
 
 <\initial>
@@ -104,6 +108,7 @@
     <associate|auto-12|<tuple|1.2.2|4>>
     <associate|auto-13|<tuple|6|4>>
     <associate|auto-14|<tuple|7|4>>
+    <associate|auto-15|<tuple|8|?>>
     <associate|auto-2|<tuple|1.1|1>>
     <associate|auto-3|<tuple|1.1.1|1>>
     <associate|auto-4|<tuple|1|1>>

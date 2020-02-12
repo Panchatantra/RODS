@@ -3,11 +3,11 @@
 
 #include <fstream>
 
-#include "elastic.h"
-#include "elastoplastic.h"
-#include "steelBilinear.h"
-#include "concreteTrilinear.h"
-#include "SMABilinear.h"
+#include "material/elastic.h"
+#include "material/elastoplastic.h"
+#include "material/steelBilinear.h"
+#include "material/concreteTrilinear.h"
+#include "material/SMABilinear.h"
 
 dsystem::dsystem(const double z) :
     zeta(z), eqnCount(0), fixedDofCount(0), eigenVectorNormed(false),
@@ -16,7 +16,6 @@ dsystem::dsystem(const double z) :
 	NumModesInherentDamping(-1)
 {
 }
-
 
 dsystem::~dsystem()
 {
@@ -27,7 +26,7 @@ void dsystem::addNode(node * nd)
 	auto it = nodes.insert(std::make_pair(nd->id, nd));
 	if (!it.second)
 	{
-		cout << "Node ID: " << nd->id << " already exists!" << endl;
+		cout << "Node ID: " << nd->id << " already exists! The node will not be added." << endl;
 	}
 }
 
@@ -49,7 +48,7 @@ void dsystem::addNode(const int id, const double x, const double z, const int do
 {
 	dof *dx = dofs.at(dofXId);
 	dof *dz = dofs.at(dofZId);
-	
+
 	node *nd = new node(id, x, 0.0, z);
 	nd->setDof(dx);
 	nd->setDof(dz);
@@ -77,7 +76,7 @@ void dsystem::addLine(line *l)
 	auto it = lines.insert(std::make_pair(l->id, l));
 	if (!it.second)
 	{
-		cout << "Line ID: " << l->id << " already exists!" << endl;
+		cout << "Line ID: " << l->id << " already exists! The line will not be added." << endl;
 	}
 }
 
@@ -165,9 +164,9 @@ void dsystem::addDof(dof * d)
 	{
 		dofs[d->id] = d;
 	}
-	else 
+	else
 	{
-		cout << "dof ID: " << d->id << " already exists!"<< endl;
+		cout << "dof ID: " << d->id << " already exists! The dof will not be added."<< endl;
 	}
 }
 
@@ -206,7 +205,7 @@ bool dsystem::addMaterial1D(material1D * mtrl)
 	}
 	else
 	{
-		cout << "material1D ID: " << mtrl->id << " already exists!" << endl;
+		cout << "material1D ID: " << mtrl->id << " already exists! The material will not be added." << endl;
 		return false;
 	}
 }
@@ -251,14 +250,17 @@ bool dsystem::addElement(element * e)
 	}
 	else
 	{
-		cout << "element ID: " << e->id << " already exists!" << endl;
+		cout << "element ID: " << e->id << " already exists! The element will not be added." << endl;
 		return false;
 	}
 }
 
-void dsystem::addSpring(spring * s)
+void dsystem::addSpring(spring *s)
 {
-	if (addElement(s)) springs[s->id] = s;
+	if (addElement(s)) {
+		springs[s->id] = s;
+		linearElasticElements[s->id] = s;
+	}
 }
 
 void dsystem::addSpring(const int id, const int ni, const int nj, const double k)
@@ -271,7 +273,11 @@ void dsystem::addSpring(const int id, const int ni, const int nj, const double k
 
 void dsystem::addSpringBL(springBilinear * s)
 {
-	if (addElement(s)) springBLs[s->id] = s;
+	if (addElement(s))
+	{
+		springBLs[s->id] = s;
+		nonlinearTangentElements[s->id] = s;
+	}
 }
 
 void dsystem::addSpringBL(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha)
@@ -284,7 +290,11 @@ void dsystem::addSpringBL(const int id, const int ni, const int nj, const double
 
 void dsystem::addSpringNL(springNonlinear * s)
 {
-	if (addElement(s)) springNLs[s->id] = s;
+	if (addElement(s))
+	{
+		springNLs[s->id] = s;
+		nonlinearTangentElements[s->id] = s;
+	}
 }
 
 void dsystem::addSpringNL(const int id, const int ni, const int nj, const int matId)
@@ -295,22 +305,30 @@ void dsystem::addSpringNL(const int id, const int ni, const int nj, const int ma
 	addSpringNL(s);
 }
 
-void dsystem::addSpringBW(springBoucWen * s)
+void dsystem::addSpringBoucWen(springBoucWen * s)
 {
-	if (addElement(s)) springBWs[s->id] = s;
+	if (addElement(s))
+	{
+		springBWs[s->id] = s;
+		nonlinearTangentElements[s->id] = s;
+	}
 }
 
-void dsystem::addSpringBW(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n)
+void dsystem::addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
 	springBoucWen *s = new springBoucWen(id, i, j, k0, uy, alpha);
-	addSpringBW(s);
+	addSpringBoucWen(s);
 }
 
 void dsystem::addDashpot(dashpot * d)
 {
-	if (addElement(d)) dashpots[d->id] = d;
+	if (addElement(d))
+	{
+		dashpots[d->id] = d;
+		linearDampingElements[d->id] = d;
+	}
 }
 
 void dsystem::addDashpot(const int id, const int ni, const int nj, const double c)
@@ -323,7 +341,11 @@ void dsystem::addDashpot(const int id, const int ni, const int nj, const double 
 
 void dsystem::addDashpotExp(dashpotExp * d)
 {
-	if (addElement(d)) dashpotExps[d->id] = d;
+	if (addElement(d))
+	{
+		dashpotExps[d->id] = d;
+		nonlinearElements[d->id] = d;
+	}
 }
 
 void dsystem::addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha)
@@ -334,9 +356,30 @@ void dsystem::addDashpotExp(const int id, const int ni, const int nj, const doub
 	addDashpotExp(d);
 }
 
+void dsystem::addDashpotMaxwell(dashpotMaxwell * d)
+{
+	if (addElement(d))
+	{
+		dashpotMaxwells[d->id] = d;
+		nonlinearElements[d->id] = d;
+	}
+}
+
+void dsystem::addDashpotMaxwell(const int id, const int ni, const int nj, const double k, const double c, const double alpha)
+{
+	dof *i = dofs.at(ni);
+	dof *j = dofs.at(nj);
+	dashpotMaxwell *d = new dashpotMaxwell(id, i, j, c, alpha);
+	addDashpotMaxwell(d);
+}
+
 void dsystem::addInerter(inerter * in)
 {
-	if (addElement(in)) inerters[in->id] = in;
+	if (addElement(in))
+	{
+		inerters[in->id] = in;
+		inertialMassElements[in->id] = in;
+	}
 }
 
 void dsystem::addInerter(const int id, const int ni, const int nj, const double m)
@@ -349,7 +392,11 @@ void dsystem::addInerter(const int id, const int ni, const int nj, const double 
 
 void dsystem::addSlider(slider * s)
 {
-	if (addElement(s)) sliders[s->id] = s;
+	if (addElement(s))
+	{
+		sliders[s->id] = s;
+		nonlinearElements[s->id] = s;
+	}
 }
 
 void dsystem::addSlider(const int id, const int ni, const int nj, const double muN)
@@ -362,7 +409,13 @@ void dsystem::addSlider(const int id, const int ni, const int nj, const double m
 
 void dsystem::addSPIS2(spis2 * s)
 {
-	if (addElement(s)) spis2s[s->id] = s;
+	if (addElement(s))
+	{
+		spis2s[s->id] = s;
+		linearElasticElements[s->id] = s;
+		linearDampingElements[s->id] = s;
+		inertialMassElements[s->id] = s;
+	}
 }
 
 void dsystem::addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k)
@@ -374,11 +427,125 @@ void dsystem::addSPIS2(const int id, const int ni, const int nj, const int nin, 
 	addSPIS2(s);
 }
 
+void dsystem::addTVMD(TVMD *d)
+{
+	if (addElement(d))
+	{
+		TVMDs[d->id] = d;
+		nonlinearElements[d->id] = d;
+	}
+}
+
+void dsystem::addTVMD(const int id, const int ni, const int nj, const double m, const double c, const double k)
+{
+	dof *i = dofs.at(ni);
+	dof *j = dofs.at(nj);
+	TVMD *d = new TVMD(id, i, j, m, c, k);
+	addTVMD(d);
+}
+
+void dsystem::addSpring2D(spring2D *s)
+{
+	if (addElement(s))
+	{
+		ele2Ds[s->id] = s;
+		spring2Ds[s->id] = s;
+		linearElasticElements[s->id] = s;
+	}
+}
+
+void dsystem::addSpring2D(const int id, const int ni, const int nj, const double k, ELE::localAxis U)
+{
+	spring2D *s = new spring2D(id, nodes.at(ni), nodes.at(nj), k, U);
+	addSpring2D(s);
+}
+
+void dsystem::addSpringBoucWen2D(springBoucWen2D *s)
+{
+	if (addElement(s))
+	{
+		ele2Ds[s->id] = s;
+		springBoucWen2Ds[s->id] = s;
+		nonlinearTangentElements[s->id] = s;
+	}
+}
+
+void dsystem::addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n, ELE::localAxis U /*= ELE::U1*/)
+{
+	springBoucWen2D *s = new springBoucWen2D(id, nodes.at(ni), nodes.at(nj), k0, uy, alpha, beta, n, U);
+	addSpringBoucWen2D(s);
+}
+
+void dsystem::addDashpot2D(dashpot2D *s)
+{
+	if (addElement(s))
+	{
+		ele2Ds[s->id] = s;
+		dashpot2Ds[s->id] = s;
+		linearDampingElements[s->id] = s;
+	}
+}
+
+void dsystem::addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::localAxis U)
+{
+	dashpot2D *s = new dashpot2D(id, nodes.at(ni), nodes.at(nj), c, U);
+	addDashpot2D(s);
+}
+
+void dsystem::addInerter2D(inerter2D *s)
+{
+	if (addElement(s))
+	{
+		ele2Ds[s->id] = s;
+		inerter2Ds[s->id] = s;
+		inertialMassElements[s->id] = s;
+	}
+}
+
+void dsystem::addInerter2D(const int id, const int ni, const int nj, const double m, ELE::localAxis U)
+{
+	inerter2D *s = new inerter2D(id, nodes.at(ni), nodes.at(nj), m, U);
+	addInerter2D(s);
+}
+
+void dsystem::addDashpotExp2D(dashpotExp2D *s)
+{
+	if (addElement(s))
+	{
+		ele2Ds[s->id] = s;
+		dashpotExp2Ds[s->id] = s;
+		nonlinearElements[s->id] = s;
+	}
+}
+
+void dsystem::addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, ELE::localAxis U /*= ELE::U1*/)
+{
+	dashpotExp2D *s = new dashpotExp2D(id, nodes.at(ni), nodes.at(nj), c, alpha, U);
+	addDashpotExp2D(s);
+}
+
+void dsystem::addDashpotMaxwell2D(dashpotMaxwell2D *s)
+{
+	if (addElement(s))
+	{
+		ele2Ds[s->id] = s;
+		dashpotMaxwell2Ds[s->id] = s;
+		nonlinearElements[s->id] = s;
+	}
+}
+
+void dsystem::addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::localAxis U)
+{
+	dashpotMaxwell2D *s = new dashpotMaxwell2D(id, nodes.at(ni), nodes.at(nj), k, c, alpha, U);
+	addDashpotMaxwell2D(s);
+}
+
 void dsystem::addTrussElastic(trussElastic *truss)
 {
 	if (addElement(truss)) {
 		ele2Ds[truss->id] = truss;
 		trussElastics[truss->id] = truss;
+		linearElasticElements[truss->id] = truss;
 	}
 }
 
@@ -393,6 +560,7 @@ void dsystem::addBeamElastic(beamElastic *beam)
 	if (addElement(beam)) {
 		ele2Ds[beam->id] = beam;
 		beamElastics[beam->id] = beam;
+		linearElasticElements[beam->id] = beam;
 	}
 }
 
@@ -407,6 +575,7 @@ void dsystem::addFrameElastic(frameElastic *frame)
 	if (addElement(frame)) {
 		ele2Ds[frame->id] = frame;
 		frameElastics[frame->id] = frame;
+		linearElasticElements[frame->id] = frame;
 	}
 }
 
@@ -539,7 +708,7 @@ void dsystem::buildDofEqnMap()
 	{
 		dof *d = it->second;
 		if ((d->isFixed)) fixedDofCount += 1;
-		
+
 		dofMapEqn[d->id] = eqnCount;
 		d->eqnId = eqnCount;
 		eqnMapDof[eqnCount] = d->id;
@@ -559,7 +728,6 @@ void dsystem::assembleMatrix()
 	{
 		buildInherentDampingMatrix();
 	}
-	
 	assembleDampingMatrix();
 	applyRestraint();
 	applyLoad();
@@ -577,24 +745,25 @@ void dsystem::assembleMassMatrix()
 	{
 		m(i) = dofs.at(eqnMapDof[i])->mass;
 	}
+
 	Mp = diagmat(m);
 	M = diagmat(m);
 
-	if ( !(inerters.empty()) )
+	if ( !(inertialMassElements.empty()) )
 	{
-		for (auto it = inerters.begin(); it != inerters.end(); it++)
+		for (auto it = inertialMassElements.begin(); it != inertialMassElements.end(); it++)
 		{
 			auto *in = it->second;
 			in->assembleMassMatrix(M);
 		}
 	}
-	
-	if (!(spis2s.empty()))
+
+	if ( !(physicalMassElements.empty()) )
 	{
-		for (auto it = spis2s.begin(); it != spis2s.end(); it++)
+		for (auto it = physicalMassElements.begin(); it != physicalMassElements.end(); it++)
 		{
-			auto *s = it->second;
-			s->assembleMassMatrix(M);
+			auto *in = it->second;
+			in->assembleMassMatrix(Mp);
 		}
 	}
 }
@@ -636,8 +805,8 @@ void dsystem::applyRestraint()
 	C.shed_cols(fixedIds);
 	C.shed_rows(fixedIds);
 
-	E = zeros<vec>(eqnCount);
-	Q = zeros<vec>(eqnCount);
+	E = zeros<vec>(eqnCount); // Ground motion vector
+	Q = zeros<vec>(eqnCount); // Nodal load vector
 }
 
 void dsystem::applyLoad()
@@ -665,45 +834,18 @@ void dsystem::assembleStiffnessMatrix()
 {
 	K = zeros<mat>(eqnCount, eqnCount);
 
-	if (!(springs.empty()))
+	if (!(linearElasticElements.empty()))
 	{
-		for (auto it = springs.begin(); it != springs.end(); it++)
+		for (auto it = linearElasticElements.begin(); it != linearElasticElements.end(); it++)
 		{
 			auto *s = it->second;
 			s->assembleStiffnessMatrix(K);
 		}
 	}
 
-	if (!(spis2s.empty()))
+	if (!(nonlinearSecantElements.empty()))
 	{
-		for (auto it = spis2s.begin(); it != spis2s.end(); it++)
-		{
-			auto *s = it->second;
-			s->assembleStiffnessMatrix(K);
-		}
-	}
-
-	if (!(trussElastics.empty()))
-	{
-		for (auto it = trussElastics.begin(); it != trussElastics.end(); it++)
-		{
-			auto *s = it->second;
-			s->assembleStiffnessMatrix(K);
-		}
-	}
-
-	if (!(beamElastics.empty()))
-	{
-		for (auto it = beamElastics.begin(); it != beamElastics.end(); it++)
-		{
-			auto *s = it->second;
-			s->assembleStiffnessMatrix(K);
-		}
-	}
-
-	if (!(frameElastics.empty()))
-	{
-		for (auto it = frameElastics.begin(); it != frameElastics.end(); it++)
+		for (auto it = nonlinearSecantElements.begin(); it != nonlinearSecantElements.end(); it++)
 		{
 			auto *s = it->second;
 			s->assembleStiffnessMatrix(K);
@@ -712,36 +854,9 @@ void dsystem::assembleStiffnessMatrix()
 
 	K0 = K;
 
-	if (!(springBLs.empty()))
+	if (!(nonlinearTangentElements.empty()))
 	{
-		for (auto it = springBLs.begin(); it != springBLs.end(); it++)
-		{
-			auto *s = it->second;
-			s->assembleStiffnessMatrix(K);
-		}
-	}
-
-	if (!(springBWs.empty()))
-	{
-		for (auto it = springBWs.begin(); it != springBWs.end(); it++)
-		{
-			auto *s = it->second;
-			s->assembleStiffnessMatrix(K);
-		}
-	}
-
-	if (!(springNLs.empty()))
-	{
-		for (auto it = springNLs.begin(); it != springNLs.end(); it++)
-		{
-			auto *s = it->second;
-			s->assembleStiffnessMatrix(K);
-		}
-	}
-
-	if (!(sliders.empty()))
-	{
-		for (auto it = sliders.begin(); it != sliders.end(); it++)
+		for (auto it = nonlinearTangentElements.begin(); it != nonlinearTangentElements.end(); it++)
 		{
 			auto *s = it->second;
 			s->assembleStiffnessMatrix(K);
@@ -781,7 +896,7 @@ void dsystem::buildInherentDampingMatrix()
 			C = MPhi*C*MPhi.t();
 		}
 	}
-	
+
 }
 
 void dsystem::buildRayleighDampingMatrix(const double omg1, const double omg2)
@@ -814,21 +929,12 @@ void dsystem::buildRayleighDampingMatrix(const int md1, const int md2)
 
 void dsystem::assembleDampingMatrix()
 {
-	if (!(dashpots.empty()))
+	if (!(linearDampingElements.empty()))
 	{
-		for (auto it = dashpots.begin(); it != dashpots.end(); it++)
+		for (auto it = linearDampingElements.begin(); it != linearDampingElements.end(); it++)
 		{
 			auto *d = it->second;
 			d->assembleDampingMatrix(C);
-		}
-	}
-
-	if (!(spis2s.empty()))
-	{
-		for (auto it = spis2s.begin(); it != spis2s.end(); it++)
-		{
-			auto *s = it->second;
-			s->assembleDampingMatrix(C);
 		}
 	}
 }
@@ -884,7 +990,7 @@ void dsystem::solveStochasticSeismicResponse(const double f_h, const int nf, con
 		cx_vec r = cx_Phi.st()*F / Ad;
 
 		cx_mat Z = zeros<cx_mat>(2*eqnCount, nf+1);
-		
+
 		for (int i = 0; i < nf+1; i++)
 		{
 			Z.col(i) = r/(omg(i)*cx_I - cx_lbd);
@@ -1097,7 +1203,7 @@ void dsystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s
 			u_p = u0 * 1.0;
 			v_p = v0 * 1.0;
 			a_p = a0 * 1.0;
-			error = 1;
+			error = 1.0;
 			for (int l = 0; l < maxiter; l++)
 			{
 				du = solve(K_h_+K, -K_h*u0-q+p_h);
@@ -1120,7 +1226,7 @@ void dsystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s
 					}
 					else
 					{
-						cout << "Fail to Converge after " << maxiter << "iterations, "
+						cout << "Fail to Converge after " << maxiter << " iterations, "
 							 << "norm error = " << error <<endl;
 						if (j == (nsub - 1))
 						{
@@ -1343,56 +1449,31 @@ void dsystem::assembleNonlinearForceVector(const bool update)
 {
 	q = zeros<vec>(eqnCount);
 
-	if (!(springBLs.empty()))
+	if (!(nonlinearElements.empty()))
 	{
-		std::map<int, springBilinear *>::iterator it;
-		for (it = springBLs.begin(); it != springBLs.end(); it++)
+		for (auto it = nonlinearElements.begin(); it != nonlinearElements.end(); it++)
 		{
-			springBilinear *s = it->second;
+			auto *s = it->second;
 			s->getResponse(update);
 			s->assembleNonlinearForceVector(q);
 		}
 	}
 
-	if (!(springBWs.empty()))
+	if (!(nonlinearTangentElements.empty()))
 	{
-		std::map<int, springBoucWen *>::iterator it;
-		for (it = springBWs.begin(); it != springBWs.end(); it++)
+		for (auto it = nonlinearTangentElements.begin(); it != nonlinearTangentElements.end(); it++)
 		{
-			springBoucWen *s = it->second;
+			auto *s = it->second;
 			s->getResponse(update);
 			s->assembleNonlinearForceVector(q);
 		}
 	}
 
-	if (!(springNLs.empty()))
+	if (!(nonlinearSecantElements.empty()))
 	{
-		std::map<int, springNonlinear *>::iterator it;
-		for (it = springNLs.begin(); it != springNLs.end(); it++)
+		for (auto it = nonlinearSecantElements.begin(); it != nonlinearSecantElements.end(); it++)
 		{
-			springNonlinear *s = it->second;
-			s->getResponse(update);
-			s->assembleNonlinearForceVector(q);
-		}
-	}
-
-	if (!(dashpotExps.empty()))
-	{
-		std::map<int, dashpotExp *>::iterator it;
-		for (it = dashpotExps.begin(); it != dashpotExps.end(); it++)
-		{
-			dashpotExp *s = it->second;
-			s->getResponse(update);
-			s->assembleNonlinearForceVector(q);
-		}
-	}
-	
-	if (!(sliders.empty()))
-	{
-		std::map<int, slider *>::iterator it;
-		for (it = sliders.begin(); it != sliders.end(); it++)
-		{
-			slider *s = it->second;
+			auto *s = it->second;
 			s->getResponse(update);
 			s->assembleNonlinearForceVector(q);
 		}
@@ -1470,19 +1551,19 @@ void dsystem::saveResponse()
 
 void dsystem::printInfo()
 {
-	cout << "=====================================" << endl;
-	cout << "      RRRR    OOO   DDD    SSS       " << endl;
-	cout << "      R   R  O   O  D  D  S          " << endl;
-	cout << "      RRRR   O   O  D  D   SSS       " << endl;
-	cout << "      R R    O   O  D  D      S      " << endl;
-	cout << "      R  RR   OOO   DDD   SSSS       " << endl;
-	cout << "      R  RR   OOO   DDD   SSSS       " << endl;
-	cout << "=====================================" << endl;
+	cout << "=================================================" << endl;
+	cout << "            RRRR    OOO   DDD    SSS             " << endl;
+	cout << "            R   R  O   O  D  D  S                " << endl;
+	cout << "            RRRR   O   O  D  D   SSS             " << endl;
+	cout << "            R R    O   O  D  D      S            " << endl;
+	cout << "            R  RR   OOO   DDD   SSSS             " << endl;
+	cout << "            R  RR   OOO   DDD   SSSS             " << endl;
+	cout << "=================================================" << endl;
 
 	cout << "Number of DOFs:" << dofs.size() << endl;
 	cout << "Number of Nodes:" << nodes.size() << endl;
 	cout << "Number of Elements:" << eles.size() << endl;
-
+	cout << "Number of Equations:" << eqnCount << endl;
 
 	int nModes = (int)P.n_rows;
 	if (nModes > 0)
@@ -1490,7 +1571,7 @@ void dsystem::printInfo()
 		cout << "Number of Modes:" << nModes << endl;
 		for (int i=0; i<nModes; i++)
 		{
-			cout << "Mode " << i+1 << ",\tT = " << P(i) << endl;
+			cout << "Mode " << i+1 << ", T = " << P(i) << endl;
 		}
 	}
 }

@@ -70,7 +70,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -308,6 +308,9 @@
     <ClCompile Include="element\dashpot.cpp" />
     <ClCompile Include="element\dashpot2D.cpp" />
     <ClCompile Include="element\dashpotExp.cpp" />
+    <ClCompile Include="element\dashpotExp2D.cpp" />
+    <ClCompile Include="element\dashpotMaxwell.cpp" />
+    <ClCompile Include="element\dashpotMaxwell2D.cpp" />
     <ClCompile Include="element\element.cpp" />
     <ClCompile Include="element\element1D.cpp" />
     <ClCompile Include="element\element2D.cpp" />
@@ -320,10 +323,13 @@
     <ClCompile Include="element\spring2D.cpp" />
     <ClCompile Include="element\springBilinear.cpp" />
     <ClCompile Include="element\springBoucWen.cpp" />
+    <ClCompile Include="element\springBoucWen2D.cpp" />
     <ClCompile Include="element\springNonlinear.cpp" />
     <ClCompile Include="element\truss.cpp" />
     <ClCompile Include="element\trussElastic.cpp" />
+    <ClCompile Include="element\TVMD.cpp" />
     <ClCompile Include="line.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="material\concreteTrilinear.cpp" />
     <ClCompile Include="material\elastic.cpp" />
     <ClCompile Include="material\elastoplastic.cpp" />
@@ -334,9 +340,9 @@
     <ClCompile Include="recorder\dofRecorder.cpp" />
     <ClCompile Include="recorder\elementRecorder.cpp" />
     <ClCompile Include="recorder\recorder.cpp" />
-    <ClCompile Include="RODS.cpp" />
     <ClCompile Include="node.cpp" />
     <ClCompile Include="dsystem.cpp" />
+    <ClCompile Include="RODS.cpp" />
     <ClCompile Include="section\section.cpp" />
     <ClCompile Include="section\sectionElasticBar.cpp" />
     <ClCompile Include="timeseries.cpp" />
@@ -348,6 +354,9 @@
     <ClInclude Include="element\dashpot.h" />
     <ClInclude Include="element\dashpot2D.h" />
     <ClInclude Include="element\dashpotExp.h" />
+    <ClInclude Include="element\dashpotExp2D.h" />
+    <ClInclude Include="element\dashpotMaxwell.h" />
+    <ClInclude Include="element\dashpotMaxwell2D.h" />
     <ClInclude Include="element\element.h" />
     <ClInclude Include="element\element1D.h" />
     <ClInclude Include="element\element2D.h" />
@@ -360,9 +369,11 @@
     <ClInclude Include="element\spring2D.h" />
     <ClInclude Include="element\springBilinear.h" />
     <ClInclude Include="element\springBoucWen.h" />
+    <ClInclude Include="element\springBoucWen2D.h" />
     <ClInclude Include="element\springNonlinear.h" />
     <ClInclude Include="element\truss.h" />
     <ClInclude Include="element\trussElastic.h" />
+    <ClInclude Include="element\TVMD.h" />
     <ClInclude Include="line.h" />
     <ClInclude Include="material\concreteTrilinear.h" />
     <ClInclude Include="material\elastic.h" />
@@ -378,6 +389,7 @@
     <ClInclude Include="recorder\dofRecorder.h" />
     <ClInclude Include="recorder\elementRecorder.h" />
     <ClInclude Include="recorder\recorder.h" />
+    <ClInclude Include="RODS.h" />
     <ClInclude Include="section\section.h" />
     <ClInclude Include="section\sectionElasticBar.h" />
     <ClInclude Include="timeseries.h" />

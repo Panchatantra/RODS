@@ -6,17 +6,17 @@
 
 using namespace arma;
 
-class slider : public element1D
+class dashpotMaxwell : public element1D
 {
 public:
-	slider(const int id, dof *i, dof *j, const double muN);
-	~slider();
+	dashpotMaxwell(const int id, dof *i, dof *j, const double ks, const double c, const double alpha=1.0);
+	~dashpotMaxwell();
 
 	void getResponse(const bool update=false);
 	void assembleNonlinearForceVector(vec &q);
 
-	double muN;
-	double u, f, v;
+	double ks, c, alpha;
+	double u, f, ud, udp;
 
 	vec::fixed<2> q;
 };

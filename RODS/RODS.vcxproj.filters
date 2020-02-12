@@ -23,9 +23,6 @@
     <ClCompile Include="node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RODS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="basis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -123,6 +120,27 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="element\dashpot2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\dashpotMaxwell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\TVMD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\dashpotExp2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\dashpotMaxwell2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\springBoucWen2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RODS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -242,6 +260,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="plot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\dashpotMaxwell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\TVMD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\dashpotExp2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\dashpotMaxwell2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\springBoucWen2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RODS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

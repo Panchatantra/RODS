@@ -1,6 +1,7 @@
 #pragma once
 #include "basis.h"
 
+constexpr bool FIXED = true;
 enum direction { X,Y,Z,RX,RY,RZ };
 
 class dof : public basis

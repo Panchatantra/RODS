@@ -45,12 +45,12 @@ void elementRecorder::record(const int cstep, const double ctime)
 		case ALL:
 			for (int j = 0; j < nv; j++)
 			{
-				Res(cstep, k) = ele->force[j];
+				Res(cstep, k) = ele->deformation[j];
 				k++;
 			}
 			for (int j = 0; j < nv; j++)
 			{
-				Res(cstep, k) = ele->deformation[j];
+				Res(cstep, k) = ele->force[j];
 				k++;
 			}
 		default:

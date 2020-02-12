@@ -23,7 +23,7 @@ void dashpot2D::buildMatrix()
 	C = T.t()*c*T;
 }
 
-void dashpot2D::assembleMassMatrix(mat & C)
+void dashpot2D::assembleDampingMatrix(mat & C)
 {
 	int local[4] = { 0,1,2,3 };
 	int global[4] = { nodeI->dofX->eqnId, nodeI->dofZ->eqnId,

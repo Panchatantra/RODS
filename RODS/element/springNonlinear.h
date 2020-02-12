@@ -1,8 +1,8 @@
 #pragma once
 
 #include "dof.h"
-#include "element1D.h"
-#include "material1D.h"
+#include "element/element1D.h"
+#include "material/material1D.h"
 #include <armadillo>
 
 using namespace arma;

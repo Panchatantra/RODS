@@ -8,12 +8,15 @@ using namespace arma;
 class timeseries : public basis
 {
 public:
+	timeseries(const int id, const double dt);
 	timeseries(const int id, const double dt, const vec &s);
-	timeseries(const int id, const double dt, char* fileName);
+	timeseries(const int id, const double dt, char *fileName);
 	~timeseries();
 
-	int nsteps;
+	void load(char *fileName);
+
 	double dt;
-	vec time, series;
+	int nsteps;
+	vec series;
 };
 

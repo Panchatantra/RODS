@@ -24,7 +24,7 @@ void inerter2D::buildMatrix()
 	M = T.t()*m*T;
 }
 
-void inerter2D::assembleMassMatrix(mat & M)
+void inerter2D::assembleMassMatrix(mat &M)
 {
 	int local[4] = { 0,1,2,3 };
 	int global[4] = { nodeI->dofX->eqnId, nodeI->dofZ->eqnId,
