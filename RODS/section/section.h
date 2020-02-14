@@ -1,21 +1,21 @@
 #pragma once
 
-#include "basis.h"
-#include "material.h"
+#include "Basis.h"
 
-class section : public basis
+class Section : public Basis
 {
 public:
-	section();
-	section(const int id, material *mat, const double A);
-	~section();
+	Section();
+	Section(const int id);
+	~Section();
 
 	virtual void setStrain(const double *strain) = 0;
 	virtual void getResponse(const bool update = false) = 0;
 
+	virtual Section *copy() = 0;
+
 	int nv;
 
-	material *mat;
 	double A;
-	double *epsilon, *force;
+	double *strain, *force;
 };

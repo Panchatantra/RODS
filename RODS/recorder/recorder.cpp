@@ -1,7 +1,7 @@
 #include "recorder.h"
 
 recorder::recorder(const int id, response rtype, char * fileName) :
-basis(id), n(0), rtype(rtype), fileName(fileName)
+Basis(id), n(0), rtype(rtype), fileName(fileName)
 {
 }
 

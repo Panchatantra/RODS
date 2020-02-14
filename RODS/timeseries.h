@@ -1,17 +1,17 @@
 #pragma once
 
 #include <armadillo>
-#include "basis.h"
+#include "Basis.h"
 
 using namespace arma;
 
-class timeseries : public basis
+class TimeSeries : public Basis
 {
 public:
-	timeseries(const int id, const double dt);
-	timeseries(const int id, const double dt, const vec &s);
-	timeseries(const int id, const double dt, char *fileName);
-	~timeseries();
+	TimeSeries(const int id, const double dt);
+	TimeSeries(const int id, const double dt, const vec &s);
+	TimeSeries(const int id, const double dt, char *fileName);
+	~TimeSeries();
 
 	void load(char *fileName);
 

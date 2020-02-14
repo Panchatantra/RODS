@@ -302,7 +302,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="basis.cpp" />
+    <ClCompile Include="Basis.cpp" />
     <ClCompile Include="dof.cpp" />
     <ClCompile Include="element\beamElastic.cpp" />
     <ClCompile Include="element\dashpot.cpp" />
@@ -314,9 +314,12 @@
     <ClCompile Include="element\element.cpp" />
     <ClCompile Include="element\element1D.cpp" />
     <ClCompile Include="element\element2D.cpp" />
-    <ClCompile Include="element\frameElastic.cpp" />
+    <ClCompile Include="element\Frame2D.cpp" />
+    <ClCompile Include="element\FrameElastic2D.cpp" />
     <ClCompile Include="element\inerter.cpp" />
     <ClCompile Include="element\inerter2D.cpp" />
+    <ClCompile Include="element\Plane2D.cpp" />
+    <ClCompile Include="element\Quad4Elastic.cpp" />
     <ClCompile Include="element\slider.cpp" />
     <ClCompile Include="element\spis2.cpp" />
     <ClCompile Include="element\spring.cpp" />
@@ -325,7 +328,7 @@
     <ClCompile Include="element\springBoucWen.cpp" />
     <ClCompile Include="element\springBoucWen2D.cpp" />
     <ClCompile Include="element\springNonlinear.cpp" />
-    <ClCompile Include="element\truss.cpp" />
+    <ClCompile Include="element\Truss2D.cpp" />
     <ClCompile Include="element\trussElastic.cpp" />
     <ClCompile Include="element\TVMD.cpp" />
     <ClCompile Include="line.cpp" />
@@ -341,14 +344,16 @@
     <ClCompile Include="recorder\elementRecorder.cpp" />
     <ClCompile Include="recorder\recorder.cpp" />
     <ClCompile Include="node.cpp" />
-    <ClCompile Include="dsystem.cpp" />
+    <ClCompile Include="DynamicSystem.cpp" />
     <ClCompile Include="RODS.cpp" />
+    <ClCompile Include="section\Fiber.cpp" />
     <ClCompile Include="section\section.cpp" />
-    <ClCompile Include="section\sectionElasticBar.cpp" />
+    <ClCompile Include="section\SectionFrame2D.cpp" />
+    <ClCompile Include="section\SectionTruss.cpp" />
     <ClCompile Include="timeseries.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="basis.h" />
+    <ClInclude Include="Basis.h" />
     <ClInclude Include="dof.h" />
     <ClInclude Include="element\beamElastic.h" />
     <ClInclude Include="element\dashpot.h" />
@@ -360,9 +365,12 @@
     <ClInclude Include="element\element.h" />
     <ClInclude Include="element\element1D.h" />
     <ClInclude Include="element\element2D.h" />
-    <ClInclude Include="element\frameElastic.h" />
+    <ClInclude Include="element\Frame2D.h" />
+    <ClInclude Include="element\FrameElastic2D.h" />
     <ClInclude Include="element\inerter.h" />
     <ClInclude Include="element\inerter2D.h" />
+    <ClInclude Include="element\Plane2D.h" />
+    <ClInclude Include="element\Quad4Elastic.h" />
     <ClInclude Include="element\slider.h" />
     <ClInclude Include="element\spis2.h" />
     <ClInclude Include="element\spring.h" />
@@ -371,7 +379,7 @@
     <ClInclude Include="element\springBoucWen.h" />
     <ClInclude Include="element\springBoucWen2D.h" />
     <ClInclude Include="element\springNonlinear.h" />
-    <ClInclude Include="element\truss.h" />
+    <ClInclude Include="element\Truss2D.h" />
     <ClInclude Include="element\trussElastic.h" />
     <ClInclude Include="element\TVMD.h" />
     <ClInclude Include="line.h" />
@@ -384,14 +392,16 @@
     <ClInclude Include="material\steelBilinear.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="numeric.h" />
-    <ClInclude Include="dsystem.h" />
+    <ClInclude Include="DynamicSystem.h" />
     <ClInclude Include="plot.h" />
     <ClInclude Include="recorder\dofRecorder.h" />
     <ClInclude Include="recorder\elementRecorder.h" />
     <ClInclude Include="recorder\recorder.h" />
     <ClInclude Include="RODS.h" />
+    <ClInclude Include="section\Fiber.h" />
     <ClInclude Include="section\section.h" />
-    <ClInclude Include="section\sectionElasticBar.h" />
+    <ClInclude Include="section\SectionFrame2D.h" />
+    <ClInclude Include="section\SectionTruss.h" />
     <ClInclude Include="timeseries.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

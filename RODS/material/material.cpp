@@ -7,7 +7,7 @@ material::material() :
 }
 
 
-material::material(const int id, const double E): basis(id), E(E)
+material::material(const int id, const double E): Basis(id), E(E)
 {
 }
 

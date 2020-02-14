@@ -1,18 +1,15 @@
-#include "section.h"
+#include "Section.h"
 
-
-
-section::section() :
-	mat(nullptr), A(0.0), nv(1)
+Section::Section() :
+	nv(1), strain(nullptr), force(nullptr)
 {
 }
 
-section::section(const int id, material * mat, const double A):
-	basis(id), mat(mat->copy()), A(A), nv(1)
+Section::Section(const int id):
+	Basis(id), nv(1), strain(nullptr), force(nullptr)
 {
 }
 
-
-section::~section()
+Section::~Section()
 {
 }

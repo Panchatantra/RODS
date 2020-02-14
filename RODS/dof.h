@@ -1,10 +1,10 @@
 #pragma once
-#include "basis.h"
+#include "Basis.h"
 
 constexpr bool FIXED = true;
 enum direction { X,Y,Z,RX,RY,RZ };
 
-class dof : public basis
+class dof : public Basis
 {
 public:
 	dof(const int n, direction dir);

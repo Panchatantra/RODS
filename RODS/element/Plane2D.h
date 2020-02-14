@@ -2,12 +2,12 @@
 #include "element.h"
 #include "node.h"
 
-class element2D :
+class Plane2D :
 	public element
 {
 public:
-	element2D(const int id, node * nodeI, node * nodeJ);
-	~element2D();
+	Plane2D(const int id, node * nodeI, node * nodeJ, node *nodeP, node *nodeQ);
+	~Plane2D();
 
 	virtual void buildMatrix() {}
 	virtual void getResponse(const bool update = false) {}
@@ -17,8 +17,7 @@ public:
 	virtual void assembleMassMatrix(mat &M) {}
 	virtual void assembleNonlinearForceVector(vec &q) {}
 
-	node *nodeI, *nodeJ;
-
-	double L;
-	double lxx, lxy, lyx, lyy;
+	node *nodeI, *nodeJ, *nodeP, *nodeQ;
+	mat::fixed<2, 2> J;
+	mat::fixed<3, 3> D;
 };

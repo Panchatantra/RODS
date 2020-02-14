@@ -1,9 +1,9 @@
 #pragma once
-#include "basis.h"
+#include "Basis.h"
 #include "node.h"
 
 class line :
-	public basis
+	public Basis
 {
 public:
 	line(const int id, node *i, node *j);

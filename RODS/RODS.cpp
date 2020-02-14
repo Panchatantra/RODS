@@ -2,14 +2,14 @@
 #define DLLEXPORT
 #endif
 
-#include "dsystem.h"
+#include "DynamicSystem.h"
 #include "RODS.h"
 
-dsystem *ds = new dsystem();
+DynamicSystem *ds = new DynamicSystem();
 
 DLL_API void clear() {
 	delete ds;
-	ds = new dsystem();
+	ds = new DynamicSystem();
 }
 
 DLL_API void set_damping_ratio(const double z) {

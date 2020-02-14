@@ -47,7 +47,7 @@ void example_sdof()
 //	double k = 100.0;
 //	double c = 2.0*zeta*sqrt(m*k);
 //
-//	dsystem *ds = new dsystem();
+//	DynamicSystem *ds = new DynamicSystem();
 //
 //	ds->addDof(1, m, FIXED);
 //	ds->addDof(2, m);
@@ -103,19 +103,19 @@ void example_sdof()
 //	double uy = 0.01;
 //	double alpha = 0.1;
 //
-//	dsystem *ds = new dsystem();
+//	DynamicSystem *ds = new DynamicSystem();
 //
 //	ds->addDof(0, m, FIXED);
 //	ds->addDof(1, m);
 //
 //	ds->addMaterialElastoplastic(0, k, k*uy, alpha);
 //	ds->addMaterialSMABilinear(1, k, k*uy, alpha, 0.5*k*uy);
-//	ds->addSpringNL(0, 0, 1, 0);
+//	ds->addSpringNonlinear(0, 0, 1, 0);
 //
 //	//ds->addSpring(0, 0, 1, k);
 //	//ds->addSpring(10, 0, 1, k);
 //	//ds->addSlider(0, 0, 1, 0.1);
-//	//ds->addSpringBL(0, 0, 1, k, uy, alpha);
+//	//ds->addSpringBilinear(0, 0, 1, k, uy, alpha);
 //	//ds->addSpringBW(0, 0, 1, k, uy, alpha);
 //	ds->addDashpot(1, 0, 1, c);
 //	//ds->addDashpotExp(1, 0, 1, c, 0.2);
@@ -158,7 +158,7 @@ void example_sdof()
 //	double c = 1.0;
 //	double zeta = 0.0;
 //	int ndof = 1;
-//	dsystem *ds = new dsystem(zeta);
+//	DynamicSystem *ds = new DynamicSystem(zeta);
 //
 //	ds->addDof(0, m, FIXED);
 //	for (int i = 1; i <= ndof; i++)
@@ -219,7 +219,7 @@ void example_sdof()
 //	double k = 2025.0;
 //	double zeta = 0.0;
 //	int ndof = 3;
-//	dsystem *ds = new dsystem(zeta);
+//	DynamicSystem *ds = new DynamicSystem(zeta);
 //
 //	double mu = 0.05;
 //	double xi = 0.005;
@@ -298,7 +298,7 @@ void example_sdof()
 //
 //void example_truss()
 //{
-//	dsystem *ds = new dsystem();
+//	DynamicSystem *ds = new DynamicSystem();
 //
 //	double mass = 0.01;
 //	double E = 206.0;
@@ -362,7 +362,7 @@ void example_sdof()
 //
 //void example_frame()
 //{
-//	dsystem *ds = new dsystem(0.05);
+//	DynamicSystem *ds = new DynamicSystem(0.05);
 //
 //	double mass = 0.005;
 //	double E = 32.5;
@@ -502,7 +502,7 @@ void example_sdof()
 //
 //void example_cantilever()
 //{
-//	dsystem *ds = new dsystem();
+//	DynamicSystem *ds = new DynamicSystem();
 //
 //	double mass = 0.005;
 //	double E = 32.5;

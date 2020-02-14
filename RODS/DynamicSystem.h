@@ -2,7 +2,7 @@
 
 #include <map>
 #include <armadillo>
-#include "basis.h"
+#include "Basis.h"
 #include "dof.h"
 #include "node.h"
 #include "line.h"
@@ -25,8 +25,9 @@
 #include "element/dashpotMaxwell2D.h"
 #include "element/trussElastic.h"
 #include "element/beamElastic.h"
-#include "element/frameElastic.h"
-#include "timeseries.h"
+#include "element/FrameElastic2D.h"
+#include "element/Quad4Elastic.h"
+#include "TimeSeries.h"
 #include "recorder/recorder.h"
 #include "recorder/dofRecorder.h"
 #include "recorder/elementRecorder.h"
@@ -43,11 +44,11 @@ enum dsolver
 	Newmark, Newmark_NL, StateSpace, StateSpace_NL
 };
 
-class dsystem : public basis
+class DynamicSystem : public Basis
 {
 public:
-	dsystem(const double z=0.0);
-	~dsystem();
+	DynamicSystem(const double z=0.0);
+	~DynamicSystem();
 
 	void addNode(node *nd);
 	void addNode(const int id, const double x, const int dofId);
@@ -70,6 +71,9 @@ public:
 	void addDof(const int id, const double m, const bool fixed=false);
 	void addDof(const int id, direction dir, const double m, const bool fixed=false);
 
+	void setMass(const int id, const double m);
+	void setNodeMass(const int id, const double m);
+	
 	void mapDofNode(dof *d, node *nd);
 	void mapDofNode(const int id_d, const int id_nd);
 
@@ -85,10 +89,10 @@ public:
 
 	void addSpring(spring *s);
 	void addSpring(const int id, const int ni, const int nj, const double k);
-	void addSpringBL(springBilinear *s);
-	void addSpringBL(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
-	void addSpringNL(springNonlinear *s);
-	void addSpringNL(const int id, const int ni, const int nj, const int matId);
+	void addSpringBilinear(springBilinear *s);
+	void addSpringBilinear(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
+	void addSpringNonlinear(springNonlinear *s);
+	void addSpringNonlinear(const int id, const int ni, const int nj, const int matId);
 	void addSpringBoucWen(springBoucWen *s);
 	void addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta = 0.5, const double n=20);
 	void addDashpot(dashpot *d);
@@ -123,10 +127,14 @@ public:
 	void addTrussElastic(const int id, const int ni, const int nj, const double EA);
 	void addBeamElastic(beamElastic *beam);
 	void addBeamElastic(const int id, const int ni, const int nj, const double EI);
-	void addFrameElastic(frameElastic *frame);
+	void addFrameElastic(FrameElastic2D *frame);
 	void addFrameElastic(const int id, const int ni, const int nj, const double EA, const double EI);
+	void addQuad4Elastic(Quad4Elastic *quad);
+	void addQuad4Elastic(const int id, const int nodeI, const int nodeJ,
+						const int nodeP, const int nodeQ,
+						const double E, const double nu, const double t);
 
-	void addTimeseries(timeseries *ts);
+	void addTimeseries(TimeSeries *ts);
 	void addTimeseries(const int id, const double dt, const vec &s);
 	void addTimeseries(const int id, const double dt, char * fileName);
 
@@ -186,6 +194,7 @@ public:
 	std::map<int, dof *> dofs;
 	std::map<int, element *> eles;
 	std::map<int, element2D *> ele2Ds;
+	std::map<int, Plane2D *> Plane2Ds;
 
 	std::map<int, element *> physicalMassElements; // For Assembling Mp
 	std::map<int, element *> inertialMassElements; // For Assembling M other than Mp
@@ -194,6 +203,7 @@ public:
 	std::map<int, element *> nonlinearElements;  // For Assembling q only
 	std::map<int, element *> nonlinearTangentElements;  // For Assembling q and K
 	std::map<int, element *> nonlinearSecantElements;  // For Assembling q and K0
+	std::map<int, element *> nonlinearInitialTangentElements;  // For Assembling q, K0 and K
 
 	std::map<int, spring *> springs;
 	std::map<int, springBilinear *> springBLs;
@@ -216,11 +226,12 @@ public:
 
 	std::map<int, trussElastic *> trussElastics;
 	std::map<int, beamElastic *> beamElastics;
-	std::map<int, frameElastic *> frameElastics;
+	std::map<int, FrameElastic2D *> FrameElastic2Ds;
+	std::map<int, Quad4Elastic *> Quad4Elastics;
 
 	std::map<int, material1D *> material1Ds;
 
-	std::map<int, timeseries *> tss;
+	std::map<int, TimeSeries *> tss;
 	std::map<int, recorder *> drs;
 	std::map<int, recorder *> ers;
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "basis.h"
+#include "Basis.h"
 #include "node.h"
 #include <armadillo>
 
@@ -12,7 +12,7 @@ namespace ELE {
 	};
 };
 
-class element : public basis
+class element : public Basis
 {
 public:
 	element();
@@ -21,6 +21,7 @@ public:
 
 	virtual void buildMatrix() = 0;
 	virtual void getResponse(const bool update = false) = 0;
+	virtual void assembleInitialStiffnessMatrix(mat &K0) = 0;
 	virtual void assembleStiffnessMatrix(mat &K) = 0;
 	virtual void assembleDampingMatrix(mat &C) = 0;
 	virtual void assembleMassMatrix(mat &M) = 0;

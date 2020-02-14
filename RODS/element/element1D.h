@@ -13,6 +13,7 @@ public:
 
 	virtual void buildMatrix() {}
 	virtual void getResponse(const bool update = false) {}
+	virtual void assembleInitialStiffnessMatrix(mat &K0) {}
 	virtual void assembleStiffnessMatrix(mat &K) {}
 	virtual void assembleDampingMatrix(mat &C) {}
 	virtual void assembleMassMatrix(mat &M) {}

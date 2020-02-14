@@ -1,28 +1,28 @@
-#include "timeseries.h"
+#include "TimeSeries.h"
 
-timeseries::timeseries(const int id, const double dt, const vec &s):
-	basis(id), nsteps((int)s.n_rows), dt(dt),
+TimeSeries::TimeSeries(const int id, const double dt, const vec &s):
+	Basis(id), nsteps((int)s.n_rows), dt(dt),
     series(vec(s))
 {
 }
 
-timeseries::timeseries(const int id, const double dt, char* fileName):
-	basis(id), dt(dt)
+TimeSeries::TimeSeries(const int id, const double dt, char* fileName):
+	Basis(id), dt(dt)
 {
 	series.load(fileName, raw_ascii);
 	nsteps = (int)series.n_rows;
 }
 
-timeseries::timeseries(const int id, const double dt) :
-	basis(id), dt(dt), nsteps(0)
+TimeSeries::TimeSeries(const int id, const double dt) :
+	Basis(id), dt(dt), nsteps(0)
 {
 }
 
-timeseries::~timeseries()
+TimeSeries::~TimeSeries()
 {
 }
 
-void timeseries::load(char *fileName)
+void TimeSeries::load(char *fileName)
 {
 	series.load(fileName, raw_ascii);
 	nsteps = (int)series.n_rows;

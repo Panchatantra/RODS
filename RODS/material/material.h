@@ -1,7 +1,7 @@
 #pragma once
-#include "basis.h"
+#include "Basis.h"
 
-class material : public basis
+class material : public Basis
 {
 public:
 	material();

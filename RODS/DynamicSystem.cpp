@@ -1,4 +1,4 @@
-#include "dsystem.h"
+#include "DynamicSystem.h"
 #include "numeric.h"
 
 #include <fstream>
@@ -9,7 +9,7 @@
 #include "material/concreteTrilinear.h"
 #include "material/SMABilinear.h"
 
-dsystem::dsystem(const double z) :
+DynamicSystem::DynamicSystem(const double z) :
     zeta(z), eqnCount(0), fixedDofCount(0), eigenVectorNormed(false),
     dynamicSolver(StateSpace), dt(0.02), ctime(0.0), nsteps(0), cstep(0),
 	useRayleighDamping(true), RayleighOmg1(2*PI/0.3), RayleighOmg2(2*PI/0.1),
@@ -17,11 +17,11 @@ dsystem::dsystem(const double z) :
 {
 }
 
-dsystem::~dsystem()
+DynamicSystem::~DynamicSystem()
 {
 }
 
-void dsystem::addNode(node * nd)
+void DynamicSystem::addNode(node * nd)
 {
 	auto it = nodes.insert(std::make_pair(nd->id, nd));
 	if (!it.second)
@@ -30,7 +30,7 @@ void dsystem::addNode(node * nd)
 	}
 }
 
-void dsystem::addNode(const int id, const double x, const int dofId)
+void DynamicSystem::addNode(const int id, const double x, const int dofId)
 {
 	dof *d = dofs.at(dofId);
 	node *nd = new node(id, x);
@@ -38,13 +38,13 @@ void dsystem::addNode(const int id, const double x, const int dofId)
 	addNode(nd);
 }
 
-void dsystem::addNode(const int id, const double x, const double y, const double z)
+void DynamicSystem::addNode(const int id, const double x, const double y, const double z)
 {
 	node *nd = new node(id, x, y, z);
 	addNode(nd);
 }
 
-void dsystem::addNode(const int id, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId)
+void DynamicSystem::addNode(const int id, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId)
 {
 	dof *dx = dofs.at(dofXId);
 	dof *dz = dofs.at(dofZId);
@@ -61,7 +61,7 @@ void dsystem::addNode(const int id, const double x, const double z, const int do
 	addNode(nd);
 }
 
-void dsystem::addNodeWithDof(const int id, const double x, const int dofId)
+void DynamicSystem::addNodeWithDof(const int id, const double x, const int dofId)
 {
     dof *d = new dof(dofId, X);
     node *nd = new node(id, x, 0.0, 0.0);
@@ -71,7 +71,7 @@ void dsystem::addNodeWithDof(const int id, const double x, const int dofId)
     addNode(nd);
 }
 
-void dsystem::addLine(line *l)
+void DynamicSystem::addLine(line *l)
 {
 	auto it = lines.insert(std::make_pair(l->id, l));
 	if (!it.second)
@@ -80,28 +80,28 @@ void dsystem::addLine(line *l)
 	}
 }
 
-void dsystem::addLine(const int id, const int ni, const int nj)
+void DynamicSystem::addLine(const int id, const int ni, const int nj)
 {
 	line *l = new line(id, nodes.at(ni), nodes.at(nj));
 	addLine(l);
 }
 
-void dsystem::fixDof(const int id)
+void DynamicSystem::fixDof(const int id)
 {
 	dofs.at(id)->isFixed = true;
 }
 
-void dsystem::fixNode(const int id)
+void DynamicSystem::fixNode(const int id)
 {
 	nodes.at(id)->fixDof();
 }
 
-void dsystem::addDofLoad(const int id, const double load)
+void DynamicSystem::addDofLoad(const int id, const double load)
 {
 	dofs.at(id)->setLoad(load);
 }
 
-void dsystem::exportGmsh(char * fileName)
+void DynamicSystem::exportGmsh(char * fileName)
 {
 	std::ofstream outFile;
 	outFile.open(fileName, ios::out);
@@ -115,14 +115,31 @@ void dsystem::exportGmsh(char * fileName)
 		outFile << it->first << " " << nd->x0 << " " << nd->y0 << " " << nd->z0 << std::endl;
 	}
 	outFile << "$EndNodes" << std::endl;
-	outFile << "$Elements" << std::endl;
-	outFile << ele2Ds.size() << std::endl;
-	for (auto it = ele2Ds.begin(); it != ele2Ds.end(); it++)
+
+	if (ele2Ds.size()>1)
 	{
-		auto ele = it->second;
-		outFile << it->first << " 1 1 1 " << ele->nodeI->id << " " << ele->nodeJ->id << std::endl;
+		outFile << "$Elements" << std::endl;
+		outFile << ele2Ds.size() << std::endl;
+		for (auto it = ele2Ds.begin(); it != ele2Ds.end(); it++)
+		{
+			auto ele = it->second;
+			outFile << it->first << " 1 1 1 " << ele->nodeI->id << " " << ele->nodeJ->id << std::endl;
+		}
+		outFile << "$EndElements" << std::endl;
 	}
-	outFile << "$EndElements" << std::endl;
+
+	if (Plane2Ds.size()>1)
+	{
+		outFile << "$Elements" << std::endl;
+		outFile << Plane2Ds.size() << std::endl;
+		for (auto it = Plane2Ds.begin(); it != Plane2Ds.end(); it++)
+		{
+			auto ele = it->second;
+			outFile << it->first << " 3 1 1 " << ele->nodeI->id << " " << ele->nodeJ->id << " "
+											  << ele->nodeP->id << " " << ele->nodeQ->id << std::endl;
+		}
+		outFile << "$EndElements" << std::endl;
+	}
 
 	outFile << "$NodeData" << std::endl;
 
@@ -158,7 +175,7 @@ void dsystem::exportGmsh(char * fileName)
 	}
 }
 
-void dsystem::addDof(dof * d)
+void DynamicSystem::addDof(dof * d)
 {
 	if (dofs.count(d->id) == 0)
 	{
@@ -170,25 +187,47 @@ void dsystem::addDof(dof * d)
 	}
 }
 
-void dsystem::addDof(const int id, const double m, const bool fixed)
+void DynamicSystem::addDof(const int id, const double m, const bool fixed)
 {
 	dof *d = new dof(id, X, m, fixed);
 	addDof(d);
 }
 
-void dsystem::addDof(const int id, direction dir, const double m, const bool fixed)
+void DynamicSystem::addDof(const int id, direction dir, const double m, const bool fixed)
 {
 	dof *d = new dof(id, dir, m, fixed);
 	addDof(d);
 }
 
-void dsystem::mapDofNode(dof * d, node * nd)
+void DynamicSystem::setMass(const int id, const double m)
+{
+	dofs.at(id)->mass = m;
+}
+
+void DynamicSystem::setNodeMass(const int id, const double m)
+{
+	node *nd = nodes.at(id);
+	if (nd->isActivated(X))
+	{
+		nd->dofX->mass = m;
+	}
+	if (nd->isActivated(Z))
+	{
+		nd->dofZ->mass = m;
+	}
+	if (nd->isActivated(RY))
+	{
+		nd->dofRY->mass = m;
+	}
+}
+
+void DynamicSystem::mapDofNode(dof * d, node * nd)
 {
 	nd->setDof(d);
 	dofMapNode[d->id] = nd->id;
 }
 
-void dsystem::mapDofNode(const int id_d, const int id_nd)
+void DynamicSystem::mapDofNode(const int id_d, const int id_nd)
 {
 	node *nd = nodes.at(id_nd);
 	dof *d = dofs.at(id_d);
@@ -196,7 +235,7 @@ void dsystem::mapDofNode(const int id_d, const int id_nd)
 	dofMapNode[id_d] = id_nd;
 }
 
-bool dsystem::addMaterial1D(material1D * mtrl)
+bool DynamicSystem::addMaterial1D(material1D * mtrl)
 {
 	if (material1Ds.count(mtrl->id) == 0)
 	{
@@ -210,38 +249,38 @@ bool dsystem::addMaterial1D(material1D * mtrl)
 	}
 }
 
-bool dsystem::addMaterialElastic(const int id, const double E0)
+bool DynamicSystem::addMaterialElastic(const int id, const double E0)
 {
 	material1D *mtrl = new elastic(id, E0);
 	return addMaterial1D(mtrl);
 }
 
-bool dsystem::addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha)
+bool DynamicSystem::addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha)
 {
 	material1D *mtrl = new elastoplastic(id, E0, fy, alpha);
 	return addMaterial1D(mtrl);
 }
 
-bool dsystem::addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha, const double beta)
+bool DynamicSystem::addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha, const double beta)
 {
 	material1D *mtrl = new steelBilinear(id, E0, fy, alpha, beta);
 	return addMaterial1D(mtrl);
 }
 
-bool dsystem::addMaterialConcreteTrilinear(const int id, const double E0, const double fc, const double epsilon_c, const double sigma_cr, const double sigma_u, const double epsilon_u)
+bool DynamicSystem::addMaterialConcreteTrilinear(const int id, const double E0, const double fc, const double epsilon_c, const double sigma_cr, const double sigma_u, const double epsilon_u)
 {
 	material1D *mtrl = new concreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u);
 	return addMaterial1D(mtrl);
 }
 
-bool dsystem::addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift)
+bool DynamicSystem::addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift)
 {
 	material1D *mtrl = new SMABilinear(id, E0, fy, alpha, sigma_shift);
 	return addMaterial1D(mtrl);
 }
 
 
-bool dsystem::addElement(element * e)
+bool DynamicSystem::addElement(element * e)
 {
 	if (eles.count(e->id) == 0)
 	{
@@ -255,7 +294,7 @@ bool dsystem::addElement(element * e)
 	}
 }
 
-void dsystem::addSpring(spring *s)
+void DynamicSystem::addSpring(spring *s)
 {
 	if (addElement(s)) {
 		springs[s->id] = s;
@@ -263,7 +302,7 @@ void dsystem::addSpring(spring *s)
 	}
 }
 
-void dsystem::addSpring(const int id, const int ni, const int nj, const double k)
+void DynamicSystem::addSpring(const int id, const int ni, const int nj, const double k)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
@@ -271,7 +310,7 @@ void dsystem::addSpring(const int id, const int ni, const int nj, const double k
 	addSpring(s);
 }
 
-void dsystem::addSpringBL(springBilinear * s)
+void DynamicSystem::addSpringBilinear(springBilinear * s)
 {
 	if (addElement(s))
 	{
@@ -280,15 +319,15 @@ void dsystem::addSpringBL(springBilinear * s)
 	}
 }
 
-void dsystem::addSpringBL(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha)
+void DynamicSystem::addSpringBilinear(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
 	springBilinear *s = new springBilinear(id, i, j, k0, uy, alpha);
-	addSpringBL(s);
+	addSpringBilinear(s);
 }
 
-void dsystem::addSpringNL(springNonlinear * s)
+void DynamicSystem::addSpringNonlinear(springNonlinear * s)
 {
 	if (addElement(s))
 	{
@@ -297,15 +336,15 @@ void dsystem::addSpringNL(springNonlinear * s)
 	}
 }
 
-void dsystem::addSpringNL(const int id, const int ni, const int nj, const int matId)
+void DynamicSystem::addSpringNonlinear(const int id, const int ni, const int nj, const int matId)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
 	springNonlinear *s = new springNonlinear(id, i, j, material1Ds.at(matId));
-	addSpringNL(s);
+	addSpringNonlinear(s);
 }
 
-void dsystem::addSpringBoucWen(springBoucWen * s)
+void DynamicSystem::addSpringBoucWen(springBoucWen * s)
 {
 	if (addElement(s))
 	{
@@ -314,7 +353,7 @@ void dsystem::addSpringBoucWen(springBoucWen * s)
 	}
 }
 
-void dsystem::addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n)
+void DynamicSystem::addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
@@ -322,7 +361,7 @@ void dsystem::addSpringBoucWen(const int id, const int ni, const int nj, const d
 	addSpringBoucWen(s);
 }
 
-void dsystem::addDashpot(dashpot * d)
+void DynamicSystem::addDashpot(dashpot * d)
 {
 	if (addElement(d))
 	{
@@ -331,7 +370,7 @@ void dsystem::addDashpot(dashpot * d)
 	}
 }
 
-void dsystem::addDashpot(const int id, const int ni, const int nj, const double c)
+void DynamicSystem::addDashpot(const int id, const int ni, const int nj, const double c)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
@@ -339,7 +378,7 @@ void dsystem::addDashpot(const int id, const int ni, const int nj, const double 
 	addDashpot(d);
 }
 
-void dsystem::addDashpotExp(dashpotExp * d)
+void DynamicSystem::addDashpotExp(dashpotExp * d)
 {
 	if (addElement(d))
 	{
@@ -348,7 +387,7 @@ void dsystem::addDashpotExp(dashpotExp * d)
 	}
 }
 
-void dsystem::addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha)
+void DynamicSystem::addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
@@ -356,7 +395,7 @@ void dsystem::addDashpotExp(const int id, const int ni, const int nj, const doub
 	addDashpotExp(d);
 }
 
-void dsystem::addDashpotMaxwell(dashpotMaxwell * d)
+void DynamicSystem::addDashpotMaxwell(dashpotMaxwell * d)
 {
 	if (addElement(d))
 	{
@@ -365,7 +404,7 @@ void dsystem::addDashpotMaxwell(dashpotMaxwell * d)
 	}
 }
 
-void dsystem::addDashpotMaxwell(const int id, const int ni, const int nj, const double k, const double c, const double alpha)
+void DynamicSystem::addDashpotMaxwell(const int id, const int ni, const int nj, const double k, const double c, const double alpha)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
@@ -373,7 +412,7 @@ void dsystem::addDashpotMaxwell(const int id, const int ni, const int nj, const 
 	addDashpotMaxwell(d);
 }
 
-void dsystem::addInerter(inerter * in)
+void DynamicSystem::addInerter(inerter * in)
 {
 	if (addElement(in))
 	{
@@ -382,7 +421,7 @@ void dsystem::addInerter(inerter * in)
 	}
 }
 
-void dsystem::addInerter(const int id, const int ni, const int nj, const double m)
+void DynamicSystem::addInerter(const int id, const int ni, const int nj, const double m)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
@@ -390,7 +429,7 @@ void dsystem::addInerter(const int id, const int ni, const int nj, const double 
 	addInerter(in);
 }
 
-void dsystem::addSlider(slider * s)
+void DynamicSystem::addSlider(slider * s)
 {
 	if (addElement(s))
 	{
@@ -399,7 +438,7 @@ void dsystem::addSlider(slider * s)
 	}
 }
 
-void dsystem::addSlider(const int id, const int ni, const int nj, const double muN)
+void DynamicSystem::addSlider(const int id, const int ni, const int nj, const double muN)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
@@ -407,7 +446,7 @@ void dsystem::addSlider(const int id, const int ni, const int nj, const double m
 	addSlider(s);
 }
 
-void dsystem::addSPIS2(spis2 * s)
+void DynamicSystem::addSPIS2(spis2 * s)
 {
 	if (addElement(s))
 	{
@@ -418,7 +457,7 @@ void dsystem::addSPIS2(spis2 * s)
 	}
 }
 
-void dsystem::addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k)
+void DynamicSystem::addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
@@ -427,7 +466,7 @@ void dsystem::addSPIS2(const int id, const int ni, const int nj, const int nin, 
 	addSPIS2(s);
 }
 
-void dsystem::addTVMD(TVMD *d)
+void DynamicSystem::addTVMD(TVMD *d)
 {
 	if (addElement(d))
 	{
@@ -436,7 +475,7 @@ void dsystem::addTVMD(TVMD *d)
 	}
 }
 
-void dsystem::addTVMD(const int id, const int ni, const int nj, const double m, const double c, const double k)
+void DynamicSystem::addTVMD(const int id, const int ni, const int nj, const double m, const double c, const double k)
 {
 	dof *i = dofs.at(ni);
 	dof *j = dofs.at(nj);
@@ -444,7 +483,7 @@ void dsystem::addTVMD(const int id, const int ni, const int nj, const double m, 
 	addTVMD(d);
 }
 
-void dsystem::addSpring2D(spring2D *s)
+void DynamicSystem::addSpring2D(spring2D *s)
 {
 	if (addElement(s))
 	{
@@ -454,13 +493,13 @@ void dsystem::addSpring2D(spring2D *s)
 	}
 }
 
-void dsystem::addSpring2D(const int id, const int ni, const int nj, const double k, ELE::localAxis U)
+void DynamicSystem::addSpring2D(const int id, const int ni, const int nj, const double k, ELE::localAxis U)
 {
 	spring2D *s = new spring2D(id, nodes.at(ni), nodes.at(nj), k, U);
 	addSpring2D(s);
 }
 
-void dsystem::addSpringBoucWen2D(springBoucWen2D *s)
+void DynamicSystem::addSpringBoucWen2D(springBoucWen2D *s)
 {
 	if (addElement(s))
 	{
@@ -470,13 +509,13 @@ void dsystem::addSpringBoucWen2D(springBoucWen2D *s)
 	}
 }
 
-void dsystem::addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n, ELE::localAxis U /*= ELE::U1*/)
+void DynamicSystem::addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n, ELE::localAxis U /*= ELE::U1*/)
 {
 	springBoucWen2D *s = new springBoucWen2D(id, nodes.at(ni), nodes.at(nj), k0, uy, alpha, beta, n, U);
 	addSpringBoucWen2D(s);
 }
 
-void dsystem::addDashpot2D(dashpot2D *s)
+void DynamicSystem::addDashpot2D(dashpot2D *s)
 {
 	if (addElement(s))
 	{
@@ -486,13 +525,13 @@ void dsystem::addDashpot2D(dashpot2D *s)
 	}
 }
 
-void dsystem::addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::localAxis U)
+void DynamicSystem::addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::localAxis U)
 {
 	dashpot2D *s = new dashpot2D(id, nodes.at(ni), nodes.at(nj), c, U);
 	addDashpot2D(s);
 }
 
-void dsystem::addInerter2D(inerter2D *s)
+void DynamicSystem::addInerter2D(inerter2D *s)
 {
 	if (addElement(s))
 	{
@@ -502,13 +541,13 @@ void dsystem::addInerter2D(inerter2D *s)
 	}
 }
 
-void dsystem::addInerter2D(const int id, const int ni, const int nj, const double m, ELE::localAxis U)
+void DynamicSystem::addInerter2D(const int id, const int ni, const int nj, const double m, ELE::localAxis U)
 {
 	inerter2D *s = new inerter2D(id, nodes.at(ni), nodes.at(nj), m, U);
 	addInerter2D(s);
 }
 
-void dsystem::addDashpotExp2D(dashpotExp2D *s)
+void DynamicSystem::addDashpotExp2D(dashpotExp2D *s)
 {
 	if (addElement(s))
 	{
@@ -518,13 +557,13 @@ void dsystem::addDashpotExp2D(dashpotExp2D *s)
 	}
 }
 
-void dsystem::addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, ELE::localAxis U /*= ELE::U1*/)
+void DynamicSystem::addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, ELE::localAxis U /*= ELE::U1*/)
 {
 	dashpotExp2D *s = new dashpotExp2D(id, nodes.at(ni), nodes.at(nj), c, alpha, U);
 	addDashpotExp2D(s);
 }
 
-void dsystem::addDashpotMaxwell2D(dashpotMaxwell2D *s)
+void DynamicSystem::addDashpotMaxwell2D(dashpotMaxwell2D *s)
 {
 	if (addElement(s))
 	{
@@ -534,13 +573,13 @@ void dsystem::addDashpotMaxwell2D(dashpotMaxwell2D *s)
 	}
 }
 
-void dsystem::addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::localAxis U)
+void DynamicSystem::addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::localAxis U)
 {
 	dashpotMaxwell2D *s = new dashpotMaxwell2D(id, nodes.at(ni), nodes.at(nj), k, c, alpha, U);
 	addDashpotMaxwell2D(s);
 }
 
-void dsystem::addTrussElastic(trussElastic *truss)
+void DynamicSystem::addTrussElastic(trussElastic *truss)
 {
 	if (addElement(truss)) {
 		ele2Ds[truss->id] = truss;
@@ -549,13 +588,13 @@ void dsystem::addTrussElastic(trussElastic *truss)
 	}
 }
 
-void dsystem::addTrussElastic(const int id, const int ni, const int nj, const double EA)
+void DynamicSystem::addTrussElastic(const int id, const int ni, const int nj, const double EA)
 {
 	trussElastic *truss = new trussElastic(id, nodes.at(ni), nodes.at(nj), EA);
 	addTrussElastic(truss);
 }
 
-void dsystem::addBeamElastic(beamElastic *beam)
+void DynamicSystem::addBeamElastic(beamElastic *beam)
 {
 	if (addElement(beam)) {
 		ele2Ds[beam->id] = beam;
@@ -564,50 +603,66 @@ void dsystem::addBeamElastic(beamElastic *beam)
 	}
 }
 
-void dsystem::addBeamElastic(const int id, const int ni, const int nj, const double EI)
+void DynamicSystem::addBeamElastic(const int id, const int ni, const int nj, const double EI)
 {
 	beamElastic *beam = new beamElastic(id, nodes.at(ni), nodes.at(nj), EI);
 	addBeamElastic(beam);
 }
 
-void dsystem::addFrameElastic(frameElastic *frame)
+void DynamicSystem::addFrameElastic(FrameElastic2D *frame)
 {
 	if (addElement(frame)) {
 		ele2Ds[frame->id] = frame;
-		frameElastics[frame->id] = frame;
+		FrameElastic2Ds[frame->id] = frame;
 		linearElasticElements[frame->id] = frame;
 	}
 }
 
-void dsystem::addFrameElastic(const int id, const int ni, const int nj, const double EA, const double EI)
+void DynamicSystem::addFrameElastic(const int id, const int ni, const int nj, const double EA, const double EI)
 {
-	frameElastic *frame = new frameElastic(id, nodes.at(ni), nodes.at(nj), EA, EI);
+	FrameElastic2D *frame = new FrameElastic2D(id, nodes.at(ni), nodes.at(nj), EA, EI);
 	addFrameElastic(frame);
 }
 
-void dsystem::addTimeseries(timeseries * ts)
+void DynamicSystem::addQuad4Elastic(Quad4Elastic* quad)
+{
+	if (addElement(quad)) {
+		Quad4Elastics[quad->id] = quad;
+		Plane2Ds[quad->id] = quad;
+		linearElasticElements[quad->id] = quad;
+	}
+}
+
+void DynamicSystem::addQuad4Elastic(const int id, const int nodeI, const int nodeJ, const int nodeP, const int nodeQ,
+	const double E, const double nu, const double t)
+{
+	Quad4Elastic *quad = new Quad4Elastic(id, nodes.at(nodeI), nodes.at(nodeJ), nodes.at(nodeP), nodes.at(nodeQ), E, nu, t);
+	addQuad4Elastic(quad);
+}
+
+void DynamicSystem::addTimeseries(TimeSeries * ts)
 {
 	tss[ts->id] = ts;
 }
 
-void dsystem::addTimeseries(const int id, const double dt, const vec &s)
+void DynamicSystem::addTimeseries(const int id, const double dt, const vec &s)
 {
-	timeseries *ts = new timeseries(id, dt, s);
+	TimeSeries *ts = new TimeSeries(id, dt, s);
 	addTimeseries(ts);
 }
 
-void dsystem::addTimeseries(const int id, const double dt, char* fileName)
+void DynamicSystem::addTimeseries(const int id, const double dt, char* fileName)
 {
-	timeseries *ts = new timeseries(id, dt, fileName);
+	TimeSeries *ts = new TimeSeries(id, dt, fileName);
 	addTimeseries(ts);
 }
 
-void dsystem::addDofRecorder(dofRecorder * dr)
+void DynamicSystem::addDofRecorder(dofRecorder * dr)
 {
 	drs[dr->id] = dr;
 }
 
-void dsystem::addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName)
+void DynamicSystem::addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName)
 {
 	std::vector<dof *> rdofs(n);
 
@@ -620,12 +675,12 @@ void dsystem::addDofRecorder(const int id, int *dofIds, const int n, response rt
 	addDofRecorder(dr);
 }
 
-void dsystem::addElementRecorder(elementRecorder * er)
+void DynamicSystem::addElementRecorder(elementRecorder * er)
 {
 	ers[er->id] = er;
 }
 
-void dsystem::addElementRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
+void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
 {
 	std::vector<element *> reles(n);
 
@@ -638,7 +693,7 @@ void dsystem::addElementRecorder(const int id, int * eleIds, const int n, respon
 	addElementRecorder(er);
 }
 
-void dsystem::addSpringRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
+void DynamicSystem::addSpringRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
 {
 	std::vector<element *> reles(n);
 
@@ -651,7 +706,7 @@ void dsystem::addSpringRecorder(const int id, int * eleIds, const int n, respons
 	addElementRecorder(er);
 }
 
-void dsystem::addDashpotRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
+void DynamicSystem::addDashpotRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
 {
 	std::vector<element *> reles(n);
 
@@ -664,7 +719,7 @@ void dsystem::addDashpotRecorder(const int id, int * eleIds, const int n, respon
 	addElementRecorder(er);
 }
 
-void dsystem::addInerterRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
+void DynamicSystem::addInerterRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
 {
 	std::vector<element *> reles(n);
 
@@ -677,14 +732,14 @@ void dsystem::addInerterRecorder(const int id, int * eleIds, const int n, respon
 	addElementRecorder(er);
 }
 
-void dsystem::setRayleighDamping(const double omg1, const double omg2)
+void DynamicSystem::setRayleighDamping(const double omg1, const double omg2)
 {
 	useRayleighDamping = true;
 	RayleighOmg1 = omg1;
 	RayleighOmg2 = omg2;
 }
 
-void dsystem::activeGroundMotion(direction dir)
+void DynamicSystem::activeGroundMotion(direction dir)
 {
 	for (int i = 0; i < eqnCount; i++)
 	{
@@ -696,7 +751,7 @@ void dsystem::activeGroundMotion(direction dir)
 	}
 }
 
-void dsystem::buildDofEqnMap()
+void DynamicSystem::buildDofEqnMap()
 {
 	std::map<int, dof *>::iterator it;
 	eqnCount = 0;
@@ -716,7 +771,7 @@ void dsystem::buildDofEqnMap()
 	}
 }
 
-void dsystem::assembleMatrix()
+void DynamicSystem::assembleMatrix()
 {
 	assembleMassMatrix();
 	assembleStiffnessMatrix();
@@ -737,7 +792,7 @@ void dsystem::assembleMatrix()
 	acc = zeros<vec>(eqnCount);
 }
 
-void dsystem::assembleMassMatrix()
+void DynamicSystem::assembleMassMatrix()
 {
 	buildDofEqnMap();
 	vec m(eqnCount);
@@ -768,7 +823,7 @@ void dsystem::assembleMassMatrix()
 	}
 }
 
-void dsystem::applyRestraint()
+void DynamicSystem::applyRestraint()
 {
 	eqnCount = 0;
 	dofMapEqn.clear();
@@ -809,7 +864,7 @@ void dsystem::applyRestraint()
 	Q = zeros<vec>(eqnCount); // Nodal load vector
 }
 
-void dsystem::applyLoad()
+void DynamicSystem::applyLoad()
 {
 	for (int i = 0; i < eqnCount; i++)
 	{
@@ -818,7 +873,7 @@ void dsystem::applyLoad()
 	}
 }
 
-void dsystem::addGravity()
+void DynamicSystem::addGravity()
 {
 	for (auto it=dofs.begin(); it!=dofs.end(); it++)
 	{
@@ -830,7 +885,7 @@ void dsystem::addGravity()
 	}
 }
 
-void dsystem::assembleStiffnessMatrix()
+void DynamicSystem::assembleStiffnessMatrix()
 {
 	K = zeros<mat>(eqnCount, eqnCount);
 
@@ -864,13 +919,13 @@ void dsystem::assembleStiffnessMatrix()
 	}
 }
 
-void dsystem::setNumModesInherentDamping(const int n)
+void DynamicSystem::setNumModesInherentDamping(const int n)
 {
 	NumModesInherentDamping = n;
 	useRayleighDamping = false;
 }
 
-void dsystem::buildInherentDampingMatrix()
+void DynamicSystem::buildInherentDampingMatrix()
 {
 	int eigenNum = NumModesInherentDamping>0 ? NumModesInherentDamping: eqnCount;
 	if (zeta == 0.0)
@@ -899,7 +954,7 @@ void dsystem::buildInherentDampingMatrix()
 
 }
 
-void dsystem::buildRayleighDampingMatrix(const double omg1, const double omg2)
+void DynamicSystem::buildRayleighDampingMatrix(const double omg1, const double omg2)
 {
 	if (zeta == 0.0)
 	{
@@ -913,7 +968,7 @@ void dsystem::buildRayleighDampingMatrix(const double omg1, const double omg2)
 	}
 }
 
-void dsystem::buildRayleighDampingMatrix(const int md1, const int md2)
+void DynamicSystem::buildRayleighDampingMatrix(const int md1, const int md2)
 {
 	if (zeta == 0.0)
 	{
@@ -927,7 +982,7 @@ void dsystem::buildRayleighDampingMatrix(const int md1, const int md2)
 	}
 }
 
-void dsystem::assembleDampingMatrix()
+void DynamicSystem::assembleDampingMatrix()
 {
 	if (!(linearDampingElements.empty()))
 	{
@@ -939,7 +994,7 @@ void dsystem::assembleDampingMatrix()
 	}
 }
 
-void dsystem::solveEigen()
+void DynamicSystem::solveEigen()
 {
 	omg = zeros<vec>(eqnCount);
 	Phi = zeros<mat>(eqnCount, eqnCount);
@@ -951,7 +1006,7 @@ void dsystem::solveEigen()
 	P = 2.0*PI / omg;
 }
 
-void dsystem::solveComplexEigen()
+void DynamicSystem::solveComplexEigen()
 {
 	mat O = zeros<mat>(eqnCount, eqnCount);
 	mat A = join_cols(join_rows(C, M), join_rows(M, O));
@@ -964,7 +1019,7 @@ void dsystem::solveComplexEigen()
 	eig_gen(cx_lbd, cx_Phi, B_eig);
 }
 
-void dsystem::solveStochasticSeismicResponse(const double f_h, const int nf, const char method)
+void DynamicSystem::solveStochasticSeismicResponse(const double f_h, const int nf, const char method)
 {
 	double omg_h = 2.0*PI*f_h;
 	vec omg = linspace(0, omg_h, nf+1);
@@ -1018,7 +1073,7 @@ void dsystem::solveStochasticSeismicResponse(const double f_h, const int nf, con
 	}
 }
 
-void dsystem::solveStaticResponse(const int nsub)
+void DynamicSystem::solveStaticResponse(const int nsub)
 {
 	dsp = solve(K, Q);
 	nsteps = nsub;
@@ -1031,7 +1086,7 @@ void dsystem::solveStaticResponse(const int nsub)
 	saveResponse();
 }
 
-void dsystem::solveTimeDomainSeismicResponse(const int tsId, const double s, const int nsub)
+void DynamicSystem::solveTimeDomainSeismicResponse(const int tsId, const double s, const int nsub)
 {
 	switch (dynamicSolver)
 	{
@@ -1052,7 +1107,7 @@ void dsystem::solveTimeDomainSeismicResponse(const int tsId, const double s, con
 	}
 }
 
-void dsystem::solveTimeDomainSeismicResponseNMK(const int tsId, const double s, const int nsub)
+void DynamicSystem::solveTimeDomainSeismicResponseNMK(const int tsId, const double s, const int nsub)
 {
 	nsteps = tss.at(tsId)->nsteps;
 	dt = tss.at(tsId)->dt;
@@ -1134,7 +1189,7 @@ void dsystem::solveTimeDomainSeismicResponseNMK(const int tsId, const double s, 
 	saveResponse();
 }
 
-void dsystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s, const int nsub, const double tol, const int maxiter)
+void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s, const int nsub, const double tol, const int maxiter)
 {
 	nsteps = tss.at(tsId)->nsteps;
 	dt = tss.at(tsId)->dt;
@@ -1258,7 +1313,7 @@ void dsystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s
 	saveResponse();
 }
 
-void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, const double s, const int nsub)
+void DynamicSystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, const double s, const int nsub)
 {
 	nsteps = tss.at(tsId)->nsteps;
 	dt = tss.at(tsId)->dt;
@@ -1331,7 +1386,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, const dou
 	saveResponse();
 }
 
-void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, const double s, const int nsub)
+void DynamicSystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, const double s, const int nsub)
 {
 	nsteps = tss.at(tsId)->nsteps;
 	dt = tss.at(tsId)->dt;
@@ -1406,7 +1461,7 @@ void dsystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, const d
 	saveResponse();
 }
 
-void dsystem::solveTimeDomainSeismicResponseRK4(const int tsId, const double s, const int nsub)
+void DynamicSystem::solveTimeDomainSeismicResponseRK4(const int tsId, const double s, const int nsub)
 {
 	int nstep = tss.at(tsId)->nsteps;
 	double dt = tss.at(tsId)->dt;
@@ -1424,7 +1479,7 @@ void dsystem::solveTimeDomainSeismicResponseRK4(const int tsId, const double s, 
 	element::dt = dt;
 }
 
-void dsystem::setDofResponse()
+void DynamicSystem::setDofResponse()
 {
 	for (int i = 0; i < eqnCount; i++)
 	{
@@ -1433,7 +1488,7 @@ void dsystem::setDofResponse()
 	}
 }
 
-void dsystem::getElementResponse()
+void DynamicSystem::getElementResponse()
 {
 	if (!(eles.empty()))
 	{
@@ -1445,7 +1500,7 @@ void dsystem::getElementResponse()
 	}
 }
 
-void dsystem::assembleNonlinearForceVector(const bool update)
+void DynamicSystem::assembleNonlinearForceVector(const bool update)
 {
 	q = zeros<vec>(eqnCount);
 
@@ -1480,7 +1535,7 @@ void dsystem::assembleNonlinearForceVector(const bool update)
 	}
 }
 
-void dsystem::initRecorders()
+void DynamicSystem::initRecorders()
 {
 	if (!(drs.empty()))
 	{
@@ -1503,7 +1558,7 @@ void dsystem::initRecorders()
 	}
 }
 
-void dsystem::recordResponse()
+void DynamicSystem::recordResponse()
 {
 	if (!(drs.empty()))
 	{
@@ -1526,7 +1581,7 @@ void dsystem::recordResponse()
 	}
 }
 
-void dsystem::saveResponse()
+void DynamicSystem::saveResponse()
 {
 	if (!(drs.empty()))
 	{
@@ -1549,7 +1604,7 @@ void dsystem::saveResponse()
 	}
 }
 
-void dsystem::printInfo()
+void DynamicSystem::printInfo()
 {
 	cout << "=================================================" << endl;
 	cout << "            RRRR    OOO   DDD    SSS             " << endl;

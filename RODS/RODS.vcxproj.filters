@@ -14,16 +14,10 @@
     <ClCompile Include="dof.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dsystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="timeseries.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="node.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="basis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="line.cpp">
@@ -68,9 +62,6 @@
     <ClCompile Include="element\element2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="element\frameElastic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="element\inerter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -95,9 +86,6 @@
     <ClCompile Include="element\springNonlinear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="element\truss.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="element\trussElastic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -111,9 +99,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="section\section.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="section\sectionElasticBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="element\inerter2D.cpp">
@@ -143,12 +128,39 @@
     <ClCompile Include="RODS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Basis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Plane2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Quad4Elastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="section\Fiber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Truss2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="section\SectionTruss.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\FrameElastic2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="section\SectionFrame2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Frame2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dof.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dsystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="numeric.h">
@@ -158,9 +170,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="basis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="line.h">
@@ -205,9 +214,6 @@
     <ClInclude Include="element\element2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="element\frameElastic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="element\inerter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -232,9 +238,6 @@
     <ClInclude Include="element\springNonlinear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="element\truss.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="element\trussElastic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -248,9 +251,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="section\section.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="section\sectionElasticBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\inerter2D.h">
@@ -278,6 +278,36 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RODS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Basis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Plane2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Quad4Elastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="section\Fiber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Truss2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="section\SectionTruss.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\FrameElastic2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="section\SectionFrame2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Frame2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

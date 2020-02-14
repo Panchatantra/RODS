@@ -2,12 +2,12 @@
 
 #include "element2D.h"
 
-class frameElastic :
+class FrameElastic2D :
 	public element2D
 {
 public:
-	frameElastic(const int id, node * nodeI, node * nodeJ, const double EA, const double EI);
-	~frameElastic();
+	FrameElastic2D(const int id, node * nodeI, node * nodeJ, const double EA, const double EI);
+	~FrameElastic2D();
 
 	void buildMatrix();
 	void getResponse(const bool update = false);

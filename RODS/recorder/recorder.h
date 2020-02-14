@@ -2,13 +2,13 @@
 
 #include <vector>
 #include <armadillo>
-#include "basis.h"
+#include "Basis.h"
 
 using namespace arma;
 
 enum response { DISP, VEL, ACC, FORCE, DEF, ALL };
 
-class recorder : public basis
+class recorder : public Basis
 {
 public:
 	recorder(const int id, response rtype, char * fileName);

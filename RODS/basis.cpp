@@ -1,14 +1,14 @@
-#include "basis.h"
+#include "Basis.h"
 
-basis::basis() : id(0)
+Basis::Basis() : id(0)
 {
 }
 
-basis::basis(const int id): id(id)
+Basis::Basis(const int id): id(id)
 {
 }
 
-basis::~basis()
+Basis::~Basis()
 {
 }
 

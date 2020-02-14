@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "armadillo"
-#include "dsystem.h"
+#include "DynamicSystem.h"
 #include "material/elastoplastic.h"
 #include "material/steelBilinear.h"
 #include "material/concreteTrilinear.h"
@@ -20,7 +20,7 @@ void example_sdof()
 	double zeta = 0.02;
 	double c = 2.0*zeta*sqrt(m*k);
 
-	dsystem *ds = new dsystem();
+	DynamicSystem *ds = new DynamicSystem();
 
 	ds->addDof(0, m, FIXED);
 	ds->addDof(1, m);
@@ -71,7 +71,7 @@ void example_sdof_inerter_system()
 	double k = 100.0;
 	double c = 2.0*zeta*sqrt(m*k);
 
-	dsystem *ds = new dsystem();
+	DynamicSystem *ds = new DynamicSystem();
 
 	ds->addDof(1, m, FIXED);
 	ds->addDof(2, m);
@@ -127,19 +127,19 @@ void example_sdof_bl()
 	double uy = 0.01;
 	double alpha = 0.1;
 
-	dsystem *ds = new dsystem();
+	DynamicSystem *ds = new DynamicSystem();
 
 	ds->addDof(0, m, FIXED);
 	ds->addDof(1, m);
 
 	ds->addMaterialElastoplastic(0, k, k*uy, alpha);
 	ds->addMaterialSMABilinear(1, k, k*uy, alpha, 0.5*k*uy);
-	ds->addSpringNL(0, 0, 1, 0);
+	ds->addSpringNonlinear(0, 0, 1, 0);
 
 	//ds->addSpring(0, 0, 1, k);
 	//ds->addSpring(10, 0, 1, k);
 	//ds->addSlider(0, 0, 1, 0.1);
-	//ds->addSpringBL(0, 0, 1, k, uy, alpha);
+	//ds->addSpringBilinear(0, 0, 1, k, uy, alpha);
 	//ds->addSpringBW(0, 0, 1, k, uy, alpha);
 	ds->addDashpot(1, 0, 1, c);
 	//ds->addDashpotExp(1, 0, 1, c, 0.2);
@@ -182,7 +182,7 @@ void example_shear_building()
 	double c = 1.0;
 	double zeta = 0.0;
 	int ndof = 1;
-	dsystem *ds = new dsystem(zeta);
+	auto *ds = new DynamicSystem(zeta);
 
 	ds->addDof(0, m, FIXED);
 	for (int i = 1; i <= ndof; i++)
@@ -240,7 +240,7 @@ void example_shear_building_spis2()
 	double k = 2025.0;
 	double zeta = 0.0;
 	int ndof = 3;
-	dsystem *ds = new dsystem(zeta);
+	DynamicSystem *ds = new DynamicSystem(zeta);
 
 	double mu = 0.05;
 	double xi = 0.005;
@@ -319,7 +319,7 @@ void test_material()
 
 void example_truss()
 {
-	dsystem *ds = new dsystem();
+	DynamicSystem *ds = new DynamicSystem();
 
 	double mass = 0.01;
 	double E = 206.0;
@@ -383,7 +383,7 @@ void example_truss()
 
 void example_frame()
 {
-	dsystem *ds = new dsystem(0.05);
+	DynamicSystem *ds = new DynamicSystem(0.05);
 
 	double mass = 0.005;
 	double E = 32.5;
@@ -409,7 +409,6 @@ void example_frame()
 	{6000 , 9000} };
 
 	double x = 0, z = 0;
-
 	for (int i = 0; i < nnd; i++)
 	{
 		ds->addDof(3 * i + 1, X, mass);
@@ -521,7 +520,7 @@ void example_frame()
 
 void example_cantilever()
 {
-	dsystem *ds = new dsystem();
+	DynamicSystem *ds = new DynamicSystem();
 
 	double mass = 0.005;
 	double E = 32.5;
@@ -585,6 +584,101 @@ void example_cantilever()
 	//ds->exportGmsh(gmshFile);
 }
 
+void example_wall()
+{
+	DynamicSystem *ds = new DynamicSystem(0.05);
+
+	double mass = 0.05;
+	double E = 32.5;
+	double nu = 0.2;
+	double t = 250.0;
+
+	int nnd = 28;
+	int ne = 18;
+
+	double crds[28][2] {{-1500, 0},
+	{-500, 0},
+	{-500, 1000},
+	{-1500, 1000},
+	{-500, 2000},
+	{-1500, 2000},
+	{-500, 3000},
+	{-1500, 3000},
+	{-500, 4000},
+	{-1500, 4000},
+	{-500, 5000},
+	{-1500, 5000},
+	{-500, 6000},
+	{-1500, 6000},
+	{500, 0},
+	{500, 1000},
+	{500, 2000},
+	{500, 3000},
+	{500, 4000},
+	{500, 5000},
+	{500, 6000},
+	{1500, 0},
+	{1500, 1000},
+	{1500, 2000},
+	{1500, 3000},
+	{1500, 4000},
+	{1500, 5000},
+	{1500, 6000}};
+
+	double x = 0.0, z = 0.0;
+	for (auto i = 0; i < nnd; i++)
+	{
+		ds->addDof(2 * i + 1, X, mass);
+		ds->addDof(2 * i + 2, Z, mass);
+
+		x = crds[i][0];
+		z = crds[i][1];
+		ds->addNode(i + 1, x, z, 2*i+1, 2*i+2, -1);
+	}
+
+	ds->fixNode(1 );
+	ds->fixNode(2 );
+	ds->fixNode(15);
+	ds->fixNode(22);
+
+	int cn[18][4] {{1, 2, 3, 4},
+	{4, 3, 5, 6},
+	{6, 5, 7, 8},
+	{8, 7, 9, 10},
+	{10, 9, 11, 12},
+	{12, 11, 13, 14},
+	{2, 15, 16, 3},
+	{3, 16, 17, 5},
+	{5, 17, 18, 7},
+	{7, 18, 19, 9},
+	{9, 19, 20, 11},
+	{11, 20, 21, 13},
+	{15, 22, 23, 16},
+	{16, 23, 24, 17},
+	{17, 24, 25, 18},
+	{18, 25, 26, 19},
+	{19, 26, 27, 20},
+	{20, 27, 28, 21}};
+
+	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
+	for (int i = 0; i < ne; i++)
+	{
+		nodeI = cn[i][0];
+		nodeJ = cn[i][1];
+		nodeP = cn[i][2];
+		nodeQ = cn[i][3];
+		ds->addQuad4Elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
+	}
+
+	ds->assembleMatrix();
+
+	ds->solveEigen();
+	ds->printInfo();
+
+	char gmshFile[] = "data/wall.msh";
+	ds->exportGmsh(gmshFile);
+}
+
 int main()
 {
 	//example_sdof();
@@ -594,7 +688,8 @@ int main()
 	//example_shear_building_spis2();
 	//test_material();
 	//example_truss();
-	example_frame();
+	//example_frame();
 	//example_cantilever();
+	example_wall();
 	return 0;
 }

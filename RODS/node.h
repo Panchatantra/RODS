@@ -1,9 +1,9 @@
 #pragma once
 
-#include "basis.h"
+#include "Basis.h"
 #include "dof.h"
 
-class node : public basis
+class node : public Basis
 {
 public:
 	node(const int id, const double x=0.0, const double y=0.0, const double z=0.0);

@@ -1,11 +1,11 @@
 #pragma once
 
-class basis
+class Basis
 {
 public:
-    basis();
-    basis(const int id);
-    ~basis();
+    Basis();
+    Basis(const int id);
+    ~Basis();
     
     int id;
 };
