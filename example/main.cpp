@@ -79,7 +79,7 @@ void example_sdof()
 //
 //	char eq[] = "EQ-S-1.txt";
 //	double dt = 0.005;
-//	ds->addTimeseries(1, dt, eq);
+//	ds->addTimeSeries(1, dt, eq);
 //
 //	int nrd = 1;
 //	int *dofIds = new int[nrd] { 2 };
@@ -129,10 +129,10 @@ void example_sdof()
 //	vec t = linspace(0.0, dt*(nsteps - 1), nsteps);
 //	double Omg = 1 * ds->omg(0);
 //	vec ag = arma::sin(Omg*t);
-//	ds->addTimeseries(1, dt, ag);
+//	ds->addTimeSeries(1, dt, ag);
 //
 //	char eq[] = "EQ-S-1.txt";
-//	ds->addTimeseries(2, 0.005, eq);
+//	ds->addTimeSeries(2, 0.005, eq);
 //
 //	int nrd = 2;
 //	int *dofIds = new int[nrd] { 0, 1 };
@@ -202,9 +202,9 @@ void example_sdof()
 //	vec t = linspace(0.0, dt*(nsteps - 1), nsteps);
 //	double Omg = 0.9*ds->omg(0);
 //	vec ag = arma::sin(Omg*t);
-//	ds->addTimeseries(1, dt, ag);
+//	ds->addTimeSeries(1, dt, ag);
 //	char eq[] = "EQ-S-1.txt";
-//	ds->addTimeseries(2, 0.005, eq);
+//	ds->addTimeSeries(2, 0.005, eq);
 //
 //	int ts = 2;
 //	ds->solveTimeDomainSeismicResponseStateSpace(ts, 1, 10);
@@ -489,7 +489,7 @@ void example_sdof()
 //	int eqId = 1;
 //	double dt = 0.005;
 //	char eqFile[] = "example/EQ-S-1.txt";
-//	ds->addTimeseries(eqId, dt, eqFile);
+//	ds->addTimeSeries(eqId, dt, eqFile);
 //
 //	ds->setDynamicSolver(StateSpace_NL);
 //	ds->activeGroundMotion(X);

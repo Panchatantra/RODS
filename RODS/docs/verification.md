@@ -99,9 +99,9 @@ void example_truss()
 
 ### 振型
 
-![truss 2D gmsh](truss2D_sap_mode.png)
+![truss 2D sap](truss2D_sap_mode.png)
 
-![truss 2D gmsh](truss2D_gmsh_mode.png)
+![truss 2D rods](truss2D_rods_mode.png)
 
 ## 三层框架
 
@@ -130,16 +130,16 @@ void example_truss()
 
 ![frame 2D sap](frame2D_sap_mode.png "SAP2000")
 
-![frame 2D gmsh](frame2D_gmsh_mode.png "RODS")
+![frame 2D rods](frame2D_rods_mode.png "RODS")
 
 ### 地震响应
 
 #### 黏滞阻尼器减震结构
 
-原结构顶点位移相应
+原结构顶点位移响应
 ![frame 2D response](disp_frame.png)
 
-减震结构顶点位移相应
+减震结构顶点位移响应
 ![frame 2D response](disp_frame_damped.png)
 
 阻尼器滞回曲线
@@ -150,3 +150,33 @@ void example_truss()
 
 #### 金属阻尼器减震结构
 
+
+
+## 剪力墙
+
+### 模型
+
+![wall 2D](wall2D.png)
+
+### 自振周期
+
+|阶次|SAP2000|RODS|误差|
+|----|----|----|----|
+| 1 |0.279660|0.27966|0.0000%|
+| 2 |0.074783|0.074783|0.0000%|
+| 3 |0.072494|0.0724938|-0.0003%|
+| 4 |0.035555|0.0355554|0.0011%|
+| 5 |0.035040|0.0350404|0.0011%|
+| 6 |0.027949|0.0279491|0.0004%|
+| 7 |0.025509|0.0255089|-0.0004%|
+| 8 |0.023839|0.0238392|0.0008%|
+| 9 |0.022843|0.0228432|0.0009%|
+|10 |0.021479|0.0214786|-0.0019%|
+|11 |0.021282|0.0212816|-0.0019%|
+|12 |0.020554|0.0205538|-0.0010%|
+
+### 振型
+
+![wall 2D](wall2D_sap_mode.png)
+
+![wall 2D](wall2D_rods_mode.png)

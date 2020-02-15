@@ -306,6 +306,7 @@ bool DynamicSystem::addSectionTruss(const int id, int* fiberIds, const int nFibe
 		}
 		SectionTruss *sec = new SectionTruss(id, fibers);
 		Sections[id] = sec;
+		SectionTrusss[id] = sec;
 		return true;
 	}
 	else
@@ -326,6 +327,7 @@ bool DynamicSystem::addSectionFrame2D(const int id, int* fiberIds, const int nFi
 		}
 		SectionFrame2D *sec = new SectionFrame2D(id, fibers);
 		Sections[id] = sec;
+		SectionFrame2Ds[id] = sec;
 		return true;
 	}
 	else
@@ -695,21 +697,53 @@ void DynamicSystem::addQuad4Elastic(const int id, const int nodeI, const int nod
 	addQuad4Elastic(quad);
 }
 
-void DynamicSystem::addTimeseries(TimeSeries * ts)
+void DynamicSystem::addTruss2D(const int id, const int ni, const int nj, const int secId)
+{
+	if (eles.count(id) == 0)
+	{
+		Truss2D *truss = new Truss2D(id, nodes.at(ni), nodes.at(nj), SectionTrusss.at(secId));
+		eles[id] = truss;
+		ele2Ds[id] = truss;
+		Truss2Ds[id] = truss;
+		nonlinearInitialTangentElements[id] = truss;
+	}
+	else
+	{
+		cout << "element ID: " << id << " already exists! The element will not be added." << endl;
+	}
+}
+
+void DynamicSystem::addFrame2D(const int id, const int ni, const int nj, const int secId, const int nIntP)
+{
+	if (eles.count(id) == 0)
+	{
+		Frame2D *truss = new Frame2D(id, nodes.at(ni), nodes.at(nj), SectionFrame2Ds.at(secId), nIntP);
+		eles[id] = truss;
+		ele2Ds[id] = truss;
+		Frame2Ds[id] = truss;
+		nonlinearInitialTangentElements[id] = truss;
+	}
+	else
+	{
+		cout << "element ID: " << id << " already exists! The element will not be added." << endl;
+	}
+}
+
+void DynamicSystem::addTimeSeries(TimeSeries * ts)
 {
 	tss[ts->id] = ts;
 }
 
-void DynamicSystem::addTimeseries(const int id, const double dt, const vec &s)
+void DynamicSystem::addTimeSeries(const int id, const double dt, const vec &s)
 {
 	TimeSeries *ts = new TimeSeries(id, dt, s);
-	addTimeseries(ts);
+	addTimeSeries(ts);
 }
 
-void DynamicSystem::addTimeseries(const int id, const double dt, char* fileName)
+void DynamicSystem::addTimeSeries(const int id, const double dt, char* fileName)
 {
 	TimeSeries *ts = new TimeSeries(id, dt, fileName);
-	addTimeseries(ts);
+	addTimeSeries(ts);
 }
 
 void DynamicSystem::addDofRecorder(dofRecorder * dr)
@@ -884,16 +918,17 @@ void DynamicSystem::applyRestraint()
 	dofMapEqn.clear();
 	eqnMapDof.clear();
 
-	uvec fixedIds = zeros<uvec>(fixedDofCount);
+	fixedIds = zeros<uvec>(fixedDofCount);
 	int fixedDofCount_ = 0;
 
-	for (auto it = dofs.begin(); it != dofs.end(); it++)
+	for (auto it = dofs.begin(); it != dofs.end(); ++it)
 	{
 		dof *d = it->second;
 		if ((d->isFixed))
 		{
 			fixedIds(fixedDofCount_) = d->eqnId;
 			fixedDofCount_ += 1;
+			d->eqnId = -1;
 		}
 		else
 		{
@@ -980,6 +1015,38 @@ void DynamicSystem::assembleStiffnessMatrix()
 			auto *s = it->second;
 			s->assembleStiffnessMatrix(K);
 		}
+	}
+}
+
+void DynamicSystem::reassembleStiffnessMatrix()
+{
+	auto nDof = dofs.size();
+	int eqnId = 0;
+	for (auto it = dofs.begin(); it != dofs.end(); ++it)
+	{
+		it->second->eqnId = eqnId;
+		eqnId += 1;
+	}
+	
+	K = zeros<mat>(nDof, nDof);
+
+	if (!(nonlinearTangentElements.empty()))
+	{
+		for (auto it = nonlinearTangentElements.begin(); it != nonlinearTangentElements.end(); it++)
+		{
+			auto *s = it->second;
+			s->assembleStiffnessMatrix(K);
+		}
+	}
+
+	K.shed_cols(fixedIds);
+	K.shed_rows(fixedIds);
+
+	K = K + K0;
+
+	for (auto it = dofMapEqn.begin(); it != dofMapEqn.end(); ++it)
+	{
+		dofs.at(it->first)->eqnId = it->second;
 	}
 }
 
@@ -1147,6 +1214,94 @@ void DynamicSystem::solveStaticResponse(const int nsub)
 	getElementResponse();
 	recordResponse();
 	saveResponse();
+}
+
+void DynamicSystem::solveNonlinearStaticResponse(const int nsub)
+{
+	double tol = 1e-6;
+	int maxIter = 10;
+	int nIter = 0;
+	double error = 1.0;
+
+	vec du = zeros<vec>(eqnCount);
+	vec dQ = Q/nsub;
+
+	nsteps = nsub;
+	dt = 1.0/nsub;
+	cstep = 0;
+	ctime = 0.0;
+
+	initRecorders();
+
+	setDofResponse();
+	assembleNonlinearForceVector();
+
+	for (auto i=0; i<nsub; ++i)
+	{
+		cstep = i;
+		ctime = i*dt;
+		nIter = 0;
+		
+		while (nIter<maxIter)
+		{
+			du = solve(K, dQ-q); // solve for the correction response vector
+			dsp = dsp + du; // correct the response
+			setDofResponse(); // set the corrected response to the DOFs
+
+			error = norm(du)/norm(dsp); // calculate the norm error
+			
+			if (error>tol) // not converged
+			{
+				if (nIter < (maxIter-1)) // not exceed max iterations
+				{
+					// calculate nonlinear force vector q and tangent stiffness matrix K
+					// without update history variables
+					assembleNonlinearForceVector(false);
+					reassembleStiffnessMatrix();
+				}
+				else // reach max iterations
+				{
+					cout << "Fail to Converge after " << maxIter << " iterations, "
+						<< "norm error = " << error << endl;
+					
+					// record response, update history variables,
+					// calculate nonlinear force vector q and tangent stiffness matrix K,
+					// then go to next substep
+					// the following results maybe unreliable
+					getElementResponse();
+					recordResponse(); 
+					assembleNonlinearForceVector(true);
+					reassembleStiffnessMatrix();
+				}
+			}
+			else  // converged
+			{
+				// record response, update history variables,
+				// calculate nonlinear force vector q and tangent stiffness matrix K,
+				// then break the while loop to next substep
+				getElementResponse();
+				recordResponse();
+				assembleNonlinearForceVector(true);
+				reassembleStiffnessMatrix();
+				break;
+			}
+			nIter += 1; // increase the iteration count
+		}
+	}
+	saveResponse();
+}
+
+void DynamicSystem::solveNonlinearStaticResponse(const int tsId, const double s, const int nsub)
+{
+	TimeSeries *ts = tss.at(tsId);
+	double t1 = ts->dt*ts->nsteps;
+	vec t_0 = linspace(0.0, t1, ts->nsteps);
+	dt = ts->dt/nsub;
+	vec t_a = linspace(0.0, t1, ts->nsteps + (ts->nsteps-1)*(nsub-1));
+	vec s_a = zeros<vec>(t_a.size());
+	interp1(t_0, ts->series, t_a, s_a);
+
+	s_a = s*s_a;
 }
 
 void DynamicSystem::solveTimeDomainSeismicResponse(const int tsId, const double s, const int nsub)
@@ -1340,7 +1495,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 					if (l < maxiter - 1)
 					{
 						assembleNonlinearForceVector(false);
-						assembleStiffnessMatrix();
+						reassembleStiffnessMatrix();
 					}
 					else
 					{
@@ -1352,7 +1507,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 							recordResponse();
 						}
 						assembleNonlinearForceVector(true);
-						assembleStiffnessMatrix();
+						reassembleStiffnessMatrix();
 					}
 				}
 				else
@@ -1360,7 +1515,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 					getElementResponse();
 					recordResponse();
 					assembleNonlinearForceVector(true);
-					assembleStiffnessMatrix();
+					reassembleStiffnessMatrix();
 					break;
 				}
 			}

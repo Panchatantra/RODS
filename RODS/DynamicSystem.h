@@ -37,6 +37,8 @@
 #include "material/material1D.h"
 #include "section/Section.h"
 #include "section/Fiber.h"
+#include "section/SectionTruss.h"
+#include "section/SectionFrame2D.h"
 
 using namespace arma;
 
@@ -142,9 +144,12 @@ public:
 						const int nodeP, const int nodeQ,
 						const double E, const double nu, const double t);
 
-	void addTimeseries(TimeSeries *ts);
-	void addTimeseries(const int id, const double dt, const vec &s);
-	void addTimeseries(const int id, const double dt, char * fileName);
+	void addTruss2D(const int id, const int ni, const int nj, const int secId);
+	void addFrame2D(const int id, const int ni, const int nj, const int secId, const int nIntP=5);
+
+	void addTimeSeries(TimeSeries *ts);
+	void addTimeSeries(const int id, const double dt, const vec &s);
+	void addTimeSeries(const int id, const double dt, char * fileName);
 
 	void addDofRecorder(dofRecorder *dr);
 	void addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName);
@@ -163,6 +168,7 @@ public:
 	void applyLoad();
 	void addGravity();
 	void assembleStiffnessMatrix();
+	void reassembleStiffnessMatrix();
 	void setNumModesInherentDamping(const int n);
 	void buildInherentDampingMatrix();
 	void buildRayleighDampingMatrix(const double omg1, const double omg2);
@@ -173,8 +179,11 @@ public:
 	void solveComplexEigen();
 	void solveStochasticSeismicResponse(const double f_h=50.0, const int nf=10000, const char method='c');
 
-	void setDynamicSolver(dsolver s) { this->dynamicSolver = s; }
 	void solveStaticResponse(const int nsub=1);
+	void solveNonlinearStaticResponse(const int nsub=10);
+	void solveNonlinearStaticResponse(const int tsId, const double s, const int nsub=10);
+
+	void setDynamicSolver(dsolver s) { this->dynamicSolver = s; }
 	void solveTimeDomainSeismicResponse(const int tsId, const double s=1.0, const int nsub=1);
 	void solveTimeDomainSeismicResponseNMK(const int tsId, const double s=1.0, const int nsub=1);
 	void solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s=1.0, const int nsub=1, const double tol=1.0e-6, const int maxiter=20);
@@ -233,6 +242,8 @@ public:
 	std::map<int, inerter2D *> inerter2Ds;
 
 	std::map<int, trussElastic *> trussElastics;
+	std::map<int, Truss2D *> Truss2Ds;
+	std::map<int, Frame2D *> Frame2Ds;
 	std::map<int, beamElastic *> beamElastics;
 	std::map<int, FrameElastic2D *> FrameElastic2Ds;
 	std::map<int, Quad4Elastic *> Quad4Elastics;
@@ -240,6 +251,8 @@ public:
 	std::map<int, material1D *> material1Ds;
 	std::map<int, Fiber *> Fibers;
 	std::map<int, Section *> Sections;
+	std::map<int, SectionTruss *> SectionTrusss;
+	std::map<int, SectionFrame2D *> SectionFrame2Ds;
 
 	std::map<int, TimeSeries *> tss;
 	std::map<int, recorder *> drs;
@@ -254,6 +267,7 @@ public:
 
 	mat K0;
 	vec q;
+	uvec fixedIds;
 
     double zeta;
     int eqnCount, fixedDofCount;

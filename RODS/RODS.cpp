@@ -59,7 +59,7 @@ DLL_API size_t add_dashpot(const int id, const int i, const int j, const double 
 }
 
 DLL_API size_t add_timeseries(const int id, const double dt, char* fileName) {
-	ds->addTimeseries(id, dt, fileName);
+	ds->addTimeSeries(id, dt, fileName);
 	return ds->tss.size();
 }
 

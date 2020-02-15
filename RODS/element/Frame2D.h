@@ -10,7 +10,7 @@ class Frame2D :
 	public element2D
 {
 public:
-	Frame2D(const int id, node *nodeI, node *nodeJ, SectionFrame2D *sec, const int nIntPoints);
+	Frame2D(const int id, node *nodeI, node *nodeJ, SectionFrame2D *sec, const int nIntPoints=5);
 	~Frame2D();
 
 	void buildMatrix();
