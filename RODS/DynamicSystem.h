@@ -27,12 +27,16 @@
 #include "element/beamElastic.h"
 #include "element/FrameElastic2D.h"
 #include "element/Quad4Elastic.h"
+#include "element/Truss2D.h"
+#include "element/Frame2D.h"
 #include "TimeSeries.h"
 #include "recorder/recorder.h"
 #include "recorder/dofRecorder.h"
 #include "recorder/elementRecorder.h"
 #include "material/material.h"
 #include "material/material1D.h"
+#include "section/Section.h"
+#include "section/Fiber.h"
 
 using namespace arma;
 
@@ -73,7 +77,7 @@ public:
 
 	void setMass(const int id, const double m);
 	void setNodeMass(const int id, const double m);
-	
+
 	void mapDofNode(dof *d, node *nd);
 	void mapDofNode(const int id_d, const int id_nd);
 
@@ -84,6 +88,10 @@ public:
 	bool addMaterialConcreteTrilinear(const int id, const double E0, const double fc, const double epsilon_c,
 		const double sigma_cr, const double sigma_u, const double epsilon_u);
 	bool addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift);
+
+	bool addFiber(const int id, const int matId, const double A, const double y, const double z=0.0);
+	bool addSectionTruss(const int id, int *fiberIds, const int nFibers);
+	bool addSectionFrame2D(const int id, int *fiberIds, const int nFibers);
 
 	bool addElement(element *e);
 
@@ -230,6 +238,8 @@ public:
 	std::map<int, Quad4Elastic *> Quad4Elastics;
 
 	std::map<int, material1D *> material1Ds;
+	std::map<int, Fiber *> Fibers;
+	std::map<int, Section *> Sections;
 
 	std::map<int, TimeSeries *> tss;
 	std::map<int, recorder *> drs;

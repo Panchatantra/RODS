@@ -80,9 +80,7 @@ void Frame2D::getResponse(const bool update)
 	force = f.memptr();
 	deformation = ue.memptr();
 
-	vec::fixed<3> f_ = f - k0*ue;
-	q = T.t()*f_;
-
+	q = T.t()*(f - k0*ue);
 }
 
 void Frame2D::assembleStiffnessMatrix(mat &K)
