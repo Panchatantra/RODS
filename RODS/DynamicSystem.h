@@ -3,7 +3,7 @@
 #include <map>
 #include <armadillo>
 #include "Basis.h"
-#include "dof.h"
+#include "DOF.h"
 #include "node.h"
 #include "line.h"
 #include "element/spring.h"
@@ -75,14 +75,14 @@ public:
 
 	void exportGmsh(char * fileName);
 
-    void addDof(dof *d);
+    void addDof(DOF *d);
 	void addDof(const int id, const double m, const bool fixed=false);
 	void addDof(const int id, direction dir, const double m, const bool fixed=false);
 
 	void setMass(const int id, const double m);
 	void setNodeMass(const int id, const double m);
 
-	void mapDofNode(dof *d, node *nd);
+	void mapDofNode(DOF *d, node *nd);
 	void mapDofNode(const int id_d, const int id_nd);
 
 	bool addMaterial1D(material1D *mt);
@@ -215,7 +215,7 @@ public:
 
 	std::map<int, node *> nodes;
 	std::map<int, line *> lines;
-	std::map<int, dof *> dofs;
+	std::map<int, DOF *> dofs;
 	std::map<int, element *> eles;
 	std::map<int, element2D *> ele2Ds;
 	std::map<int, Plane2D *> Plane2Ds;

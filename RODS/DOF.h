@@ -8,12 +8,12 @@ using namespace std;
 constexpr bool FIXED = true;
 enum direction { X,Y,Z,RX,RY,RZ };
 
-class dof : public Basis
+class DOF : public Basis
 {
 public:
-	dof(const int id, direction dir);
-	dof(const int id, direction dir, const double m, const bool fixed = false);
-	~dof();
+	DOF(const int id, direction dir);
+	DOF(const int id, direction dir, const double m, const bool fixed = false);
+	~DOF();
 
 	void setResponse(const double dsp, const double vel, const double acc);
 	void addLoad(Load* load);

@@ -25,7 +25,7 @@ node::~node()
 {
 }
 
-void node::setDof(dof * d)
+void node::setDof(DOF * d)
 {
 	direction dir = d->dir;
 	switch (dir)
@@ -96,7 +96,7 @@ void node::fixDof(direction dir)
 
 bool node::isActivated(direction dir)
 {
-	dof *d = nullptr;
+	DOF *d = nullptr;
 	switch (dir)
 	{
 	case X:

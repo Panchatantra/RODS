@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dof.h"
+#include "DOF.h"
 #include "element/element1D.h"
 #include "material/material1D.h"
 #include <armadillo>
@@ -10,7 +10,7 @@ using namespace arma;
 class springNonlinear : public element1D
 {
 public:
-	springNonlinear(const int id, dof *i, dof *j, material1D *smat);
+	springNonlinear(const int id, DOF *i, DOF *j, material1D *smat);
 	~springNonlinear();
 
 	void buildMatrix();

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dof.h"
+#include "DOF.h"
 #include "element2D.h"
 #include <armadillo>
 

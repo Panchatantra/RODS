@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dof.h"
+#include "DOF.h"
 #include "element1D.h"
 #include <armadillo>
 
@@ -9,7 +9,7 @@ using namespace arma;
 class dashpotExp : public element1D
 {
 public:
-	dashpotExp(const int id, dof *i, dof *j, const double c, const double alpha);
+	dashpotExp(const int id, DOF *i, DOF *j, const double c, const double alpha);
 	~dashpotExp();
 
 	void buildMatrix();

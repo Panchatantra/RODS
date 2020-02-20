@@ -23,6 +23,9 @@ bld/
 [Ll]og/
 RODS/x64/
 RODS/x86/
+RODS/html/
+RODS/latex/
+
 
 # Cmake files
 cmake-build-Debug/

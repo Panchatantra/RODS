@@ -1,14 +1,14 @@
 #pragma once
 
 #include "element.h"
-#include "dof.h"
+#include "DOF.h"
 
 class element1D :
 	public element
 {
 public:
 	element1D();
-	element1D(const int id, dof *i, dof *j);
+	element1D(const int id, DOF *i, DOF *j);
 	~element1D();
 
 	virtual void buildMatrix() {}
@@ -19,5 +19,5 @@ public:
 	virtual void assembleMassMatrix(mat &M) {}
 	virtual void assembleNonlinearForceVector(vec &q) {}
 
-	dof *dofI, *dofJ;
+	DOF *dofI, *dofJ;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dof.h"
+#include "DOF.h"
 #include "element1D.h"
 #include <armadillo>
 
@@ -9,7 +9,7 @@ using namespace arma;
 class slider : public element1D
 {
 public:
-	slider(const int id, dof *i, dof *j, const double muN);
+	slider(const int id, DOF *i, DOF *j, const double muN);
 	~slider();
 
 	void getResponse(const bool update=false);

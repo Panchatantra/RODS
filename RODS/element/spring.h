@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dof.h"
+#include "DOF.h"
 #include "element1D.h"
 #include <armadillo>
 
@@ -9,7 +9,7 @@ using namespace arma;
 class spring : public element1D
 {
 public:
-	spring(const int id, dof *i, dof *j, const double k);
+	spring(const int id, DOF *i, DOF *j, const double k);
 	~spring();
 
 	void buildMatrix();

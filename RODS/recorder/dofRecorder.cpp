@@ -1,6 +1,6 @@
 #include "dofRecorder.h"
 
-dofRecorder::dofRecorder(const int id, std::vector<dof *> dofs, response rtype, char * fileName):
+dofRecorder::dofRecorder(const int id, std::vector<DOF *> dofs, response rtype, char * fileName):
 	recorder(id, rtype, fileName), dofs(dofs)
 
 {
@@ -16,7 +16,7 @@ void dofRecorder::record(const int cstep, const double ctime)
 	Res(cstep, 0) = ctime;
 	for (size_t i = 0; i < n; i++)
 	{
-		dof * d = dofs[i];
+		DOF * d = dofs[i];
 		switch (rtype)
 		{
 		case DISP:

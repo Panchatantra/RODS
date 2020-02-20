@@ -1,17 +1,17 @@
 #pragma once
 
 #include "recorder.h"
-#include "dof.h"
+#include "DOF.h"
 
 class dofRecorder :
 	public recorder
 {
 public:
-	dofRecorder(const int id, std::vector<dof *> dofs, response rtype, char * fileName);
+	dofRecorder(const int id, std::vector<DOF *> dofs, response rtype, char * fileName);
 	~dofRecorder();
 
 	virtual void record(const int cstep, const double ctime);
 
-	std::vector<dof *> dofs;
+	std::vector<DOF *> dofs;
 };
 

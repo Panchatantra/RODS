@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dof.h"
+#include "DOF.h"
 #include "element1D.h"
 #include <armadillo>
 
@@ -9,7 +9,7 @@ using namespace arma;
 class spis2 : public element1D
 {
 public:
-	spis2(const int id, dof *i, dof *j, dof *in, const double m, const double c, const double k);
+	spis2(const int id, DOF *i, DOF *j, DOF *in, const double m, const double c, const double k);
 	~spis2();
 
 	void buildMatrix();
@@ -18,7 +18,7 @@ public:
 	void assembleDampingMatrix(mat & C);
 	void getResponse(const bool update = false);
 
-	dof *dofIN;
+	DOF *dofIN;
 	double m, c, k;
 	double *u, *f;
 	mat::fixed<3,3> M, C, K;

@@ -33,7 +33,7 @@ void DynamicSystem::addNode(node * nd)
 
 void DynamicSystem::addNode(const int id, const double x, const int dofId)
 {
-	dof *d = dofs.at(dofId);
+	DOF *d = dofs.at(dofId);
 	node *nd = new node(id, x);
 	nd->setDof(d);
 	addNode(nd);
@@ -47,8 +47,8 @@ void DynamicSystem::addNode(const int id, const double x, const double y, const 
 
 void DynamicSystem::addNode(const int id, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId)
 {
-	dof *dx = dofs.at(dofXId);
-	dof *dz = dofs.at(dofZId);
+	DOF *dx = dofs.at(dofXId);
+	DOF *dz = dofs.at(dofZId);
 
 	node *nd = new node(id, x, 0.0, z);
 	nd->setDof(dx);
@@ -64,7 +64,7 @@ void DynamicSystem::addNode(const int id, const double x, const double z, const 
 
 void DynamicSystem::addNodeWithDof(const int id, const double x, const int dofId)
 {
-	dof *d = new dof(dofId, X);
+	DOF *d = new DOF(dofId, X);
 	node *nd = new node(id, x, 0.0, 0.0);
 	nd->setDof(d);
 
@@ -161,7 +161,7 @@ void DynamicSystem::exportGmsh(char * fileName)
 	vec modeshape = Phi.col(0);
 	for (int i = 0; i < eqnCount; i++)
 	{
-		dof *d = dofs.at(eqnMapDof.at(i));
+		DOF *d = dofs.at(eqnMapDof.at(i));
 		d->dsp = modeshape(i);
 	}
 
@@ -184,7 +184,7 @@ void DynamicSystem::exportGmsh(char * fileName)
 
 	outFile.close();
 
-	dof *d = nullptr;
+	DOF *d = nullptr;
 	for (int i = 0; i < eqnCount; i++)
 	{
 		d = dofs.at(eqnMapDof.at(i));
@@ -192,7 +192,7 @@ void DynamicSystem::exportGmsh(char * fileName)
 	}
 }
 
-void DynamicSystem::addDof(dof * d)
+void DynamicSystem::addDof(DOF * d)
 {
 	if (dofs.count(d->id) == 0)
 	{
@@ -206,13 +206,13 @@ void DynamicSystem::addDof(dof * d)
 
 void DynamicSystem::addDof(const int id, const double m, const bool fixed)
 {
-	dof *d = new dof(id, X, m, fixed);
+	DOF *d = new DOF(id, X, m, fixed);
 	addDof(d);
 }
 
 void DynamicSystem::addDof(const int id, direction dir, const double m, const bool fixed)
 {
-	dof *d = new dof(id, dir, m, fixed);
+	DOF *d = new DOF(id, dir, m, fixed);
 	addDof(d);
 }
 
@@ -238,7 +238,7 @@ void DynamicSystem::setNodeMass(const int id, const double m)
 	}
 }
 
-void DynamicSystem::mapDofNode(dof * d, node * nd)
+void DynamicSystem::mapDofNode(DOF * d, node * nd)
 {
 	nd->setDof(d);
 	dofMapNode[d->id] = nd->id;
@@ -247,7 +247,7 @@ void DynamicSystem::mapDofNode(dof * d, node * nd)
 void DynamicSystem::mapDofNode(const int id_d, const int id_nd)
 {
 	node *nd = nodes.at(id_nd);
-	dof *d = dofs.at(id_d);
+	DOF *d = dofs.at(id_d);
 	nd->setDof(d);
 	dofMapNode[id_d] = id_nd;
 }
@@ -377,8 +377,8 @@ void DynamicSystem::addSpring(spring *s)
 
 void DynamicSystem::addSpring(const int id, const int ni, const int nj, const double k)
 {
-	dof *i = dofs.at(ni);
-	dof *j = dofs.at(nj);
+	DOF *i = dofs.at(ni);
+	DOF *j = dofs.at(nj);
 	spring *s = new spring(id, i, j, k);
 	addSpring(s);
 }
@@ -394,8 +394,8 @@ void DynamicSystem::addSpringBilinear(springBilinear * s)
 
 void DynamicSystem::addSpringBilinear(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha)
 {
-	dof *i = dofs.at(ni);
-	dof *j = dofs.at(nj);
+	DOF *i = dofs.at(ni);
+	DOF *j = dofs.at(nj);
 	springBilinear *s = new springBilinear(id, i, j, k0, uy, alpha);
 	addSpringBilinear(s);
 }
@@ -411,8 +411,8 @@ void DynamicSystem::addSpringNonlinear(springNonlinear * s)
 
 void DynamicSystem::addSpringNonlinear(const int id, const int ni, const int nj, const int matId)
 {
-	dof *i = dofs.at(ni);
-	dof *j = dofs.at(nj);
+	DOF *i = dofs.at(ni);
+	DOF *j = dofs.at(nj);
 	springNonlinear *s = new springNonlinear(id, i, j, material1Ds.at(matId));
 	addSpringNonlinear(s);
 }
@@ -428,8 +428,8 @@ void DynamicSystem::addSpringBoucWen(springBoucWen * s)
 
 void DynamicSystem::addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n)
 {
-	dof *i = dofs.at(ni);
-	dof *j = dofs.at(nj);
+	DOF *i = dofs.at(ni);
+	DOF *j = dofs.at(nj);
 	springBoucWen *s = new springBoucWen(id, i, j, k0, uy, alpha);
 	addSpringBoucWen(s);
 }
@@ -445,8 +445,8 @@ void DynamicSystem::addDashpot(dashpot * d)
 
 void DynamicSystem::addDashpot(const int id, const int ni, const int nj, const double c)
 {
-	dof *i = dofs.at(ni);
-	dof *j = dofs.at(nj);
+	DOF *i = dofs.at(ni);
+	DOF *j = dofs.at(nj);
 	dashpot *d = new dashpot(id, i, j, c);
 	addDashpot(d);
 }
@@ -462,8 +462,8 @@ void DynamicSystem::addDashpotExp(dashpotExp * d)
 
 void DynamicSystem::addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha)
 {
-	dof *i = dofs.at(ni);
-	dof *j = dofs.at(nj);
+	DOF *i = dofs.at(ni);
+	DOF *j = dofs.at(nj);
 	dashpotExp *d = new dashpotExp(id, i, j, c, alpha);
 	addDashpotExp(d);
 }
@@ -479,8 +479,8 @@ void DynamicSystem::addDashpotMaxwell(dashpotMaxwell * d)
 
 void DynamicSystem::addDashpotMaxwell(const int id, const int ni, const int nj, const double k, const double c, const double alpha)
 {
-	dof *i = dofs.at(ni);
-	dof *j = dofs.at(nj);
+	DOF *i = dofs.at(ni);
+	DOF *j = dofs.at(nj);
 	dashpotMaxwell *d = new dashpotMaxwell(id, i, j, c, alpha);
 	addDashpotMaxwell(d);
 }
@@ -496,8 +496,8 @@ void DynamicSystem::addInerter(inerter * in)
 
 void DynamicSystem::addInerter(const int id, const int ni, const int nj, const double m)
 {
-	dof *i = dofs.at(ni);
-	dof *j = dofs.at(nj);
+	DOF *i = dofs.at(ni);
+	DOF *j = dofs.at(nj);
 	inerter *in = new inerter(id, i, j, m);
 	addInerter(in);
 }
@@ -513,8 +513,8 @@ void DynamicSystem::addSlider(slider * s)
 
 void DynamicSystem::addSlider(const int id, const int ni, const int nj, const double muN)
 {
-	dof *i = dofs.at(ni);
-	dof *j = dofs.at(nj);
+	DOF *i = dofs.at(ni);
+	DOF *j = dofs.at(nj);
 	slider *s = new slider(id, i, j, muN);
 	addSlider(s);
 }
@@ -532,9 +532,9 @@ void DynamicSystem::addSPIS2(spis2 * s)
 
 void DynamicSystem::addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k)
 {
-	dof *i = dofs.at(ni);
-	dof *j = dofs.at(nj);
-	dof *in = dofs.at(nin);
+	DOF *i = dofs.at(ni);
+	DOF *j = dofs.at(nj);
+	DOF *in = dofs.at(nin);
 	spis2 *s = new spis2(id, i, j, in, m, c, k);
 	addSPIS2(s);
 }
@@ -550,8 +550,8 @@ void DynamicSystem::addTVMD(TVMD *d)
 
 void DynamicSystem::addTVMD(const int id, const int ni, const int nj, const double m, const double c, const double k)
 {
-	dof *i = dofs.at(ni);
-	dof *j = dofs.at(nj);
+	DOF *i = dofs.at(ni);
+	DOF *j = dofs.at(nj);
 	TVMD *d = new TVMD(id, i, j, m, c, k);
 	addTVMD(d);
 }
@@ -785,7 +785,7 @@ void DynamicSystem::addDofRecorder(dofRecorder * dr)
 
 void DynamicSystem::addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName)
 {
-	std::vector<dof *> rdofs(n);
+	std::vector<DOF *> rdofs(n);
 
 	for (int i = 0; i < n; i++)
 	{
@@ -864,7 +864,7 @@ void DynamicSystem::activeGroundMotion(direction dir)
 {
 	for (int i = 0; i < eqnCount; i++)
 	{
-		dof *d = dofs.at(eqnMapDof.at(i));
+		DOF *d = dofs.at(eqnMapDof.at(i));
 		if (d->dir == dir)
 		{
 			E(i) = 1.0;
@@ -874,7 +874,7 @@ void DynamicSystem::activeGroundMotion(direction dir)
 
 void DynamicSystem::buildDofEqnMap()
 {
-	std::map<int, dof *>::iterator it;
+	std::map<int, DOF *>::iterator it;
 	eqnCount = 0;
 	fixedDofCount = 0;
 	dofMapEqn.clear();
@@ -882,7 +882,7 @@ void DynamicSystem::buildDofEqnMap()
 
 	for (it = dofs.begin(); it != dofs.end(); it++)
 	{
-		dof *d = it->second;
+		DOF *d = it->second;
 		if ((d->isFixed)) fixedDofCount += 1;
 
 		dofMapEqn[d->id] = eqnCount;
@@ -955,7 +955,7 @@ void DynamicSystem::applyRestraint()
 
 	for (auto it = dofs.begin(); it != dofs.end(); ++it)
 	{
-		dof *d = it->second;
+		DOF *d = it->second;
 		if ((d->isFixed))
 		{
 			fixedIds(fixedDofCount_) = d->eqnId;
@@ -991,7 +991,7 @@ void DynamicSystem::applyLoad()
 {
 	for (int i = 0; i < eqnCount; i++)
 	{
-		dof *d = dofs.at(eqnMapDof.at(i));
+		DOF *d = dofs.at(eqnMapDof.at(i));
 		Q(i) = d->getLoad(ctime);
 	}
 }
@@ -1454,7 +1454,7 @@ void DynamicSystem::solveNonlinearStaticResponseDispControl(const double loadedT
 	ctime = loadedTime;
 	vec p(size(Q));
 
-	dof *d = nullptr;
+	DOF *d = nullptr;
 	for (int i = 0; i < eqnCount; i++)
 	{
 		d = dofs.at(eqnMapDof.at(i));
@@ -1553,51 +1553,49 @@ void DynamicSystem::solveNonlinearStaticResponseDispControl(const double loadedT
 
 void DynamicSystem::solveNonlinearStaticResponseDispControlDelta(const double loadedTime, const int nsub)
 {
-	Load *load = Loads.at(dispControlLoadId);
+	Load *load = Loads.at(dispControlLoadId); // time-varying load pattern of the control DOF
 
+	// obtain the reference load vector:
 	ctime = loadedTime;
-	vec p(size(Q));
-
-	dof *d = nullptr;
+	vec p(size(Q)); // reference load vector
+	DOF *d = nullptr;
 	for (int i = 0; i < eqnCount; i++)
 	{
 		d = dofs.at(eqnMapDof.at(i));
 		p(i) = d->getLoad(ctime, false);
 	}
 
-	double tol = 1e-6;
-	int maxIter = 20;
-	int nIter = 0;
-	double error = 1.0;
-	double cdisp = 0.0;
-	double lambda = 0.0;
-	double dlambda = 0.0;
+	double tol = 1e-6; // tolerance for convergence check
+	int maxIter = 20; // maximum iteration times
+	int nIter = 0; // iteration count
+	double error = 1.0; // norm error for convergence check
+	double cdisp = 0.0; // current desired value of control DOF
+	double lambda = 0.0; // load factor
+	double dlambda = 0.0; // variation of load factor
 
-	nsteps = nsub;
-	dt = loadedTime/nsub;
-
-	initRecorders();
+	nsteps = nsub; // number of analysis steps
+	dt = loadedTime/nsub; // analysis time interval
+	initRecorders(); // initialize the recorders with given number of analysis steps
 	
-	vec du = zeros<vec>(eqnCount); /// variation of displacement response
-	vec du0 = zeros<vec>(eqnCount); /// reference variation of displacement response due to reference load and current Jacobian matrix
-	vec du_ = zeros<vec>(eqnCount); /// datum vector to calculate the relative norm error
-	double normDu; /// datum value to calculate the relative norm error
+	vec du = zeros<vec>(eqnCount); // variation of displacement response
+	vec du0 = zeros<vec>(eqnCount); // reference variation of displacement response due to reference load and current Jacobian matrix
+	vec du_ = zeros<vec>(eqnCount); // initial variation of displacement and datum vector to calculate the relative norm error
+	double normDu; // datum value to calculate the relative norm error
 	
 	for (auto i=1; i<nsub+1; ++i)
 	{
 		cstep = i-1;
 		ctime = i*dt;
-		cdisp = load->getValue(ctime);
-		
 		nIter = 0;
-
+		
 		du = solve(K, p);
+		cdisp = load->getValue(ctime);
 		dlambda = (cdisp - load->getValue(ctime-dt))/du(dispControlEqn);
-		du_ = du*dlambda;
+		du_ = du*dlambda; // initial trial displacement
 		normDu = norm(du_);
-		lambda += dlambda;
-		dsp = dsp + du_;
-		dsp0 = dsp;
+		lambda += dlambda; // 
+		dsp = dsp + du_; // initial trial displacement
+		dsp0 = dsp; // set the corrected response to the DOFs
 		setDofResponse(); // set the corrected response to the DOFs
 		assembleNonlinearForceVector(false);
 		reassembleStiffnessMatrix();
@@ -2055,7 +2053,7 @@ void DynamicSystem::setDofResponse()
 {
 	for (int i = 0; i < eqnCount; i++)
 	{
-		dof *d = dofs.at(eqnMapDof.at(i));
+		DOF *d = dofs.at(eqnMapDof.at(i));
 		d->setResponse(dsp(i), vel(i), acc(i));
 	}
 }

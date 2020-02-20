@@ -1,6 +1,6 @@
 #include "TVMD.h"
 
-TVMD::TVMD(const int id, dof *i, dof *j, const double m, const double c, const double k) :
+TVMD::TVMD(const int id, DOF *i, DOF *j, const double m, const double c, const double k) :
 	element1D(id, i, j), m(m), c(c), k(k),
 	u(0.0), f(0.0),
 	ud(0.0), vd(0.0), udp(0.0), vdp(0.0)

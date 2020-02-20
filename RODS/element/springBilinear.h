@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dof.h"
+#include "DOF.h"
 #include "element1D.h"
 #include <armadillo>
 
@@ -9,7 +9,7 @@ using namespace arma;
 class springBilinear : public element1D
 {
 public:
-	springBilinear(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha);
+	springBilinear(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha);
 	~springBilinear();
 
 	void buildMatrix();

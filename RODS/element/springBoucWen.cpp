@@ -1,6 +1,6 @@
 #include "springBoucWen.h"
 
-springBoucWen::springBoucWen(const int id, dof *i, dof *j, const double k0, const double uy, const double alpha, const double beta, const double n) :
+springBoucWen::springBoucWen(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha, const double beta, const double n) :
 	element1D(id, i, j),
 	k0(k0), uy(uy),k1(alpha*k0), fy(k0*uy),
 	alpha(alpha), beta(beta), n(n),

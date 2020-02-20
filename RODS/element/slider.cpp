@@ -1,7 +1,7 @@
 #include "slider.h"
 
 
-slider::slider(const int id, dof *i, dof *j, const double muN) :
+slider::slider(const int id, DOF *i, DOF *j, const double muN) :
 	element1D(id, i, j), muN(muN),
 	u(0.0), f(0.0), v(0.0)
 {
