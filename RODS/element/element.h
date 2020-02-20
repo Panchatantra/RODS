@@ -27,7 +27,10 @@ public:
 	virtual void assembleMassMatrix(mat &M) = 0;
 	virtual void assembleNonlinearForceVector(vec &q) = 0;
 
-	static double dt;
+	virtual void printResponse();
+
 	int nv;
 	double *force, *deformation;
+	static double dt;
+	static bool isStatic;
 };

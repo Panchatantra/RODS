@@ -22,6 +22,11 @@ concreteTrilinear::~concreteTrilinear()
 {
 }
 
+void concreteTrilinear::setStrain(const double *strain)
+{
+	epsilon = -(*strain);
+}
+
 void concreteTrilinear::getResponse(const bool update)
 {
 	double depsilon = epsilon - epsilon_p;
@@ -171,6 +176,8 @@ void concreteTrilinear::getResponse(const bool update)
 		sigma_max = sigma_max_;
 		epsilon_max = epsilon_max_;
 	}
+
+	sigma = -sigma;
 }
 
 void concreteTrilinear::compressionEnvelope(const double strain, double & stress, double & tangent, MAT_CTL::state &s)

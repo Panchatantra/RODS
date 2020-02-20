@@ -484,7 +484,7 @@ void example_sdof()
 //	char eleOutput[] = "example/damper.dat";
 //	ds->addElementRecorder(0, eleIds, nre, ALL, eleOutput);
 //
-//	//ds->solveStaticResponse();
+//	//ds->solveLinearStaticResponse();
 //
 //	int eqId = 1;
 //	double dt = 0.005;

@@ -16,7 +16,7 @@ public:
 		const double sigma_cr, const double sigma_u, const double epsilon_u);
 	~concreteTrilinear();
 
-	virtual void setStrain(const double *strain) { epsilon = *strain; }
+	virtual void setStrain(const double *strain);
 	virtual void getResponse(const bool update = false);
 
 	virtual material1D *copy() { return new concreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u); }

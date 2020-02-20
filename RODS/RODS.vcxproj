@@ -70,7 +70,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -316,6 +316,7 @@
     <ClCompile Include="element\element2D.cpp" />
     <ClCompile Include="element\Frame2D.cpp" />
     <ClCompile Include="element\FrameElastic2D.cpp" />
+    <ClCompile Include="element\FramePDelta2D.cpp" />
     <ClCompile Include="element\inerter.cpp" />
     <ClCompile Include="element\inerter2D.cpp" />
     <ClCompile Include="element\Plane2D.cpp" />
@@ -332,6 +333,7 @@
     <ClCompile Include="element\trussElastic.cpp" />
     <ClCompile Include="element\TVMD.cpp" />
     <ClCompile Include="line.cpp" />
+    <ClCompile Include="Load.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="material\concreteTrilinear.cpp" />
     <ClCompile Include="material\elastic.cpp" />
@@ -367,6 +369,7 @@
     <ClInclude Include="element\element2D.h" />
     <ClInclude Include="element\Frame2D.h" />
     <ClInclude Include="element\FrameElastic2D.h" />
+    <ClInclude Include="element\FramePDelta2D.h" />
     <ClInclude Include="element\inerter.h" />
     <ClInclude Include="element\inerter2D.h" />
     <ClInclude Include="element\Plane2D.h" />
@@ -383,6 +386,7 @@
     <ClInclude Include="element\trussElastic.h" />
     <ClInclude Include="element\TVMD.h" />
     <ClInclude Include="line.h" />
+    <ClInclude Include="Load.h" />
     <ClInclude Include="material\concreteTrilinear.h" />
     <ClInclude Include="material\elastic.h" />
     <ClInclude Include="material\elastoplastic.h" />

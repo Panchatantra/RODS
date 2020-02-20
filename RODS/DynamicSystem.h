@@ -29,6 +29,7 @@
 #include "element/Quad4Elastic.h"
 #include "element/Truss2D.h"
 #include "element/Frame2D.h"
+#include "element/FramePDelta2D.h"
 #include "TimeSeries.h"
 #include "recorder/recorder.h"
 #include "recorder/dofRecorder.h"
@@ -69,7 +70,8 @@ public:
 	void fixDof(const int id);
 	void fixNode(const int id);
 
-	void addDofLoad(const int id, const double load);
+	void addLoad(const int id, double *t, double *p, const int nP, const double arriveTime=0.0, const double scale=1.0);
+	void addDofLoad(const int dofId, const int loadId);
 
 	void exportGmsh(char * fileName);
 
@@ -83,7 +85,7 @@ public:
 	void mapDofNode(dof *d, node *nd);
 	void mapDofNode(const int id_d, const int id_nd);
 
-	bool addMaterial1D(material1D *mtrl);
+	bool addMaterial1D(material1D *mt);
 	bool addMaterialElastic(const int id, const double E0);
 	bool addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha=0.02);
 	bool addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha=0.02, const double beta=0.5);
@@ -146,6 +148,7 @@ public:
 
 	void addTruss2D(const int id, const int ni, const int nj, const int secId);
 	void addFrame2D(const int id, const int ni, const int nj, const int secId, const int nIntP=5);
+	void addFramePDelta2D(const int id, const int ni, const int nj, const int secId, const int nIntP=5);
 
 	void addTimeSeries(TimeSeries *ts);
 	void addTimeSeries(const int id, const double dt, const vec &s);
@@ -166,7 +169,8 @@ public:
 	void assembleMassMatrix();
 	void applyRestraint();
 	void applyLoad();
-	void addGravity();
+	void setLoadConst(const bool isConst=true);
+	
 	void assembleStiffnessMatrix();
 	void reassembleStiffnessMatrix();
 	void setNumModesInherentDamping(const int n);
@@ -179,9 +183,12 @@ public:
 	void solveComplexEigen();
 	void solveStochasticSeismicResponse(const double f_h=50.0, const int nf=10000, const char method='c');
 
-	void solveStaticResponse(const int nsub=1);
+	void solveLinearStaticResponse();
 	void solveNonlinearStaticResponse(const int nsub=10);
-	void solveNonlinearStaticResponse(const int tsId, const double s, const int nsub=10);
+	void solveNonlinearStaticResponse(const double endTime, const int nsub=10);
+	void setDispControlDof(const int dofId, const int loadId);
+	void solveNonlinearStaticResponseDispControl(const double loadedTime, const int nsub=10);
+	void solveNonlinearStaticResponseDispControlDelta(const double loadedTime, const int nsub=10);
 
 	void setDynamicSolver(dsolver s) { this->dynamicSolver = s; }
 	void solveTimeDomainSeismicResponse(const int tsId, const double s=1.0, const int nsub=1);
@@ -244,6 +251,7 @@ public:
 	std::map<int, trussElastic *> trussElastics;
 	std::map<int, Truss2D *> Truss2Ds;
 	std::map<int, Frame2D *> Frame2Ds;
+	std::map<int, FramePDelta2D *> FramePDelta2Ds;
 	std::map<int, beamElastic *> beamElastics;
 	std::map<int, FrameElastic2D *> FrameElastic2Ds;
 	std::map<int, Quad4Elastic *> Quad4Elastics;
@@ -255,15 +263,18 @@ public:
 	std::map<int, SectionFrame2D *> SectionFrame2Ds;
 
 	std::map<int, TimeSeries *> tss;
+	std::map<int, Load *> Loads;
 	std::map<int, recorder *> drs;
 	std::map<int, recorder *> ers;
 
 	mat Mp, K, C, M;
 	mat Phi;
 	vec omg, P;
-	vec E, Q;
+	vec E, Q, Q0;
 	vec dsp, vel, acc;
 	mat u, v, a;
+
+	vec dsp0, q0;
 
 	mat K0;
 	vec q;
@@ -280,4 +291,7 @@ public:
 	bool useRayleighDamping;
 	double RayleighOmg1, RayleighOmg2;
 	int NumModesInherentDamping;
+
+	int dispControlDOFId, dispControlLoadId;
+	int dispControlEqn;
 };

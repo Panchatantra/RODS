@@ -158,6 +158,12 @@
     <ClCompile Include="element\Frame2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Load.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\FramePDelta2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dof.h">
@@ -308,6 +314,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\Frame2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Load.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\FramePDelta2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

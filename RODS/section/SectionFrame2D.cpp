@@ -16,8 +16,8 @@ SectionFrame2D::SectionFrame2D(const int id, vector<Fiber *> fibers):
 		this->fibers.push_back((*it)->copy());
 	}
 
-	void getSectionCentroid();
-	void getInitialStiffness();
+	getSectionCentroid();
+	getInitialStiffness();
 }
 
 SectionFrame2D::~SectionFrame2D()
@@ -48,7 +48,7 @@ void SectionFrame2D::getResponse(const bool update)
 		fiber->getResponse(update);
 
 		f(0) += fiber->N;
-		f(1) += -fiber->N*y;
+		f(1) += -(fiber->N*y);
 
 		k(0,0) += fiber->k;
 		k(0,1) += -fiber->k*y;

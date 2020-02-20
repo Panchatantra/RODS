@@ -6,12 +6,12 @@
 
 using namespace std;
 
-class Frame2D :
+class FramePDelta2D :
 	public element2D
 {
 public:
-	Frame2D(const int id, node *nodeI, node *nodeJ, SectionFrame2D *sec, const int nIntPoints=5);
-	~Frame2D();
+	FramePDelta2D(const int id, node *nodeI, node *nodeJ, SectionFrame2D *sec, const int nIntPoints=5);
+	~FramePDelta2D();
 
 	void buildMatrix() override;
 	void getResponse(const bool update = false) override;
@@ -29,6 +29,8 @@ public:
 	mat::fixed<3, 6> T;
 	mat::fixed<6, 6> K0;
 	mat::fixed<6, 6> K;
+	mat::fixed<6, 6> Kg;
+	mat::fixed<6, 6> T3;
 	vec::fixed<6> u;
 	vec::fixed<6> q;
 };

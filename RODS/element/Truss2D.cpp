@@ -19,8 +19,8 @@ void Truss2D::buildMatrix()
 
 void Truss2D::getResponse(const bool update)
 {
-	u = vec( { nodeI->dofX->dsp, nodeI->dofY->dsp,
-				nodeJ->dofX->dsp, nodeJ->dofY->dsp } );
+	u = vec( { nodeI->dofX->dsp, nodeI->dofZ->dsp,
+				 nodeJ->dofX->dsp, nodeJ->dofZ->dsp } );
 
 	ue = 0.0;
 	for (size_t i = 0; i < 4; i++)
@@ -38,6 +38,8 @@ void Truss2D::getResponse(const bool update)
 	force = &f;
 	deformation = &ue;
 
+	buildMatrix();
+
 	double f_ = f - k0*ue;
 	for (size_t i = 0; i < 4; i++)
 	{
@@ -49,7 +51,7 @@ void Truss2D::assembleInitialStiffnessMatrix(mat &K0)
 {
 	int local[4] = { 0,1,2,3 };
 	int global[4] = { nodeI->dofX->eqnId, nodeI->dofZ->eqnId,
-		nodeJ->dofX->eqnId, nodeJ->dofZ->eqnId };
+					  nodeJ->dofX->eqnId, nodeJ->dofZ->eqnId };
 
 	for (int i = 0; i < 4; i++)
 	{

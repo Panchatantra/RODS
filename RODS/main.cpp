@@ -424,11 +424,6 @@ void example_frame()
 	ds->fixNode(5);
 	ds->fixNode(9);
 
-	double lf = 5.0;
-	ds->addDofLoad(3 * 1 + 1, lf);
-	ds->addDofLoad(3 * 2 + 1, lf);
-	ds->addDofLoad(3 * 3 + 1, lf);
-
 	int elementConnect[15][3]{ {1, 2, 1},
 	{2, 3, 1},
 	{3, 4, 1},
@@ -464,7 +459,10 @@ void example_frame()
 	double c = 5.0;
 	double k = 100.0;
 	double alpha = 0.15;
-	//ds->addDashpot2D(101, 6, 11, c);
+	ds->addDashpot2D(101, 6, 11, c);
+	ds->addDashpot2D(102, 6, 11, c);
+	ds->addDashpot2D(103, 8, 11, c);
+	
 	//ds->addDashpotExp2D(101, 6, 9, c, alpha);
 	//ds->addDashpotExp2D(102, 6, 11, c, alpha);
 	//ds->addDashpotExp2D(103, 8, 11, c, alpha);
@@ -478,9 +476,9 @@ void example_frame()
 	//ds->addSpringBoucWen(102, ds->nodes.at(6)->dofX->id, ds->nodes.at(11)->dofX->id, k0, uy, alfa);
 	//ds->addSpringBoucWen(103, ds->nodes.at(8)->dofX->id, ds->nodes.at(11)->dofX->id, k0, uy, alfa);
 
-	ds->addSpringBoucWen2D(101, 6, 9, k0, uy, alfa);
-	ds->addSpringBoucWen2D(102, 6, 11, k0, uy, alfa);
-	ds->addSpringBoucWen2D(103, 8, 11, k0, uy, alfa);
+	//ds->addSpringBoucWen2D(101, 6, 9, k0, uy, alfa);
+	//ds->addSpringBoucWen2D(102, 6, 11, k0, uy, alfa);
+	//ds->addSpringBoucWen2D(103, 8, 11, k0, uy, alfa);
 
 	//ds->addDashpot(101, ds->nodes.at(6)->dofX->id, ds->nodes.at(11)->dofX->id, c);
 
@@ -504,8 +502,6 @@ void example_frame()
 	char eleOutput[] = "data/damper.dat";
 	ds->addElementRecorder(0, eleIds, nre, ALL, eleOutput);
 
-	//ds->solveStaticResponse();
-
 	int eqId = 1;
 	double dt = 0.005;
 	char eqFile[] = "data/EQ-S-1.txt";
@@ -513,7 +509,7 @@ void example_frame()
 
 	ds->setDynamicSolver(StateSpace_NL);
 	ds->activeGroundMotion(X);
-	ds->solveTimeDomainSeismicResponse(eqId, 700.0, 30);
+	//ds->solveTimeDomainSeismicResponse(eqId, 700.0, 30);
 
 	ds->printInfo();
 }
@@ -679,6 +675,208 @@ void example_wall()
 	ds->exportGmsh(gmshFile);
 }
 
+void example_nonlinear_spring()
+{
+	double E = 2.06e2, fy = 0.4;
+	double alpha = 0.02;
+	double L = 1000.0;
+
+	double A = 2148.84937505542;
+	auto ds = new DynamicSystem();
+	
+	ds->addDof(1,X,0.0,FIXED);
+	ds->addDof(2,X,0.0);
+
+	ds->addSpringBilinear(1,1,2,E*A/L,fy*A/(E*A/L),alpha);
+
+	int loadId = 1;
+	int nP = 3;
+	double t[3] {0,1,2};
+	double p[3] {0,1,1};
+	double G = fy*A*1.05;
+	ds->addLoad(loadId,t,p,nP,0.0,G);
+	ds->addDofLoad(2, loadId);
+
+	ds->assembleMatrix();
+	
+	ds->solveNonlinearStaticResponse(10);
+
+	ds->eles.at(1)->printResponse();
+	//ds->printInfo();
+}
+
+void example_nonlinear_truss()
+{
+	double E = 2.06e2, fy = 0.4;
+	double eps_y = fy/E;
+	double alpha = 0.02;
+
+	double Ec = 3.0e4, fc = 30.0;
+	double eps_c = 0.002, eps_u = 0.0033;
+	double sigma_cr = 0.4*fc, sigma_u = 0.85*fc;
+	concreteTrilinear *mat2 = new concreteTrilinear(2, Ec, fc, eps_c, sigma_cr, sigma_u, eps_u);
+
+	double A = 2148.84937505542;
+	auto ds = new DynamicSystem();
+	int matId = 1;
+	int fiberId = 1;
+	int secId = 1;
+	ds->addMaterialElastoplastic(matId, E, fy, alpha);
+	ds->addFiber(fiberId, matId, A,0.0);
+	ds->addSectionTruss(secId, &fiberId, 1);
+
+	ds->addDof(1,X,0.0,FIXED);
+	ds->addDof(2,Z,0.0,FIXED);
+	ds->addDof(3,X,0.0,FIXED);
+	ds->addDof(4,Z,0.0);
+	ds->addDof(5,X,0.0,FIXED);
+	ds->addDof(6,Z,0.0);
+	
+	double L = 1000.0;
+	ds->addNode(1,0.0,0.0,1,2,-1);
+	ds->addNode(11,0.0,0.5*L,5,6,-1);
+	ds->addNode(2,0.0,L,3,4,-1);
+
+	int loadId = 1;
+	int nP = 3;
+	double t[3] {0,1,2};
+	double p[3] {0,1,1};
+	double G = -fy*A*1.2;
+	ds->addLoad(loadId,t,p,nP,0.0,G);
+	ds->addDofLoad(4, loadId);
+
+	ds->addTruss2D(1,1,11,secId);
+	ds->addTruss2D(2,11,2,secId);
+
+	ds->assembleMatrix();
+
+	int nre = 1;
+	int *eleIds = new int[nre] { 1 };
+	char eleOutput[] = "data/truss.dat";
+	ds->addElementRecorder(1, eleIds, nre, ALL, eleOutput);
+
+	ds->solveNonlinearStaticResponse(10);
+
+	ds->eles.at(1)->printResponse();
+	//ds->printInfo();
+}
+
+void example_nonlinear_cantilever()
+{
+	auto ds = new DynamicSystem();
+	int matConcId = 1;
+	int matBarId = 2;
+	int secId = 1;
+
+	double E = 2.0e2, fy = 0.582;
+	double alpha = 0.0;
+
+	double Ec = 3.0e1, fc = 0.0307;
+	double eps_c = 0.0066, eps_u = 0.015;
+	double sigma_cr = 0.4*fc, sigma_u = 0.85*fc;
+	
+	ds->addMaterialConcreteTrilinear(matConcId, Ec, fc, eps_c, sigma_cr, sigma_u, eps_u);
+	ds->addMaterialSteelBilinear(matBarId, E, fy, alpha, 0.5);
+	//ds->addMaterialElastoplastic(matBarId, E, fy, alpha);
+
+	double d = 8.0;
+	double b = 200.0, h = 200.0, as = 15, As = 3*PI*d*d/4.0;
+	int nLayer = 10;
+	double A = b*h/nLayer, y = h/nLayer*0.5;
+	int fiberId = 1;
+	int *fiberIds = new int[nLayer+2];
+
+	for (int i = 0; i < nLayer; ++i)
+	{
+		ds->addFiber(fiberId, matConcId, A, y);
+		fiberIds[fiberId-1] = fiberId;
+		y += h/nLayer;
+		fiberId += 1;
+	}
+
+	fiberIds[fiberId-1] = fiberId;
+	ds->addFiber(fiberId, matBarId, As, as);
+	fiberIds[fiberId] = fiberId+1;
+	ds->addFiber(fiberId+1, matBarId, As, h-as);
+	
+	ds->addSectionFrame2D(secId, fiberIds, nLayer+2);
+
+	ds->addDof(1,X,0.0,FIXED);
+	ds->addDof(2,Z,0.0,FIXED);
+	ds->addDof(3,RY,0.0,FIXED);
+	
+	ds->addDof(4,X,0.0);
+	ds->addDof(5,Z,0.0);
+	ds->addDof(6,RY,0.0);
+
+	ds->addDof(7,X,0.0);
+	ds->addDof(8,Z,0.0);
+	ds->addDof(9,RY,0.0);
+
+	double L = 750.0;
+	ds->addNode(1,0.0,0.0,1,2,3);
+	ds->addNode(2,0.0,0.5*h,7,8,9);
+	ds->addNode(4,0.0,L,4,5,6);
+
+	int loadId = 1;
+	int nP = 3;
+	double t[3] {0,1,100};
+	double p[3] {0,1,1};
+	double G = -140.0;
+	
+	ds->addLoad(loadId,t,p,nP,0.0,G);
+	ds->addDofLoad(5, loadId);
+
+	ds->addFramePDelta2D(1,1,2,secId,2);
+	ds->addFramePDelta2D(2,2,4,secId,2);
+
+	double EA = Ec*b*h;
+	double EI = Ec*b*h*h*h/12.0;
+	//ds->addFrameElastic(1,1,2,EA,EI);
+	//ds->addFrameElastic(2,2,4,EA,EI);
+
+	ds->assembleMatrix();
+
+	int nrd = 1;
+	int *dofIds = new int[nrd] {
+		ds->nodes.at(4)->dofX->id
+	};
+	char dispOutput[] = "data/disp_cantilever.dat";
+	ds->addDofRecorder(1, dofIds, nrd, DISP, dispOutput);
+
+	int nre = 1;
+	int *eleIds = new int[nre] { 1 };
+	char eleOutput[] = "data/cantilever.dat";
+	ds->addElementRecorder(1, eleIds, nre, ALL, eleOutput);
+
+	ds->solveNonlinearStaticResponse(10);
+	ds->setLoadConst();
+
+	ds->dsp.print();
+
+	int dispLoadId = 12;
+	int nPd = 25;
+	double td[25] {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
+	double pd[25] {0,5,-5,10,-10,15,-15,20,-20,25,-25,30,-30,35,-35,40,-40,45,-45,50,-50,55,-55,60,-60};
+	
+	double scale = 1.0;
+	
+	ds->addLoad(dispLoadId, td, pd, nPd, 0.0, scale);
+
+	int lateralLoadId = 2;
+	ds->addLoad(lateralLoadId, t, p, nP, 0.0, 1.0);
+	ds->addDofLoad(4, lateralLoadId);
+	
+	ds->setDispControlDof(4, dispLoadId);
+
+	double loadedTime = 8.5;
+	double dt = 0.001;
+	int nsub = loadedTime/dt;
+	ds->solveNonlinearStaticResponseDispControlDelta(loadedTime, nsub);
+
+	//ds->printInfo();
+}
+
 int main()
 {
 	//example_sdof();
@@ -690,6 +888,9 @@ int main()
 	//example_truss();
 	//example_frame();
 	//example_cantilever();
-	example_wall();
+	//example_wall();
+	//example_nonlinear_spring();
+	//example_nonlinear_truss();
+	example_nonlinear_cantilever();
 	return 0;
 }

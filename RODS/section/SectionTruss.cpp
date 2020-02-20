@@ -23,7 +23,7 @@ SectionTruss::~SectionTruss()
 
 void SectionTruss::setStrain(const double *strain)
 {
-	epsilon = strain[0];
+	epsilon = *strain;
 	Fiber *fiber = nullptr;
 
 	for (auto it = fibers.begin(); it != fibers.end(); ++it)

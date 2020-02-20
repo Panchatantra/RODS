@@ -1,7 +1,7 @@
-#include "Frame2D.h"
+#include "FramePDelta2D.h"
 #include "numeric.h"
 
-Frame2D::Frame2D(const int id, node *nodeI, node *nodeJ, SectionFrame2D *sec, const int nIntPoints):
+FramePDelta2D::FramePDelta2D(const int id, node *nodeI, node *nodeJ, SectionFrame2D *sec, const int nIntPoints):
 	element2D(id, nodeI, nodeJ), B(zeros<mat>(2, 3)),
 	k(zeros<mat>(3, 3)), k0(zeros<mat>(3, 3)),
 	xi(new double[nIntPoints]), wt(new double[nIntPoints])
@@ -26,22 +26,44 @@ Frame2D::Frame2D(const int id, node *nodeI, node *nodeJ, SectionFrame2D *sec, co
 				{lyx/L, lyy/L, 0.0, -lyx/L, -lyy/L, 1.0}
 			});
 
+	Kg = 1.0/30.0/L*mat(
+		{
+			{0,0,0,0,0,0},
+			{0,36,3*L,0,-36,3*L},
+			{0,3*L,4*L*L,0,-3*L,-L*L},
+			{0,0,0,0,0,0},
+			{0,-36,-3*L,0,36,-3*L},
+			{0,3*L,-L*L,0,-3*L,4*L*L}
+		}
+	);
+
+	T3 = mat(
+		{
+			{lxx,lxy,0,0,0,0},
+			{lyx,lyy,0,0,0,0},
+			{0,0,1,0,0,0},
+			{0,0,0,lxx,lxy,0},
+			{0,0,0,lyx,lyy,0},
+			{0,0,0,0,0,1}
+		}
+	);
+
 	buildMatrix();
-	
+
 	K0 = K;
 	nv = 3;
 }
 
-Frame2D::~Frame2D()
+FramePDelta2D::~FramePDelta2D()
 {
 }
 
-void Frame2D::buildMatrix()
+void FramePDelta2D::buildMatrix()
 {
 	K = T.t()*k*T;
 }
 
-void Frame2D::getResponse(const bool update)
+void FramePDelta2D::getResponse(const bool update)
 {
 	u = vec( { nodeI->dofX->dsp, nodeI->dofZ->dsp, nodeI->dofRY->dsp,
 		       nodeJ->dofX->dsp, nodeJ->dofZ->dsp, nodeJ->dofRY->dsp } );
@@ -83,10 +105,10 @@ void Frame2D::getResponse(const bool update)
 
 	buildMatrix();
 
-	q = T.t()*(f - k0*ue);
+	q = T.t()*(f - k0*ue) + f(0)*Kg*T3*u;
 }
 
-void Frame2D::assembleStiffnessMatrix(mat &K)
+void FramePDelta2D::assembleStiffnessMatrix(mat &K)
 {
 	int local[6] = {0,1,2,3,4,5};
 	int global[6] = {nodeI->dofX->eqnId, nodeI->dofZ->eqnId, nodeI->dofRY->eqnId,
@@ -101,7 +123,7 @@ void Frame2D::assembleStiffnessMatrix(mat &K)
 	}
 }
 
-void Frame2D::assembleInitialStiffnessMatrix(mat &K0)
+void FramePDelta2D::assembleInitialStiffnessMatrix(mat &K0)
 {
 	int local[6] = {0,1,2,3,4,5};
 	int global[6] = {nodeI->dofX->eqnId, nodeI->dofZ->eqnId, nodeI->dofRY->eqnId,
@@ -116,7 +138,7 @@ void Frame2D::assembleInitialStiffnessMatrix(mat &K0)
 	}
 }
 
-void Frame2D::assembleNonlinearForceVector(vec &q)
+void FramePDelta2D::assembleNonlinearForceVector(vec &q)
 {
 	int local[6] = {0,1,2,3,4,5};
 	int global[6] = {nodeI->dofX->eqnId, nodeI->dofZ->eqnId, nodeI->dofRY->eqnId,
