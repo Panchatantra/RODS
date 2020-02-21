@@ -11,12 +11,12 @@ namespace MAT_CTL {
 /**
  * @brief      The trilinear concrete material class.
  */
-class concreteTrilinear :
+class ConcreteTrilinear :
 	public Material1D
 {
 public:
 	/**
-	 * @brief      Constructs a new instance of concreteTrilinear.
+	 * @brief      Constructs a new instance of ConcreteTrilinear.
 	 *
 	 * @param[in]  id         The identifier
 	 * @param[in]  E          The initial compressive module
@@ -26,9 +26,9 @@ public:
 	 * @param[in]  sigma_u    The compressive crush stress
 	 * @param[in]  epsilon_u  The compressive crush strain
 	 */
-	concreteTrilinear(const int id, const double E, const double fc, const double epsilon_c,
+	ConcreteTrilinear(const int id, const double E, const double fc, const double epsilon_c,
 		const double sigma_cr, const double sigma_u, const double epsilon_u);
-	~concreteTrilinear();
+	~ConcreteTrilinear();
 
 	/**
 	 * @brief      Sets the strain.
@@ -44,7 +44,7 @@ public:
 	 */
 	void getResponse(const bool update = false) override;
 
-	Material1D *copy() override { return new concreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u); }
+	Material1D *copy() override { return new ConcreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u); }
 
 	void compressionEnvelope(const double strain, double &stress, double &tangent, MAT_CTL::state &s);
 

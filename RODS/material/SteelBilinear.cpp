@@ -1,8 +1,8 @@
-#include "steelBilinear.h"
+#include "SteelBilinear.h"
 
 using namespace MAT_STBL;
 
-steelBilinear::steelBilinear(const int id, const double E, const double fy, const double alpha, const double beta) :
+SteelBilinear::SteelBilinear(const int id, const double E, const double fy, const double alpha, const double beta) :
     Material1D(id, E), fy(fy), alpha(alpha), sigma_ref(beta*fy),
     E0(E), epsilon_y(fy/E), E1(E*alpha),
 	E_p(E), epsilon_p(0.0), sigma_p(0.0),
@@ -12,11 +12,11 @@ steelBilinear::steelBilinear(const int id, const double E, const double fy, cons
 {
 }
 
-steelBilinear::~steelBilinear()
+SteelBilinear::~SteelBilinear()
 {
 }
 
-void steelBilinear::getResponse(const bool update)
+void SteelBilinear::getResponse(const bool update)
 {
 	double depsilon = epsilon - epsilon_p;
 	double sigma_try = sigma_p + depsilon * E_p;

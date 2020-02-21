@@ -1,9 +1,9 @@
-#include "concreteTrilinear.h"
+#include "ConcreteTrilinear.h"
 #include <math.h>
 
 using namespace MAT_CTL;
 
-concreteTrilinear::concreteTrilinear(const int id, const double E, const double fc,
+ConcreteTrilinear::ConcreteTrilinear(const int id, const double E, const double fc,
 	const double epsilon_c, const double sigma_cr, const double sigma_u, const double epsilon_u) :
     Material1D(id, E),
     fc(fc), epsilon_c(epsilon_c),
@@ -18,16 +18,16 @@ concreteTrilinear::concreteTrilinear(const int id, const double E, const double 
 {
 }
 
-concreteTrilinear::~concreteTrilinear()
+ConcreteTrilinear::~ConcreteTrilinear()
 {
 }
 
-void concreteTrilinear::setStrain(const double *strain)
+void ConcreteTrilinear::setStrain(const double *strain)
 {
 	epsilon = -(*strain);
 }
 
-void concreteTrilinear::getResponse(const bool update)
+void ConcreteTrilinear::getResponse(const bool update)
 {
 	double depsilon = epsilon - epsilon_p;
 	double sigma_try = sigma_p + depsilon * E_p;
@@ -180,7 +180,7 @@ void concreteTrilinear::getResponse(const bool update)
 	sigma = -sigma;
 }
 
-void concreteTrilinear::compressionEnvelope(const double strain, double & stress, double & tangent, MAT_CTL::state &s)
+void ConcreteTrilinear::compressionEnvelope(const double strain, double & stress, double & tangent, MAT_CTL::state &s)
 {
 	if (strain < epsilon_cr)
 	{
