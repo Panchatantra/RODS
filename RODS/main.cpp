@@ -5,8 +5,8 @@
 #include "armadillo"
 #include "DynamicSystem.h"
 #include "material/Elastoplastic.h"
-#include "material/steelBilinear.h"
-#include "material/concreteTrilinear.h"
+#include "material/SteelBilinear.h"
+#include "material/ConcreteTrilinear.h"
 #include "material/SMABilinear.h"
 
 #include "plot.h"
@@ -290,12 +290,12 @@ void test_material()
 	double alpha = 0.02;
 	Material1D *tmat;
 	Elastoplastic *mat0 = new Elastoplastic(0, E, fy, alpha);
-	steelBilinear *mat1 = new steelBilinear(1, E, fy, alpha);
+	SteelBilinear *mat1 = new SteelBilinear(1, E, fy, alpha);
 
 	double Ec = 3.0e4, fc = 30.0;
 	double eps_c = 0.002, eps_u = 0.0033;
 	double sigma_cr = 0.4*fc, sigma_u = 0.85*fc;
-	concreteTrilinear *mat2 = new concreteTrilinear(2, Ec, fc, eps_c, sigma_cr, sigma_u, eps_u);
+	ConcreteTrilinear *mat2 = new ConcreteTrilinear(2, Ec, fc, eps_c, sigma_cr, sigma_u, eps_u);
 
 	double sigma_shift = 0.5*fy;
 	SMABilinear *mat3 = new SMABilinear(3, E, fy, alpha, sigma_shift);
@@ -713,7 +713,7 @@ void example_nonlinear_truss()
 	double Ec = 3.0e4, fc = 30.0;
 	double eps_c = 0.002, eps_u = 0.0033;
 	double sigma_cr = 0.4*fc, sigma_u = 0.85*fc;
-	concreteTrilinear *mat2 = new concreteTrilinear(2, Ec, fc, eps_c, sigma_cr, sigma_u, eps_u);
+	ConcreteTrilinear *mat2 = new ConcreteTrilinear(2, Ec, fc, eps_c, sigma_cr, sigma_u, eps_u);
 
 	double A = 2148.84937505542;
 	auto ds = new DynamicSystem();

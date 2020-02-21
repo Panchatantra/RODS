@@ -14,16 +14,10 @@
     <ClCompile Include="timeseries.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="material\concreteTrilinear.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="material\elastic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="material\SMABilinear.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="material\steelBilinear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="element\dashpot.cpp">
@@ -48,9 +42,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="element\springNonlinear.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="element\trussElastic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="recorder\dofRecorder.cpp">
@@ -164,6 +155,15 @@
     <ClCompile Include="element\Spring.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="element\TrussElastic2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\ConcreteTrilinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\SteelBilinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="numeric.h">
@@ -172,16 +172,10 @@
     <ClInclude Include="timeseries.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="material\concreteTrilinear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="material\elastic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="material\SMABilinear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="material\steelBilinear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\dashpot.h">
@@ -206,9 +200,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\springNonlinear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="element\trussElastic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="recorder\dofRecorder.h">
@@ -320,6 +311,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\Spring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\TrussElastic2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material\ConcreteTrilinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material\SteelBilinear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

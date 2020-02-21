@@ -6,8 +6,8 @@
 
 #include "material/elastic.h"
 #include "material/Elastoplastic.h"
-#include "material/steelBilinear.h"
-#include "material/concreteTrilinear.h"
+#include "material/SteelBilinear.h"
+#include "material/ConcreteTrilinear.h"
 #include "material/SMABilinear.h"
 
 DynamicSystem::DynamicSystem(const double z) :
@@ -280,13 +280,13 @@ bool DynamicSystem::addMaterialElastoplastic(const int id, const double E0, cons
 
 bool DynamicSystem::addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha, const double beta)
 {
-	Material1D *mtrl = new steelBilinear(id, E0, fy, alpha, beta);
+	Material1D *mtrl = new SteelBilinear(id, E0, fy, alpha, beta);
 	return addMaterial1D(mtrl);
 }
 
 bool DynamicSystem::addMaterialConcreteTrilinear(const int id, const double E0, const double fc, const double epsilon_c, const double sigma_cr, const double sigma_u, const double epsilon_u)
 {
-	Material1D *mtrl = new concreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u);
+	Material1D *mtrl = new ConcreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u);
 	return addMaterial1D(mtrl);
 }
 
@@ -652,7 +652,7 @@ void DynamicSystem::addDashpotMaxwell2D(const int id, const int ni, const int nj
 	addDashpotMaxwell2D(s);
 }
 
-void DynamicSystem::addTrussElastic(TrussElastic *truss)
+void DynamicSystem::addTrussElastic(TrussElastic2D *truss)
 {
 	if (addElement(truss)) {
 		Element2Ds[truss->id] = truss;
@@ -663,7 +663,7 @@ void DynamicSystem::addTrussElastic(TrussElastic *truss)
 
 void DynamicSystem::addTrussElastic(const int id, const int ni, const int nj, const double EA)
 {
-	TrussElastic *truss = new TrussElastic(id, Nodes.at(ni), Nodes.at(nj), EA);
+	TrussElastic2D *truss = new TrussElastic2D(id, Nodes.at(ni), Nodes.at(nj), EA);
 	addTrussElastic(truss);
 }
 
