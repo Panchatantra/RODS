@@ -5,6 +5,7 @@
 "**R**esponse solver for **O**scillated **D**ynamic **S**ystem"
 * Most of the elements are **rod**-like elements
 * Salute to the famous ancient Chinese calculator — counting **rods**
+
 ------
 
 ## Element types
@@ -42,6 +43,7 @@
 ### 3D elements
 
 * ...
+
 ------
 
 ## Nonlinear materials
@@ -59,6 +61,7 @@
 * SectionTruss (Fiber-based)
 * SectionFrame2D (Fiber-based)
 * ...
+
 ------
 
 ## Solvers
@@ -77,6 +80,7 @@
         * Newmark-β solver with Newton Iteration
         * State space solver 
 * Stochastic solver
+
 ------
 
 ## Response Recorders
@@ -89,3 +93,5 @@
 ## Visualization
 
 * Gmsh
+
+------
