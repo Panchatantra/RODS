@@ -23,7 +23,7 @@
 #include "element/DashpotExp2D.h"
 #include "element/Inerter2D.h"
 #include "element/DashpotMaxwell2D.h"
-#include "element/trussElastic.h"
+#include "element/TrussElastic.h"
 #include "element/BeamElastic.h"
 #include "element/FrameElastic2D.h"
 #include "element/Quad4Elastic.h"
@@ -196,7 +196,7 @@ public:
 	void addDashpotMaxwell2D(DashpotMaxwell2D *s);
 	void addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::localAxis U = ELE::U1);
 
-	void addTrussElastic(trussElastic *truss);
+	void addTrussElastic(TrussElastic *truss);
 	void addTrussElastic(const int id, const int ni, const int nj, const double EA);
 	void addBeamElastic(BeamElastic *beam);
 	void addBeamElastic(const int id, const int ni, const int nj, const double EI);
@@ -364,7 +364,7 @@ public:
 	std::map<int, DashpotExp2D *> DashpotExp2Ds;
 	std::map<int, Inerter2D *> Inerter2Ds;
 
-	std::map<int, trussElastic *> trussElastics;
+	std::map<int, TrussElastic *> TrussElastics;
 	std::map<int, Truss2D *> Truss2Ds;
 	std::map<int, Frame2D *> Frame2Ds;
 	std::map<int, FramePDelta2D *> FramePDelta2Ds;

@@ -1,6 +1,6 @@
-#include "trussElastic.h"
+#include "TrussElastic.h"
 
-trussElastic::trussElastic(const int id, Node * nodeI, Node * nodeJ, const double EA):
+TrussElastic::TrussElastic(const int id, Node * nodeI, Node * nodeJ, const double EA):
 	Element2D(id, nodeI, nodeJ), EA(EA), ue(0.0), f(0.0)
 {
 	T = rowvec( {-lxx, -lxy, lxx, lxy} );
@@ -8,16 +8,16 @@ trussElastic::trussElastic(const int id, Node * nodeI, Node * nodeJ, const doubl
 	buildMatrix();
 }
 
-trussElastic::~trussElastic()
+TrussElastic::~TrussElastic()
 {
 }
 
-void trussElastic::buildMatrix()
+void TrussElastic::buildMatrix()
 {
 	K = T.t()*k*T;
 }
 
-void trussElastic::getResponse(const bool update)
+void TrussElastic::getResponse(const bool update)
 {
 	u = vec( { nodeI->dofX->dsp, nodeI->dofZ->dsp, nodeJ->dofX->dsp, nodeJ->dofZ->dsp } );
 
@@ -33,7 +33,7 @@ void trussElastic::getResponse(const bool update)
 	deformation = &ue;
 }
 
-void trussElastic::assembleStiffnessMatrix(mat &K)
+void TrussElastic::assembleStiffnessMatrix(mat &K)
 {
 	int local[4] = {0,1,2,3};
 	int global[4] = {nodeI->dofX->eqnId, nodeI->dofZ->eqnId,

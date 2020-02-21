@@ -652,18 +652,18 @@ void DynamicSystem::addDashpotMaxwell2D(const int id, const int ni, const int nj
 	addDashpotMaxwell2D(s);
 }
 
-void DynamicSystem::addTrussElastic(trussElastic *truss)
+void DynamicSystem::addTrussElastic(TrussElastic *truss)
 {
 	if (addElement(truss)) {
 		Element2Ds[truss->id] = truss;
-		trussElastics[truss->id] = truss;
+		TrussElastics[truss->id] = truss;
 		linearElasticElements[truss->id] = truss;
 	}
 }
 
 void DynamicSystem::addTrussElastic(const int id, const int ni, const int nj, const double EA)
 {
-	trussElastic *truss = new trussElastic(id, Nodes.at(ni), Nodes.at(nj), EA);
+	TrussElastic *truss = new TrussElastic(id, Nodes.at(ni), Nodes.at(nj), EA);
 	addTrussElastic(truss);
 }
 
