@@ -39,8 +39,8 @@ double Load::getValue(const double time)
 	}
 	else
 	{
-		size_t i = 0;
-		size_t j = 0;
+		int i = 0;
+		int j = 0;
 
 		for (int q = 0; q < nP; ++q)
 		{

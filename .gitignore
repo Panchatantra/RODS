@@ -25,7 +25,7 @@ RODS/x64/
 RODS/x86/
 RODS/html/
 RODS/latex/
-
+RODS/RODS
 
 # Cmake files
 cmake-build-Debug/
