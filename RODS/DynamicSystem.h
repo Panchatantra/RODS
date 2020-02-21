@@ -322,7 +322,7 @@ public:
 	std::map<int, int> dofMapNode;
 
 	std::map<int, Node *> Nodes; 			///< Nodes
-	std::map<int, Line *> lines; 			///< lines
+	std::map<int, Line *> Lines; 			///< Lines
 	std::map<int, DOF *> DOFs; 				///< DOFs
 	std::map<int, Element *> Elements; 		///< Elements
 	std::map<int, Element2D *> Element2Ds; 	///< Element2Ds
@@ -345,43 +345,43 @@ public:
 	/// The elements for assembling #q, #K0 and #K
 	std::map<int, Element *> nonlinearInitialTangentElements;
 
-	std::map<int, Spring *> Springs;
-	std::map<int, SpringBilinear *> SpringBilinears;
-	std::map<int, SpringNonlinear *> SpringNonlinears;
-	std::map<int, SpringBoucWen *> SpringBoucWens;
-	std::map<int, Dashpot *> Dashpots;
-	std::map<int, DashpotExp *> DashpotExps;
-	std::map<int, DashpotMaxwell *> DashpotMaxwells;
-	std::map<int, Inerter *> Inerters;
-	std::map<int, SPIS2 *> SPIS2s;
-	std::map<int, TVMD *> TVMDs;
-	std::map<int, Slider *> Sliders;
+	std::map<int, Spring *> Springs; ///< Springs in the system
+	std::map<int, SpringBilinear *> SpringBilinears; ///< SpringBilinears in the system
+	std::map<int, SpringNonlinear *> SpringNonlinears; ///< SpringNonlinears in the system
+	std::map<int, SpringBoucWen *> SpringBoucWens; ///< SpringBoucWens in the system
+	std::map<int, Dashpot *> Dashpots; ///< Dashpots in the system
+	std::map<int, DashpotExp *> DashpotExps; ///< DashpotExps in the system
+	std::map<int, DashpotMaxwell *> DashpotMaxwells; ///< DashpotMaxwells in the system
+	std::map<int, Inerter *> Inerters; ///< Inerters in the system
+	std::map<int, SPIS2 *> SPIS2s; ///< SPIS2s in the system
+	std::map<int, TVMD *> TVMDs; ///< TVMDs in the system
+	std::map<int, Slider *> Sliders; ///< Sliders in the system
 
-	std::map<int, Spring2D *> Spring2Ds;
-	std::map<int, SpringBoucWen2D *> SpringBoucWen2Ds;
-	std::map<int, Dashpot2D *> Dashpot2Ds;
-	std::map<int, DashpotMaxwell2D *> DashpotMaxwell2Ds;
-	std::map<int, DashpotExp2D *> DashpotExp2Ds;
-	std::map<int, Inerter2D *> Inerter2Ds;
+	std::map<int, Spring2D *> Spring2Ds; ///< Spring2Ds in the system
+	std::map<int, SpringBoucWen2D *> SpringBoucWen2Ds; ///< SpringBoucWen2Ds in the system
+	std::map<int, Dashpot2D *> Dashpot2Ds; ///< Dashpot2Ds in the system
+	std::map<int, DashpotMaxwell2D *> DashpotMaxwell2Ds; ///< DashpotMaxwell2Ds in the system
+	std::map<int, DashpotExp2D *> DashpotExp2Ds; ///< DashpotExp2Ds in the system
+	std::map<int, Inerter2D *> Inerter2Ds; ///< Inerter2Ds in the system
 
-	std::map<int, TrussElastic *> TrussElastics;
-	std::map<int, Truss2D *> Truss2Ds;
-	std::map<int, Frame2D *> Frame2Ds;
-	std::map<int, FramePDelta2D *> FramePDelta2Ds;
-	std::map<int, BeamElastic *> BeamElastics;
-	std::map<int, FrameElastic2D *> FrameElastic2Ds;
-	std::map<int, Quad4Elastic *> Quad4Elastics;
+	std::map<int, TrussElastic *> TrussElastics; ///< TrussElastics in the system
+	std::map<int, Truss2D *> Truss2Ds; ///< Truss2Ds in the system
+	std::map<int, Frame2D *> Frame2Ds; ///< Frame2Ds in the system
+	std::map<int, FramePDelta2D *> FramePDelta2Ds; ///< FramePDelta2Ds in the system
+	std::map<int, BeamElastic *> BeamElastics; ///< BeamElastics in the system
+	std::map<int, FrameElastic2D *> FrameElastic2Ds; ///< FrameElastic2Ds in the system
+	std::map<int, Quad4Elastic *> Quad4Elastics; ///< Quad4Elastics in the system
 
-	std::map<int, Material1D *> Material1Ds;
-	std::map<int, Fiber *> Fibers;
-	std::map<int, Section *> Sections;
-	std::map<int, SectionTruss *> SectionTrusss;
-	std::map<int, SectionFrame2D *> SectionFrame2Ds;
+	std::map<int, Material1D *> Material1Ds; ///< Material1Ds in the system
+	std::map<int, Fiber *> Fibers; ///< Fibers in the system
+	std::map<int, Section *> Sections; ///< Sections in the system
+	std::map<int, SectionTruss *> SectionTrusss; ///< SectionTrusss in the system
+	std::map<int, SectionFrame2D *> SectionFrame2Ds; ///< SectionFrame2Ds in the system
 
-	std::map<int, TimeSeries *> tss;
-	std::map<int, Load *> Loads;
-	std::map<int, Recorder *> drs;
-	std::map<int, Recorder *> ers;
+	std::map<int, TimeSeries *> Waves; ///< Waves in the system
+	std::map<int, Load *> Loads; ///< Loads in the system
+	std::map<int, Recorder *> DOFRecorders; ///< DOFRecorders in the system
+	std::map<int, Recorder *> ElementRecorders; ///< ElementRecorders in the system
 
 	mat Mp; 		///< The physical mass matrix
 	mat K0; 		///< The initial stiffness matrix
@@ -399,8 +399,7 @@ public:
 	vec acc;		///< The acceleration vector
 	vec q;			///< The nonlinear force vector
 	uvec fixedIds;	///< The identifiers of fixed DOFs
-	mat u, v, a;
-	vec dsp0, q0;
+	vec dsp0;		///< The backup of displacement vector
 
     double zeta;				///< The inherent damping ratio
     int eqnCount;				///< The number of equations

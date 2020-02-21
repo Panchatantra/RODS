@@ -47,7 +47,7 @@ DLL_API size_t add_dashpot(const int id, const int i, const int j, const double 
 
 DLL_API size_t add_timeseries(const int id, const double dt, char* fileName) {
 	ds->addTimeSeries(id, dt, fileName);
-	return ds->tss.size();
+	return ds->Waves.size();
 }
 
 DLL_API size_t assemble_matrix() {
@@ -63,12 +63,12 @@ DLL_API size_t solve_eigen()
 
 DLL_API size_t add_dof_recorder(const int id, int *dofIds, const int n, const int rtype, char * fileName) {
 	ds->addDofRecorder(id, dofIds, n, response(rtype), fileName);
-	return ds->drs.size();
+	return ds->DOFRecorders.size();
 }
 
 DLL_API size_t add_ele_recorder(const int id, int *eleIds, const int n, const int rtype, char * fileName) {
 	ds->addElementRecorder(id, eleIds, n, response(rtype), fileName);
-	return ds->ers.size();
+	return ds->ElementRecorders.size();
 }
 
 DLL_API size_t set_dynamic_solver(const int s) {

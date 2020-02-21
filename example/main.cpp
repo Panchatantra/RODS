@@ -208,7 +208,7 @@ void example_sdof()
 //
 //	int ts = 2;
 //	ds->solveTimeDomainSeismicResponseStateSpace(ts, 1, 10);
-//	rowvec tt = ds->tss[ts]->time.t();
+//	rowvec tt = ds->Waves[ts]->time.t();
 //	tt.save("t.dat", csv_ascii);
 //	ds->u.save("dsp.dat", csv_ascii);
 //}

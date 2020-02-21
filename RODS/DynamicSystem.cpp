@@ -74,7 +74,7 @@ void DynamicSystem::addNodeWithDof(const int id, const double x, const int dofId
 
 void DynamicSystem::addLine(Line *l)
 {
-	auto it = lines.insert(std::make_pair(l->id, l));
+	auto it = Lines.insert(std::make_pair(l->id, l));
 	if (!it.second)
 	{
 		cout << "Line ID: " << l->id << " already exists! The line will not be added." << endl;
@@ -763,7 +763,7 @@ void DynamicSystem::addFramePDelta2D(const int id, const int ni, const int nj, c
 
 void DynamicSystem::addTimeSeries(TimeSeries * ts)
 {
-	tss[ts->id] = ts;
+	Waves[ts->id] = ts;
 }
 
 void DynamicSystem::addTimeSeries(const int id, const double dt, const vec &s)
@@ -780,7 +780,7 @@ void DynamicSystem::addTimeSeries(const int id, const double dt, char* fileName)
 
 void DynamicSystem::addDofRecorder(dofRecorder * dr)
 {
-	drs[dr->id] = dr;
+	DOFRecorders[dr->id] = dr;
 }
 
 void DynamicSystem::addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName)
@@ -798,7 +798,7 @@ void DynamicSystem::addDofRecorder(const int id, int *dofIds, const int n, respo
 
 void DynamicSystem::addElementRecorder(elementRecorder * er)
 {
-	ers[er->id] = er;
+	ElementRecorders[er->id] = er;
 }
 
 void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
@@ -1008,13 +1008,11 @@ void DynamicSystem::setLoadConst(const bool isConst)
 	if (isConst)
 	{
 		dsp0 = dsp;
-		q0 = q;
 		Q0 = Q;
 	}
 	else
 	{
 		dsp0 = zeros<vec>(eqnCount);
-		q0 = zeros<vec>(eqnCount);
 		Q0 = zeros<vec>(eqnCount);
 	}
 }
@@ -1679,23 +1677,19 @@ void DynamicSystem::solveTimeDomainSeismicResponse(const int tsId, const double 
 
 void DynamicSystem::solveTimeDomainSeismicResponseNMK(const int tsId, const double s, const int nsub)
 {
-	nsteps = tss.at(tsId)->nsteps;
-	dt = tss.at(tsId)->dt;
-	vec ag = s * tss.at(tsId)->series;
+	nsteps = Waves.at(tsId)->nsteps;
+	dt = Waves.at(tsId)->dt;
+	vec ag = s*Waves.at(tsId)->series;
 
 	vec u0(dsp);
 	vec v0(vel);
 	vec a0(acc);
 
-	u = zeros<mat>(eqnCount, nsteps);
-	v = zeros<mat>(eqnCount, nsteps);
-	a = zeros<mat>(eqnCount, nsteps);
-
 	cstep = 0;
-	ctime = 0;
+	ctime = 0.0;
 	initRecorders();
 
-	dt = dt / nsub;
+	dt = dt/nsub;
 	Element::dt = dt;
 
 	double gma = 0.5;
@@ -1713,14 +1707,11 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMK(const int tsId, const doub
 
 	mat K_h = c1*M + c3*C + K0;
 
-	u.col(0) = u0;
-	v.col(0) = v0;
 	a0 = solve(M, -Mp*E*ag(0) - C*v0);
-	a.col(0) = a0;
 
-	dsp = u.col(0);
-	vel = v.col(0);
-	acc = a.col(0);
+	dsp = u0;
+	vel = v0;
+	acc = a0;
 
 	setDofResponse();
 	getElementResponse();
@@ -1745,13 +1736,9 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMK(const int tsId, const doub
 			a0 = solve(M, -Mp*E*agj - C*v0 - K0*u0 + Q0);
 		}
 
-		u.col(i + 1) = u0;
-		v.col(i + 1) = v0;
-		a.col(i + 1) = a0;
-
-		dsp = u.col(i + 1);
-		vel = v.col(i + 1);
-		acc = a.col(i + 1);
+		dsp = u0;
+		vel = v0;
+		acc = a0;
 
 		setDofResponse();
 		getElementResponse();
@@ -1762,23 +1749,19 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMK(const int tsId, const doub
 
 void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s, const int nsub, const double tol, const int maxiter)
 {
-	nsteps = tss.at(tsId)->nsteps;
-	dt = tss.at(tsId)->dt;
-	vec ag = s * tss.at(tsId)->series;
+	nsteps = Waves.at(tsId)->nsteps;
+	dt = Waves.at(tsId)->dt;
+	vec ag = s*Waves.at(tsId)->series;
 
 	vec u0(dsp);
 	vec v0(vel);
 	vec a0(acc);
 
-	u = zeros<mat>(eqnCount, nsteps);
-	v = zeros<mat>(eqnCount, nsteps);
-	a = zeros<mat>(eqnCount, nsteps);
-
 	cstep = 0;
-	ctime = 0;
+	ctime = 0.0;
 	initRecorders();
 
-	dt = dt / nsub;
+	dt = dt/nsub;
 	Element::dt = dt;
 
 	double gma = 0.5;
@@ -1797,14 +1780,11 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 	mat K_h_ = c1*M + c3*C;
 	mat K_h = K_h_ + K0;
 
-	u.col(0) = u0;
-	v.col(0) = v0;
 	a0 = solve(M, -Mp*E*ag(0) - C*v0);
-	a.col(0) = a0;
 
-	dsp = u.col(0);
-	vel = v.col(0);
-	acc = a.col(0);
+	dsp = u0;
+	vel = v0;
+	acc = a0;
 
 	setDofResponse();
 	getElementResponse();
@@ -1842,7 +1822,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 				acc = a0;
 
 				setDofResponse();
-				error = norm(du) / norm(u0);
+				error = norm(du)/norm(u0);
 				if (error > tol)
 				{
 					if (l < maxiter - 1)
@@ -1873,37 +1853,30 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 				}
 			}
 		}
-		u.col(i + 1) = u0;
-		v.col(i + 1) = v0;
-		a.col(i + 1) = a0;
 
-		dsp = u.col(i + 1);
-		vel = v.col(i + 1);
-		acc = a.col(i + 1);
+		dsp = u0;
+		vel = v0;
+		acc = a0;
 	}
 	saveResponse();
 }
 
 void DynamicSystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, const double s, const int nsub)
 {
-	nsteps = tss.at(tsId)->nsteps;
-	dt = tss.at(tsId)->dt;
-	vec ag = s * tss.at(tsId)->series;
+	nsteps = Waves.at(tsId)->nsteps;
+	dt = Waves.at(tsId)->dt;
+	vec ag = s*Waves.at(tsId)->series;
 
-	vec x0 = zeros<vec>(2 * eqnCount);
+	vec x0 = zeros<vec>(2*eqnCount);
 	x0.head_rows(eqnCount) = dsp;
 	x0.tail_rows(eqnCount) = vel;
-	vec F = zeros<vec>(2 * eqnCount);
-
-	u = zeros<mat>(eqnCount, nsteps);
-	v = zeros<mat>(eqnCount, nsteps);
-	a = zeros<mat>(eqnCount, nsteps);
+	vec F = zeros<vec>(2*eqnCount);
 
 	cstep = 0;
-	ctime = 0;
+	ctime = 0.0;
 	initRecorders();
 
-	dt = dt / nsub;
+	dt = dt/nsub;
 	Element::dt = dt;
 
 	mat O = zeros<mat>(eqnCount, eqnCount);
@@ -1916,13 +1889,9 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, con
 	//mat T = expmat(H*h);
 	mat T = expm(H, h);
 
-	u.col(0) = x0.head_rows(eqnCount);
-	v.col(0) = x0.tail_rows(eqnCount);
-	a.col(0) = solve(M, -Mp*E*ag(0) - C*v.col(0));
-
-	dsp = u.col(0);
-	vel = v.col(0);
-	acc = a.col(0);
+	dsp = x0.head_rows(eqnCount);
+	vel = x0.tail_rows(eqnCount);
+	acc = solve(M, -Mp*E*ag(0) - C*vel);
 
 	setDofResponse();
 	getElementResponse();
@@ -1932,23 +1901,19 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, con
 	for (int i = 0; i < nsteps - 1; i++)
 	{
 		cstep += 1;
-		ctime += dt * nsub;
+		ctime += dt*nsub;
 		agd = (ag(i + 1) - ag(i)) / nsub;
 		agi = ag(i);
 		for (int j = 0; j < nsub; j++)
 		{
-			agj = agi + agd * j;
+			agj = agi + agd*j;
 			F.tail_rows(eqnCount) = solve(M, -Mp*E*agj + Q0);
-			x0 = T * (x0 + F*h);
+			x0 = T*(x0 + F*h);
 		}
 
-		u.col(i + 1) = x0.head_rows(eqnCount);
-		v.col(i + 1) = x0.tail_rows(eqnCount);
-		a.col(i + 1) = solve(M, -Mp*E*agj - C*v.col(i+1) - K*u.col(i+1) + Q0);
-
-		dsp = u.col(i + 1);
-		vel = v.col(i + 1);
-		acc = a.col(i + 1);
+		dsp = x0.head_rows(eqnCount);
+		vel = x0.tail_rows(eqnCount);
+		acc = solve(M, -Mp*E*agj - C*vel - K*dsp + Q0);
 
 		setDofResponse();
 		getElementResponse();
@@ -1959,24 +1924,20 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, con
 
 void DynamicSystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, const double s, const int nsub)
 {
-	nsteps = tss.at(tsId)->nsteps;
-	dt = tss.at(tsId)->dt;
-	vec ag = s * tss.at(tsId)->series;
+	nsteps = Waves.at(tsId)->nsteps;
+	dt = Waves.at(tsId)->dt;
+	vec ag = s*Waves.at(tsId)->series;
 
-	vec x0 = zeros<vec>(2 * eqnCount);
+	vec x0 = zeros<vec>(2*eqnCount);
 	x0.head_rows(eqnCount) = dsp;
 	x0.tail_rows(eqnCount) = vel;
-	vec F = zeros<vec>(2 * eqnCount);
-
-	u = zeros<mat>(eqnCount, nsteps);
-	v = zeros<mat>(eqnCount, nsteps);
-	a = zeros<mat>(eqnCount, nsteps);
+	vec F = zeros<vec>(2*eqnCount);
 
 	cstep = 0;
-	ctime = 0;
+	ctime = 0.0;
 	initRecorders();
 
-	dt = dt / nsub;
+	dt = dt/nsub;
 	Element::dt = dt;
 
 	mat O = zeros<mat>(eqnCount, eqnCount);
@@ -1989,13 +1950,9 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, c
 	//mat T = expmat(H*h);
 	mat T = expm(H, h);
 
-	u.col(0) = x0.head_rows(eqnCount);
-	v.col(0) = x0.tail_rows(eqnCount);
-	a.col(0) = solve(M, -Mp * E*ag(0) - C * v.col(0));
-
-	dsp = u.col(0);
-	vel = v.col(0);
-	acc = a.col(0);
+	dsp = x0.head_rows(eqnCount);
+	vel = x0.tail_rows(eqnCount);
+	acc = solve(M, -Mp*E*ag(0) - C*vel);
 
 	setDofResponse();
 	getElementResponse();
@@ -2006,7 +1963,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, c
 	for (int i = 0; i < nsteps - 1; i++)
 	{
 		cstep += 1;
-		ctime += dt * nsub;
+		ctime += dt*nsub;
 		agd = (ag(i + 1) - ag(i)) / nsub;
 		agi = ag(i);
 		for (int j = 0; j < nsub; j++)
@@ -2024,26 +1981,16 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, c
 			}
 			assembleNonlinearForceVector(true);
 		}
-		u.col(i + 1) = x0.head_rows(eqnCount);
-		v.col(i + 1) = x0.tail_rows(eqnCount);
-		a.col(i + 1) = solve(M, -Mp*E*agj - q - C*v.col(i+1) - K0*u.col(i+1) + Q0);
+		acc = solve(M, -Mp*E*agj - q - C*vel - K0*dsp + Q0);
 	}
 	saveResponse();
 }
 
 void DynamicSystem::solveTimeDomainSeismicResponseRK4(const int tsId, const double s, const int nsub)
 {
-	int nstep = tss.at(tsId)->nsteps;
-	double dt = tss.at(tsId)->dt;
-	vec ag = s * tss.at(tsId)->series;
-
-	vec u0 = zeros<vec>(eqnCount);
-	vec v0 = zeros<vec>(eqnCount);
-	vec a0 = zeros<vec>(eqnCount);
-
-	u = zeros<mat>(eqnCount, nstep);
-	v = zeros<mat>(eqnCount, nstep);
-	a = zeros<mat>(eqnCount, nstep);
+	int nstep = Waves.at(tsId)->nsteps;
+	double dt = Waves.at(tsId)->dt;
+	vec ag = s*Waves.at(tsId)->series;
 
 	dt = dt / nsub;
 	Element::dt = dt;
@@ -2117,20 +2064,20 @@ void DynamicSystem::assembleNonlinearForceVector(const bool update)
 
 void DynamicSystem::initRecorders()
 {
-	if (!(drs.empty()))
+	if (!(DOFRecorders.empty()))
 	{
 		std::map<int, Recorder *>::iterator it;
-		for (it = drs.begin(); it != drs.end(); it++)
+		for (it = DOFRecorders.begin(); it != DOFRecorders.end(); it++)
 		{
 			Recorder *dr = it->second;
 			dr->init(nsteps);
 		}
 	}
 
-	if (!(ers.empty()))
+	if (!(ElementRecorders.empty()))
 	{
 		std::map<int, Recorder *>::iterator it;
-		for (it = ers.begin(); it != ers.end(); it++)
+		for (it = ElementRecorders.begin(); it != ElementRecorders.end(); it++)
 		{
 			Recorder *er = it->second;
 			er->init(nsteps);
@@ -2140,20 +2087,20 @@ void DynamicSystem::initRecorders()
 
 void DynamicSystem::recordResponse()
 {
-	if (!(drs.empty()))
+	if (!(DOFRecorders.empty()))
 	{
 		std::map<int, Recorder *>::iterator it;
-		for (it = drs.begin(); it != drs.end(); it++)
+		for (it = DOFRecorders.begin(); it != DOFRecorders.end(); it++)
 		{
 			Recorder *dr = it->second;
 			dr->record(cstep, ctime);
 		}
 	}
 
-	if (!(ers.empty()))
+	if (!(ElementRecorders.empty()))
 	{
 		std::map<int, Recorder *>::iterator it;
-		for (it = ers.begin(); it != ers.end(); it++)
+		for (it = ElementRecorders.begin(); it != ElementRecorders.end(); it++)
 		{
 			Recorder *er = it->second;
 			er->record(cstep, ctime);
@@ -2163,20 +2110,20 @@ void DynamicSystem::recordResponse()
 
 void DynamicSystem::saveResponse()
 {
-	if (!(drs.empty()))
+	if (!(DOFRecorders.empty()))
 	{
 		std::map<int, Recorder *>::iterator it;
-		for (it = drs.begin(); it != drs.end(); it++)
+		for (it = DOFRecorders.begin(); it != DOFRecorders.end(); it++)
 		{
 			Recorder *dr = it->second;
 			dr->save();
 		}
 	}
 
-	if (!(ers.empty()))
+	if (!(ElementRecorders.empty()))
 	{
 		std::map<int, Recorder *>::iterator it;
-		for (it = ers.begin(); it != ers.end(); it++)
+		for (it = ElementRecorders.begin(); it != ElementRecorders.end(); it++)
 		{
 			Recorder *er = it->second;
 			er->save();

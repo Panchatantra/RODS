@@ -459,9 +459,10 @@ void example_frame()
 	double c = 5.0;
 	double k = 100.0;
 	double alpha = 0.15;
-	ds->addDashpot2D(101, 6, 11, c);
-	ds->addDashpot2D(102, 6, 11, c);
-	ds->addDashpot2D(103, 8, 11, c);
+	
+	//ds->addDashpot2D(101, 6, 11, c);
+	//ds->addDashpot2D(102, 6, 11, c);
+	//ds->addDashpot2D(103, 8, 11, c);
 	
 	//ds->addDashpotExp2D(101, 6, 9, c, alpha);
 	//ds->addDashpotExp2D(102, 6, 11, c, alpha);
@@ -476,16 +477,16 @@ void example_frame()
 	//ds->addSpringBoucWen(102, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(11)->dofX->id, k0, uy, alfa);
 	//ds->addSpringBoucWen(103, ds->Nodes.at(8)->dofX->id, ds->Nodes.at(11)->dofX->id, k0, uy, alfa);
 
-	//ds->addSpringBoucWen2D(101, 6, 9, k0, uy, alfa);
-	//ds->addSpringBoucWen2D(102, 6, 11, k0, uy, alfa);
-	//ds->addSpringBoucWen2D(103, 8, 11, k0, uy, alfa);
-
-	//ds->addDashpot(101, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(11)->dofX->id, c);
+	ds->addSpringBoucWen2D(101, 6, 9, k0, uy, alfa);
+	ds->addSpringBoucWen2D(102, 6, 11, k0, uy, alfa);
+	ds->addSpringBoucWen2D(103, 8, 11, k0, uy, alfa);
 
 	ds->setRayleighDamping(2.0*PI / 0.36, 2.0*PI / 0.1);
 
 	ds->assembleMatrix();
 	ds->solveEigen();
+
+	ds->printInfo();
 
 	char gmshFile[] = "data/frame.msh";
 	ds->exportGmsh(gmshFile);
@@ -509,9 +510,7 @@ void example_frame()
 
 	ds->setDynamicSolver(StateSpace_NL);
 	ds->activeGroundMotion(Direction::X);
-	//ds->solveTimeDomainSeismicResponse(eqId, 700.0, 30);
-
-	ds->printInfo();
+	ds->solveTimeDomainSeismicResponse(eqId, 700.0, 30);
 }
 
 void example_cantilever()
@@ -886,11 +885,11 @@ int main()
 	//example_shear_building_spis2();
 	//test_material();
 	//example_truss();
-	//example_frame();
+	example_frame();
 	//example_cantilever();
 	//example_wall();
 	//example_nonlinear_spring();
 	//example_nonlinear_truss();
-	example_nonlinear_cantilever();
+	//example_nonlinear_cantilever();
 	return 0;
 }
