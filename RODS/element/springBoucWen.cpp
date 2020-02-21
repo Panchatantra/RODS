@@ -1,7 +1,7 @@
 #include "springBoucWen.h"
 
 springBoucWen::springBoucWen(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha, const double beta, const double n) :
-	element1D(id, i, j),
+	Element1D(id, i, j),
 	k0(k0), uy(uy),k1(alpha*k0), fy(k0*uy),
 	alpha(alpha), beta(beta), n(n),
 	k(k0), u(0), f(0), v(0), z(0), zp(0)
@@ -42,9 +42,9 @@ void springBoucWen::getResponse(const bool update)
 
 	z = zp;
 	f = alpha*k0*u + (1.0-alpha)*fy*z;
-	z += element::dt*k0/fy*(v-beta*fabs(v)*pow(fabs(z),(n-1))*z-(1.0-beta)*v*pow(fabs(z),n));
+	z += Element::dt*k0/fy*(v-beta*fabs(v)*pow(fabs(z),(n-1))*z-(1.0-beta)*v*pow(fabs(z),n));
 
-	k = k0 + (1.0-alpha)*fy*(z-zp)/(v*element::dt);
+	k = k0 + (1.0-alpha)*fy*(z-zp)/(v*Element::dt);
 
 	//q(0) = -(f - k*u);
 	q(0) = -f;

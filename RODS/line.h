@@ -1,14 +1,14 @@
 #pragma once
 #include "Basis.h"
-#include "node.h"
+#include "Node.h"
 
-class line :
+class Line :
 	public Basis
 {
 public:
-	line(const int id, node *i, node *j);
-	~line();
+	Line(const int id, Node *i, Node *j);
+	~Line();
 
-	node *nodeI, *nodeJ;
+	Node *nodeI, *nodeJ;
 };
 

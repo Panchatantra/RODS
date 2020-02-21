@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include <armadillo>
 #include "Basis.h"
 
@@ -8,11 +7,11 @@ using namespace arma;
 
 enum response { DISP, VEL, ACC, FORCE, DEF, ALL };
 
-class recorder : public Basis
+class Recorder : public Basis
 {
 public:
-	recorder(const int id, response rtype, char * fileName);
-	~recorder();
+	Recorder(const int id, response rtype, char * fileName);
+	~Recorder();
 
 	void init(const int nsteps);
 	virtual void record(const int cstep, const double ctime) = 0;

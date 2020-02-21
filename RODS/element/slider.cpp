@@ -1,18 +1,18 @@
-#include "slider.h"
+#include "Slider.h"
 
 
-slider::slider(const int id, DOF *i, DOF *j, const double muN) :
-	element1D(id, i, j), muN(muN),
+Slider::Slider(const int id, DOF *i, DOF *j, const double muN) :
+	Element1D(id, i, j), muN(muN),
 	u(0.0), f(0.0), v(0.0)
 {
 }
 
 
-slider::~slider()
+Slider::~Slider()
 {
 }
 
-void slider::getResponse(const bool update)
+void Slider::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	v = dofJ->vel - dofI->vel;
@@ -27,7 +27,7 @@ void slider::getResponse(const bool update)
 	deformation = &u;
 }
 
-void slider::assembleNonlinearForceVector(vec & q)
+void Slider::assembleNonlinearForceVector(vec & q)
 {
 	int i_local = 0;
 	int j_local = 1;

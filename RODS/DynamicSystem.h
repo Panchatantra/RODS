@@ -4,8 +4,8 @@
 #include <armadillo>
 #include "Basis.h"
 #include "DOF.h"
-#include "node.h"
-#include "line.h"
+#include "Node.h"
+#include "Line.h"
 #include "element/spring.h"
 #include "element/springBilinear.h"
 #include "element/springBoucWen.h"
@@ -13,7 +13,7 @@
 #include "element/dashpotExp.h"
 #include "element/dashpotMaxwell.h"
 #include "element/inerter.h"
-#include "element/slider.h"
+#include "element/Slider.h"
 #include "element/spis2.h"
 #include "element/TVMD.h"
 #include "element/springNonlinear.h"
@@ -24,18 +24,18 @@
 #include "element/inerter2D.h"
 #include "element/dashpotMaxwell2D.h"
 #include "element/trussElastic.h"
-#include "element/beamElastic.h"
+#include "element/BeamElastic.h"
 #include "element/FrameElastic2D.h"
 #include "element/Quad4Elastic.h"
 #include "element/Truss2D.h"
 #include "element/Frame2D.h"
 #include "element/FramePDelta2D.h"
 #include "TimeSeries.h"
-#include "recorder/recorder.h"
+#include "recorder/Recorder.h"
 #include "recorder/dofRecorder.h"
 #include "recorder/elementRecorder.h"
-#include "material/material.h"
-#include "material/material1D.h"
+#include "material/Material.h"
+#include "material/Material1D.h"
 #include "section/Section.h"
 #include "section/Fiber.h"
 #include "section/SectionTruss.h"
@@ -51,41 +51,102 @@ enum dsolver
 	Newmark, Newmark_NL, StateSpace, StateSpace_NL
 };
 
+/**
+ * @brief      The Dynamic System Class.
+ */
 class DynamicSystem : public Basis
 {
 public:
+	/**
+	 * @brief      Constructs a new instance.
+	 *
+	 * @param[in]  z     The inherent damping ratio
+	 */
 	DynamicSystem(const double z=0.0);
 	~DynamicSystem();
 
-	void addNode(node *nd);
+	void addNode(Node *nd);
+
+	/**
+	 * @brief      Adds a 1D Node into the system.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  x      The X coordinate
+	 * @param[in]  dofId  The DOF identifier
+	 */
 	void addNode(const int id, const double x, const int dofId);
+
+	/**
+	 * @brief      Adds a 2D Node into the system.
+	 *
+	 * @param[in]  id       The identifier
+	 * @param[in]  x        The X coordinate
+	 * @param[in]  z        The Z coordinate
+	 * @param[in]  dofXId   The DOF X identifier
+	 * @param[in]  dofZId   The DOF Z identifier
+	 * @param[in]  dofRYId  The DOF RY identifier
+	 */
 	void addNode(const int id, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId);
+
 	void addNode(const int id, const double x, const double y, const double z);
 
 	void addNodeWithDof(const int id, const double x, const int dofId);
 
-	void addLine(line *l);
+	void addLine(Line *l);
 	void addLine(const int id, const int ni, const int nj);
 
+	/**
+	 * @brief      Fix a DOF.
+	 *
+	 * @param[in]  id    The DOF identifier
+	 */
 	void fixDof(const int id);
+
+	/**
+	 * @brief      Fix all the DOFs of a Node.
+	 *
+	 * @param[in]  id    The Node identifier
+	 */
 	void fixNode(const int id);
 
+	/**
+	 * @brief      Adds a load into the system.
+	 *
+	 * @param[in]  id          The Load identifier
+	 * @param      t           The loading moments
+	 * @param      p           The loading values related to the moments
+	 * @param[in]  nP          The number of loading moments
+	 * @param[in]  arriveTime  The arrive time of the load, default to 0.0
+	 * @param[in]  scale       The scale factor of the load, default to 1.0
+	 */
 	void addLoad(const int id, double *t, double *p, const int nP, const double arriveTime=0.0, const double scale=1.0);
+
+	/**
+	 * @brief      Adds a Load to a DOF.
+	 *
+	 * @param[in]  dofId   The DOF identifier
+	 * @param[in]  loadId  The Load identifier
+	 */
 	void addDofLoad(const int dofId, const int loadId);
 
+	/**
+	 * @brief      Export the FEM model as GMSH format.
+	 *
+	 * @param      fileName  The exported file name
+	 */
 	void exportGmsh(char * fileName);
 
     void addDof(DOF *d);
 	void addDof(const int id, const double m, const bool fixed=false);
-	void addDof(const int id, direction dir, const double m, const bool fixed=false);
+	void addDof(const int id, Direction dir, const double m, const bool fixed=false);
 
 	void setMass(const int id, const double m);
 	void setNodeMass(const int id, const double m);
 
-	void mapDofNode(DOF *d, node *nd);
+	void mapDofNode(DOF *d, Node *nd);
 	void mapDofNode(const int id_d, const int id_nd);
 
-	bool addMaterial1D(material1D *mt);
+	bool addMaterial1D(Material1D *mt);
 	bool addMaterialElastic(const int id, const double E0);
 	bool addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha=0.02);
 	bool addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha=0.02, const double beta=0.5);
@@ -97,7 +158,7 @@ public:
 	bool addSectionTruss(const int id, int *fiberIds, const int nFibers);
 	bool addSectionFrame2D(const int id, int *fiberIds, const int nFibers);
 
-	bool addElement(element *e);
+	bool addElement(Element *e);
 
 	void addSpring(spring *s);
 	void addSpring(const int id, const int ni, const int nj, const double k);
@@ -115,7 +176,7 @@ public:
 	void addDashpotMaxwell(const int id, const int ni, const int nj, const double k, const double c, const double alpha = 1.0);
 	void addInerter(inerter *in);
 	void addInerter(const int id, const int ni, const int nj, const double m);
-	void addSlider(slider *s);
+	void addSlider(Slider *s);
 	void addSlider(const int id, const int ni, const int nj, const double muN);
 	void addSPIS2(spis2 *s);
 	void addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k);
@@ -137,7 +198,7 @@ public:
 
 	void addTrussElastic(trussElastic *truss);
 	void addTrussElastic(const int id, const int ni, const int nj, const double EA);
-	void addBeamElastic(beamElastic *beam);
+	void addBeamElastic(BeamElastic *beam);
 	void addBeamElastic(const int id, const int ni, const int nj, const double EI);
 	void addFrameElastic(FrameElastic2D *frame);
 	void addFrameElastic(const int id, const int ni, const int nj, const double EA, const double EI);
@@ -163,24 +224,54 @@ public:
 	void addInerterRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 
 	void setRayleighDamping(const double omg1, const double omg2);
-	void activeGroundMotion(direction dir);
+	void activeGroundMotion(Direction dir);
 	void buildDofEqnMap();
+
+	/**
+	 * @brief      Assembles the system matrices
+	 * @note       This function must be called before analysis.
+	 */
 	void assembleMatrix();
+
 	void assembleMassMatrix();
 	void applyRestraint();
 	void applyLoad();
+
+	/**
+	 * @brief      Sets all the loads constant or not.
+	 *
+	 * @param[in]  isConst  Indicates if set the loads constant, default to be true
+	 */
 	void setLoadConst(const bool isConst=true);
-	
+
 	void assembleStiffnessMatrix();
 	void reassembleStiffnessMatrix();
+
+	/**
+	 * @brief      Sets the number of modes for calculate inherent damping.
+	 *
+	 * @param[in]  n     number of modes
+	 */
 	void setNumModesInherentDamping(const int n);
 	void buildInherentDampingMatrix();
 	void buildRayleighDampingMatrix(const double omg1, const double omg2);
 	void buildRayleighDampingMatrix(const int md1, const int md2);
 	void assembleDampingMatrix();
 
+	/**
+	 * @brief      Solves for eigen values and vectors
+	 */
 	void solveEigen();
 	void solveComplexEigen();
+
+	/**
+	 * @brief      Solves the stochastic seismic response
+	 *
+	 * @param[in]  f_h     The highest frequency for numerical integration
+	 * @param[in]  nf      The number of frequencies for numerical integration
+	 * @param[in]  method  The solution method: 'c' for complex superposition, 'd' for direct solution
+	 * @note       A unit white-noise exitation is assumed at present.
+	 */
 	void solveStochasticSeismicResponse(const double f_h=50.0, const int nf=10000, const char method='c');
 
 	void solveLinearStaticResponse();
@@ -203,31 +294,56 @@ public:
 
 	//void solveNonlinearEquation();
 
+	/**
+	 * @brief      Initializes the recorders.
+	 */
 	void initRecorders();
+
+	/**
+	 * @brief      Records the responses.
+	 */
 	void recordResponse();
+
+	/**
+	 * @brief      Saves the responses.
+	 */
 	void saveResponse();
 
+	/**
+	 * @brief      Prints the basic information of the system.
+	 */
 	void printInfo();
 
+	/// The map from a DOF identifier to its equation number
 	std::map<int, int> dofMapEqn;
+	/// The map from a equation number to its DOF identifier
 	std::map<int, int> eqnMapDof;
+	/// The map from a DOF identifier to its master Node identifier
 	std::map<int, int> dofMapNode;
 
-	std::map<int, node *> nodes;
-	std::map<int, line *> lines;
-	std::map<int, DOF *> dofs;
-	std::map<int, element *> eles;
-	std::map<int, element2D *> ele2Ds;
-	std::map<int, Plane2D *> Plane2Ds;
+	std::map<int, Node *> Nodes; 			///< Nodes
+	std::map<int, Line *> lines; 			///< lines
+	std::map<int, DOF *> DOFs; 				///< DOFs
+	std::map<int, Element *> Elements; 		///< Elements
+	std::map<int, Element2D *> Element2Ds; 	///< Element2Ds
+	std::map<int, Plane2D *> Plane2Ds; 		///< Plane2Ds
 
-	std::map<int, element *> physicalMassElements; // For Assembling Mp
-	std::map<int, element *> inertialMassElements; // For Assembling M other than Mp
-	std::map<int, element *> linearElasticElements; // For Assembling K0 and K
-	std::map<int, element *> linearDampingElements; // For Assembling C
-	std::map<int, element *> nonlinearElements;  // For Assembling q only
-	std::map<int, element *> nonlinearTangentElements;  // For Assembling q and K
-	std::map<int, element *> nonlinearSecantElements;  // For Assembling q and K0
-	std::map<int, element *> nonlinearInitialTangentElements;  // For Assembling q, K0 and K
+	/// The elements for assembling #Mp
+	std::map<int, Element *> physicalMassElements;
+	/// The elements for assembling #M other than #Mp
+	std::map<int, Element *> inertialMassElements;
+	/// The elements for assembling #K0 and #K
+	std::map<int, Element *> linearElasticElements;
+	/// The elements for assembling #C
+	std::map<int, Element *> linearDampingElements;
+	/// The elements for assembling #q only
+	std::map<int, Element *> nonlinearElements;
+	/// The elements for assembling #q and #K
+	std::map<int, Element *> nonlinearTangentElements;
+	/// The elements for assembling #q and #K0
+	std::map<int, Element *> nonlinearSecantElements;
+	/// The elements for assembling #q, #K0 and #K
+	std::map<int, Element *> nonlinearInitialTangentElements;
 
 	std::map<int, spring *> springs;
 	std::map<int, springBilinear *> springBLs;
@@ -239,7 +355,7 @@ public:
 	std::map<int, inerter *> inerters;
 	std::map<int, spis2 *> spis2s;
 	std::map<int, TVMD *> TVMDs;
-	std::map<int, slider *> sliders;
+	std::map<int, Slider *> Sliders;
 
 	std::map<int, spring2D *> spring2Ds;
 	std::map<int, springBoucWen2D *> springBoucWen2Ds;
@@ -252,11 +368,11 @@ public:
 	std::map<int, Truss2D *> Truss2Ds;
 	std::map<int, Frame2D *> Frame2Ds;
 	std::map<int, FramePDelta2D *> FramePDelta2Ds;
-	std::map<int, beamElastic *> beamElastics;
+	std::map<int, BeamElastic *> BeamElastics;
 	std::map<int, FrameElastic2D *> FrameElastic2Ds;
 	std::map<int, Quad4Elastic *> Quad4Elastics;
 
-	std::map<int, material1D *> material1Ds;
+	std::map<int, Material1D *> Material1Ds;
 	std::map<int, Fiber *> Fibers;
 	std::map<int, Section *> Sections;
 	std::map<int, SectionTruss *> SectionTrusss;
@@ -264,34 +380,45 @@ public:
 
 	std::map<int, TimeSeries *> tss;
 	std::map<int, Load *> Loads;
-	std::map<int, recorder *> drs;
-	std::map<int, recorder *> ers;
+	std::map<int, Recorder *> drs;
+	std::map<int, Recorder *> ers;
 
-	mat Mp, K, C, M;
-	mat Phi;
-	vec omg, P;
-	vec E, Q, Q0;
-	vec dsp, vel, acc;
+	mat Mp; 		///< The physical mass matrix
+	mat K0; 		///< The initial stiffness matrix
+	mat K; 			///< The tangent stiffness matrix
+	mat C; 			///< The damping matrix
+	mat M; 			///< The inertial mass matrix
+	mat Phi; 		///< The matrix for storing eigen vectors
+	vec omg; 		///< The natural circular frequencies
+	vec P; 			///< The natural periods
+	vec E; 			///< The ground motion reference vector
+	vec Q; 			///< The static load vector
+	vec Q0; 		///< The constant static load vector
+	vec dsp;		///< The displacement vector
+	vec vel;		///< The velocity vector
+	vec acc;		///< The acceleration vector
+	vec q;			///< The nonlinear force vector
+	uvec fixedIds;	///< The identifiers of fixed DOFs
 	mat u, v, a;
-
 	vec dsp0, q0;
 
-	mat K0;
-	vec q;
-	uvec fixedIds;
+    double zeta;				///< The inherent damping ratio
+    int eqnCount;				///< The number of equations
+    int fixedDofCount;			///< The number of fixed DOFs
+    bool eigenVectorNormed;		///< If the eigen vectors are normed
 
-    double zeta;
-    int eqnCount, fixedDofCount;
-    bool eigenVectorNormed;
+	dsolver dynamicSolver;		///< The dynamic solver
+	double dt;					///< The analysis time interval
+	double ctime;				///< The current analysis time
+	int nsteps;					///< The total analysis steps
+	int cstep;					///< The current analysis step
 
-	dsolver dynamicSolver;
-	double dt, ctime;
-	int nsteps, cstep;
+	bool useRayleighDamping;	///< If use Rayleigh damping
+	double RayleighOmg1;		///< The first circular frequency for Rayleigh damping
+	double RayleighOmg2;		///< The second circular frequency for Rayleigh damping
+	int NumModesInherentDamping;///< The number of modes to calculate inherent damping
 
-	bool useRayleighDamping;
-	double RayleighOmg1, RayleighOmg2;
-	int NumModesInherentDamping;
-
-	int dispControlDOFId, dispControlLoadId;
-	int dispControlEqn;
+	int dispControlDOFId;		///< The identifier of displacement control DOF
+	int dispControlLoadId;		///< The identifier of load pattern for displacement control DOF
+	int dispControlEqn;			///< The equation number of displacement control DOF
 };

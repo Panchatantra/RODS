@@ -27,7 +27,7 @@ namespace RODS {
 
 extern "C" {
 	DLL_API void clear();
-	DLL_API void set_damping_ratio(const double z);
+	DLL_API void set_damping_ratio(const double zeta);
 	DLL_API void active_ground_motion(const int dir);
 	DLL_API void fix_dof(const int id);
 	DLL_API size_t add_dof(const int id, const double m);

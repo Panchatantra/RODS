@@ -1,19 +1,19 @@
-#include "elastoplastic.h"
+#include "Elastoplastic.h"
 
 using namespace MAT_EP;
 
-elastoplastic::elastoplastic(const int id, const double E, const double fy, const double alpha) :
-	material1D(id, E), fy(fy), alpha(alpha), E0(E), epsilon_y(fy / E), E1(E*alpha),
+Elastoplastic::Elastoplastic(const int id, const double E, const double fy, const double alpha) :
+	Material1D(id, E), fy(fy), alpha(alpha), E0(E), epsilon_y(fy / E), E1(E*alpha),
 	E_p(E), epsilon_p(0.0), depsilon_p(0.0), sigma_p(0.0),
 	status(ELASTIC), status_p(ELASTIC)
 {
 }
 
-elastoplastic::~elastoplastic()
+Elastoplastic::~Elastoplastic()
 {
 }
 
-void elastoplastic::getResponse(const bool update)
+void Elastoplastic::getResponse(const bool update)
 {
 	double depsilon = epsilon - epsilon_p;
 	double f_try = sigma_p + depsilon * E_p;

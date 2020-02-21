@@ -1,8 +1,8 @@
 #include "FramePDelta2D.h"
 #include "numeric.h"
 
-FramePDelta2D::FramePDelta2D(const int id, node *nodeI, node *nodeJ, SectionFrame2D *sec, const int nIntPoints):
-	element2D(id, nodeI, nodeJ), B(zeros<mat>(2, 3)),
+FramePDelta2D::FramePDelta2D(const int id, Node *nodeI, Node *nodeJ, SectionFrame2D *sec, const int nIntPoints):
+	Element2D(id, nodeI, nodeJ), B(zeros<mat>(2, 3)),
 	k(zeros<mat>(3, 3)), k0(zeros<mat>(3, 3)),
 	xi(new double[nIntPoints]), wt(new double[nIntPoints])
 {

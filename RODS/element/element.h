@@ -1,6 +1,5 @@
 #pragma once
 #include "Basis.h"
-#include "node.h"
 #include <armadillo>
 
 using namespace arma;
@@ -12,12 +11,12 @@ namespace ELE {
 	};
 };
 
-class element : public Basis
+class Element : public Basis
 {
 public:
-	element();
-	element(const int id);
-	~element();
+	Element();
+	Element(const int id);
+	~Element();
 
 	virtual void buildMatrix() = 0;
 	virtual void getResponse(const bool update = false) = 0;

@@ -1,13 +1,13 @@
 #pragma once
-#include "element.h"
-#include "node.h"
+#include "Element.h"
+#include "Node.h"
 
-class element2D :
-	public element
+class Element2D :
+	public Element
 {
 public:
-	element2D(const int id, node * nodeI, node * nodeJ);
-	~element2D();
+	Element2D(const int id, Node * nodeI, Node * nodeJ);
+	~Element2D();
 
 	virtual void buildMatrix() {}
 	virtual void getResponse(const bool update = false) {}
@@ -17,7 +17,7 @@ public:
 	virtual void assembleMassMatrix(mat &M) {}
 	virtual void assembleNonlinearForceVector(vec &q) {}
 
-	node *nodeI, *nodeJ;
+	Node *nodeI, *nodeJ;
 
 	double L;
 	double lxx, lxy, lyx, lyy;

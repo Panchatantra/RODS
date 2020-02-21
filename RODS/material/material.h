@@ -1,17 +1,17 @@
 #pragma once
 #include "Basis.h"
 
-class material : public Basis
+class Material : public Basis
 {
 public:
-	material();
-	material(const int id, const double E);
-	~material();
+	Material();
+	Material(const int id, const double E);
+	~Material();
 
 	virtual void setStrain(const double *strain) = 0;
 	virtual void getResponse(const bool update = false) = 0;
 
-	virtual material *copy() = 0;
+	virtual Material *copy() = 0;
 
 	double E;
 };

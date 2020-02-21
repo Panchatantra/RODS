@@ -1,17 +1,15 @@
-#include "element1D.h"
+#include "Element1D.h"
 
 
-element1D::element1D()
+Element1D::Element1D()
 {
-	nv = 1;
 }
 
-element1D::element1D(const int id, DOF * i, DOF * j) : element(id), dofI(i), dofJ(j)
+Element1D::Element1D(const int id, DOF * i, DOF * j) : Element(id), dofI(i), dofJ(j)
 {
-	nv = 1;
 }
 
 
-element1D::~element1D()
+Element1D::~Element1D()
 {
 }

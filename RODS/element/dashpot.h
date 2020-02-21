@@ -1,12 +1,12 @@
 #pragma once
 
 #include "DOF.h"
-#include "element1D.h"
+#include "Element1D.h"
 #include <armadillo>
 
 using namespace arma;
 
-class dashpot : public element1D
+class dashpot : public Element1D
 {
 public:
 	dashpot(const int id, DOF *i, DOF *j, const double c);

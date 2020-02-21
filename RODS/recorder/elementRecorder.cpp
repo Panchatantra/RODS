@@ -1,7 +1,7 @@
 #include "elementRecorder.h"
 
-elementRecorder::elementRecorder(const int id, std::vector<element *> eles, response rtype, char * fileName):
-	recorder(id, rtype, fileName), eles(eles)
+elementRecorder::elementRecorder(const int id, std::vector<Element *> eles, response rtype, char * fileName):
+	Recorder(id, rtype, fileName), eles(eles)
 {
 	if (rtype == ALL)
 	{
@@ -25,7 +25,7 @@ void elementRecorder::record(const int cstep, const double ctime)
 
 	for (size_t i = 0; i < eles.size(); i++)
 	{
-		element *ele = eles[i];
+		Element *ele = eles[i];
 		switch (rtype)
 		{
 		case FORCE:

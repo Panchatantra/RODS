@@ -1,8 +1,8 @@
 #include "dashpotExp2D.h"
 
-dashpotExp2D::dashpotExp2D(const int id, node * nodeI, node * nodeJ, const double c, const double alpha,
+dashpotExp2D::dashpotExp2D(const int id, Node * nodeI, Node * nodeJ, const double c, const double alpha,
 	ELE::localAxis axis) :
-	element2D(id, nodeI, nodeJ), c(c), alpha(alpha), ue(0.0), f(0.0)
+	Element2D(id, nodeI, nodeJ), c(c), alpha(alpha), ue(0.0), f(0.0)
 {
 	if (axis == ELE::U1)
 	{

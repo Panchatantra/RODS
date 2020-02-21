@@ -1,16 +1,16 @@
 #pragma once
 
 #include <vector>
-#include "element2D.h"
+#include "Element2D.h"
 #include "section/SectionFrame2D.h"
 
 using namespace std;
 
 class FramePDelta2D :
-	public element2D
+	public Element2D
 {
 public:
-	FramePDelta2D(const int id, node *nodeI, node *nodeJ, SectionFrame2D *sec, const int nIntPoints=5);
+	FramePDelta2D(const int id, Node *nodeI, Node *nodeJ, SectionFrame2D *sec, const int nIntPoints=5);
 	~FramePDelta2D();
 
 	void buildMatrix() override;

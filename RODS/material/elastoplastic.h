@@ -1,5 +1,5 @@
 #pragma once
-#include "material1D.h"
+#include "Material1D.h"
 
 namespace MAT_EP {
 	enum state
@@ -8,18 +8,17 @@ namespace MAT_EP {
 	};
 }
 
-
-class elastoplastic :
-	public material1D
+class Elastoplastic :
+	public Material1D
 {
 public:
-	elastoplastic(const int id, const double E, const double fy, const double alpha=0.02);
-	~elastoplastic();
+	Elastoplastic(const int id, const double E, const double fy, const double alpha=0.02);
+	~Elastoplastic();
 
 	virtual void setStrain(const double *strain) { epsilon = *strain; }
 	virtual void getResponse(const bool update = false);
 
-	virtual material1D *copy() { return new elastoplastic(id, E0, fy, alpha); }
+	virtual Material1D *copy() { return new Elastoplastic(id, E0, fy, alpha); }
 
 	double fy, alpha;
 	double E0, epsilon_y, E1;

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "element2D.h"
+#include "Element2D.h"
 #include "section/SectionTruss.h"
 
 class Truss2D :
-	public element2D
+	public Element2D
 {
 public:
-	Truss2D(const int id, node *nodeI, node *nodeJ, SectionTruss *sec);
+	Truss2D(const int id, Node *nodeI, Node *nodeJ, SectionTruss *sec);
 	~Truss2D();
 
 	void buildMatrix() override;

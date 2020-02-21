@@ -1,16 +1,16 @@
 #pragma once
 
 #include "DOF.h"
-#include "element1D.h"
+#include "Element1D.h"
 #include <armadillo>
 
 using namespace arma;
 
-class slider : public element1D
+class Slider : public Element1D
 {
 public:
-	slider(const int id, DOF *i, DOF *j, const double muN);
-	~slider();
+	Slider(const int id, DOF *i, DOF *j, const double muN);
+	~Slider();
 
 	void getResponse(const bool update=false);
 	void assembleNonlinearForceVector(vec &q);

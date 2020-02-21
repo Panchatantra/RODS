@@ -1,7 +1,7 @@
 #include "TVMD.h"
 
 TVMD::TVMD(const int id, DOF *i, DOF *j, const double m, const double c, const double k) :
-	element1D(id, i, j), m(m), c(c), k(k),
+	Element1D(id, i, j), m(m), c(c), k(k),
 	u(0.0), f(0.0),
 	ud(0.0), vd(0.0), udp(0.0), vdp(0.0)
 {
@@ -21,7 +21,7 @@ void TVMD::getResponse(const bool update)
 	vd = vdp;
 	f = k*(u - ud);
 
-	double dt = element::dt;
+	double dt = Element::dt;
 
 	//Modified Euler Method:
 	ud = ud + dt*vd;
@@ -81,6 +81,6 @@ void TVMD::assembleNonlinearForceVector(vec & q)
 
 void TVMD::func(const double uc, const double ud, const double vd, double &kud, double &kvd)
 {
-	kud = element::dt*vd;
-	kvd = element::dt*(-c*vd+k*(uc-ud))/m;
+	kud = Element::dt*vd;
+	kvd = Element::dt*(-c*vd+k*(uc-ud))/m;
 }

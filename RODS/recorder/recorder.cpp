@@ -1,26 +1,26 @@
-#include "recorder.h"
+#include "Recorder.h"
 
-recorder::recorder(const int id, response rtype, char * fileName) :
+Recorder::Recorder(const int id, response rtype, char * fileName) :
 Basis(id), n(0), rtype(rtype), fileName(fileName)
 {
 }
 
-recorder::~recorder()
+Recorder::~Recorder()
 {
 }
 
-void recorder::init(const int nsteps)
+void Recorder::init(const int nsteps)
 {
 	this->nsteps = nsteps;
 	Res = zeros<mat>(nsteps, n + 1);
 }
 
-void recorder::save()
+void Recorder::save()
 {
 	Res.save(fileName, raw_ascii);
 }
 
-void recorder::setFileName(char *fileName)
+void Recorder::setFileName(char *fileName)
 {
 	this->fileName = fileName;
 }

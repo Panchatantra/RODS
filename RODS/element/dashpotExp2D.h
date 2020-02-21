@@ -1,15 +1,15 @@
 #pragma once
 
 #include "DOF.h"
-#include "element2D.h"
+#include "Element2D.h"
 #include <armadillo>
 
 using namespace arma;
 
-class dashpotExp2D : public element2D
+class dashpotExp2D : public Element2D
 {
 public:
-	dashpotExp2D(const int id, node * nodeI, node * nodeJ, const double c, const double alpha,
+	dashpotExp2D(const int id, Node * nodeI, Node * nodeJ, const double c, const double alpha,
 		ELE::localAxis axis);
 	~dashpotExp2D();
 

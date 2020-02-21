@@ -1,15 +1,15 @@
 #pragma once
 
 #include "DOF.h"
-#include "element2D.h"
+#include "Element2D.h"
 #include <armadillo>
 
 using namespace arma;
 
-class springBoucWen2D : public element2D
+class springBoucWen2D : public Element2D
 {
 public:
-	springBoucWen2D(const int id, node * nodeI, node * nodeJ, const double k0, const double uy,
+	springBoucWen2D(const int id, Node * nodeI, Node * nodeJ, const double k0, const double uy,
 		const double alpha, const double beta, const double n, ELE::localAxis axis);
 	~springBoucWen2D();
 

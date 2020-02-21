@@ -2,7 +2,7 @@
 
 
 dashpotMaxwell::dashpotMaxwell(const int id, DOF *i, DOF *j, const double ks, const double c, const double alpha) :
-	element1D(id, i, j), ks(ks), c(c), alpha(alpha),
+	Element1D(id, i, j), ks(ks), c(c), alpha(alpha),
 	u(0.0), f(0.0), ud(0.0), udp(0.0)
 {
 }
@@ -22,9 +22,9 @@ void dashpotMaxwell::getResponse(const bool update)
 	f = ks*(u-ud);
 
 	double f0 = sign(u-ud)*pow(f/c, 1.0/alpha);
-	ud = udp + element::dt*f0;
+	ud = udp + Element::dt*f0;
 	double f1 = sign(u+dt*v-ud)*pow(ks*(u+dt*v-ud)/c, 1.0/alpha);
-	ud = udp + element::dt*0.5*(f0 + f1);
+	ud = udp + Element::dt*0.5*(f0 + f1);
 
 	q(0) = -f;
 	q(1) = f;

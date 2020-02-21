@@ -1,12 +1,12 @@
 #pragma once
 
 #include "DOF.h"
-#include "element1D.h"
+#include "Element1D.h"
 #include <armadillo>
 
 using namespace arma;
 
-class spring : public element1D
+class spring : public Element1D
 {
 public:
 	spring(const int id, DOF *i, DOF *j, const double k);

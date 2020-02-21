@@ -1,8 +1,8 @@
 #include "springNonlinear.h"
 
 
-springNonlinear::springNonlinear(const int id, DOF *i, DOF *j, material1D *smat) :
-	element1D(id,i,j), smat(smat->copy()), u(0.0), f(0.0)
+springNonlinear::springNonlinear(const int id, DOF *i, DOF *j, Material1D *smat) :
+	Element1D(id,i,j), smat(smat->copy()), u(0.0), f(0.0)
 {
 	buildMatrix();
 }

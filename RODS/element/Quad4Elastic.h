@@ -6,7 +6,7 @@ class Quad4Elastic :
 	public Plane2D
 {
 public:
-	Quad4Elastic(const int id, node *nodeI, node *nodeJ, node *nodeP, node *nodeQ,
+	Quad4Elastic(const int id, Node *nodeI, Node *nodeJ, Node *nodeP, Node *nodeQ,
 		const double E, const double nu, const double t);
 	~Quad4Elastic();
 

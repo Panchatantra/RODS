@@ -5,7 +5,7 @@ using namespace MAT_CTL;
 
 concreteTrilinear::concreteTrilinear(const int id, const double E, const double fc,
 	const double epsilon_c, const double sigma_cr, const double sigma_u, const double epsilon_u) :
-    material1D(id, E),
+    Material1D(id, E),
     fc(fc), epsilon_c(epsilon_c),
     sigma_cr(sigma_cr), epsilon_cr(sigma_cr/E),
     sigma_u(sigma_u), epsilon_u(epsilon_u),

@@ -12,26 +12,13 @@ DLL_API void clear() {
 	ds = new DynamicSystem();
 }
 
-DLL_API void set_damping_ratio(const double z) {
-	ds->zeta = z;
+DLL_API void set_damping_ratio(const double zeta) {
+	ds->zeta = zeta;
 }
 
 DLL_API void active_ground_motion(const int dir)
 {
-	switch (dir)
-	{
-	case 1:
-		ds->activeGroundMotion(X);
-		break;
-	case 2:
-		ds->activeGroundMotion(Y);
-		break;
-	case 3:
-		ds->activeGroundMotion(Z);
-		break;
-	default:
-		break;
-	}
+	ds->activeGroundMotion(Direction(dir));
 }
 
 DLL_API void fix_dof(const int id) {
@@ -40,12 +27,12 @@ DLL_API void fix_dof(const int id) {
 
 DLL_API size_t add_dof(const int id, const double m) {
 	ds->addDof(id, m);
-	return ds->dofs.size();
+	return ds->DOFs.size();
 }
 
 DLL_API size_t add_dof_fixed(const int id, const double m) {
 	ds->addDof(id, m, FIXED);
-	return ds->dofs.size();
+	return ds->DOFs.size();
 }
 
 DLL_API size_t add_spring(const int id, const int i, const int j, const double k) {

@@ -1,6 +1,6 @@
 #include "Quad4Elastic.h"
 
-Quad4Elastic::Quad4Elastic(const int id, node *nodeI, node *nodeJ, node *nodeP, node *nodeQ,
+Quad4Elastic::Quad4Elastic(const int id, Node *nodeI, Node *nodeJ, Node *nodeP, Node *nodeQ,
 		const double E, const double nu, const double t):
 	Plane2D(id, nodeI, nodeJ, nodeP, nodeQ),
 	E(E), nu(nu), t(t)

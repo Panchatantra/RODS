@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "material/elastic.h"
-#include "material/elastoplastic.h"
+#include "material/Elastoplastic.h"
 #include "material/steelBilinear.h"
 #include "material/concreteTrilinear.h"
 #include "material/SMABilinear.h"
@@ -22,9 +22,9 @@ DynamicSystem::~DynamicSystem()
 {
 }
 
-void DynamicSystem::addNode(node * nd)
+void DynamicSystem::addNode(Node * nd)
 {
-	auto it = nodes.insert(std::make_pair(nd->id, nd));
+	auto it = Nodes.insert(std::make_pair(nd->id, nd));
 	if (!it.second)
 	{
 		cout << "Node ID: " << nd->id << " already exists! The node will not be added." << endl;
@@ -33,30 +33,30 @@ void DynamicSystem::addNode(node * nd)
 
 void DynamicSystem::addNode(const int id, const double x, const int dofId)
 {
-	DOF *d = dofs.at(dofId);
-	node *nd = new node(id, x);
+	DOF *d = DOFs.at(dofId);
+	Node *nd = new Node(id, x);
 	nd->setDof(d);
 	addNode(nd);
 }
 
 void DynamicSystem::addNode(const int id, const double x, const double y, const double z)
 {
-	node *nd = new node(id, x, y, z);
+	Node *nd = new Node(id, x, y, z);
 	addNode(nd);
 }
 
 void DynamicSystem::addNode(const int id, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId)
 {
-	DOF *dx = dofs.at(dofXId);
-	DOF *dz = dofs.at(dofZId);
+	DOF *dx = DOFs.at(dofXId);
+	DOF *dz = DOFs.at(dofZId);
 
-	node *nd = new node(id, x, 0.0, z);
+	Node *nd = new Node(id, x, 0.0, z);
 	nd->setDof(dx);
 	nd->setDof(dz);
 
 	if (dofRYId >= 0)
 	{
-		nd->setDof(dofs.at(dofRYId));
+		nd->setDof(DOFs.at(dofRYId));
 	}
 
 	addNode(nd);
@@ -64,15 +64,15 @@ void DynamicSystem::addNode(const int id, const double x, const double z, const 
 
 void DynamicSystem::addNodeWithDof(const int id, const double x, const int dofId)
 {
-	DOF *d = new DOF(dofId, X);
-	node *nd = new node(id, x, 0.0, 0.0);
+	DOF *d = new DOF(dofId, Direction::X);
+	Node *nd = new Node(id, x, 0.0, 0.0);
 	nd->setDof(d);
 
 	addDof(d);
 	addNode(nd);
 }
 
-void DynamicSystem::addLine(line *l)
+void DynamicSystem::addLine(Line *l)
 {
 	auto it = lines.insert(std::make_pair(l->id, l));
 	if (!it.second)
@@ -83,18 +83,18 @@ void DynamicSystem::addLine(line *l)
 
 void DynamicSystem::addLine(const int id, const int ni, const int nj)
 {
-	line *l = new line(id, nodes.at(ni), nodes.at(nj));
+	Line *l = new Line(id, Nodes.at(ni), Nodes.at(nj));
 	addLine(l);
 }
 
 void DynamicSystem::fixDof(const int id)
 {
-	dofs.at(id)->isFixed = true;
+	DOFs.at(id)->isFixed = true;
 }
 
 void DynamicSystem::fixNode(const int id)
 {
-	nodes.at(id)->fixDof();
+	Nodes.at(id)->fixDof();
 }
 
 void DynamicSystem::addLoad(const int id, double* t, double* p, const int nP, const double arriveTime,
@@ -113,7 +113,7 @@ void DynamicSystem::addLoad(const int id, double* t, double* p, const int nP, co
 
 void DynamicSystem::addDofLoad(const int dofId, const int loadId)
 {
-	dofs.at(dofId)->addLoad(Loads.at(loadId));
+	DOFs.at(dofId)->addLoad(Loads.at(loadId));
 }
 
 void DynamicSystem::exportGmsh(char * fileName)
@@ -123,19 +123,19 @@ void DynamicSystem::exportGmsh(char * fileName)
 
 	outFile << "$MeshFormat\n2.2 0 8\n$EndMeshFormat" << std::endl;
 	outFile << "$Nodes" << std::endl;
-	outFile << nodes.size() << std::endl;
-	for (auto it = nodes.begin(); it != nodes.end(); ++it)
+	outFile << Nodes.size() << std::endl;
+	for (auto it = Nodes.begin(); it != Nodes.end(); ++it)
 	{
 		auto nd = it->second;
 		outFile << it->first << " " << nd->x0 << " " << nd->y0 << " " << nd->z0 << std::endl;
 	}
 	outFile << "$EndNodes" << std::endl;
 
-	if (ele2Ds.size() > 1)
+	if (Element2Ds.size() > 1)
 	{
 		outFile << "$Elements" << std::endl;
-		outFile << ele2Ds.size() << std::endl;
-		for (auto it = ele2Ds.begin(); it != ele2Ds.end(); ++it)
+		outFile << Element2Ds.size() << std::endl;
+		for (auto it = Element2Ds.begin(); it != Element2Ds.end(); ++it)
 		{
 			auto ele = it->second;
 			outFile << it->first << " 1 1 1 " << ele->nodeI->id << " " << ele->nodeJ->id << std::endl;
@@ -161,7 +161,7 @@ void DynamicSystem::exportGmsh(char * fileName)
 	vec modeshape = Phi.col(0);
 	for (int i = 0; i < eqnCount; i++)
 	{
-		DOF *d = dofs.at(eqnMapDof.at(i));
+		DOF *d = DOFs.at(eqnMapDof.at(i));
 		d->dsp = modeshape(i);
 	}
 
@@ -172,9 +172,9 @@ void DynamicSystem::exportGmsh(char * fileName)
 	outFile << "3" << std::endl;
 	outFile << "0" << std::endl;
 	outFile << "3" << std::endl;
-	outFile << nodes.size() << std::endl;
+	outFile << Nodes.size() << std::endl;
 
-	for (auto it = nodes.begin(); it != nodes.end(); it++)
+	for (auto it = Nodes.begin(); it != Nodes.end(); it++)
 	{
 		auto nd = it->second;
 		outFile << it->first << " " << nd->dofX->dsp << " " << 0.0 << " " << nd->dofZ->dsp << std::endl;
@@ -187,16 +187,16 @@ void DynamicSystem::exportGmsh(char * fileName)
 	DOF *d = nullptr;
 	for (int i = 0; i < eqnCount; i++)
 	{
-		d = dofs.at(eqnMapDof.at(i));
+		d = DOFs.at(eqnMapDof.at(i));
 		d->dsp = 0.0;
 	}
 }
 
 void DynamicSystem::addDof(DOF * d)
 {
-	if (dofs.count(d->id) == 0)
+	if (DOFs.count(d->id) == 0)
 	{
-		dofs[d->id] = d;
+		DOFs[d->id] = d;
 	}
 	else
 	{
@@ -206,11 +206,11 @@ void DynamicSystem::addDof(DOF * d)
 
 void DynamicSystem::addDof(const int id, const double m, const bool fixed)
 {
-	DOF *d = new DOF(id, X, m, fixed);
+	DOF *d = new DOF(id, Direction::X, m, fixed);
 	addDof(d);
 }
 
-void DynamicSystem::addDof(const int id, direction dir, const double m, const bool fixed)
+void DynamicSystem::addDof(const int id, Direction dir, const double m, const bool fixed)
 {
 	DOF *d = new DOF(id, dir, m, fixed);
 	addDof(d);
@@ -218,27 +218,27 @@ void DynamicSystem::addDof(const int id, direction dir, const double m, const bo
 
 void DynamicSystem::setMass(const int id, const double m)
 {
-	dofs.at(id)->mass = m;
+	DOFs.at(id)->mass = m;
 }
 
 void DynamicSystem::setNodeMass(const int id, const double m)
 {
-	node *nd = nodes.at(id);
-	if (nd->isActivated(X))
+	Node *nd = Nodes.at(id);
+	if (nd->isActivated(Direction::X))
 	{
 		nd->dofX->mass = m;
 	}
-	if (nd->isActivated(Z))
+	if (nd->isActivated(Direction::Z))
 	{
 		nd->dofZ->mass = m;
 	}
-	if (nd->isActivated(RY))
+	if (nd->isActivated(Direction::RY))
 	{
 		nd->dofRY->mass = m;
 	}
 }
 
-void DynamicSystem::mapDofNode(DOF * d, node * nd)
+void DynamicSystem::mapDofNode(DOF * d, Node * nd)
 {
 	nd->setDof(d);
 	dofMapNode[d->id] = nd->id;
@@ -246,53 +246,53 @@ void DynamicSystem::mapDofNode(DOF * d, node * nd)
 
 void DynamicSystem::mapDofNode(const int id_d, const int id_nd)
 {
-	node *nd = nodes.at(id_nd);
-	DOF *d = dofs.at(id_d);
+	Node *nd = Nodes.at(id_nd);
+	DOF *d = DOFs.at(id_d);
 	nd->setDof(d);
 	dofMapNode[id_d] = id_nd;
 }
 
-bool DynamicSystem::addMaterial1D(material1D * mt)
+bool DynamicSystem::addMaterial1D(Material1D * mt)
 {
-	if (material1Ds.count(mt->id) == 0)
+	if (Material1Ds.count(mt->id) == 0)
 	{
-		material1Ds[mt->id] = mt;
+		Material1Ds[mt->id] = mt;
 		return true;
 	}
 	else
 	{
-		cout << "material1D ID: " << mt->id << " already exists! The material will not be added." << endl;
+		cout << "Material1D ID: " << mt->id << " already exists! The material will not be added." << endl;
 		return false;
 	}
 }
 
 bool DynamicSystem::addMaterialElastic(const int id, const double E0)
 {
-	material1D *mtrl = new elastic(id, E0);
+	Material1D *mtrl = new elastic(id, E0);
 	return addMaterial1D(mtrl);
 }
 
 bool DynamicSystem::addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha)
 {
-	material1D *mtrl = new elastoplastic(id, E0, fy, alpha);
+	Material1D *mtrl = new Elastoplastic(id, E0, fy, alpha);
 	return addMaterial1D(mtrl);
 }
 
 bool DynamicSystem::addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha, const double beta)
 {
-	material1D *mtrl = new steelBilinear(id, E0, fy, alpha, beta);
+	Material1D *mtrl = new steelBilinear(id, E0, fy, alpha, beta);
 	return addMaterial1D(mtrl);
 }
 
 bool DynamicSystem::addMaterialConcreteTrilinear(const int id, const double E0, const double fc, const double epsilon_c, const double sigma_cr, const double sigma_u, const double epsilon_u)
 {
-	material1D *mtrl = new concreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u);
+	Material1D *mtrl = new concreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u);
 	return addMaterial1D(mtrl);
 }
 
 bool DynamicSystem::addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift)
 {
-	material1D *mtrl = new SMABilinear(id, E0, fy, alpha, sigma_shift);
+	Material1D *mtrl = new SMABilinear(id, E0, fy, alpha, sigma_shift);
 	return addMaterial1D(mtrl);
 }
 
@@ -300,7 +300,7 @@ bool DynamicSystem::addFiber(const int id, const int matId, const double A, cons
 {
 	if (Fibers.count(id) == 0)
 	{
-		Fiber *fiber = new Fiber(id, material1Ds.at(matId), A, y, z);
+		Fiber *fiber = new Fiber(id, Material1Ds.at(matId), A, y, z);
 		Fibers[id] = fiber;
 		return true;
 	}
@@ -353,16 +353,16 @@ bool DynamicSystem::addSectionFrame2D(const int id, int* fiberIds, const int nFi
 	}
 }
 
-bool DynamicSystem::addElement(element * e)
+bool DynamicSystem::addElement(Element * e)
 {
-	if (eles.count(e->id) == 0)
+	if (Elements.count(e->id) == 0)
 	{
-		eles[e->id] = e;
+		Elements[e->id] = e;
 		return true;
 	}
 	else
 	{
-		cout << "element ID: " << e->id << " already exists! The element will not be added." << endl;
+		cout << "Element ID: " << e->id << " already exists! The element will not be added." << endl;
 		return false;
 	}
 }
@@ -377,8 +377,8 @@ void DynamicSystem::addSpring(spring *s)
 
 void DynamicSystem::addSpring(const int id, const int ni, const int nj, const double k)
 {
-	DOF *i = dofs.at(ni);
-	DOF *j = dofs.at(nj);
+	DOF *i = DOFs.at(ni);
+	DOF *j = DOFs.at(nj);
 	spring *s = new spring(id, i, j, k);
 	addSpring(s);
 }
@@ -394,8 +394,8 @@ void DynamicSystem::addSpringBilinear(springBilinear * s)
 
 void DynamicSystem::addSpringBilinear(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha)
 {
-	DOF *i = dofs.at(ni);
-	DOF *j = dofs.at(nj);
+	DOF *i = DOFs.at(ni);
+	DOF *j = DOFs.at(nj);
 	springBilinear *s = new springBilinear(id, i, j, k0, uy, alpha);
 	addSpringBilinear(s);
 }
@@ -411,9 +411,9 @@ void DynamicSystem::addSpringNonlinear(springNonlinear * s)
 
 void DynamicSystem::addSpringNonlinear(const int id, const int ni, const int nj, const int matId)
 {
-	DOF *i = dofs.at(ni);
-	DOF *j = dofs.at(nj);
-	springNonlinear *s = new springNonlinear(id, i, j, material1Ds.at(matId));
+	DOF *i = DOFs.at(ni);
+	DOF *j = DOFs.at(nj);
+	springNonlinear *s = new springNonlinear(id, i, j, Material1Ds.at(matId));
 	addSpringNonlinear(s);
 }
 
@@ -428,8 +428,8 @@ void DynamicSystem::addSpringBoucWen(springBoucWen * s)
 
 void DynamicSystem::addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n)
 {
-	DOF *i = dofs.at(ni);
-	DOF *j = dofs.at(nj);
+	DOF *i = DOFs.at(ni);
+	DOF *j = DOFs.at(nj);
 	springBoucWen *s = new springBoucWen(id, i, j, k0, uy, alpha);
 	addSpringBoucWen(s);
 }
@@ -445,8 +445,8 @@ void DynamicSystem::addDashpot(dashpot * d)
 
 void DynamicSystem::addDashpot(const int id, const int ni, const int nj, const double c)
 {
-	DOF *i = dofs.at(ni);
-	DOF *j = dofs.at(nj);
+	DOF *i = DOFs.at(ni);
+	DOF *j = DOFs.at(nj);
 	dashpot *d = new dashpot(id, i, j, c);
 	addDashpot(d);
 }
@@ -462,8 +462,8 @@ void DynamicSystem::addDashpotExp(dashpotExp * d)
 
 void DynamicSystem::addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha)
 {
-	DOF *i = dofs.at(ni);
-	DOF *j = dofs.at(nj);
+	DOF *i = DOFs.at(ni);
+	DOF *j = DOFs.at(nj);
 	dashpotExp *d = new dashpotExp(id, i, j, c, alpha);
 	addDashpotExp(d);
 }
@@ -479,8 +479,8 @@ void DynamicSystem::addDashpotMaxwell(dashpotMaxwell * d)
 
 void DynamicSystem::addDashpotMaxwell(const int id, const int ni, const int nj, const double k, const double c, const double alpha)
 {
-	DOF *i = dofs.at(ni);
-	DOF *j = dofs.at(nj);
+	DOF *i = DOFs.at(ni);
+	DOF *j = DOFs.at(nj);
 	dashpotMaxwell *d = new dashpotMaxwell(id, i, j, c, alpha);
 	addDashpotMaxwell(d);
 }
@@ -496,26 +496,26 @@ void DynamicSystem::addInerter(inerter * in)
 
 void DynamicSystem::addInerter(const int id, const int ni, const int nj, const double m)
 {
-	DOF *i = dofs.at(ni);
-	DOF *j = dofs.at(nj);
+	DOF *i = DOFs.at(ni);
+	DOF *j = DOFs.at(nj);
 	inerter *in = new inerter(id, i, j, m);
 	addInerter(in);
 }
 
-void DynamicSystem::addSlider(slider * s)
+void DynamicSystem::addSlider(Slider * s)
 {
 	if (addElement(s))
 	{
-		sliders[s->id] = s;
+		Sliders[s->id] = s;
 		nonlinearElements[s->id] = s;
 	}
 }
 
 void DynamicSystem::addSlider(const int id, const int ni, const int nj, const double muN)
 {
-	DOF *i = dofs.at(ni);
-	DOF *j = dofs.at(nj);
-	slider *s = new slider(id, i, j, muN);
+	DOF *i = DOFs.at(ni);
+	DOF *j = DOFs.at(nj);
+	Slider *s = new Slider(id, i, j, muN);
 	addSlider(s);
 }
 
@@ -532,9 +532,9 @@ void DynamicSystem::addSPIS2(spis2 * s)
 
 void DynamicSystem::addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k)
 {
-	DOF *i = dofs.at(ni);
-	DOF *j = dofs.at(nj);
-	DOF *in = dofs.at(nin);
+	DOF *i = DOFs.at(ni);
+	DOF *j = DOFs.at(nj);
+	DOF *in = DOFs.at(nin);
 	spis2 *s = new spis2(id, i, j, in, m, c, k);
 	addSPIS2(s);
 }
@@ -550,8 +550,8 @@ void DynamicSystem::addTVMD(TVMD *d)
 
 void DynamicSystem::addTVMD(const int id, const int ni, const int nj, const double m, const double c, const double k)
 {
-	DOF *i = dofs.at(ni);
-	DOF *j = dofs.at(nj);
+	DOF *i = DOFs.at(ni);
+	DOF *j = DOFs.at(nj);
 	TVMD *d = new TVMD(id, i, j, m, c, k);
 	addTVMD(d);
 }
@@ -560,7 +560,7 @@ void DynamicSystem::addSpring2D(spring2D *s)
 {
 	if (addElement(s))
 	{
-		ele2Ds[s->id] = s;
+		Element2Ds[s->id] = s;
 		spring2Ds[s->id] = s;
 		linearElasticElements[s->id] = s;
 	}
@@ -568,7 +568,7 @@ void DynamicSystem::addSpring2D(spring2D *s)
 
 void DynamicSystem::addSpring2D(const int id, const int ni, const int nj, const double k, ELE::localAxis U)
 {
-	spring2D *s = new spring2D(id, nodes.at(ni), nodes.at(nj), k, U);
+	spring2D *s = new spring2D(id, Nodes.at(ni), Nodes.at(nj), k, U);
 	addSpring2D(s);
 }
 
@@ -576,7 +576,7 @@ void DynamicSystem::addSpringBoucWen2D(springBoucWen2D *s)
 {
 	if (addElement(s))
 	{
-		ele2Ds[s->id] = s;
+		Element2Ds[s->id] = s;
 		springBoucWen2Ds[s->id] = s;
 		nonlinearTangentElements[s->id] = s;
 	}
@@ -584,7 +584,7 @@ void DynamicSystem::addSpringBoucWen2D(springBoucWen2D *s)
 
 void DynamicSystem::addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n, ELE::localAxis U /*= ELE::U1*/)
 {
-	springBoucWen2D *s = new springBoucWen2D(id, nodes.at(ni), nodes.at(nj), k0, uy, alpha, beta, n, U);
+	springBoucWen2D *s = new springBoucWen2D(id, Nodes.at(ni), Nodes.at(nj), k0, uy, alpha, beta, n, U);
 	addSpringBoucWen2D(s);
 }
 
@@ -592,7 +592,7 @@ void DynamicSystem::addDashpot2D(dashpot2D *s)
 {
 	if (addElement(s))
 	{
-		ele2Ds[s->id] = s;
+		Element2Ds[s->id] = s;
 		dashpot2Ds[s->id] = s;
 		linearDampingElements[s->id] = s;
 	}
@@ -600,7 +600,7 @@ void DynamicSystem::addDashpot2D(dashpot2D *s)
 
 void DynamicSystem::addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::localAxis U)
 {
-	dashpot2D *s = new dashpot2D(id, nodes.at(ni), nodes.at(nj), c, U);
+	dashpot2D *s = new dashpot2D(id, Nodes.at(ni), Nodes.at(nj), c, U);
 	addDashpot2D(s);
 }
 
@@ -608,7 +608,7 @@ void DynamicSystem::addInerter2D(inerter2D *s)
 {
 	if (addElement(s))
 	{
-		ele2Ds[s->id] = s;
+		Element2Ds[s->id] = s;
 		inerter2Ds[s->id] = s;
 		inertialMassElements[s->id] = s;
 	}
@@ -616,7 +616,7 @@ void DynamicSystem::addInerter2D(inerter2D *s)
 
 void DynamicSystem::addInerter2D(const int id, const int ni, const int nj, const double m, ELE::localAxis U)
 {
-	inerter2D *s = new inerter2D(id, nodes.at(ni), nodes.at(nj), m, U);
+	inerter2D *s = new inerter2D(id, Nodes.at(ni), Nodes.at(nj), m, U);
 	addInerter2D(s);
 }
 
@@ -624,7 +624,7 @@ void DynamicSystem::addDashpotExp2D(dashpotExp2D *s)
 {
 	if (addElement(s))
 	{
-		ele2Ds[s->id] = s;
+		Element2Ds[s->id] = s;
 		dashpotExp2Ds[s->id] = s;
 		nonlinearElements[s->id] = s;
 	}
@@ -632,7 +632,7 @@ void DynamicSystem::addDashpotExp2D(dashpotExp2D *s)
 
 void DynamicSystem::addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, ELE::localAxis U /*= ELE::U1*/)
 {
-	dashpotExp2D *s = new dashpotExp2D(id, nodes.at(ni), nodes.at(nj), c, alpha, U);
+	dashpotExp2D *s = new dashpotExp2D(id, Nodes.at(ni), Nodes.at(nj), c, alpha, U);
 	addDashpotExp2D(s);
 }
 
@@ -640,7 +640,7 @@ void DynamicSystem::addDashpotMaxwell2D(dashpotMaxwell2D *s)
 {
 	if (addElement(s))
 	{
-		ele2Ds[s->id] = s;
+		Element2Ds[s->id] = s;
 		dashpotMaxwell2Ds[s->id] = s;
 		nonlinearElements[s->id] = s;
 	}
@@ -648,14 +648,14 @@ void DynamicSystem::addDashpotMaxwell2D(dashpotMaxwell2D *s)
 
 void DynamicSystem::addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::localAxis U)
 {
-	dashpotMaxwell2D *s = new dashpotMaxwell2D(id, nodes.at(ni), nodes.at(nj), k, c, alpha, U);
+	dashpotMaxwell2D *s = new dashpotMaxwell2D(id, Nodes.at(ni), Nodes.at(nj), k, c, alpha, U);
 	addDashpotMaxwell2D(s);
 }
 
 void DynamicSystem::addTrussElastic(trussElastic *truss)
 {
 	if (addElement(truss)) {
-		ele2Ds[truss->id] = truss;
+		Element2Ds[truss->id] = truss;
 		trussElastics[truss->id] = truss;
 		linearElasticElements[truss->id] = truss;
 	}
@@ -663,29 +663,29 @@ void DynamicSystem::addTrussElastic(trussElastic *truss)
 
 void DynamicSystem::addTrussElastic(const int id, const int ni, const int nj, const double EA)
 {
-	trussElastic *truss = new trussElastic(id, nodes.at(ni), nodes.at(nj), EA);
+	trussElastic *truss = new trussElastic(id, Nodes.at(ni), Nodes.at(nj), EA);
 	addTrussElastic(truss);
 }
 
-void DynamicSystem::addBeamElastic(beamElastic *beam)
+void DynamicSystem::addBeamElastic(BeamElastic *beam)
 {
 	if (addElement(beam)) {
-		ele2Ds[beam->id] = beam;
-		beamElastics[beam->id] = beam;
+		Element2Ds[beam->id] = beam;
+		BeamElastics[beam->id] = beam;
 		linearElasticElements[beam->id] = beam;
 	}
 }
 
 void DynamicSystem::addBeamElastic(const int id, const int ni, const int nj, const double EI)
 {
-	beamElastic *beam = new beamElastic(id, nodes.at(ni), nodes.at(nj), EI);
+	BeamElastic *beam = new BeamElastic(id, Nodes.at(ni), Nodes.at(nj), EI);
 	addBeamElastic(beam);
 }
 
 void DynamicSystem::addFrameElastic(FrameElastic2D *frame)
 {
 	if (addElement(frame)) {
-		ele2Ds[frame->id] = frame;
+		Element2Ds[frame->id] = frame;
 		FrameElastic2Ds[frame->id] = frame;
 		linearElasticElements[frame->id] = frame;
 	}
@@ -693,7 +693,7 @@ void DynamicSystem::addFrameElastic(FrameElastic2D *frame)
 
 void DynamicSystem::addFrameElastic(const int id, const int ni, const int nj, const double EA, const double EI)
 {
-	FrameElastic2D *frame = new FrameElastic2D(id, nodes.at(ni), nodes.at(nj), EA, EI);
+	FrameElastic2D *frame = new FrameElastic2D(id, Nodes.at(ni), Nodes.at(nj), EA, EI);
 	addFrameElastic(frame);
 }
 
@@ -709,55 +709,55 @@ void DynamicSystem::addQuad4Elastic(Quad4Elastic* quad)
 void DynamicSystem::addQuad4Elastic(const int id, const int nodeI, const int nodeJ, const int nodeP, const int nodeQ,
 	const double E, const double nu, const double t)
 {
-	Quad4Elastic *quad = new Quad4Elastic(id, nodes.at(nodeI), nodes.at(nodeJ), nodes.at(nodeP), nodes.at(nodeQ), E, nu, t);
+	Quad4Elastic *quad = new Quad4Elastic(id, Nodes.at(nodeI), Nodes.at(nodeJ), Nodes.at(nodeP), Nodes.at(nodeQ), E, nu, t);
 	addQuad4Elastic(quad);
 }
 
 void DynamicSystem::addTruss2D(const int id, const int ni, const int nj, const int secId)
 {
-	if (eles.count(id) == 0)
+	if (Elements.count(id) == 0)
 	{
-		Truss2D *truss = new Truss2D(id, nodes.at(ni), nodes.at(nj), SectionTrusss.at(secId));
-		eles[id] = truss;
-		ele2Ds[id] = truss;
+		Truss2D *truss = new Truss2D(id, Nodes.at(ni), Nodes.at(nj), SectionTrusss.at(secId));
+		Elements[id] = truss;
+		Element2Ds[id] = truss;
 		Truss2Ds[id] = truss;
 		nonlinearInitialTangentElements[id] = truss;
 	}
 	else
 	{
-		cout << "element ID: " << id << " already exists! The element will not be added." << endl;
+		cout << "Element ID: " << id << " already exists! The element will not be added." << endl;
 	}
 }
 
 void DynamicSystem::addFrame2D(const int id, const int ni, const int nj, const int secId, const int nIntP)
 {
-	if (eles.count(id) == 0)
+	if (Elements.count(id) == 0)
 	{
-		Frame2D *frame = new Frame2D(id, nodes.at(ni), nodes.at(nj), SectionFrame2Ds.at(secId), nIntP);
-		eles[id] = frame;
-		ele2Ds[id] = frame;
+		Frame2D *frame = new Frame2D(id, Nodes.at(ni), Nodes.at(nj), SectionFrame2Ds.at(secId), nIntP);
+		Elements[id] = frame;
+		Element2Ds[id] = frame;
 		Frame2Ds[id] = frame;
 		nonlinearInitialTangentElements[id] = frame;
 	}
 	else
 	{
-		cout << "element ID: " << id << " already exists! The element will not be added." << endl;
+		cout << "Element ID: " << id << " already exists! The element will not be added." << endl;
 	}
 }
 
 void DynamicSystem::addFramePDelta2D(const int id, const int ni, const int nj, const int secId, const int nIntP)
 {
-	if (eles.count(id) == 0)
+	if (Elements.count(id) == 0)
 	{
-		FramePDelta2D *frame = new FramePDelta2D(id, nodes.at(ni), nodes.at(nj), SectionFrame2Ds.at(secId), nIntP);
-		eles[id] = frame;
-		ele2Ds[id] = frame;
+		FramePDelta2D *frame = new FramePDelta2D(id, Nodes.at(ni), Nodes.at(nj), SectionFrame2Ds.at(secId), nIntP);
+		Elements[id] = frame;
+		Element2Ds[id] = frame;
 		FramePDelta2Ds[id] = frame;
 		nonlinearInitialTangentElements[id] = frame;
 	}
 	else
 	{
-		cout << "element ID: " << id << " already exists! The element will not be added." << endl;
+		cout << "Element ID: " << id << " already exists! The element will not be added." << endl;
 	}
 }
 
@@ -789,7 +789,7 @@ void DynamicSystem::addDofRecorder(const int id, int *dofIds, const int n, respo
 
 	for (int i = 0; i < n; i++)
 	{
-		rdofs[i] = dofs.at(dofIds[i]);
+		rdofs[i] = DOFs.at(dofIds[i]);
 	}
 
 	dofRecorder *dr = new dofRecorder(id, rdofs, rtype, fileName);
@@ -803,11 +803,11 @@ void DynamicSystem::addElementRecorder(elementRecorder * er)
 
 void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
 {
-	std::vector<element *> reles(n);
+	std::vector<Element *> reles(n);
 
 	for (int i = 0; i < n; i++)
 	{
-		reles[i] = eles.at(eleIds[i]);
+		reles[i] = Elements.at(eleIds[i]);
 	}
 
 	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);
@@ -816,7 +816,7 @@ void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, 
 
 void DynamicSystem::addSpringRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
 {
-	std::vector<element *> reles(n);
+	std::vector<Element *> reles(n);
 
 	for (int i = 0; i < n; i++)
 	{
@@ -829,7 +829,7 @@ void DynamicSystem::addSpringRecorder(const int id, int * eleIds, const int n, r
 
 void DynamicSystem::addDashpotRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
 {
-	std::vector<element *> reles(n);
+	std::vector<Element *> reles(n);
 
 	for (int i = 0; i < n; i++)
 	{
@@ -842,7 +842,7 @@ void DynamicSystem::addDashpotRecorder(const int id, int * eleIds, const int n, 
 
 void DynamicSystem::addInerterRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
 {
-	std::vector<element *> reles(n);
+	std::vector<Element *> reles(n);
 
 	for (int i = 0; i < n; i++)
 	{
@@ -860,11 +860,11 @@ void DynamicSystem::setRayleighDamping(const double omg1, const double omg2)
 	RayleighOmg2 = omg2;
 }
 
-void DynamicSystem::activeGroundMotion(direction dir)
+void DynamicSystem::activeGroundMotion(Direction dir)
 {
 	for (int i = 0; i < eqnCount; i++)
 	{
-		DOF *d = dofs.at(eqnMapDof.at(i));
+		DOF *d = DOFs.at(eqnMapDof.at(i));
 		if (d->dir == dir)
 		{
 			E(i) = 1.0;
@@ -880,7 +880,7 @@ void DynamicSystem::buildDofEqnMap()
 	dofMapEqn.clear();
 	eqnMapDof.clear();
 
-	for (it = dofs.begin(); it != dofs.end(); it++)
+	for (it = DOFs.begin(); it != DOFs.end(); it++)
 	{
 		DOF *d = it->second;
 		if ((d->isFixed)) fixedDofCount += 1;
@@ -919,7 +919,7 @@ void DynamicSystem::assembleMassMatrix()
 	vec m(eqnCount);
 	for (int i = 0; i < eqnCount; i++)
 	{
-		m(i) = dofs.at(eqnMapDof[i])->mass;
+		m(i) = DOFs.at(eqnMapDof[i])->mass;
 	}
 
 	Mp = diagmat(m);
@@ -953,7 +953,7 @@ void DynamicSystem::applyRestraint()
 	fixedIds = zeros<uvec>(fixedDofCount);
 	int fixedDofCount_ = 0;
 
-	for (auto it = dofs.begin(); it != dofs.end(); ++it)
+	for (auto it = DOFs.begin(); it != DOFs.end(); ++it)
 	{
 		DOF *d = it->second;
 		if ((d->isFixed))
@@ -991,7 +991,7 @@ void DynamicSystem::applyLoad()
 {
 	for (int i = 0; i < eqnCount; i++)
 	{
-		DOF *d = dofs.at(eqnMapDof.at(i));
+		DOF *d = DOFs.at(eqnMapDof.at(i));
 		Q(i) = d->getLoad(ctime);
 	}
 }
@@ -1064,9 +1064,9 @@ void DynamicSystem::assembleStiffnessMatrix()
 
 void DynamicSystem::reassembleStiffnessMatrix()
 {
-	auto nDof = dofs.size();
+	auto nDof = DOFs.size();
 	int eqnId = 0;
-	for (auto it = dofs.begin(); it != dofs.end(); ++it)
+	for (auto it = DOFs.begin(); it != DOFs.end(); ++it)
 	{
 		it->second->eqnId = eqnId;
 		eqnId += 1;
@@ -1115,7 +1115,7 @@ void DynamicSystem::reassembleStiffnessMatrix()
 
 	for (auto it = dofMapEqn.begin(); it != dofMapEqn.end(); ++it)
 	{
-		dofs.at(it->first)->eqnId = it->second;
+		DOFs.at(it->first)->eqnId = it->second;
 	}
 }
 
@@ -1457,7 +1457,7 @@ void DynamicSystem::solveNonlinearStaticResponseDispControl(const double loadedT
 	DOF *d = nullptr;
 	for (int i = 0; i < eqnCount; i++)
 	{
-		d = dofs.at(eqnMapDof.at(i));
+		d = DOFs.at(eqnMapDof.at(i));
 		p(i) = d->getLoad(ctime, false);
 	}
 
@@ -1561,7 +1561,7 @@ void DynamicSystem::solveNonlinearStaticResponseDispControlDelta(const double lo
 	DOF *d = nullptr;
 	for (int i = 0; i < eqnCount; i++)
 	{
-		d = dofs.at(eqnMapDof.at(i));
+		d = DOFs.at(eqnMapDof.at(i));
 		p(i) = d->getLoad(ctime, false);
 	}
 
@@ -1696,7 +1696,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMK(const int tsId, const doub
 	initRecorders();
 
 	dt = dt / nsub;
-	element::dt = dt;
+	Element::dt = dt;
 
 	double gma = 0.5;
 	double bta = 0.25;
@@ -1779,7 +1779,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 	initRecorders();
 
 	dt = dt / nsub;
-	element::dt = dt;
+	Element::dt = dt;
 
 	double gma = 0.5;
 	double bta = 0.25;
@@ -1904,7 +1904,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, con
 	initRecorders();
 
 	dt = dt / nsub;
-	element::dt = dt;
+	Element::dt = dt;
 
 	mat O = zeros<mat>(eqnCount, eqnCount);
 	mat I = eye<mat>(eqnCount, eqnCount);
@@ -1977,7 +1977,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, c
 	initRecorders();
 
 	dt = dt / nsub;
-	element::dt = dt;
+	Element::dt = dt;
 
 	mat O = zeros<mat>(eqnCount, eqnCount);
 	mat I = eye<mat>(eqnCount, eqnCount);
@@ -2046,25 +2046,25 @@ void DynamicSystem::solveTimeDomainSeismicResponseRK4(const int tsId, const doub
 	a = zeros<mat>(eqnCount, nstep);
 
 	dt = dt / nsub;
-	element::dt = dt;
+	Element::dt = dt;
 }
 
 void DynamicSystem::setDofResponse()
 {
 	for (int i = 0; i < eqnCount; i++)
 	{
-		DOF *d = dofs.at(eqnMapDof.at(i));
+		DOF *d = DOFs.at(eqnMapDof.at(i));
 		d->setResponse(dsp(i), vel(i), acc(i));
 	}
 }
 
 void DynamicSystem::getElementResponse()
 {
-	if (!(eles.empty()))
+	if (!(Elements.empty()))
 	{
-		for (auto it = eles.begin(); it != eles.end(); it++)
+		for (auto it = Elements.begin(); it != Elements.end(); it++)
 		{
-			element *e = it->second;
+			Element *e = it->second;
 			e->getResponse();
 		}
 	}
@@ -2119,20 +2119,20 @@ void DynamicSystem::initRecorders()
 {
 	if (!(drs.empty()))
 	{
-		std::map<int, recorder *>::iterator it;
+		std::map<int, Recorder *>::iterator it;
 		for (it = drs.begin(); it != drs.end(); it++)
 		{
-			recorder *dr = it->second;
+			Recorder *dr = it->second;
 			dr->init(nsteps);
 		}
 	}
 
 	if (!(ers.empty()))
 	{
-		std::map<int, recorder *>::iterator it;
+		std::map<int, Recorder *>::iterator it;
 		for (it = ers.begin(); it != ers.end(); it++)
 		{
-			recorder *er = it->second;
+			Recorder *er = it->second;
 			er->init(nsteps);
 		}
 	}
@@ -2142,20 +2142,20 @@ void DynamicSystem::recordResponse()
 {
 	if (!(drs.empty()))
 	{
-		std::map<int, recorder *>::iterator it;
+		std::map<int, Recorder *>::iterator it;
 		for (it = drs.begin(); it != drs.end(); it++)
 		{
-			recorder *dr = it->second;
+			Recorder *dr = it->second;
 			dr->record(cstep, ctime);
 		}
 	}
 
 	if (!(ers.empty()))
 	{
-		std::map<int, recorder *>::iterator it;
+		std::map<int, Recorder *>::iterator it;
 		for (it = ers.begin(); it != ers.end(); it++)
 		{
-			recorder *er = it->second;
+			Recorder *er = it->second;
 			er->record(cstep, ctime);
 		}
 	}
@@ -2165,20 +2165,20 @@ void DynamicSystem::saveResponse()
 {
 	if (!(drs.empty()))
 	{
-		std::map<int, recorder *>::iterator it;
+		std::map<int, Recorder *>::iterator it;
 		for (it = drs.begin(); it != drs.end(); it++)
 		{
-			recorder *dr = it->second;
+			Recorder *dr = it->second;
 			dr->save();
 		}
 	}
 
 	if (!(ers.empty()))
 	{
-		std::map<int, recorder *>::iterator it;
+		std::map<int, Recorder *>::iterator it;
 		for (it = ers.begin(); it != ers.end(); it++)
 		{
-			recorder *er = it->second;
+			Recorder *er = it->second;
 			er->save();
 		}
 	}
@@ -2195,9 +2195,9 @@ void DynamicSystem::printInfo()
 	cout << "            R  RR   OOO   DDD   SSSS             " << endl;
 	cout << "=================================================" << endl;
 
-	cout << "Number of DOFs:" << dofs.size() << endl;
-	cout << "Number of Nodes:" << nodes.size() << endl;
-	cout << "Number of Elements:" << eles.size() << endl;
+	cout << "Number of DOFs:" << DOFs.size() << endl;
+	cout << "Number of Nodes:" << Nodes.size() << endl;
+	cout << "Number of Elements:" << Elements.size() << endl;
 	cout << "Number of Equations:" << eqnCount << endl;
 
 	int nModes = (int)P.n_rows;

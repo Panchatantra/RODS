@@ -1,7 +1,7 @@
-#include "element2D.h"
+#include "Element2D.h"
 
-element2D::element2D(const int id, node * nodeI, node * nodeJ):
-	element(id), nodeI(nodeI), nodeJ(nodeJ)
+Element2D::Element2D(const int id, Node * nodeI, Node * nodeJ):
+	Element(id), nodeI(nodeI), nodeJ(nodeJ)
 {
 	double dx = nodeJ->x0 - nodeI->x0;
 	double dy = nodeJ->z0 - nodeI->z0;
@@ -13,6 +13,6 @@ element2D::element2D(const int id, node * nodeI, node * nodeJ):
 	lyy = lxx;
 }
 
-element2D::~element2D()
+Element2D::~Element2D()
 {
 }

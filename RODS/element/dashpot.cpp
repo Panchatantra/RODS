@@ -1,7 +1,7 @@
 #include "dashpot.h"
 
 dashpot::dashpot(const int id, DOF * i, DOF * j, const double c) :
-	element1D(id, i, j), c(c), u(0.0), f(0.0)
+	Element1D(id, i, j), c(c), u(0.0), f(0.0)
 {
     buildMatrix();
 }

@@ -11,16 +11,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dof.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="timeseries.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="node.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="line.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="material\concreteTrilinear.cpp">
@@ -29,22 +20,10 @@
     <ClCompile Include="material\elastic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="material\elastoplastic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="material\material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="material\material1D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="material\SMABilinear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="material\steelBilinear.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="element\beamElastic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="element\dashpot.cpp">
@@ -53,19 +32,7 @@
     <ClCompile Include="element\dashpotExp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="element\element.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="element\element1D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="element\element2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="element\inerter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="element\slider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="element\spis2.cpp">
@@ -93,12 +60,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="recorder\elementRecorder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="recorder\recorder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="section\section.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="element\inerter2D.cpp">
@@ -164,21 +125,51 @@
     <ClCompile Include="element\FramePDelta2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DOF.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Element.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Element1D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Element2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="section\Section.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\Material1D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\Elastoplastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="recorder\Recorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Slider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\BeamElastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dof.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="numeric.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="timeseries.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="material\concreteTrilinear.h">
@@ -187,22 +178,10 @@
     <ClInclude Include="material\elastic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="material\elastoplastic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="material\material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="material\material1D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="material\SMABilinear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="material\steelBilinear.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="element\beamElastic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\dashpot.h">
@@ -211,19 +190,7 @@
     <ClInclude Include="element\dashpotExp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="element\element.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="element\element1D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="element\element2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="element\inerter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="element\slider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\spis2.h">
@@ -251,12 +218,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="recorder\elementRecorder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="recorder\recorder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="section\section.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\inerter2D.h">
@@ -320,6 +281,45 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\FramePDelta2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DOF.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Element.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Element1D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Element2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material\Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="section\Section.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material\Material1D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material\Elastoplastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="recorder\Recorder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Slider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\BeamElastic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

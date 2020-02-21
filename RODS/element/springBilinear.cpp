@@ -2,7 +2,7 @@
 
 
 springBilinear::springBilinear(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha) :
-	element1D(id,i,j), k0(k0), uy(uy),
+	Element1D(id,i,j), k0(k0), uy(uy),
 	k1(alpha*k0), fy(k0*uy), alpha(alpha),
 	k(k0), u(0), f(0),
 	kp(k0), up(0), dup(0), fp(0),

@@ -1,5 +1,5 @@
 #pragma once
-#include "material1D.h"
+#include "Material1D.h"
 
 namespace MAT_CTL {
 	enum state
@@ -12,7 +12,7 @@ namespace MAT_CTL {
  * @brief      The trilinear concrete material class.
  */
 class concreteTrilinear :
-	public material1D
+	public Material1D
 {
 public:
 	/**
@@ -44,7 +44,7 @@ public:
 	 */
 	void getResponse(const bool update = false) override;
 
-	material1D *copy() override { return new concreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u); }
+	Material1D *copy() override { return new concreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u); }
 
 	void compressionEnvelope(const double strain, double &stress, double &tangent, MAT_CTL::state &s);
 

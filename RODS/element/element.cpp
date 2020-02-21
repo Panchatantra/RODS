@@ -1,21 +1,19 @@
-#include "element.h"
+#include "Element.h"
 #include <iostream>
 
-element::element()
-{
-	nv = 1;
-}
-
-element::element(const int id) : Basis(id)
-{
-	nv = 1;
-}
-
-element::~element()
+Element::Element(): nv(1)
 {
 }
 
-void element::printResponse()
+Element::Element(const int id) : Basis(id), nv(1)
+{
+}
+
+Element::~Element()
+{
+}
+
+void Element::printResponse()
 {
 	std::cout << "Response of element (ID: " << id << "): "<< std::endl;
 	std::cout << "Deformation: " << std::endl;
@@ -30,5 +28,5 @@ void element::printResponse()
 	}
 }
 
-double element::dt = 0.0;
-bool element::isStatic = false;
+double Element::dt = 0.0;
+bool Element::isStatic = false;

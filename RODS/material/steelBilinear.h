@@ -1,5 +1,5 @@
 #pragma once
-#include "material1D.h"
+#include "Material1D.h"
 
 namespace MAT_STBL {
 	enum state
@@ -9,7 +9,7 @@ namespace MAT_STBL {
 }
 
 class steelBilinear :
-	public material1D
+	public Material1D
 {
 public:
 	steelBilinear(const int id, const double E, const double fy, const double alpha, const double beta = 0.5);
@@ -18,7 +18,7 @@ public:
 	virtual void setStrain(const double *strain) { epsilon = *strain; }
 	virtual void getResponse(const bool update = false);
 
-	virtual material1D *copy() { return new steelBilinear(id, E0, fy, alpha, sigma_ref/fy); }
+	virtual Material1D *copy() { return new steelBilinear(id, E0, fy, alpha, sigma_ref/fy); }
 
 	double fy, alpha, sigma_ref;
 	double E0, epsilon_y, E1;

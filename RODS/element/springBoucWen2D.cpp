@@ -1,8 +1,8 @@
 #include "springBoucWen2D.h"
 
-springBoucWen2D::springBoucWen2D(const int id, node * nodeI, node * nodeJ, const double k0, const double uy,
+springBoucWen2D::springBoucWen2D(const int id, Node * nodeI, Node * nodeJ, const double k0, const double uy,
 		const double alpha, const double beta, const double n, ELE::localAxis axis) :
-	element2D(id, nodeI, nodeJ),
+	Element2D(id, nodeI, nodeJ),
 	k0(k0), uy(uy), fy(k0*uy),
 	alpha(alpha), beta(beta), n(n),
 	k(k0), ue(0.0), f(0.0),
@@ -46,9 +46,9 @@ void springBoucWen2D::getResponse(const bool update)
 
 	z = zp;
 	f = alpha*k0*ue + (1.0-alpha)*fy*z;
-	z += element::dt*k0/fy*(ve-beta*fabs(ve)*pow(fabs(z),(n-1))*z-(1.0-beta)*ve*pow(fabs(z),n));
+	z += Element::dt*k0/fy*(ve-beta*fabs(ve)*pow(fabs(z),(n-1))*z-(1.0-beta)*ve*pow(fabs(z),n));
 
-	k = k0 + (1.0-alpha)*fy*(z-zp)/(ve*element::dt);
+	k = k0 + (1.0-alpha)*fy*(z-zp)/(ve*Element::dt);
 
 	for (size_t i = 0; i < 4; i++)
 	{

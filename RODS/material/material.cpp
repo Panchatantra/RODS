@@ -1,17 +1,17 @@
-#include "material.h"
+#include "Material.h"
 
 
-material::material() :
+Material::Material() :
 	E(0.0)
 {
 }
 
 
-material::material(const int id, const double E): Basis(id), E(E)
+Material::Material(const int id, const double E): Basis(id), E(E)
 {
 }
 
 
-material::~material()
+Material::~Material()
 {
 }

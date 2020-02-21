@@ -267,8 +267,8 @@ void example_sdof()
 //	double E = 2.0e5, fy = 400.0;
 //	double eps_y = fy / E;
 //	double alpha = 0.02;
-//	material1D *tmat;
-//	elastoplastic *mat0 = new elastoplastic(0, E, fy, alpha);
+//	Material1D *tmat;
+//	Elastoplastic *mat0 = new Elastoplastic(0, E, fy, alpha);
 //	steelBilinear *mat1 = new steelBilinear(1, E, fy, alpha);
 //
 //	double Ec = 3.0e4, fc = 30.0;
@@ -454,15 +454,15 @@ void example_sdof()
 //	//ds->addDashpotMaxwell2D(103, 8, 11, k, c, alpha);
 //
 //	double k0 = 16.0, uy = 0.5, alfa = 0.02;
-//	//ds->addSpringBoucWen(101, ds->nodes.at(6)->dofX->id, ds->nodes.at(9)->dofX->id, k0, uy, alfa);
-//	//ds->addSpringBoucWen(102, ds->nodes.at(6)->dofX->id, ds->nodes.at(11)->dofX->id, k0, uy, alfa);
-//	//ds->addSpringBoucWen(103, ds->nodes.at(8)->dofX->id, ds->nodes.at(11)->dofX->id, k0, uy, alfa);
+//	//ds->addSpringBoucWen(101, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(9)->dofX->id, k0, uy, alfa);
+//	//ds->addSpringBoucWen(102, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(11)->dofX->id, k0, uy, alfa);
+//	//ds->addSpringBoucWen(103, ds->Nodes.at(8)->dofX->id, ds->Nodes.at(11)->dofX->id, k0, uy, alfa);
 //
 //	ds->addSpringBoucWen2D(101, 6, 9, k0, uy, alfa);
 //	ds->addSpringBoucWen2D(102, 6, 11, k0, uy, alfa);
 //	ds->addSpringBoucWen2D(103, 8, 11, k0, uy, alfa);
 //
-//	//ds->addDashpot(101, ds->nodes.at(6)->dofX->id, ds->nodes.at(11)->dofX->id, c);
+//	//ds->addDashpot(101, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(11)->dofX->id, c);
 //
 //	ds->setRayleighDamping(2.0*PI / 0.36, 2.0*PI / 0.1);
 //
@@ -474,7 +474,7 @@ void example_sdof()
 //
 //	int nrd = 1;
 //	int *dofIds = new int[nrd] {
-//		ds->nodes.at(4)->dofX->id
+//		ds->Nodes.at(4)->dofX->id
 //	};
 //	char dispOutput[] = "example/disp_frame_damped.dat";
 //	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);

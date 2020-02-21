@@ -1,7 +1,7 @@
 #include "Truss2D.h"
 
-Truss2D::Truss2D(const int id, node *nodeI, node *nodeJ, SectionTruss *sec):
-	element2D(id, nodeI, nodeJ), sec(sec->copy()), k(sec->k/L), k0(sec->k/L), ue(0.0), f(0.0)
+Truss2D::Truss2D(const int id, Node *nodeI, Node *nodeJ, SectionTruss *sec):
+	Element2D(id, nodeI, nodeJ), sec(sec->copy()), k(sec->k/L), k0(sec->k/L), ue(0.0), f(0.0)
 {
 	T = rowvec( {-lxx, -lxy, lxx, lxy} );
 	buildMatrix();

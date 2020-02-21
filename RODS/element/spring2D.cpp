@@ -1,7 +1,7 @@
 #include "spring2D.h"
 
-spring2D::spring2D(const int id, node * nodeI, node * nodeJ, double k, ELE::localAxis axis) :
-	element2D(id, nodeI, nodeJ), k(k), ue(0.0), f(0.0)
+spring2D::spring2D(const int id, Node * nodeI, Node * nodeJ, double k, ELE::localAxis axis) :
+	Element2D(id, nodeI, nodeJ), k(k), ue(0.0), f(0.0)
 {
 	if (axis == ELE::U1)
 	{

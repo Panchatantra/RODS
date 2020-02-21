@@ -1,8 +1,8 @@
 #include "dashpotMaxwell2D.h"
 
-dashpotMaxwell2D::dashpotMaxwell2D(const int id, node * nodeI, node * nodeJ, const double k, const double c, const double alpha,
+dashpotMaxwell2D::dashpotMaxwell2D(const int id, Node * nodeI, Node * nodeJ, const double k, const double c, const double alpha,
 	ELE::localAxis axis) :
-	element2D(id, nodeI, nodeJ), k(k), c(c), alpha(alpha),
+	Element2D(id, nodeI, nodeJ), k(k), c(c), alpha(alpha),
 	ue(0.0), f(0.0), ud(0.0), udp(0.0)
 {
 	if (axis == ELE::U1)
@@ -41,12 +41,12 @@ void dashpotMaxwell2D::getResponse(const bool update)
 	double f0, f1;
 
 	f0 = sign(ue - ud)*pow(abs(f)/c, 1.0/alpha);
-	ud = udp + element::dt*f0;
+	ud = udp + Element::dt*f0;
 
 	for (size_t i=0; i<1; i++)
 	{
 		f1 = sign(ue + dt*ve - ud)*pow(k*abs(ue + dt*ve - ud) / c, 1.0 / alpha);
-		ud = udp + element::dt*0.5*(f0 + f1);
+		ud = udp + Element::dt*0.5*(f0 + f1);
 	}
 
 	for (size_t i = 0; i < 4; i++)

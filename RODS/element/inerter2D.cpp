@@ -1,7 +1,7 @@
 #include "inerter2D.h"
 
-inerter2D::inerter2D(const int id, node * nodeI, node * nodeJ, double m, ELE::localAxis axis) :
-	element2D(id, nodeI, nodeJ), m(m),
+inerter2D::inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, ELE::localAxis axis) :
+	Element2D(id, nodeI, nodeJ), m(m),
 	ue(0.0), f(0.0)
 {
 	if (axis == ELE::U1)

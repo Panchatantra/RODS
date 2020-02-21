@@ -4,7 +4,7 @@
 #include <iostream>
 #include "armadillo"
 #include "DynamicSystem.h"
-#include "material/elastoplastic.h"
+#include "material/Elastoplastic.h"
 #include "material/steelBilinear.h"
 #include "material/concreteTrilinear.h"
 #include "material/SMABilinear.h"
@@ -29,7 +29,7 @@ void example_sdof()
 	ds->addDashpot(1, 0, 1, c);
 
 	ds->assembleMatrix();
-	ds->activeGroundMotion(X);
+	ds->activeGroundMotion(Direction::X);
 
 	ds->solveEigen();
 	ds->P.print("Natural Periods:");
@@ -96,7 +96,7 @@ void example_sdof_inerter_system()
 	//ds->addTVMD(3, 1, 2, m_in, c_d, k_s);
 
 	ds->assembleMatrix();
-	ds->activeGroundMotion(X);
+	ds->activeGroundMotion(Direction::X);
 
 	ds->solveEigen();
 	ds->P.print("Natural Periods:");
@@ -145,7 +145,7 @@ void example_sdof_bl()
 	//ds->addDashpotExp(1, 0, 1, c, 0.2);
 
 	ds->assembleMatrix();
-	ds->activeGroundMotion(X);
+	ds->activeGroundMotion(Direction::X);
 	ds->solveEigen();
 
 	double dt = 0.01;
@@ -288,8 +288,8 @@ void test_material()
 	double E = 2.0e5, fy = 400.0;
 	double eps_y = fy / E;
 	double alpha = 0.02;
-	material1D *tmat;
-	elastoplastic *mat0 = new elastoplastic(0, E, fy, alpha);
+	Material1D *tmat;
+	Elastoplastic *mat0 = new Elastoplastic(0, E, fy, alpha);
 	steelBilinear *mat1 = new steelBilinear(1, E, fy, alpha);
 
 	double Ec = 3.0e4, fc = 30.0;
@@ -341,8 +341,8 @@ void example_truss()
 
 	for (int i = 0; i < nnd; i++)
 	{
-		ds->addDof(2 * i + 1, X, mass);
-		ds->addDof(2 * i + 2, Z, mass);
+		ds->addDof(2 * i + 1, Direction::X, mass);
+		ds->addDof(2 * i + 2, Direction::Z, mass);
 
 		x = nodeCoord[i][0];
 		z = nodeCoord[i][1];
@@ -411,9 +411,9 @@ void example_frame()
 	double x = 0, z = 0;
 	for (int i = 0; i < nnd; i++)
 	{
-		ds->addDof(3 * i + 1, X, mass);
-		ds->addDof(3 * i + 2, Z, mass);
-		ds->addDof(3 * i + 3, RY, mass);
+		ds->addDof(3 * i + 1, Direction::X, mass);
+		ds->addDof(3 * i + 2, Direction::Z, mass);
+		ds->addDof(3 * i + 3, Direction::RY, mass);
 
 		x = nodeCoord[i][0];
 		z = nodeCoord[i][1];
@@ -472,15 +472,15 @@ void example_frame()
 	//ds->addDashpotMaxwell2D(103, 8, 11, k, c, alpha);
 
 	double k0 = 16.0, uy = 0.5, alfa = 0.02;
-	//ds->addSpringBoucWen(101, ds->nodes.at(6)->dofX->id, ds->nodes.at(9)->dofX->id, k0, uy, alfa);
-	//ds->addSpringBoucWen(102, ds->nodes.at(6)->dofX->id, ds->nodes.at(11)->dofX->id, k0, uy, alfa);
-	//ds->addSpringBoucWen(103, ds->nodes.at(8)->dofX->id, ds->nodes.at(11)->dofX->id, k0, uy, alfa);
+	//ds->addSpringBoucWen(101, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(9)->dofX->id, k0, uy, alfa);
+	//ds->addSpringBoucWen(102, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(11)->dofX->id, k0, uy, alfa);
+	//ds->addSpringBoucWen(103, ds->Nodes.at(8)->dofX->id, ds->Nodes.at(11)->dofX->id, k0, uy, alfa);
 
 	//ds->addSpringBoucWen2D(101, 6, 9, k0, uy, alfa);
 	//ds->addSpringBoucWen2D(102, 6, 11, k0, uy, alfa);
 	//ds->addSpringBoucWen2D(103, 8, 11, k0, uy, alfa);
 
-	//ds->addDashpot(101, ds->nodes.at(6)->dofX->id, ds->nodes.at(11)->dofX->id, c);
+	//ds->addDashpot(101, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(11)->dofX->id, c);
 
 	ds->setRayleighDamping(2.0*PI / 0.36, 2.0*PI / 0.1);
 
@@ -492,7 +492,7 @@ void example_frame()
 
 	int nrd = 1;
 	int *dofIds = new int[nrd] {
-		ds->nodes.at(4)->dofX->id
+		ds->Nodes.at(4)->dofX->id
 	};
 	char dispOutput[] = "data/disp_frame_damped.dat";
 	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
@@ -508,7 +508,7 @@ void example_frame()
 	ds->addTimeSeries(eqId, dt, eqFile);
 
 	ds->setDynamicSolver(StateSpace_NL);
-	ds->activeGroundMotion(X);
+	ds->activeGroundMotion(Direction::X);
 	//ds->solveTimeDomainSeismicResponse(eqId, 700.0, 30);
 
 	ds->printInfo();
@@ -535,9 +535,9 @@ void example_cantilever()
 	double x = 0, z = 0;
 	for (int i = 0; i < nnd; i++)
 	{
-		ds->addDof(3 * i + 1, X, mass);
-		ds->addDof(3 * i + 2, Z, mass);
-		ds->addDof(3 * i + 3, RY, mass*1.0e-1);
+		ds->addDof(3 * i + 1, Direction::X, mass);
+		ds->addDof(3 * i + 2, Direction::Z, mass);
+		ds->addDof(3 * i + 3, Direction::RY, mass*1.0e-1);
 
 		x = nodeCoord[i][0];
 		z = nodeCoord[i][1];
@@ -624,8 +624,8 @@ void example_wall()
 	double x = 0.0, z = 0.0;
 	for (auto i = 0; i < nnd; i++)
 	{
-		ds->addDof(2 * i + 1, X, mass);
-		ds->addDof(2 * i + 2, Z, mass);
+		ds->addDof(2 * i + 1, Direction::X, mass);
+		ds->addDof(2 * i + 2, Direction::Z, mass);
 
 		x = crds[i][0];
 		z = crds[i][1];
@@ -684,8 +684,8 @@ void example_nonlinear_spring()
 	double A = 2148.84937505542;
 	auto ds = new DynamicSystem();
 	
-	ds->addDof(1,X,0.0,FIXED);
-	ds->addDof(2,X,0.0);
+	ds->addDof(1,Direction::X,0.0,FIXED);
+	ds->addDof(2,Direction::X,0.0);
 
 	ds->addSpringBilinear(1,1,2,E*A/L,fy*A/(E*A/L),alpha);
 
@@ -701,7 +701,7 @@ void example_nonlinear_spring()
 	
 	ds->solveNonlinearStaticResponse(10);
 
-	ds->eles.at(1)->printResponse();
+	ds->Elements.at(1)->printResponse();
 	//ds->printInfo();
 }
 
@@ -725,12 +725,12 @@ void example_nonlinear_truss()
 	ds->addFiber(fiberId, matId, A,0.0);
 	ds->addSectionTruss(secId, &fiberId, 1);
 
-	ds->addDof(1,X,0.0,FIXED);
-	ds->addDof(2,Z,0.0,FIXED);
-	ds->addDof(3,X,0.0,FIXED);
-	ds->addDof(4,Z,0.0);
-	ds->addDof(5,X,0.0,FIXED);
-	ds->addDof(6,Z,0.0);
+	ds->addDof(1,Direction::X,0.0,FIXED);
+	ds->addDof(2,Direction::Z,0.0,FIXED);
+	ds->addDof(3,Direction::X,0.0,FIXED);
+	ds->addDof(4,Direction::Z,0.0);
+	ds->addDof(5,Direction::X,0.0,FIXED);
+	ds->addDof(6,Direction::Z,0.0);
 	
 	double L = 1000.0;
 	ds->addNode(1,0.0,0.0,1,2,-1);
@@ -757,7 +757,7 @@ void example_nonlinear_truss()
 
 	ds->solveNonlinearStaticResponse(10);
 
-	ds->eles.at(1)->printResponse();
+	ds->Elements.at(1)->printResponse();
 	//ds->printInfo();
 }
 
@@ -801,17 +801,17 @@ void example_nonlinear_cantilever()
 	
 	ds->addSectionFrame2D(secId, fiberIds, nLayer+2);
 
-	ds->addDof(1,X,0.0,FIXED);
-	ds->addDof(2,Z,0.0,FIXED);
-	ds->addDof(3,RY,0.0,FIXED);
+	ds->addDof(1,Direction::X,0.0,FIXED);
+	ds->addDof(2,Direction::Z,0.0,FIXED);
+	ds->addDof(3,Direction::RY,0.0,FIXED);
 	
-	ds->addDof(4,X,0.0);
-	ds->addDof(5,Z,0.0);
-	ds->addDof(6,RY,0.0);
+	ds->addDof(4,Direction::X,0.0);
+	ds->addDof(5,Direction::Z,0.0);
+	ds->addDof(6,Direction::RY,0.0);
 
-	ds->addDof(7,X,0.0);
-	ds->addDof(8,Z,0.0);
-	ds->addDof(9,RY,0.0);
+	ds->addDof(7,Direction::X,0.0);
+	ds->addDof(8,Direction::Z,0.0);
+	ds->addDof(9,Direction::RY,0.0);
 
 	double L = 750.0;
 	ds->addNode(1,0.0,0.0,1,2,3);
@@ -839,7 +839,7 @@ void example_nonlinear_cantilever()
 
 	int nrd = 1;
 	int *dofIds = new int[nrd] {
-		ds->nodes.at(4)->dofX->id
+		ds->Nodes.at(4)->dofX->id
 	};
 	char dispOutput[] = "data/disp_cantilever.dat";
 	ds->addDofRecorder(1, dofIds, nrd, DISP, dispOutput);

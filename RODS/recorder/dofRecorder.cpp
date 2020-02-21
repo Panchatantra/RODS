@@ -1,7 +1,7 @@
 #include "dofRecorder.h"
 
 dofRecorder::dofRecorder(const int id, std::vector<DOF *> dofs, response rtype, char * fileName):
-	recorder(id, rtype, fileName), dofs(dofs)
+	Recorder(id, rtype, fileName), dofs(dofs)
 
 {
 	n = dofs.size();

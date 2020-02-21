@@ -2,7 +2,7 @@
 
 
 elastic::elastic(const int id, const double E) :
-	material1D(id, E)
+	Material1D(id, E)
 {
 }
 

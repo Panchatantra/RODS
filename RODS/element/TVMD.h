@@ -1,12 +1,12 @@
 #pragma once
 
 #include "DOF.h"
-#include "element1D.h"
+#include "Element1D.h"
 #include <armadillo>
 
 using namespace arma;
 
-class TVMD : public element1D
+class TVMD : public Element1D
 {
 public:
 	TVMD(const int id, DOF *i, DOF *j, const double m, const double c, const double k);

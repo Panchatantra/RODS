@@ -1,10 +1,10 @@
 #pragma once
 
-#include "recorder.h"
+#include "Recorder.h"
 #include "DOF.h"
 
 class dofRecorder :
-	public recorder
+	public Recorder
 {
 public:
 	dofRecorder(const int id, std::vector<DOF *> dofs, response rtype, char * fileName);

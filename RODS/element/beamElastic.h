@@ -1,13 +1,13 @@
 #pragma once
 
-#include "element2D.h"
+#include "Element2D.h"
 
-class beamElastic :
-	public element2D
+class BeamElastic :
+	public Element2D
 {
 public:
-	beamElastic(const int id, node * nodeI, node * nodeJ, const double EI);
-	~beamElastic();
+	BeamElastic(const int id, Node * nodeI, Node * nodeJ, const double EI);
+	~BeamElastic();
 
 	void buildMatrix();
 	void getResponse(const bool update = false);

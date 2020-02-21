@@ -1,51 +1,39 @@
-#include "node.h"
+#include "Node.h"
 
 
-node::node(const int id, const double x, const double y, const double z)
-{
-	this->id = id;
-	this->x = x;
-	this->y = y;
-	this->z = z;
-
-	this->x0 = x;
-	this->y0 = y;
-	this->z0 = z;
-
-	dofX = nullptr;
-	dofY = nullptr;
-	dofZ = nullptr;
-	dofRX = nullptr;
-	dofRY = nullptr;
-	dofRZ = nullptr;
-}
-
-
-node::~node()
+Node::Node(const int id, const double x, const double y, const double z):
+		Basis(id), x(x), y(y), z(z), x0(x), y0(y), z0(z),
+		dofX(nullptr), dofY(nullptr), dofZ(nullptr),
+		dofRX(nullptr), dofRY(nullptr), dofRZ(nullptr)
 {
 }
 
-void node::setDof(DOF * d)
+
+Node::~Node()
 {
-	direction dir = d->dir;
+}
+
+void Node::setDof(DOF * d)
+{
+	Direction dir = d->dir;
 	switch (dir)
 	{
-	case X:
+	case Direction::X:
         this->dofX = d;
 		break;
-	case Y:
+	case Direction::Y:
         this->dofY = d;
 		break;
-	case Z:
+	case Direction::Z:
         this->dofZ = d;
 		break;
-	case RX:
+	case Direction::RX:
         this->dofRX = d;
 		break;
-	case RY:
+	case Direction::RY:
         this->dofRY = d;
 		break;
-	case RZ:
+	case Direction::RZ:
         this->dofRZ = d;
 		break;
 	default:
@@ -53,7 +41,7 @@ void node::setDof(DOF * d)
 	}
 }
 
-void node::fixDof()
+void Node::fixDof()
 {
 	if (dofX != nullptr) dofX->isFixed = true;
 	if (dofY != nullptr) dofY->isFixed = true;
@@ -63,58 +51,57 @@ void node::fixDof()
 	if (dofRZ != nullptr) dofRZ->isFixed = true;
 }
 
-void node::fixDof(direction dir)
+void Node::fixDof(Direction dir)
 {
 	if (isActivated(dir))
 	{
 		switch (dir)
 		{
-		case X:
+		case Direction::X:
 			dofX->isFixed = true;
 			break;
-		case Y:
+		case Direction::Y:
 			dofY->isFixed = true;
 			break;
-		case Z:
+		case Direction::Z:
 			dofZ->isFixed = true;
 			break;
-		case RX:
+		case Direction::RX:
 			dofRX->isFixed = true;
 			break;
-		case RY:
+		case Direction::RY:
 			dofRY->isFixed = true;
 			break;
-		case RZ:
+		case Direction::RZ:
 			dofRZ->isFixed = true;
 			break;
 		default:
 			break;
 		}
 	}
-	
 }
 
-bool node::isActivated(direction dir)
+bool Node::isActivated(Direction dir)
 {
 	DOF *d = nullptr;
 	switch (dir)
 	{
-	case X:
+	case Direction::X:
 		d = dofX;
 		break;
-	case Y:
+	case Direction::Y:
 		d = dofY;
 		break;
-	case Z:
+	case Direction::Z:
 		d = dofZ;
 		break;
-	case RX:
+	case Direction::RX:
 		d = dofRX;
 		break;
-	case RY:
+	case Direction::RY:
 		d = dofRY;
 		break;
-	case RZ:
+	case Direction::RZ:
 		d = dofRZ;
 		break;
 	default:

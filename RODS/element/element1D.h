@@ -1,15 +1,15 @@
 #pragma once
 
-#include "element.h"
+#include "Element.h"
 #include "DOF.h"
 
-class element1D :
-	public element
+class Element1D :
+	public Element
 {
 public:
-	element1D();
-	element1D(const int id, DOF *i, DOF *j);
-	~element1D();
+	Element1D();
+	Element1D(const int id, DOF *i, DOF *j);
+	~Element1D();
 
 	virtual void buildMatrix() {}
 	virtual void getResponse(const bool update = false) {}

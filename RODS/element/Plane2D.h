@@ -1,12 +1,12 @@
 #pragma once
-#include "element.h"
-#include "node.h"
+#include "Element.h"
+#include "Node.h"
 
 class Plane2D :
-	public element
+	public Element
 {
 public:
-	Plane2D(const int id, node * nodeI, node * nodeJ, node *nodeP, node *nodeQ);
+	Plane2D(const int id, Node * nodeI, Node * nodeJ, Node *nodeP, Node *nodeQ);
 	~Plane2D();
 
 	virtual void buildMatrix() {}
@@ -17,7 +17,7 @@ public:
 	virtual void assembleMassMatrix(mat &M) {}
 	virtual void assembleNonlinearForceVector(vec &q) {}
 
-	node *nodeI, *nodeJ, *nodeP, *nodeQ;
+	Node *nodeI, *nodeJ, *nodeP, *nodeQ;
 	mat::fixed<2, 2> J;
 	mat::fixed<3, 3> D;
 };
