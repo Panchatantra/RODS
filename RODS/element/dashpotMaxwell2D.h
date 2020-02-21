@@ -6,12 +6,12 @@
 
 using namespace arma;
 
-class dashpotMaxwell2D : public Element2D
+class DashpotMaxwell2D : public Element2D
 {
 public:
-	dashpotMaxwell2D(const int id, Node * nodeI, Node * nodeJ, const double k, const double c, const double alpha,
+	DashpotMaxwell2D(const int id, Node * nodeI, Node * nodeJ, const double k, const double c, const double alpha,
 		ELE::localAxis axis);
-	~dashpotMaxwell2D();
+	~DashpotMaxwell2D();
 
 	virtual void getResponse(const bool update = false);
 	virtual void assembleNonlinearForceVector(vec &q);

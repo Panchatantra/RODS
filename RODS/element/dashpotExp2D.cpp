@@ -1,6 +1,6 @@
-#include "dashpotExp2D.h"
+#include "DashpotExp2D.h"
 
-dashpotExp2D::dashpotExp2D(const int id, Node * nodeI, Node * nodeJ, const double c, const double alpha,
+DashpotExp2D::DashpotExp2D(const int id, Node * nodeI, Node * nodeJ, const double c, const double alpha,
 	ELE::localAxis axis) :
 	Element2D(id, nodeI, nodeJ), c(c), alpha(alpha), ue(0.0), f(0.0)
 {
@@ -15,15 +15,15 @@ dashpotExp2D::dashpotExp2D(const int id, Node * nodeI, Node * nodeJ, const doubl
 	buildMatrix();
 }
 
-dashpotExp2D::~dashpotExp2D()
+DashpotExp2D::~DashpotExp2D()
 {
 }
 
-void dashpotExp2D::buildMatrix()
+void DashpotExp2D::buildMatrix()
 {
 }
 
-void dashpotExp2D::getResponse(const bool update)
+void DashpotExp2D::getResponse(const bool update)
 {
 	double *u = new double[4] {nodeI->dofX->dsp, nodeI->dofZ->dsp,
 							   nodeJ->dofX->dsp, nodeJ->dofZ->dsp};
@@ -52,7 +52,7 @@ void dashpotExp2D::getResponse(const bool update)
 	deformation = &ue;
 }
 
-void dashpotExp2D::assembleNonlinearForceVector(vec &q)
+void DashpotExp2D::assembleNonlinearForceVector(vec &q)
 {
 	int local[4] = {0,1,2,3};
 	int global[4] = {nodeI->dofX->eqnId, nodeI->dofZ->eqnId,

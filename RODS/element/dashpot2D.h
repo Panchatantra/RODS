@@ -6,11 +6,11 @@
 
 using namespace arma;
 
-class dashpot2D : public Element2D
+class Dashpot2D : public Element2D
 {
 public:
-	dashpot2D(const int id, Node * nodeI, Node * nodeJ, double c, ELE::localAxis axis);
-	~dashpot2D();
+	Dashpot2D(const int id, Node * nodeI, Node * nodeJ, double c, ELE::localAxis axis);
+	~Dashpot2D();
 
 	virtual void buildMatrix();
 	virtual void assembleDampingMatrix(mat &C);

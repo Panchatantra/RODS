@@ -1,6 +1,6 @@
-#include "inerter2D.h"
+#include "Inerter2D.h"
 
-inerter2D::inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, ELE::localAxis axis) :
+Inerter2D::Inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, ELE::localAxis axis) :
 	Element2D(id, nodeI, nodeJ), m(m),
 	ue(0.0), f(0.0)
 {
@@ -15,16 +15,16 @@ inerter2D::inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, ELE::lo
 	buildMatrix();
 }
 
-inerter2D::~inerter2D()
+Inerter2D::~Inerter2D()
 {
 }
 
-void inerter2D::buildMatrix()
+void Inerter2D::buildMatrix()
 {
 	M = T.t()*m*T;
 }
 
-void inerter2D::assembleMassMatrix(mat &M)
+void Inerter2D::assembleMassMatrix(mat &M)
 {
 	int local[4] = { 0,1,2,3 };
 	int global[4] = { nodeI->dofX->eqnId, nodeI->dofZ->eqnId,
@@ -39,7 +39,7 @@ void inerter2D::assembleMassMatrix(mat &M)
 	}
 }
 
-void inerter2D::getResponse(const bool update)
+void Inerter2D::getResponse(const bool update)
 {
 	double *u = new double[4] {nodeI->dofX->dsp, nodeI->dofZ->dsp,
 							   nodeJ->dofX->dsp, nodeJ->dofZ->dsp};

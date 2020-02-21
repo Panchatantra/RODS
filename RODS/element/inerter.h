@@ -6,11 +6,11 @@
 
 using namespace arma;
 
-class inerter : public Element1D
+class Inerter : public Element1D
 {
 public:
-	inerter(const int id, DOF *i, DOF *j, const double m);
-	~inerter();
+	Inerter(const int id, DOF *i, DOF *j, const double m);
+	~Inerter();
 
 	void buildMatrix();
 	void assembleMassMatrix(mat & M);

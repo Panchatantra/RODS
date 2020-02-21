@@ -6,11 +6,11 @@
 
 using namespace arma;
 
-class dashpotMaxwell : public Element1D
+class DashpotMaxwell : public Element1D
 {
 public:
-	dashpotMaxwell(const int id, DOF *i, DOF *j, const double ks, const double c, const double alpha=1.0);
-	~dashpotMaxwell();
+	DashpotMaxwell(const int id, DOF *i, DOF *j, const double ks, const double c, const double alpha=1.0);
+	~DashpotMaxwell();
 
 	void getResponse(const bool update=false);
 	void assembleNonlinearForceVector(vec &q);

@@ -1,17 +1,17 @@
-#include "dashpotExp.h"
+#include "DashpotExp.h"
 
-dashpotExp::dashpotExp(const int id, DOF * i, DOF * j, const double c, const double alpha) :
+DashpotExp::DashpotExp(const int id, DOF * i, DOF * j, const double c, const double alpha) :
 	Element1D(id, i, j), c(c), alpha(alpha),
 	u(0.0), f(0.0)
 {
     buildMatrix();
 }
 
-dashpotExp::~dashpotExp()
+DashpotExp::~DashpotExp()
 {
 }
 
-void dashpotExp::buildMatrix()
+void DashpotExp::buildMatrix()
 {
 	C(0, 0) = 0.0;
 	C(0, 1) = -0.0;
@@ -19,7 +19,7 @@ void dashpotExp::buildMatrix()
 	C(1, 1) = 0.0;
 }
 
-void dashpotExp::assembleDampingMatrix(mat & C)
+void DashpotExp::assembleDampingMatrix(mat & C)
 {
 	int i_local = 0;
 	int j_local = 1;
@@ -33,7 +33,7 @@ void dashpotExp::assembleDampingMatrix(mat & C)
 	C(j_global, j_global) += this->C(j_local, j_local);
 }
 
-void dashpotExp::getResponse(const bool update)
+void DashpotExp::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	double v = dofJ->vel - dofI->vel;
@@ -46,7 +46,7 @@ void dashpotExp::getResponse(const bool update)
 	deformation = &u;
 }
 
-void dashpotExp::assembleNonlinearForceVector(vec & q)
+void DashpotExp::assembleNonlinearForceVector(vec & q)
 {
 	int i_local = 0;
 	int j_local = 1;

@@ -1,17 +1,17 @@
-#include "dashpot.h"
+#include "Dashpot.h"
 
-dashpot::dashpot(const int id, DOF * i, DOF * j, const double c) :
+Dashpot::Dashpot(const int id, DOF * i, DOF * j, const double c) :
 	Element1D(id, i, j), c(c), u(0.0), f(0.0)
 {
     buildMatrix();
 }
 
 
-dashpot::~dashpot()
+Dashpot::~Dashpot()
 {
 }
 
-void dashpot::buildMatrix()
+void Dashpot::buildMatrix()
 {
 	C(0, 0) = c;
 	C(0, 1) = -c;
@@ -19,7 +19,7 @@ void dashpot::buildMatrix()
 	C(1, 1) = c;
 }
 
-void dashpot::assembleDampingMatrix(mat & C)
+void Dashpot::assembleDampingMatrix(mat & C)
 {
 	int i_local = 0;
 	int j_local = 1;
@@ -33,7 +33,7 @@ void dashpot::assembleDampingMatrix(mat & C)
 	C(j_global, j_global) += this->C(j_local, j_local);
 }
 
-void dashpot::getResponse(const bool update)
+void Dashpot::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	double v = dofJ->vel - dofI->vel;

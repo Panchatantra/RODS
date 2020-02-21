@@ -323,7 +323,7 @@
     <ClCompile Include="element\Quad4Elastic.cpp" />
     <ClCompile Include="element\Slider.cpp" />
     <ClCompile Include="element\spis2.cpp" />
-    <ClCompile Include="element\spring.cpp" />
+    <ClCompile Include="element\Spring.cpp" />
     <ClCompile Include="element\spring2D.cpp" />
     <ClCompile Include="element\springBilinear.cpp" />
     <ClCompile Include="element\springBoucWen.cpp" />
@@ -376,7 +376,7 @@
     <ClInclude Include="element\Quad4Elastic.h" />
     <ClInclude Include="element\Slider.h" />
     <ClInclude Include="element\spis2.h" />
-    <ClInclude Include="element\spring.h" />
+    <ClInclude Include="element\Spring.h" />
     <ClInclude Include="element\spring2D.h" />
     <ClInclude Include="element\springBilinear.h" />
     <ClInclude Include="element\springBoucWen.h" />

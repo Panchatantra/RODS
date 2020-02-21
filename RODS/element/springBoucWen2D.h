@@ -6,12 +6,12 @@
 
 using namespace arma;
 
-class springBoucWen2D : public Element2D
+class SpringBoucWen2D : public Element2D
 {
 public:
-	springBoucWen2D(const int id, Node * nodeI, Node * nodeJ, const double k0, const double uy,
+	SpringBoucWen2D(const int id, Node * nodeI, Node * nodeJ, const double k0, const double uy,
 		const double alpha, const double beta, const double n, ELE::localAxis axis);
-	~springBoucWen2D();
+	~SpringBoucWen2D();
 
 	virtual void buildMatrix();
 	virtual void getResponse(const bool update = false);

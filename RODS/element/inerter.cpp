@@ -1,18 +1,18 @@
-#include "inerter.h"
+#include "Inerter.h"
 
 
-inerter::inerter(const int id, DOF *i, DOF *j, const double m) :
+Inerter::Inerter(const int id, DOF *i, DOF *j, const double m) :
 	Element1D(id, i, j), m(m),
 	u(0.0), f(0.0)
 {
 	buildMatrix();
 }
 
-inerter::~inerter()
+Inerter::~Inerter()
 {
 }
 
-void inerter::buildMatrix()
+void Inerter::buildMatrix()
 {
 	M(0, 0) = m;
 	M(0, 1) = -m;
@@ -20,7 +20,7 @@ void inerter::buildMatrix()
 	M(1, 1) = m;
 }
 
-void inerter::assembleMassMatrix(mat & M)
+void Inerter::assembleMassMatrix(mat & M)
 {
 	int i_local = 0;
 	int j_local = 1;
@@ -34,7 +34,7 @@ void inerter::assembleMassMatrix(mat & M)
 	M(j_global, j_global) += this->M(j_local, j_local);
 }
 
-void inerter::getResponse(const bool update)
+void Inerter::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	double a = dofJ->acc - dofI->acc;

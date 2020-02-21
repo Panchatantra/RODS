@@ -1,6 +1,6 @@
-#include "dashpot2D.h"
+#include "Dashpot2D.h"
 
-dashpot2D::dashpot2D(const int id, Node * nodeI, Node * nodeJ, double c, ELE::localAxis axis) :
+Dashpot2D::Dashpot2D(const int id, Node * nodeI, Node * nodeJ, double c, ELE::localAxis axis) :
 	Element2D(id, nodeI, nodeJ), c(c), ue(0.0), f(0.0)
 {
 	if (axis == ELE::U1)
@@ -14,16 +14,16 @@ dashpot2D::dashpot2D(const int id, Node * nodeI, Node * nodeJ, double c, ELE::lo
 	buildMatrix();
 }
 
-dashpot2D::~dashpot2D()
+Dashpot2D::~Dashpot2D()
 {
 }
 
-void dashpot2D::buildMatrix()
+void Dashpot2D::buildMatrix()
 {
 	C = T.t()*c*T;
 }
 
-void dashpot2D::assembleDampingMatrix(mat & C)
+void Dashpot2D::assembleDampingMatrix(mat & C)
 {
 	int local[4] = { 0,1,2,3 };
 	int global[4] = { nodeI->dofX->eqnId, nodeI->dofZ->eqnId,
@@ -38,7 +38,7 @@ void dashpot2D::assembleDampingMatrix(mat & C)
 	}
 }
 
-void dashpot2D::getResponse(const bool update)
+void Dashpot2D::getResponse(const bool update)
 {
 	double *u = new double[4] {nodeI->dofX->dsp, nodeI->dofZ->dsp,
 							   nodeJ->dofX->dsp, nodeJ->dofZ->dsp};

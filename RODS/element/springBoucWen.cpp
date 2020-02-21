@@ -1,6 +1,6 @@
-#include "springBoucWen.h"
+#include "SpringBoucWen.h"
 
-springBoucWen::springBoucWen(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha, const double beta, const double n) :
+SpringBoucWen::SpringBoucWen(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha, const double beta, const double n) :
 	Element1D(id, i, j),
 	k0(k0), uy(uy),k1(alpha*k0), fy(k0*uy),
 	alpha(alpha), beta(beta), n(n),
@@ -9,11 +9,11 @@ springBoucWen::springBoucWen(const int id, DOF *i, DOF *j, const double k0, cons
 	buildMatrix();
 }
 
-springBoucWen::~springBoucWen()
+SpringBoucWen::~SpringBoucWen()
 {
 }
 
-void springBoucWen::buildMatrix()
+void SpringBoucWen::buildMatrix()
 {
 	K(0, 0) = k;
 	K(0, 1) = -k;
@@ -21,7 +21,7 @@ void springBoucWen::buildMatrix()
 	K(1, 1) = k;
 }
 
-void springBoucWen::assembleStiffnessMatrix(mat & K)
+void SpringBoucWen::assembleStiffnessMatrix(mat & K)
 {
 	int i_local = 0;
 	int j_local = 1;
@@ -35,7 +35,7 @@ void springBoucWen::assembleStiffnessMatrix(mat & K)
 	K(j_global, j_global) += this->K(j_local, j_local);
 }
 
-void springBoucWen::getResponse(const bool update)
+void SpringBoucWen::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	v = dofJ->vel - dofI->vel;
@@ -61,7 +61,7 @@ void springBoucWen::getResponse(const bool update)
 	}
 }
 
-void springBoucWen::assembleNonlinearForceVector(vec & q)
+void SpringBoucWen::assembleNonlinearForceVector(vec & q)
 {
 	int i_local = 0;
 	int j_local = 1;

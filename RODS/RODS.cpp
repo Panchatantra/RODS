@@ -37,12 +37,12 @@ DLL_API size_t add_dof_fixed(const int id, const double m) {
 
 DLL_API size_t add_spring(const int id, const int i, const int j, const double k) {
 	ds->addSpring(id, i, j, k);
-	return ds->springs.size();
+	return ds->Springs.size();
 }
 
 DLL_API size_t add_dashpot(const int id, const int i, const int j, const double c) {
 	ds->addDashpot(id, i, j, c);
-	return ds->dashpots.size();
+	return ds->Dashpots.size();
 }
 
 DLL_API size_t add_timeseries(const int id, const double dt, char* fileName) {

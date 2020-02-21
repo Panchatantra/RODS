@@ -7,11 +7,11 @@
 
 using namespace arma;
 
-class springNonlinear : public Element1D
+class SpringNonlinear : public Element1D
 {
 public:
-	springNonlinear(const int id, DOF *i, DOF *j, Material1D *smat);
-	~springNonlinear();
+	SpringNonlinear(const int id, DOF *i, DOF *j, Material1D *smat);
+	~SpringNonlinear();
 
 	void buildMatrix();
 	void assembleStiffnessMatrix(mat &K);

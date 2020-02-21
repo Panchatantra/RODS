@@ -1,18 +1,18 @@
-#include "springNonlinear.h"
+#include "SpringNonlinear.h"
 
 
-springNonlinear::springNonlinear(const int id, DOF *i, DOF *j, Material1D *smat) :
+SpringNonlinear::SpringNonlinear(const int id, DOF *i, DOF *j, Material1D *smat) :
 	Element1D(id,i,j), smat(smat->copy()), u(0.0), f(0.0)
 {
 	buildMatrix();
 }
 
 
-springNonlinear::~springNonlinear()
+SpringNonlinear::~SpringNonlinear()
 {
 }
 
-void springNonlinear::buildMatrix()
+void SpringNonlinear::buildMatrix()
 {
 	double k = smat->E;
 	K(0, 0) = k;
@@ -21,7 +21,7 @@ void springNonlinear::buildMatrix()
 	K(1, 1) = k;
 }
 
-void springNonlinear::assembleStiffnessMatrix(mat & K)
+void SpringNonlinear::assembleStiffnessMatrix(mat & K)
 {
 	int i_local = 0;
 	int j_local = 1;
@@ -35,7 +35,7 @@ void springNonlinear::assembleStiffnessMatrix(mat & K)
 	K(j_global, j_global) += this->K(j_local, j_local);
 }
 
-void springNonlinear::getResponse(const bool update)
+void SpringNonlinear::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	smat->setStrain(&u);
@@ -53,7 +53,7 @@ void springNonlinear::getResponse(const bool update)
 	buildMatrix();
 }
 
-void springNonlinear::assembleNonlinearForceVector(vec & q)
+void SpringNonlinear::assembleNonlinearForceVector(vec & q)
 {
 	int i_local = 0;
 	int j_local = 1;

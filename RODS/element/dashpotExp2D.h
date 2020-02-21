@@ -6,12 +6,12 @@
 
 using namespace arma;
 
-class dashpotExp2D : public Element2D
+class DashpotExp2D : public Element2D
 {
 public:
-	dashpotExp2D(const int id, Node * nodeI, Node * nodeJ, const double c, const double alpha,
+	DashpotExp2D(const int id, Node * nodeI, Node * nodeJ, const double c, const double alpha,
 		ELE::localAxis axis);
-	~dashpotExp2D();
+	~DashpotExp2D();
 
 	virtual void buildMatrix();
 	virtual void getResponse(const bool update = false);

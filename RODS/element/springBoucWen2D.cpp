@@ -1,6 +1,6 @@
-#include "springBoucWen2D.h"
+#include "SpringBoucWen2D.h"
 
-springBoucWen2D::springBoucWen2D(const int id, Node * nodeI, Node * nodeJ, const double k0, const double uy,
+SpringBoucWen2D::SpringBoucWen2D(const int id, Node * nodeI, Node * nodeJ, const double k0, const double uy,
 		const double alpha, const double beta, const double n, ELE::localAxis axis) :
 	Element2D(id, nodeI, nodeJ),
 	k0(k0), uy(uy), fy(k0*uy),
@@ -20,16 +20,16 @@ springBoucWen2D::springBoucWen2D(const int id, Node * nodeI, Node * nodeJ, const
 	buildMatrix();
 }
 
-springBoucWen2D::~springBoucWen2D()
+SpringBoucWen2D::~SpringBoucWen2D()
 {
 }
 
-void springBoucWen2D::buildMatrix()
+void SpringBoucWen2D::buildMatrix()
 {
 	K = T.t()*k*T;
 }
 
-void springBoucWen2D::getResponse(const bool update)
+void SpringBoucWen2D::getResponse(const bool update)
 {
 	double *u = new double[4] {nodeI->dofX->dsp, nodeI->dofZ->dsp,
 							   nodeJ->dofX->dsp, nodeJ->dofZ->dsp};
@@ -66,7 +66,7 @@ void springBoucWen2D::getResponse(const bool update)
 	}
 }
 
-void springBoucWen2D::assembleNonlinearForceVector(vec &q)
+void SpringBoucWen2D::assembleNonlinearForceVector(vec &q)
 {
 	int local[4] = {0,1,2,3};
 	int global[4] = {nodeI->dofX->eqnId, nodeI->dofZ->eqnId,
@@ -83,7 +83,7 @@ void springBoucWen2D::assembleNonlinearForceVector(vec &q)
 	}
 }
 
-void springBoucWen2D::assembleStiffnessMatrix(mat &K)
+void SpringBoucWen2D::assembleStiffnessMatrix(mat &K)
 {
 	int local[4] = { 0,1,2,3 };
 	int global[4] = { nodeI->dofX->eqnId, nodeI->dofZ->eqnId,

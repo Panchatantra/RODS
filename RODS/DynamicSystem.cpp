@@ -367,10 +367,10 @@ bool DynamicSystem::addElement(Element * e)
 	}
 }
 
-void DynamicSystem::addSpring(spring *s)
+void DynamicSystem::addSpring(Spring *s)
 {
 	if (addElement(s)) {
-		springs[s->id] = s;
+		Springs[s->id] = s;
 		linearElasticElements[s->id] = s;
 	}
 }
@@ -379,15 +379,15 @@ void DynamicSystem::addSpring(const int id, const int ni, const int nj, const do
 {
 	DOF *i = DOFs.at(ni);
 	DOF *j = DOFs.at(nj);
-	spring *s = new spring(id, i, j, k);
+	Spring *s = new Spring(id, i, j, k);
 	addSpring(s);
 }
 
-void DynamicSystem::addSpringBilinear(springBilinear * s)
+void DynamicSystem::addSpringBilinear(SpringBilinear * s)
 {
 	if (addElement(s))
 	{
-		springBLs[s->id] = s;
+		SpringBilinears[s->id] = s;
 		nonlinearTangentElements[s->id] = s;
 	}
 }
@@ -396,15 +396,15 @@ void DynamicSystem::addSpringBilinear(const int id, const int ni, const int nj, 
 {
 	DOF *i = DOFs.at(ni);
 	DOF *j = DOFs.at(nj);
-	springBilinear *s = new springBilinear(id, i, j, k0, uy, alpha);
+	SpringBilinear *s = new SpringBilinear(id, i, j, k0, uy, alpha);
 	addSpringBilinear(s);
 }
 
-void DynamicSystem::addSpringNonlinear(springNonlinear * s)
+void DynamicSystem::addSpringNonlinear(SpringNonlinear * s)
 {
 	if (addElement(s))
 	{
-		springNLs[s->id] = s;
+		SpringNonlinears[s->id] = s;
 		nonlinearTangentElements[s->id] = s;
 	}
 }
@@ -413,15 +413,15 @@ void DynamicSystem::addSpringNonlinear(const int id, const int ni, const int nj,
 {
 	DOF *i = DOFs.at(ni);
 	DOF *j = DOFs.at(nj);
-	springNonlinear *s = new springNonlinear(id, i, j, Material1Ds.at(matId));
+	SpringNonlinear *s = new SpringNonlinear(id, i, j, Material1Ds.at(matId));
 	addSpringNonlinear(s);
 }
 
-void DynamicSystem::addSpringBoucWen(springBoucWen * s)
+void DynamicSystem::addSpringBoucWen(SpringBoucWen * s)
 {
 	if (addElement(s))
 	{
-		springBWs[s->id] = s;
+		SpringBoucWens[s->id] = s;
 		nonlinearTangentElements[s->id] = s;
 	}
 }
@@ -430,15 +430,15 @@ void DynamicSystem::addSpringBoucWen(const int id, const int ni, const int nj, c
 {
 	DOF *i = DOFs.at(ni);
 	DOF *j = DOFs.at(nj);
-	springBoucWen *s = new springBoucWen(id, i, j, k0, uy, alpha);
+	SpringBoucWen *s = new SpringBoucWen(id, i, j, k0, uy, alpha);
 	addSpringBoucWen(s);
 }
 
-void DynamicSystem::addDashpot(dashpot * d)
+void DynamicSystem::addDashpot(Dashpot * d)
 {
 	if (addElement(d))
 	{
-		dashpots[d->id] = d;
+		Dashpots[d->id] = d;
 		linearDampingElements[d->id] = d;
 	}
 }
@@ -447,15 +447,15 @@ void DynamicSystem::addDashpot(const int id, const int ni, const int nj, const d
 {
 	DOF *i = DOFs.at(ni);
 	DOF *j = DOFs.at(nj);
-	dashpot *d = new dashpot(id, i, j, c);
+	Dashpot *d = new Dashpot(id, i, j, c);
 	addDashpot(d);
 }
 
-void DynamicSystem::addDashpotExp(dashpotExp * d)
+void DynamicSystem::addDashpotExp(DashpotExp * d)
 {
 	if (addElement(d))
 	{
-		dashpotExps[d->id] = d;
+		DashpotExps[d->id] = d;
 		nonlinearElements[d->id] = d;
 	}
 }
@@ -464,15 +464,15 @@ void DynamicSystem::addDashpotExp(const int id, const int ni, const int nj, cons
 {
 	DOF *i = DOFs.at(ni);
 	DOF *j = DOFs.at(nj);
-	dashpotExp *d = new dashpotExp(id, i, j, c, alpha);
+	DashpotExp *d = new DashpotExp(id, i, j, c, alpha);
 	addDashpotExp(d);
 }
 
-void DynamicSystem::addDashpotMaxwell(dashpotMaxwell * d)
+void DynamicSystem::addDashpotMaxwell(DashpotMaxwell * d)
 {
 	if (addElement(d))
 	{
-		dashpotMaxwells[d->id] = d;
+		DashpotMaxwells[d->id] = d;
 		nonlinearElements[d->id] = d;
 	}
 }
@@ -481,15 +481,15 @@ void DynamicSystem::addDashpotMaxwell(const int id, const int ni, const int nj, 
 {
 	DOF *i = DOFs.at(ni);
 	DOF *j = DOFs.at(nj);
-	dashpotMaxwell *d = new dashpotMaxwell(id, i, j, c, alpha);
+	DashpotMaxwell *d = new DashpotMaxwell(id, i, j, c, alpha);
 	addDashpotMaxwell(d);
 }
 
-void DynamicSystem::addInerter(inerter * in)
+void DynamicSystem::addInerter(Inerter * in)
 {
 	if (addElement(in))
 	{
-		inerters[in->id] = in;
+		Inerters[in->id] = in;
 		inertialMassElements[in->id] = in;
 	}
 }
@@ -498,7 +498,7 @@ void DynamicSystem::addInerter(const int id, const int ni, const int nj, const d
 {
 	DOF *i = DOFs.at(ni);
 	DOF *j = DOFs.at(nj);
-	inerter *in = new inerter(id, i, j, m);
+	Inerter *in = new Inerter(id, i, j, m);
 	addInerter(in);
 }
 
@@ -519,11 +519,11 @@ void DynamicSystem::addSlider(const int id, const int ni, const int nj, const do
 	addSlider(s);
 }
 
-void DynamicSystem::addSPIS2(spis2 * s)
+void DynamicSystem::addSPIS2(SPIS2 * s)
 {
 	if (addElement(s))
 	{
-		spis2s[s->id] = s;
+		SPIS2s[s->id] = s;
 		linearElasticElements[s->id] = s;
 		linearDampingElements[s->id] = s;
 		inertialMassElements[s->id] = s;
@@ -535,7 +535,7 @@ void DynamicSystem::addSPIS2(const int id, const int ni, const int nj, const int
 	DOF *i = DOFs.at(ni);
 	DOF *j = DOFs.at(nj);
 	DOF *in = DOFs.at(nin);
-	spis2 *s = new spis2(id, i, j, in, m, c, k);
+	SPIS2 *s = new SPIS2(id, i, j, in, m, c, k);
 	addSPIS2(s);
 }
 
@@ -556,99 +556,99 @@ void DynamicSystem::addTVMD(const int id, const int ni, const int nj, const doub
 	addTVMD(d);
 }
 
-void DynamicSystem::addSpring2D(spring2D *s)
+void DynamicSystem::addSpring2D(Spring2D *s)
 {
 	if (addElement(s))
 	{
 		Element2Ds[s->id] = s;
-		spring2Ds[s->id] = s;
+		Spring2Ds[s->id] = s;
 		linearElasticElements[s->id] = s;
 	}
 }
 
 void DynamicSystem::addSpring2D(const int id, const int ni, const int nj, const double k, ELE::localAxis U)
 {
-	spring2D *s = new spring2D(id, Nodes.at(ni), Nodes.at(nj), k, U);
+	Spring2D *s = new Spring2D(id, Nodes.at(ni), Nodes.at(nj), k, U);
 	addSpring2D(s);
 }
 
-void DynamicSystem::addSpringBoucWen2D(springBoucWen2D *s)
+void DynamicSystem::addSpringBoucWen2D(SpringBoucWen2D *s)
 {
 	if (addElement(s))
 	{
 		Element2Ds[s->id] = s;
-		springBoucWen2Ds[s->id] = s;
+		SpringBoucWen2Ds[s->id] = s;
 		nonlinearTangentElements[s->id] = s;
 	}
 }
 
 void DynamicSystem::addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n, ELE::localAxis U /*= ELE::U1*/)
 {
-	springBoucWen2D *s = new springBoucWen2D(id, Nodes.at(ni), Nodes.at(nj), k0, uy, alpha, beta, n, U);
+	SpringBoucWen2D *s = new SpringBoucWen2D(id, Nodes.at(ni), Nodes.at(nj), k0, uy, alpha, beta, n, U);
 	addSpringBoucWen2D(s);
 }
 
-void DynamicSystem::addDashpot2D(dashpot2D *s)
+void DynamicSystem::addDashpot2D(Dashpot2D *s)
 {
 	if (addElement(s))
 	{
 		Element2Ds[s->id] = s;
-		dashpot2Ds[s->id] = s;
+		Dashpot2Ds[s->id] = s;
 		linearDampingElements[s->id] = s;
 	}
 }
 
 void DynamicSystem::addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::localAxis U)
 {
-	dashpot2D *s = new dashpot2D(id, Nodes.at(ni), Nodes.at(nj), c, U);
+	Dashpot2D *s = new Dashpot2D(id, Nodes.at(ni), Nodes.at(nj), c, U);
 	addDashpot2D(s);
 }
 
-void DynamicSystem::addInerter2D(inerter2D *s)
+void DynamicSystem::addInerter2D(Inerter2D *s)
 {
 	if (addElement(s))
 	{
 		Element2Ds[s->id] = s;
-		inerter2Ds[s->id] = s;
+		Inerter2Ds[s->id] = s;
 		inertialMassElements[s->id] = s;
 	}
 }
 
 void DynamicSystem::addInerter2D(const int id, const int ni, const int nj, const double m, ELE::localAxis U)
 {
-	inerter2D *s = new inerter2D(id, Nodes.at(ni), Nodes.at(nj), m, U);
+	Inerter2D *s = new Inerter2D(id, Nodes.at(ni), Nodes.at(nj), m, U);
 	addInerter2D(s);
 }
 
-void DynamicSystem::addDashpotExp2D(dashpotExp2D *s)
+void DynamicSystem::addDashpotExp2D(DashpotExp2D *s)
 {
 	if (addElement(s))
 	{
 		Element2Ds[s->id] = s;
-		dashpotExp2Ds[s->id] = s;
+		DashpotExp2Ds[s->id] = s;
 		nonlinearElements[s->id] = s;
 	}
 }
 
 void DynamicSystem::addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, ELE::localAxis U /*= ELE::U1*/)
 {
-	dashpotExp2D *s = new dashpotExp2D(id, Nodes.at(ni), Nodes.at(nj), c, alpha, U);
+	DashpotExp2D *s = new DashpotExp2D(id, Nodes.at(ni), Nodes.at(nj), c, alpha, U);
 	addDashpotExp2D(s);
 }
 
-void DynamicSystem::addDashpotMaxwell2D(dashpotMaxwell2D *s)
+void DynamicSystem::addDashpotMaxwell2D(DashpotMaxwell2D *s)
 {
 	if (addElement(s))
 	{
 		Element2Ds[s->id] = s;
-		dashpotMaxwell2Ds[s->id] = s;
+		DashpotMaxwell2Ds[s->id] = s;
 		nonlinearElements[s->id] = s;
 	}
 }
 
 void DynamicSystem::addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::localAxis U)
 {
-	dashpotMaxwell2D *s = new dashpotMaxwell2D(id, Nodes.at(ni), Nodes.at(nj), k, c, alpha, U);
+	DashpotMaxwell2D *s = new DashpotMaxwell2D(id, Nodes.at(ni), Nodes.at(nj), k, c, alpha, U);
 	addDashpotMaxwell2D(s);
 }
 
@@ -820,7 +820,7 @@ void DynamicSystem::addSpringRecorder(const int id, int * eleIds, const int n, r
 
 	for (int i = 0; i < n; i++)
 	{
-		reles[i] = springs.at(eleIds[i]);
+		reles[i] = Springs.at(eleIds[i]);
 	}
 
 	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);
@@ -833,7 +833,7 @@ void DynamicSystem::addDashpotRecorder(const int id, int * eleIds, const int n, 
 
 	for (int i = 0; i < n; i++)
 	{
-		reles[i] = dashpots.at(eleIds[i]);
+		reles[i] = Dashpots.at(eleIds[i]);
 	}
 
 	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);
@@ -846,7 +846,7 @@ void DynamicSystem::addInerterRecorder(const int id, int * eleIds, const int n, 
 
 	for (int i = 0; i < n; i++)
 	{
-		reles[i] = inerters.at(eleIds[i]);
+		reles[i] = Inerters.at(eleIds[i]);
 	}
 
 	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);

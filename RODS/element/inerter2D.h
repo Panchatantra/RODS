@@ -6,11 +6,11 @@
 
 using namespace arma;
 
-class inerter2D : public Element2D
+class Inerter2D : public Element2D
 {
 public:
-	inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, ELE::localAxis axis);
-	~inerter2D();
+	Inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, ELE::localAxis axis);
+	~Inerter2D();
 
 	virtual void buildMatrix();
 	virtual void assembleMassMatrix(mat &M);

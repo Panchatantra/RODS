@@ -3,12 +3,12 @@
 #include "Element2D.h"
 #include "Node.h"
 
-class spring2D :
+class Spring2D :
 	public Element2D
 {
 public:
-	spring2D(const int id, Node * nodeI, Node * nodeJ, const double k, ELE::localAxis axis);
-	~spring2D();
+	Spring2D(const int id, Node * nodeI, Node * nodeJ, const double k, ELE::localAxis axis);
+	~Spring2D();
 
 	virtual void buildMatrix();
 	virtual void getResponse();

@@ -1,7 +1,7 @@
-#include "springBilinear.h"
+#include "SpringBilinear.h"
 
 
-springBilinear::springBilinear(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha) :
+SpringBilinear::SpringBilinear(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha) :
 	Element1D(id,i,j), k0(k0), uy(uy),
 	k1(alpha*k0), fy(k0*uy), alpha(alpha),
 	k(k0), u(0), f(0),
@@ -12,11 +12,11 @@ springBilinear::springBilinear(const int id, DOF *i, DOF *j, const double k0, co
 }
 
 
-springBilinear::~springBilinear()
+SpringBilinear::~SpringBilinear()
 {
 }
 
-void springBilinear::buildMatrix()
+void SpringBilinear::buildMatrix()
 {
 	K(0, 0) = k;
 	K(0, 1) = -k;
@@ -24,7 +24,7 @@ void springBilinear::buildMatrix()
 	K(1, 1) = k;
 }
 
-void springBilinear::assembleStiffnessMatrix(mat & K)
+void SpringBilinear::assembleStiffnessMatrix(mat & K)
 {
 	int i_local = 0;
 	int j_local = 1;
@@ -38,7 +38,7 @@ void springBilinear::assembleStiffnessMatrix(mat & K)
 	K(j_global, j_global) += this->K(j_local, j_local);
 }
 
-void springBilinear::getResponse(const bool update)
+void SpringBilinear::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 
@@ -131,7 +131,7 @@ void springBilinear::getResponse(const bool update)
 	}
 }
 
-void springBilinear::assembleNonlinearForceVector(vec & q)
+void SpringBilinear::assembleNonlinearForceVector(vec & q)
 {
 	int i_local = 0;
 	int j_local = 1;

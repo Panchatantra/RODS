@@ -1,16 +1,16 @@
-#include "spring.h"
+#include "Spring.h"
 
-spring::spring(const int id, DOF *i, DOF *j, const double k) :
+Spring::Spring(const int id, DOF *i, DOF *j, const double k) :
 	Element1D(id, i, j), k(k), u(0.0), f(0.0)
 {
 	buildMatrix();
 }
 
-spring::~spring()
+Spring::~Spring()
 {
 }
 
-void spring::buildMatrix()
+void Spring::buildMatrix()
 {
 	K(0, 0) = k;
 	K(0, 1) = -k;
@@ -18,7 +18,7 @@ void spring::buildMatrix()
 	K(1, 1) = k;
 }
 
-void spring::assembleStiffnessMatrix(mat & K)
+void Spring::assembleStiffnessMatrix(mat & K)
 {
 	int i_local = 0;
 	int j_local = 1;
@@ -32,7 +32,7 @@ void spring::assembleStiffnessMatrix(mat & K)
 	K(j_global, j_global) += this->K(j_local, j_local);
 }
 
-void spring::getResponse(const bool update)
+void Spring::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	f = k * u;

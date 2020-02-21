@@ -38,9 +38,6 @@
     <ClCompile Include="element\spis2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="element\spring.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="element\spring2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -164,6 +161,9 @@
     <ClCompile Include="element\BeamElastic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="element\Spring.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="numeric.h">
@@ -194,9 +194,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\spis2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="element\spring.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\spring2D.h">
@@ -320,6 +317,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\BeamElastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Spring.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

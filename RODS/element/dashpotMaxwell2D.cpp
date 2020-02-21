@@ -1,6 +1,6 @@
-#include "dashpotMaxwell2D.h"
+#include "DashpotMaxwell2D.h"
 
-dashpotMaxwell2D::dashpotMaxwell2D(const int id, Node * nodeI, Node * nodeJ, const double k, const double c, const double alpha,
+DashpotMaxwell2D::DashpotMaxwell2D(const int id, Node * nodeI, Node * nodeJ, const double k, const double c, const double alpha,
 	ELE::localAxis axis) :
 	Element2D(id, nodeI, nodeJ), k(k), c(c), alpha(alpha),
 	ue(0.0), f(0.0), ud(0.0), udp(0.0)
@@ -15,11 +15,11 @@ dashpotMaxwell2D::dashpotMaxwell2D(const int id, Node * nodeI, Node * nodeJ, con
 	}
 }
 
-dashpotMaxwell2D::~dashpotMaxwell2D()
+DashpotMaxwell2D::~DashpotMaxwell2D()
 {
 }
 
-void dashpotMaxwell2D::getResponse(const bool update)
+void DashpotMaxwell2D::getResponse(const bool update)
 {
 	double *u = new double[4] {nodeI->dofX->dsp, nodeI->dofZ->dsp,
 							   nodeJ->dofX->dsp, nodeJ->dofZ->dsp};
@@ -63,7 +63,7 @@ void dashpotMaxwell2D::getResponse(const bool update)
 	}
 }
 
-void dashpotMaxwell2D::assembleNonlinearForceVector(vec &q)
+void DashpotMaxwell2D::assembleNonlinearForceVector(vec &q)
 {
 	int local[4] = {0,1,2,3};
 	int global[4] = {nodeI->dofX->eqnId, nodeI->dofZ->eqnId,

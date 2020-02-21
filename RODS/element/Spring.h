@@ -6,11 +6,11 @@
 
 using namespace arma;
 
-class spring : public Element1D
+class Spring : public Element1D
 {
 public:
-	spring(const int id, DOF *i, DOF *j, const double k);
-	~spring();
+	Spring(const int id, DOF *i, DOF *j, const double k);
+	~Spring();
 
 	void buildMatrix();
 	void assembleStiffnessMatrix(mat &K);

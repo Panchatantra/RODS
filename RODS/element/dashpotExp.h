@@ -6,11 +6,11 @@
 
 using namespace arma;
 
-class dashpotExp : public Element1D
+class DashpotExp : public Element1D
 {
 public:
-	dashpotExp(const int id, DOF *i, DOF *j, const double c, const double alpha);
-	~dashpotExp();
+	DashpotExp(const int id, DOF *i, DOF *j, const double c, const double alpha);
+	~DashpotExp();
 
 	void buildMatrix();
 	void assembleDampingMatrix(mat & C);

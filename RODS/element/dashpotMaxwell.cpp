@@ -1,18 +1,18 @@
-#include "dashpotMaxwell.h"
+#include "DashpotMaxwell.h"
 
 
-dashpotMaxwell::dashpotMaxwell(const int id, DOF *i, DOF *j, const double ks, const double c, const double alpha) :
+DashpotMaxwell::DashpotMaxwell(const int id, DOF *i, DOF *j, const double ks, const double c, const double alpha) :
 	Element1D(id, i, j), ks(ks), c(c), alpha(alpha),
 	u(0.0), f(0.0), ud(0.0), udp(0.0)
 {
 }
 
 
-dashpotMaxwell::~dashpotMaxwell()
+DashpotMaxwell::~DashpotMaxwell()
 {
 }
 
-void dashpotMaxwell::getResponse(const bool update)
+void DashpotMaxwell::getResponse(const bool update)
 {
 	u = dofJ->dsp - dofI->dsp;
 	double v = dofJ->vel - dofI->vel;
@@ -38,7 +38,7 @@ void dashpotMaxwell::getResponse(const bool update)
 	}
 }
 
-void dashpotMaxwell::assembleNonlinearForceVector(vec & q)
+void DashpotMaxwell::assembleNonlinearForceVector(vec & q)
 {
 	int i_local = 0;
 	int j_local = 1;

@@ -1,6 +1,6 @@
-#include "spring2D.h"
+#include "Spring2D.h"
 
-spring2D::spring2D(const int id, Node * nodeI, Node * nodeJ, double k, ELE::localAxis axis) :
+Spring2D::Spring2D(const int id, Node * nodeI, Node * nodeJ, double k, ELE::localAxis axis) :
 	Element2D(id, nodeI, nodeJ), k(k), ue(0.0), f(0.0)
 {
 	if (axis == ELE::U1)
@@ -16,16 +16,16 @@ spring2D::spring2D(const int id, Node * nodeI, Node * nodeJ, double k, ELE::loca
 }
 
 
-spring2D::~spring2D()
+Spring2D::~Spring2D()
 {
 }
 
-void spring2D::buildMatrix()
+void Spring2D::buildMatrix()
 {
 	K = T.t()*k*T;
 }
 
-void spring2D::getResponse()
+void Spring2D::getResponse()
 {
 	u = vec({ nodeI->dofX->dsp, nodeI->dofZ->dsp, nodeJ->dofX->dsp, nodeJ->dofZ->dsp });
 
@@ -41,7 +41,7 @@ void spring2D::getResponse()
 	deformation = &ue;
 }
 
-void spring2D::assembleStiffnessMatrix(mat &K)
+void Spring2D::assembleStiffnessMatrix(mat &K)
 {
 	int local[4] = { 0,1,2,3 };
 	int global[4] = { nodeI->dofX->eqnId, nodeI->dofZ->eqnId,
