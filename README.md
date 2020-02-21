@@ -1,12 +1,10 @@
 # RODS
-------
 ## About the name
 * Abbreviation for
 "**R**esponse solver for **O**scillated **D**ynamic **S**ystem"
 * Most of the elements are **rod**-like elements
 * Salute to the famous ancient Chinese calculator — counting **rods**
 
-------
 
 ## Element types
 ### 1D elements
@@ -44,7 +42,6 @@
 
 * ...
 
-------
 
 ## Nonlinear materials
 ### 1D materials
@@ -62,7 +59,6 @@
 * SectionFrame2D (Fiber-based)
 * ...
 
-------
 
 ## Solvers
 
@@ -81,17 +77,13 @@
         * State space solver 
 * Stochastic solver
 
-------
 
 ## Response Recorders
 
 * DOF Recorder
 * Element Recorder
 
-------
 
 ## Visualization
 
 * Gmsh
-
-------
