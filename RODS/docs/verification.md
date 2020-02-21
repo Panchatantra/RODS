@@ -7,8 +7,6 @@
 
 ![truss 2D](truss2D.png)
 
-![truss 2D section](truss2D_section.png)
-
 ### RODS代码
 
 ```c++
