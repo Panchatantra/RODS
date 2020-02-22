@@ -50,12 +50,12 @@ void example_sdof()
 	int nrd = 2;
 	int *dofIds = new int[nrd] { 0, 1 };
 	char dispOutput[] = "disp.dat";
-	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
+	ds->addDOFRecorder(0, dofIds, nrd, Response::DISP, dispOutput);
 
 	int nre = 2;
 	int *eleIds = new int[nre] { 0, 1 };
 	char eleOutput[] = "force.dat";
-	ds->addElementRecorder(0, eleIds, nre, FORCE, eleOutput);
+	ds->addElementRecorder(0, eleIds, nre, Response::FORCE, eleOutput);
 
 	int ts = 2;
 	ds->setDynamicSolver(StateSpace_NL);
@@ -107,7 +107,7 @@ void example_sdof_inerter_system()
 	int nrd = 1;
 	int *dofIds = new int[nrd] { 2 };
 	char dispOutput[] = "disp0.dat";
-	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
+	ds->addDOFRecorder(0, dofIds, nrd, Response::DISP, dispOutput);
 
 	int ts = 1;
 	ds->setDynamicSolver(StateSpace_NL);
@@ -160,12 +160,12 @@ void example_sdof_bl()
 	int nrd = 2;
 	int *dofIds = new int[nrd] { 0, 1 };
 	char dispOutput[] = "disp.dat";
-	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
+	ds->addDOFRecorder(0, dofIds, nrd, Response::DISP, dispOutput);
 
 	int nre = 2;
 	int *eleIds = new int[nre] { 0, 1 };
 	char eleOutput[] = "force.dat";
-	ds->addElementRecorder(0, eleIds, nre, FORCE, eleOutput);
+	ds->addElementRecorder(0, eleIds, nre, Response::FORCE, eleOutput);
 
 	int ts = 2;
 	ds->setDynamicSolver(StateSpace_NL);
@@ -498,12 +498,12 @@ void example_frame()
 		ds->Nodes.at(4)->dofX->id
 	};
 	char dispOutput[] = "data/disp_frame_damped.dat";
-	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
+	ds->addDOFRecorder(0, dofIds, nrd, Response::DISP, dispOutput);
 
 	int nre = 1;
 	int *eleIds = new int[nre] { 102 };
 	char eleOutput[] = "data/damper.dat";
-	ds->addElementRecorder(0, eleIds, nre, ALL, eleOutput);
+	ds->addElementRecorder(0, eleIds, nre, Response::ALL, eleOutput);
 
 	int eqId = 1;
 	double dt = 0.005;
@@ -754,7 +754,7 @@ void example_nonlinear_truss()
 	int nre = 1;
 	int *eleIds = new int[nre] { 1 };
 	char eleOutput[] = "data/truss.dat";
-	ds->addElementRecorder(1, eleIds, nre, ALL, eleOutput);
+	ds->addElementRecorder(1, eleIds, nre, Response::ALL, eleOutput);
 
 	ds->solveNonlinearStaticResponse(10);
 
@@ -843,12 +843,12 @@ void example_nonlinear_cantilever()
 		ds->Nodes.at(4)->dofX->id
 	};
 	char dispOutput[] = "data/disp_cantilever.dat";
-	ds->addDofRecorder(1, dofIds, nrd, DISP, dispOutput);
+	ds->addDOFRecorder(1, dofIds, nrd, Response::DISP, dispOutput);
 
 	int nre = 1;
 	int *eleIds = new int[nre] { 1 };
 	char eleOutput[] = "data/cantilever.dat";
-	ds->addElementRecorder(1, eleIds, nre, ALL, eleOutput);
+	ds->addElementRecorder(1, eleIds, nre, Response::ALL, eleOutput);
 
 	ds->solveNonlinearStaticResponse(10);
 	ds->setLoadConst();

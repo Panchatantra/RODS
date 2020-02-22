@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The Maxwell dashpot in X direction.
+ */
 class DashpotMaxwell : public Element1D
 {
 public:

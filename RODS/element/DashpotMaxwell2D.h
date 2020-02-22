@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The Maxwell dashpot in X-Z plane.
+ */
 class DashpotMaxwell2D : public Element2D
 {
 public:

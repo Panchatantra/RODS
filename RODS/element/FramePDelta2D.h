@@ -6,6 +6,9 @@
 
 using namespace std;
 
+/**
+ * @brief      The nonlinear frame2D element including P-Δ effect.
+ */
 class FramePDelta2D :
 	public Element2D
 {

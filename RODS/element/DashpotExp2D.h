@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The exponential nonlinear dashpot in X-Z plane.
+ */
 class DashpotExp2D : public Element2D
 {
 public:

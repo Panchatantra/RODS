@@ -8,6 +8,9 @@ namespace MAT_STBL {
 	};
 }
 
+/**
+ * @brief      The bilinear steel material.
+ */
 class SteelBilinear :
 	public Material1D
 {

@@ -158,10 +158,10 @@
     <ClCompile Include="material\SteelBilinear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Timeseries.cpp">
+    <ClCompile Include="material\Elastic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="material\Elastic.cpp">
+    <ClCompile Include="Wave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -319,7 +319,7 @@
     <ClInclude Include="material\SteelBilinear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Timeseries.h">
+    <ClInclude Include="Wave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

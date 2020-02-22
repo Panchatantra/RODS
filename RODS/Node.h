@@ -3,6 +3,9 @@
 #include "Basis.h"
 #include "DOF.h"
 
+/**
+ * @brief      The node.
+ */
 class Node : public Basis
 {
 public:

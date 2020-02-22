@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The exponential nonlinear dashpot in X direction.
+ */
 class DashpotExp : public Element1D
 {
 public:

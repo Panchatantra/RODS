@@ -2,6 +2,9 @@
 
 #include "Element2D.h"
 
+/**
+ * @brief      The elastic frame element in X-Z plane.
+ */
 class FrameElastic2D :
 	public Element2D
 {

@@ -7,18 +7,27 @@ using namespace std;
 
 constexpr bool FIXED = true;
 
-/// Direction of DOF in the global coordinate
-enum class Direction {
-	X, 		///< Direction X
-	Y, 		///< Direction Y
-	Z, 		///< Direction Z
-	RX, 	///< Direction RX
-	RY, 	///< Direction RY
-	RZ 		///< Direction RZ
+/**
+ * The RODS namespace
+ */
+namespace RODS
+{
+	/// Direction of DOF in the global coordinate
+	enum class Direction {
+		X, 		///< Direction X
+		Y, 		///< Direction Y
+		Z, 		///< Direction Z
+		RX, 	///< Direction RX
+		RY, 	///< Direction RY
+		RZ 		///< Direction RZ
 	};
+}
+
+using namespace RODS;
 
 /**
- * @brief      The Degree-Of-Freedom Class.
+ * @brief      The Degree-Of-Freedom.
+ * @details    DOF is the basic unit for analysis in RODS.
  */
 class DOF : public Basis
 {

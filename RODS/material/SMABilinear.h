@@ -8,7 +8,9 @@ namespace MAT_SMABL {
 	};
 }
 
-
+/**
+ * @brief      The bilinear SMA material.
+ */
 class SMABilinear :
 	public Material1D
 {

@@ -30,7 +30,7 @@
 #include "element/Truss2D.h"
 #include "element/Frame2D.h"
 #include "element/FramePDelta2D.h"
-#include "TimeSeries.h"
+#include "Wave.h"
 #include "recorder/Recorder.h"
 #include "recorder/DOFRecorder.h"
 #include "recorder/ElementRecorder.h"
@@ -52,7 +52,7 @@ enum dsolver
 };
 
 /**
- * @brief      The Dynamic System Class.
+ * @brief      The dynamic system.
  */
 class DynamicSystem : public Basis
 {
@@ -328,8 +328,17 @@ public:
 	 * @param[in]  n      The n
 	 */
 	void addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta = 0.5, const double n=20);
-	void addDashpot(Dashpot *d);
+
+	/**
+	 * @brief      Adds a dashpot.
+	 *
+	 * @param[in]  id    The identifier
+	 * @param[in]  ni    The identifier of Node i
+	 * @param[in]  nj    The identifier of Node j
+	 * @param[in]  c     The damping coefficient
+	 */
 	void addDashpot(const int id, const int ni, const int nj, const double c);
+
 	void addDashpotExp(DashpotExp *d);
 	void addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha = 0.1);
 	void addDashpotMaxwell(DashpotMaxwell *d);
@@ -367,28 +376,65 @@ public:
 						const int nodeP, const int nodeQ,
 						const double E, const double nu, const double t);
 
+	/**
+	 * @brief      Adds a nonlinear Truss2D element.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  ni     The identifier of Node i
+	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  secId  The identifier of SectionTruss
+	 */
 	void addTruss2D(const int id, const int ni, const int nj, const int secId);
 	void addFrame2D(const int id, const int ni, const int nj, const int secId, const int nIntP=5);
 	void addFramePDelta2D(const int id, const int ni, const int nj, const int secId, const int nIntP=5);
 
-	void addTimeSeries(TimeSeries *ts);
+	void addTimeSeries(Wave *ts);
 	void addTimeSeries(const int id, const double dt, const vec &s);
 	void addTimeSeries(const int id, const double dt, char * fileName);
 
-	void addDofRecorder(DOFRecorder *dr);
-	void addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName);
-	void addElementRecorder(ElementRecorder *er);
-	void addElementRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
-	void addSpringRecorder(const int id, int *eleIds, const int n, response rtype, char *  fileName);
-	void addDashpotRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
-	void addInerterRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
+	/**
+	 * @brief      Adds a DOF Recorder.
+	 *
+	 * @param[in]  id        The identifier
+	 * @param      dofIds    The DOF identifiers
+	 * @param[in]  n         The number of DOFs
+	 * @param[in]  rtype     The Response type
+	 * @param      fileName  The record file name
+	 */
+	void addDOFRecorder(const int id, int *dofIds, const int n, Response rtype, char * fileName);
 
+	/**
+	 * @brief      Adds a Element Recorder.
+	 *
+	 * @param[in]  id        The identifier
+	 * @param      dofIds    The Element identifiers
+	 * @param[in]  n         The number of Elements
+	 * @param[in]  rtype     The Response type
+	 * @param      fileName  The record file name
+	 */
+	void addElementRecorder(const int id, int *eleIds, const int n, Response rtype, char * fileName);
+
+	/**
+	 * @brief      Sets the frequencies of Rayleigh damping.
+	 *
+	 * @param[in]  omg1  The first circular frequency for Rayleigh damping
+	 * @param[in]  omg2  The second circular frequency for Rayleigh damping
+	 */
 	void setRayleighDamping(const double omg1, const double omg2);
+
+	/**
+	 * @brief      Actives Ground Motion
+	 *
+	 * @param[in]  dir        The Direction of Ground Motion
+	 * @param[in]  waveId     The wave identifier
+	 * @param[in]  waveScale  The wave scale factor
+	 */
 	void activeGroundMotion(Direction dir, const int waveId, const double waveScale);
+
 	void buildDofEqnMap();
 
 	/**
-	 * @brief      Assembles the system matrices
+	 * @brief      Assembles the system matrices and applies restraints and static loads
 	 * @note       This function must be called before analysis.
 	 */
 	void assembleMatrix();
@@ -602,7 +648,7 @@ public:
 	std::map<int, SectionTruss *> SectionTrusss; ///< SectionTrusss in the system
 	std::map<int, SectionFrame2D *> SectionFrame2Ds; ///< SectionFrame2Ds in the system
 
-	std::map<int, TimeSeries *> Waves; ///< Waves in the system
+	std::map<int, Wave *> Waves; ///< Waves in the system
 	std::map<int, Load *> Loads; ///< Loads in the system
 	std::map<int, Recorder *> DOFRecorders; ///< DOFRecorders in the system
 	std::map<int, Recorder *> ElementRecorders; ///< ElementRecorders in the system

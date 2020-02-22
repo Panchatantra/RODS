@@ -2,6 +2,10 @@
 
 #include "Element2D.h"
 
+/**
+ * @brief      The elastic beam element in X-Z plane.
+ * @note       This element does not have an axial deformation, and thus can not be used in practice.
+ */
 class BeamElastic :
 	public Element2D
 {

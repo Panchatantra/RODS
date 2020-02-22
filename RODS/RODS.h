@@ -10,20 +10,20 @@
 #endif
 #endif
 
-namespace RODS {
-	constexpr int X = 0;
-	constexpr int Y = 1;
-	constexpr int Z = 2;
-	constexpr int RX = 3;
-	constexpr int RY = 4;
-	constexpr int RZ = 5;
-	constexpr int DISP = 0;
-	constexpr int VEL = 1;
-	constexpr int ACC = 2;
-	constexpr int FORCE = 3;
-	constexpr int DEFORM = 4;
-	constexpr int ALL = 5;
-}
+//namespace RODS {
+//	constexpr int X = 0;
+//	constexpr int Y = 1;
+//	constexpr int Z = 2;
+//	constexpr int RX = 3;
+//	constexpr int RY = 4;
+//	constexpr int RZ = 5;
+//	constexpr int DISP = 0;
+//	constexpr int VEL = 1;
+//	constexpr int ACC = 2;
+//	constexpr int FORCE = 3;
+//	constexpr int DEFORM = 4;
+//	constexpr int ALL = 5;
+//}
 
 extern "C" {
 	DLL_API void clear();

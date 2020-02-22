@@ -2,6 +2,9 @@
 #include "Element.h"
 #include "Node.h"
 
+/**
+ * @brief      The base class of element in X-Z direction.
+ */
 class Element2D :
 	public Element
 {

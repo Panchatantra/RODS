@@ -352,7 +352,7 @@
     <ClCompile Include="section\Section.cpp" />
     <ClCompile Include="section\SectionFrame2D.cpp" />
     <ClCompile Include="section\SectionTruss.cpp" />
-    <ClCompile Include="Timeseries.cpp" />
+    <ClCompile Include="Wave.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basis.h" />
@@ -406,7 +406,7 @@
     <ClInclude Include="section\Section.h" />
     <ClInclude Include="section\SectionFrame2D.h" />
     <ClInclude Include="section\SectionTruss.h" />
-    <ClInclude Include="Timeseries.h" />
+    <ClInclude Include="Wave.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

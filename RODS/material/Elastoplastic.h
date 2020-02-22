@@ -8,6 +8,9 @@ namespace MAT_EP {
 	};
 }
 
+/**
+ * @brief      The elastoplastic material.
+ */
 class Elastoplastic :
 	public Material1D
 {

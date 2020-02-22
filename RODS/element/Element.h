@@ -11,6 +11,9 @@ namespace ELE {
 	};
 };
 
+/**
+ * @brief      The base class of element.
+ */
 class Element : public Basis
 {
 public:

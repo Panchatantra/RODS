@@ -1,6 +1,9 @@
 #pragma once
 #include "Basis.h"
 
+/**
+ * @brief      The basic class of material.
+ */
 class Material : public Basis
 {
 public:

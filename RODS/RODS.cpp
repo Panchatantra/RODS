@@ -62,12 +62,12 @@ DLL_API size_t solve_eigen()
 }
 
 DLL_API size_t add_dof_recorder(const int id, int *dofIds, const int n, const int rtype, char * fileName) {
-	ds->addDofRecorder(id, dofIds, n, response(rtype), fileName);
+	ds->addDOFRecorder(id, dofIds, n, Response(rtype), fileName);
 	return ds->DOFRecorders.size();
 }
 
 DLL_API size_t add_ele_recorder(const int id, int *eleIds, const int n, const int rtype, char * fileName) {
-	ds->addElementRecorder(id, eleIds, n, response(rtype), fileName);
+	ds->addElementRecorder(id, eleIds, n, Response(rtype), fileName);
 	return ds->ElementRecorders.size();
 }
 

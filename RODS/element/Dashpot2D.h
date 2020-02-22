@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The linear dashpot in X-Z plane.
+ */
 class Dashpot2D : public Element2D
 {
 public:

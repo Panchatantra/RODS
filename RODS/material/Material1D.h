@@ -2,6 +2,9 @@
 
 #include "Material.h"
 
+/**
+ * @brief      The basic class of 1D material.
+ */
 class Material1D :
 	public Material
 {

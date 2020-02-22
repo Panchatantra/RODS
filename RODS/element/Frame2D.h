@@ -6,6 +6,9 @@
 
 using namespace std;
 
+/**
+ * @brief      The nonlinear frame element in X-Z plane.
+ */
 class Frame2D :
 	public Element2D
 {

@@ -452,21 +452,15 @@ void DynamicSystem::addSpringBoucWen(const int id, const int ni, const int nj, c
 	}
 }
 
-void DynamicSystem::addDashpot(Dashpot * d)
-{
-	if (addElement(d))
-	{
-		Dashpots[d->id] = d;
-		linearDampingElements[d->id] = d;
-	}
-}
-
 void DynamicSystem::addDashpot(const int id, const int ni, const int nj, const double c)
 {
-	DOF *i = DOFs.at(ni);
-	DOF *j = DOFs.at(nj);
-	Dashpot *d = new Dashpot(id, i, j, c);
-	addDashpot(d);
+	if ( checkDuplicateElement(id) )
+	{
+		Dashpot *d = new Dashpot(id, DOFs.at(ni), DOFs.at(nj), c);
+		Elements[id] = d;
+		Dashpots[id] = d;
+		linearDampingElements[id] = d;
+	}
 }
 
 void DynamicSystem::addDashpotExp(DashpotExp * d)
@@ -480,9 +474,7 @@ void DynamicSystem::addDashpotExp(DashpotExp * d)
 
 void DynamicSystem::addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha)
 {
-	DOF *i = DOFs.at(ni);
-	DOF *j = DOFs.at(nj);
-	DashpotExp *d = new DashpotExp(id, i, j, c, alpha);
+	DashpotExp *d = new DashpotExp(id, DOFs.at(ni), DOFs.at(nj), c, alpha);
 	addDashpotExp(d);
 }
 
@@ -497,9 +489,7 @@ void DynamicSystem::addDashpotMaxwell(DashpotMaxwell * d)
 
 void DynamicSystem::addDashpotMaxwell(const int id, const int ni, const int nj, const double k, const double c, const double alpha)
 {
-	DOF *i = DOFs.at(ni);
-	DOF *j = DOFs.at(nj);
-	DashpotMaxwell *d = new DashpotMaxwell(id, i, j, c, alpha);
+	DashpotMaxwell *d = new DashpotMaxwell(id, DOFs.at(ni), DOFs.at(nj), c, alpha);
 	addDashpotMaxwell(d);
 }
 
@@ -514,9 +504,7 @@ void DynamicSystem::addInerter(Inerter * in)
 
 void DynamicSystem::addInerter(const int id, const int ni, const int nj, const double m)
 {
-	DOF *i = DOFs.at(ni);
-	DOF *j = DOFs.at(nj);
-	Inerter *in = new Inerter(id, i, j, m);
+	Inerter *in = new Inerter(id, DOFs.at(ni), DOFs.at(nj), m);
 	addInerter(in);
 }
 
@@ -531,9 +519,7 @@ void DynamicSystem::addSlider(Slider * s)
 
 void DynamicSystem::addSlider(const int id, const int ni, const int nj, const double muN)
 {
-	DOF *i = DOFs.at(ni);
-	DOF *j = DOFs.at(nj);
-	Slider *s = new Slider(id, i, j, muN);
+	Slider *s = new Slider(id, DOFs.at(ni), DOFs.at(nj), muN);
 	addSlider(s);
 }
 
@@ -550,10 +536,7 @@ void DynamicSystem::addSPIS2(SPIS2 * s)
 
 void DynamicSystem::addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k)
 {
-	DOF *i = DOFs.at(ni);
-	DOF *j = DOFs.at(nj);
-	DOF *in = DOFs.at(nin);
-	SPIS2 *s = new SPIS2(id, i, j, in, m, c, k);
+	SPIS2 *s = new SPIS2(id, DOFs.at(ni), DOFs.at(nj), DOFs.at(nin), m, c, k);
 	addSPIS2(s);
 }
 
@@ -568,9 +551,7 @@ void DynamicSystem::addTVMD(TVMD *d)
 
 void DynamicSystem::addTVMD(const int id, const int ni, const int nj, const double m, const double c, const double k)
 {
-	DOF *i = DOFs.at(ni);
-	DOF *j = DOFs.at(nj);
-	TVMD *d = new TVMD(id, i, j, m, c, k);
+	TVMD *d = new TVMD(id, DOFs.at(ni), DOFs.at(nj), m, c, k);
 	addTVMD(d);
 }
 
@@ -779,30 +760,31 @@ void DynamicSystem::addFramePDelta2D(const int id, const int ni, const int nj, c
 	}
 }
 
-void DynamicSystem::addTimeSeries(TimeSeries * ts)
+void DynamicSystem::addTimeSeries(Wave * ts)
 {
 	Waves[ts->id] = ts;
 }
 
 void DynamicSystem::addTimeSeries(const int id, const double dt, const vec &s)
 {
-	TimeSeries *ts = new TimeSeries(id, dt, s);
+	Wave *ts = new Wave(id, dt, s);
 	addTimeSeries(ts);
 }
 
 void DynamicSystem::addTimeSeries(const int id, const double dt, char* fileName)
 {
-	TimeSeries *ts = new TimeSeries(id, dt, fileName);
+	Wave *ts = new Wave(id, dt, fileName);
 	addTimeSeries(ts);
 }
 
-void DynamicSystem::addDofRecorder(DOFRecorder * dr)
+void DynamicSystem::addDOFRecorder(const int id, int *dofIds, const int n, Response rtype, char * fileName)
 {
-	DOFRecorders[dr->id] = dr;
-}
+	if (DOFRecorders.count(id) > 0)
+	{
+		cout << "DOFRecorder ID: " << id << " already exists! The recorder will not be added." << endl;
+		return;
+	}
 
-void DynamicSystem::addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName)
-{
 	std::vector<DOF *> rdofs(n);
 
 	for (int i = 0; i < n; i++)
@@ -811,16 +793,17 @@ void DynamicSystem::addDofRecorder(const int id, int *dofIds, const int n, respo
 	}
 
 	DOFRecorder *dr = new DOFRecorder(id, rdofs, rtype, fileName);
-	addDofRecorder(dr);
+	DOFRecorders[dr->id] = dr;
 }
 
-void DynamicSystem::addElementRecorder(ElementRecorder * er)
+void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, Response rtype, char * fileName)
 {
-	ElementRecorders[er->id] = er;
-}
+	if (ElementRecorders.count(id) > 0)
+	{
+		cout << "ElementRecorder ID: " << id << " already exists! The recorder will not be added." << endl;
+		return;
+	}
 
-void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
-{
 	std::vector<Element *> reles(n);
 
 	for (int i = 0; i < n; i++)
@@ -829,46 +812,7 @@ void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, 
 	}
 
 	ElementRecorder *er = new ElementRecorder(id, reles, rtype, fileName);
-	addElementRecorder(er);
-}
-
-void DynamicSystem::addSpringRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
-{
-	std::vector<Element *> reles(n);
-
-	for (int i = 0; i < n; i++)
-	{
-		reles[i] = Springs.at(eleIds[i]);
-	}
-
-	ElementRecorder *er = new ElementRecorder(id, reles, rtype, fileName);
-	addElementRecorder(er);
-}
-
-void DynamicSystem::addDashpotRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
-{
-	std::vector<Element *> reles(n);
-
-	for (int i = 0; i < n; i++)
-	{
-		reles[i] = Dashpots.at(eleIds[i]);
-	}
-
-	ElementRecorder *er = new ElementRecorder(id, reles, rtype, fileName);
-	addElementRecorder(er);
-}
-
-void DynamicSystem::addInerterRecorder(const int id, int * eleIds, const int n, response rtype, char * fileName)
-{
-	std::vector<Element *> reles(n);
-
-	for (int i = 0; i < n; i++)
-	{
-		reles[i] = Inerters.at(eleIds[i]);
-	}
-
-	ElementRecorder *er = new ElementRecorder(id, reles, rtype, fileName);
-	addElementRecorder(er);
+	ElementRecorders[er->id] = er;
 }
 
 void DynamicSystem::setRayleighDamping(const double omg1, const double omg2)

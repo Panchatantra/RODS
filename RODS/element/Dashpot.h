@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The linear dashpot in X direction.
+ */
 class Dashpot : public Element1D
 {
 public:

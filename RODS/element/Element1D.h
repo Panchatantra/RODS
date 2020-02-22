@@ -3,6 +3,9 @@
 #include "Element.h"
 #include "DOF.h"
 
+/**
+ * @brief      The base class of element in X direction.
+ */
 class Element1D :
 	public Element
 {

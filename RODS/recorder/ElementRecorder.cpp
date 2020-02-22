@@ -1,9 +1,10 @@
 #include "ElementRecorder.h"
+#include "RODS.h"
 
-ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, response rtype, char * fileName):
+ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, Response rtype, char * fileName):
 	Recorder(id, rtype, fileName), eles(eles)
 {
-	if (rtype == ALL)
+	if (rtype == Response::ALL)
 	{
 		n = 2*eles.size()*eles[0]->nv;
 	}
@@ -28,21 +29,21 @@ void ElementRecorder::record(const int cstep, const double ctime)
 		Element *ele = eles[i];
 		switch (rtype)
 		{
-		case FORCE:
+		case Response::FORCE:
 			for (int j = 0; j < nv; j++)
 			{
 				Res(cstep, k) = ele->force[j];
 				k++;
 			}
 			break;
-		case DEF:
+		case Response::DEF:
 			for (int j = 0; j < nv; j++)
 			{
 				Res(cstep, k) = ele->deformation[j];
 				k++;
 			}
 			break;
-		case ALL:
+		case Response::ALL:
 			for (int j = 0; j < nv; j++)
 			{
 				Res(cstep, k) = ele->deformation[j];

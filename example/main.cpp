@@ -84,7 +84,7 @@ void example_sdof()
 //	int nrd = 1;
 //	int *dofIds = new int[nrd] { 2 };
 //	char dispOutput[] = "disp0.dat";
-//	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
+//	ds->addDOFRecorder(0, dofIds, nrd, DISP, dispOutput);
 //
 //	int ts = 1;
 //	ds->setDynamicSolver(StateSpace);
@@ -137,7 +137,7 @@ void example_sdof()
 //	int nrd = 2;
 //	int *dofIds = new int[nrd] { 0, 1 };
 //	char dispOutput[] = "disp.dat";
-//	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
+//	ds->addDOFRecorder(0, dofIds, nrd, DISP, dispOutput);
 //
 //	int nre = 2;
 //	int *eleIds = new int[nre] { 0, 1 };
@@ -477,7 +477,7 @@ void example_sdof()
 //		ds->Nodes.at(4)->dofX->id
 //	};
 //	char dispOutput[] = "example/disp_frame_damped.dat";
-//	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
+//	ds->addDOFRecorder(0, dofIds, nrd, DISP, dispOutput);
 //
 //	int nre = 1;
 //	int *eleIds = new int[nre] { 102 };

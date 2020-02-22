@@ -9,7 +9,7 @@ namespace MAT_CTL {
 }
 
 /**
- * @brief      The trilinear concrete material class.
+ * @brief      The trilinear concrete material.
  */
 class ConcreteTrilinear :
 	public Material1D
