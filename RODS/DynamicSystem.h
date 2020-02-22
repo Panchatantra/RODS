@@ -32,8 +32,8 @@
 #include "element/FramePDelta2D.h"
 #include "TimeSeries.h"
 #include "recorder/Recorder.h"
-#include "recorder/dofRecorder.h"
-#include "recorder/elementRecorder.h"
+#include "recorder/DOFRecorder.h"
+#include "recorder/ElementRecorder.h"
 #include "material/Material.h"
 #include "material/Material1D.h"
 #include "section/Section.h"
@@ -84,11 +84,27 @@ public:
 	 * @param[in]  z        The Z coordinate
 	 * @param[in]  dofXId   The DOF X identifier
 	 * @param[in]  dofZId   The DOF Z identifier
-	 * @param[in]  dofRYId  The DOF RY identifier
+	 * @param[in]  dofRYId  The DOF RY identifier, set a negative integer to deactive the rotational DOF
 	 */
 	void addNode(const int id, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId);
 
-	void addNode(const int id, const double x, const double y, const double z);
+	/**
+	 * @brief      Adds a 3D Node into the system.
+	 *
+	 * @param[in]  id       The identifier
+	 * @param[in]  x        The X coordinate
+	 * @param[in]  y        The Y coordinate
+	 * @param[in]  z        The Z coordinate
+	 * @param[in]  dofXId   The DOF X identifier
+	 * @param[in]  dofYId   The DOF Y identifier
+	 * @param[in]  dofZId   The DOF Z identifier
+	 * @param[in]  dofRXId  The DOF RX identifier, set a negative integer to deactive the rotational DOF
+	 * @param[in]  dofRYId  The DOF RY identifier, set a negative integer to deactive the rotational DOF
+	 * @param[in]  dofRZId  The DOF RZ identifier, set a negative integer to deactive the rotational DOF
+	 */
+	void addNode(const int id, const double x, const double y, const double z,
+				const int dofXId,  const int dofYId,  const int dofZId,
+				const int dofRXId, const int dofRYId, const int dofRZId);
 
 	void addNodeWithDof(const int id, const double x, const int dofId);
 
@@ -137,36 +153,180 @@ public:
 	void exportGmsh(char * fileName);
 
     void addDof(DOF *d);
+
+    /**
+     * @brief      Adds a DOF into the system.
+     *
+     * @param[in]  id     The identifier
+     * @param[in]  m      The mass of the DOF
+     * @param[in]  fixed  Indicates if the DOF is fixed
+     */
 	void addDof(const int id, const double m, const bool fixed=false);
+
+	/**
+	 * @brief      Adds a DOF into the system.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  dir    The Direction
+	 * @param[in]  m      The mass of the DOF
+	 * @param[in]  fixed  Indicates if the DOF is fixed
+	 */
 	void addDof(const int id, Direction dir, const double m, const bool fixed=false);
 
+	/**
+	 * @brief      Sets the mass of a DOF.
+	 *
+	 * @param[in]  id    The identifier of the DOF
+	 * @param[in]  m     The mass
+	 */
 	void setMass(const int id, const double m);
+
+	/**
+	 * @brief      Sets the mass of all DOFs of a node.
+	 *
+	 * @param[in]  id    The identifier of the Node
+	 * @param[in]  m     The mass
+	 */
 	void setNodeMass(const int id, const double m);
+
+	/**
+	 * @brief      Sets the mass and moment of inertia of all DOFs of a node.
+	 *
+	 * @param[in]  id    The identifier of the Node
+	 * @param[in]  m     The mass
+	 * @param[in]  J     The moment of inertia
+	 */
+	void setNodeMass(const int id, const double m, const double J);
 
 	void mapDofNode(DOF *d, Node *nd);
 	void mapDofNode(const int id_d, const int id_nd);
 
-	bool addMaterial1D(Material1D *mt);
-	bool addMaterialElastic(const int id, const double E0);
-	bool addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha=0.02);
-	bool addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha=0.02, const double beta=0.5);
-	bool addMaterialConcreteTrilinear(const int id, const double E0, const double fc, const double epsilon_c,
-		const double sigma_cr, const double sigma_u, const double epsilon_u);
-	bool addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift);
+	bool checkDuplicateMaterial1D(const int matId);
+	void addMaterialElastic(const int id, const double E0);
 
-	bool addFiber(const int id, const int matId, const double A, const double y, const double z=0.0);
-	bool addSectionTruss(const int id, int *fiberIds, const int nFibers);
-	bool addSectionFrame2D(const int id, int *fiberIds, const int nFibers);
+	/**
+	 * @brief      Adds a elastoplastic material.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  E0     The initial tangent module
+	 * @param[in]  fy     The yield strength
+	 * @param[in]  alpha  The post-yield tangent module ratio
+	 */
+	void addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha=0.02);
+
+	/**
+	 * @brief      Adds a bilinear steel material.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  E0     The initial tangent module
+	 * @param[in]  fy     The yield strength
+	 * @param[in]  alpha  The post-yield tangent module ratio
+	 * @param[in]  beta   The recovery stress ratio
+	 */
+	void addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha=0.02, const double beta=0.5);
+
+	/**
+	 * @brief      Adds a trilinear concrete material.
+	 *
+	 * @param[in]  id         The identifier
+	 * @param[in]  E0         The initial tangent module
+	 * @param[in]  fc         The compressive strength
+	 * @param[in]  epsilon_c  The corresponding strain of compressive strength
+	 * @param[in]  sigma_cr   The compressive crack stress
+	 * @param[in]  sigma_u    The compressive crush stress
+	 * @param[in]  epsilon_u  The compressive crush strain
+	 */
+	void addMaterialConcreteTrilinear(const int id, const double E0, const double fc, const double epsilon_c,
+		const double sigma_cr, const double sigma_u, const double epsilon_u);
+
+	/**
+	 * @brief      Adds a bilinear SMA material.
+	 *
+	 * @param[in]  id           The identifier
+	 * @param[in]  E0           The initial tangent module
+	 * @param[in]  fy           The yield strength
+	 * @param[in]  alpha        The post-yield tangent module ratio
+	 * @param[in]  sigma_shift  The shift stress during unloading
+	 */
+	void addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift);
+
+	/**
+	 * @brief      Adds a fiber.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  matId  The material identifier
+	 * @param[in]  A      The area
+	 * @param[in]  y      The y coordinate
+	 * @param[in]  z      The z coordinate
+	 */
+	void addFiber(const int id, const int matId, const double A, const double y, const double z=0.0);
+
+	/**
+	 * @brief      Adds a fiber-based truss section.
+	 *
+	 * @param[in]  id        The identifier
+	 * @param      fiberIds  The fiber identifiers
+	 * @param[in]  nFibers   The number of fibers
+	 */
+	void addSectionTruss(const int id, int *fiberIds, const int nFibers);
+
+	/**
+	 * @brief      Adds a fiber-based frame section.
+	 *
+	 * @param[in]  id        The identifier
+	 * @param      fiberIds  The fiber identifiers
+	 * @param[in]  nFibers   The number of fibers
+	 */
+	void addSectionFrame2D(const int id, int *fiberIds, const int nFibers);
 
 	bool addElement(Element *e);
 
-	void addSpring(Spring *s);
+	bool checkDuplicateElement(const int eleId);
+
+	/**
+	 * @brief      Adds a spring.
+	 *
+	 * @param[in]  id    The identifier
+	 * @param[in]  ni    The identifier of Node i
+	 * @param[in]  nj    The identifier of Node j
+	 * @param[in]  k     The stiffness
+	 */
 	void addSpring(const int id, const int ni, const int nj, const double k);
-	void addSpringBilinear(SpringBilinear *s);
+
+	/**
+	 * @brief      Adds a bilinear spring.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  ni     The identifier of Node i
+	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  k0     The initial stiffness
+	 * @param[in]  uy     The yield deformation
+	 * @param[in]  alpha  The post-yield stiffness ratio
+	 */
 	void addSpringBilinear(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
-	void addSpringNonlinear(SpringNonlinear *s);
+
+	/**
+	 * @brief      Adds a nonlinear spring related to a Material1D.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  ni     The identifier of Node i
+	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  matId  The Material1D identifier
+	 */
 	void addSpringNonlinear(const int id, const int ni, const int nj, const int matId);
-	void addSpringBoucWen(SpringBoucWen *s);
+
+	/**
+	 * @brief      Adds a Bouc-Wen spring.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  ni     The identifier of Node i
+	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  k0     The initial stiffness
+	 * @param[in]  uy     The yield deformation
+	 * @param[in]  alpha  The post-yield stiffness ratio
+	 * @param[in]  beta   The beta
+	 * @param[in]  n      The n
+	 */
 	void addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta = 0.5, const double n=20);
 	void addDashpot(Dashpot *d);
 	void addDashpot(const int id, const int ni, const int nj, const double c);
@@ -215,16 +375,16 @@ public:
 	void addTimeSeries(const int id, const double dt, const vec &s);
 	void addTimeSeries(const int id, const double dt, char * fileName);
 
-	void addDofRecorder(dofRecorder *dr);
+	void addDofRecorder(DOFRecorder *dr);
 	void addDofRecorder(const int id, int *dofIds, const int n, response rtype, char * fileName);
-	void addElementRecorder(elementRecorder *er);
+	void addElementRecorder(ElementRecorder *er);
 	void addElementRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 	void addSpringRecorder(const int id, int *eleIds, const int n, response rtype, char *  fileName);
 	void addDashpotRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 	void addInerterRecorder(const int id, int *eleIds, const int n, response rtype, char * fileName);
 
 	void setRayleighDamping(const double omg1, const double omg2);
-	void activeGroundMotion(Direction dir);
+	void activeGroundMotion(Direction dir, const int waveId, const double waveScale);
 	void buildDofEqnMap();
 
 	/**
@@ -274,25 +434,89 @@ public:
 	 */
 	void solveStochasticSeismicResponse(const double f_h=50.0, const int nf=10000, const char method='c');
 
+	/**
+	 * @brief      Sets the converge parameters.
+	 *
+	 * @param[in]  tol      ///< The tolerance for convergence check
+	 * @param[in]  maxIter  ///< The maximum iterations before converged
+	 */
+	void setConvergeParameter(const double tol, const int maxIter);
+
+	/**
+	 * @brief      Solves linear static response.
+	 */
 	void solveLinearStaticResponse();
+
+	/**
+	 * @brief      Solves nonlinear static response.
+	 *
+	 * @param[in]  nsub  The number of substeps
+	 * @note        The loaded time is 1.0
+	 */
 	void solveNonlinearStaticResponse(const int nsub=10);
-	void solveNonlinearStaticResponse(const double endTime, const int nsub=10);
+
+	/**
+	 * @brief      Solves nonlinear static response.
+	 *
+	 * @param[in]  loadedTime  The loaded time
+	 * @param[in]  nsub     The number of substeps
+	 */
+	void solveNonlinearStaticResponse(const double loadedTime, const int nsub=10);
+
+	/**
+	 * @brief      Sets the displacement control DOF and the corresponding load pattern.
+	 *
+	 * @param[in]  dofId   The DOF identifier
+	 * @param[in]  loadId  The load pattern identifier
+	 */
 	void setDispControlDof(const int dofId, const int loadId);
+
+	/**
+	 * @brief      Solves nonlinear static response using displacement control loading strategy.
+	 *
+	 * @param[in]  loadedTime  The loaded time
+	 * @param[in]  nsub        The number of substeps
+	 */
 	void solveNonlinearStaticResponseDispControl(const double loadedTime, const int nsub=10);
+
+	/**
+	 * @brief      Solves nonlinear static response using displacement control loading strategy.
+	 *
+	 * @param[in]  loadedTime  The loaded time
+	 * @param[in]  nsub        The number of substeps
+	 * @note       This function has a better converge performance than #solveNonlinearStaticResponseDispControl.
+	 */
 	void solveNonlinearStaticResponseDispControlDelta(const double loadedTime, const int nsub=10);
 
+	/**
+	 * @brief      Sets the dynamic solver.
+	 *
+	 * @param[in]  s     The solver
+	 */
 	void setDynamicSolver(dsolver s) { this->dynamicSolver = s; }
-	void solveTimeDomainSeismicResponse(const int tsId, const double s=1.0, const int nsub=1);
-	void solveTimeDomainSeismicResponseNMK(const int tsId, const double s=1.0, const int nsub=1);
-	void solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s=1.0, const int nsub=1, const double tol=1.0e-6, const int maxiter=20);
-	void solveTimeDomainSeismicResponseStateSpace(const int tsId, const double s=1.0, const int nsub=1);
-	void solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, const double s=1.0, const int nsub=1);
-	void solveTimeDomainSeismicResponseRK4(const int tsId, const double s = 1.0, const int nsub = 1);
+
+	/**
+	 * @brief      Solves seismic response.
+	 *
+	 * @param[in]  nsub  The number of substeps
+	 */
+	void solveSeismicResponse(const int nsub=1);
+	void solveSeismicResponseNewmark(const int nsub=1);
+	void solveSeismicResponseNewmarkNL(const int nsub=1);
+	void solveSeismicResponseStateSpace(const int nsub=1);
+	void solveSeismicResponseStateSpaceNL(const int nsub=1);
+	void solveSeismicResponseRK4(const int nsub=1);
+
+	void solveSeismicResponseNewmarkMD(const int nsub=1);
+	void solveSeismicResponseNewmarkNLMD(const int nsub=1);
+	void solveSeismicResponseStateSpaceMD(const int nsub=1);
+	void solveSeismicResponseStateSpaceNLMD(const int nsub=1);
+
 	void setDofResponse();
+	void setDofStaticResponse();
+
 	void getElementResponse();
 	void assembleNonlinearForceVector(const bool update=false);
-
-	//void solveNonlinearEquation();
 
 	/**
 	 * @brief      Initializes the recorders.
@@ -391,7 +615,9 @@ public:
 	mat Phi; 		///< The matrix for storing eigen vectors
 	vec omg; 		///< The natural circular frequencies
 	vec P; 			///< The natural periods
-	vec E; 			///< The ground motion reference vector
+	vec EX; 		///< The ground motion reference vector (X direction)
+	vec EY; 		///< The ground motion reference vector (Y direction)
+	vec EZ; 		///< The ground motion reference vector (Z direction)
 	vec Q; 			///< The static load vector
 	vec Q0; 		///< The constant static load vector
 	vec dsp;		///< The displacement vector
@@ -420,4 +646,16 @@ public:
 	int dispControlDOFId;		///< The identifier of displacement control DOF
 	int dispControlLoadId;		///< The identifier of load pattern for displacement control DOF
 	int dispControlEqn;			///< The equation number of displacement control DOF
+
+	int XSeismicWaveId;			///< The identifier of seismic wave in X direction
+	int YSeismicWaveId;			///< The identifier of seismic wave in Y direction
+	int ZSeismicWaveId;			///< The identifier of seismic wave in Z direction
+
+	double XSeismicWaveScale;	///< The scale factor of seismic wave in X direction
+	double YSeismicWaveScale;	///< The scale factor of seismic wave in Y direction
+	double ZSeismicWaveScale;	///< The scale factor of seismic wave in Z direction
+
+	int NumDynamicSubSteps;
+	double tol;  ///< The tolerance for convergence check
+	int maxIter; ///< The maximum iterations before converged
 };

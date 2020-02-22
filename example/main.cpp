@@ -88,7 +88,7 @@ void example_sdof()
 //
 //	int ts = 1;
 //	ds->setDynamicSolver(StateSpace);
-//	ds->solveTimeDomainSeismicResponse(ts, 1.0, 1);
+//	ds->solveSeismicResponse(ts, 1.0, 1);
 //
 //	plot(dispOutput, 2);
 //}
@@ -146,7 +146,7 @@ void example_sdof()
 //
 //	int ts = 2;
 //	ds->setDynamicSolver(StateSpace_NL);
-//	ds->solveTimeDomainSeismicResponse(ts, 1.0, 1);
+//	ds->solveSeismicResponse(ts, 1.0, 1);
 //
 //	system("python post.py");
 //}
@@ -207,7 +207,7 @@ void example_sdof()
 //	ds->addTimeSeries(2, 0.005, eq);
 //
 //	int ts = 2;
-//	ds->solveTimeDomainSeismicResponseStateSpace(ts, 1, 10);
+//	ds->solveSeismicResponseStateSpace(ts, 1, 10);
 //	rowvec tt = ds->Waves[ts]->time.t();
 //	tt.save("t.dat", csv_ascii);
 //	ds->u.save("dsp.dat", csv_ascii);
@@ -493,7 +493,7 @@ void example_sdof()
 //
 //	ds->setDynamicSolver(StateSpace_NL);
 //	ds->activeGroundMotion(X);
-//	ds->solveTimeDomainSeismicResponse(eqId, 700.0, 30);
+//	ds->solveSeismicResponse(eqId, 700.0, 30);
 //
 //	plot(dispOutput, 2);
 //

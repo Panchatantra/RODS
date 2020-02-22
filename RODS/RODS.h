@@ -28,7 +28,7 @@ namespace RODS {
 extern "C" {
 	DLL_API void clear();
 	DLL_API void set_damping_ratio(const double zeta);
-	DLL_API void active_ground_motion(const int dir);
+	DLL_API void active_ground_motion(const int dir, const int waveId, const double waveScale);
 	DLL_API void fix_dof(const int id);
 	DLL_API size_t add_dof(const int id, const double m);
 	DLL_API size_t add_dof_fixed(const int id, const double m);
@@ -40,6 +40,6 @@ extern "C" {
 	DLL_API size_t add_dof_recorder(const int id, int *dofIds, const int n, const int rtype, char * fileName);
 	DLL_API size_t add_ele_recorder(const int id, int *eleIds, const int n, const int rtype, char * fileName);
 	DLL_API size_t set_dynamic_solver(const int s);
-	DLL_API size_t solve_seismic_response(const int tsId, const double s = 1.0, const int nsub = 1);
+	DLL_API size_t solve_seismic_response(const int nsub = 1);
 	DLL_API void print_info();
 }

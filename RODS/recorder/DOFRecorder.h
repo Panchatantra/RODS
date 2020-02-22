@@ -3,14 +3,14 @@
 #include "Recorder.h"
 #include "DOF.h"
 
-class dofRecorder :
+class DOFRecorder :
 	public Recorder
 {
 public:
-	dofRecorder(const int id, std::vector<DOF *> dofs, response rtype, char * fileName);
-	~dofRecorder();
+	DOFRecorder(const int id, std::vector<DOF *> dofs, response rtype, char * fileName);
+	~DOFRecorder();
 
-	virtual void record(const int cstep, const double ctime);
+	void record(const int cstep, const double ctime) override;
 
 	std::vector<DOF *> dofs;
 };

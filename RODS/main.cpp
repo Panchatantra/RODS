@@ -29,7 +29,6 @@ void example_sdof()
 	ds->addDashpot(1, 0, 1, c);
 
 	ds->assembleMatrix();
-	ds->activeGroundMotion(Direction::X);
 
 	ds->solveEigen();
 	ds->P.print("Natural Periods:");
@@ -59,8 +58,9 @@ void example_sdof()
 	ds->addElementRecorder(0, eleIds, nre, FORCE, eleOutput);
 
 	int ts = 2;
-	ds->setDynamicSolver(StateSpace);
-	ds->solveTimeDomainSeismicResponse(ts, 1.0, 1);
+	ds->setDynamicSolver(StateSpace_NL);
+	ds->activeGroundMotion(Direction::X, ts, 700.0);
+	ds->solveSeismicResponse(30);
 	//system("python post.py");
 }
 
@@ -96,7 +96,6 @@ void example_sdof_inerter_system()
 	//ds->addTVMD(3, 1, 2, m_in, c_d, k_s);
 
 	ds->assembleMatrix();
-	ds->activeGroundMotion(Direction::X);
 
 	ds->solveEigen();
 	ds->P.print("Natural Periods:");
@@ -111,8 +110,9 @@ void example_sdof_inerter_system()
 	ds->addDofRecorder(0, dofIds, nrd, DISP, dispOutput);
 
 	int ts = 1;
-	ds->setDynamicSolver(StateSpace);
-	ds->solveTimeDomainSeismicResponse(ts, 1.0, 1);
+	ds->setDynamicSolver(StateSpace_NL);
+	ds->activeGroundMotion(Direction::X, ts, 700.0);
+	ds->solveSeismicResponse(30);
 
 	plot(dispOutput, 2);
 }
@@ -145,7 +145,6 @@ void example_sdof_bl()
 	//ds->addDashpotExp(1, 0, 1, c, 0.2);
 
 	ds->assembleMatrix();
-	ds->activeGroundMotion(Direction::X);
 	ds->solveEigen();
 
 	double dt = 0.01;
@@ -170,7 +169,8 @@ void example_sdof_bl()
 
 	int ts = 2;
 	ds->setDynamicSolver(StateSpace_NL);
-	ds->solveTimeDomainSeismicResponse(ts, 1.0, 1);
+	ds->activeGroundMotion(Direction::X, ts, 700.0);
+	ds->solveSeismicResponse(30);
 
 	system("python post.py");
 }
@@ -231,7 +231,9 @@ void example_shear_building()
 	ds->addTimeSeries(2, 0.005, eq);
 
 	int ts = 2;
-	ds->solveTimeDomainSeismicResponseStateSpace(ts, 1, 10);
+	ds->setDynamicSolver(StateSpace);
+	ds->activeGroundMotion(Direction::X, ts, 700.0);
+	ds->solveSeismicResponse(30);
 }
 
 void example_shear_building_spis2()
@@ -509,8 +511,8 @@ void example_frame()
 	ds->addTimeSeries(eqId, dt, eqFile);
 
 	ds->setDynamicSolver(StateSpace_NL);
-	ds->activeGroundMotion(Direction::X);
-	ds->solveTimeDomainSeismicResponse(eqId, 700.0, 30);
+	ds->activeGroundMotion(Direction::X, eqId, 700.0);
+	ds->solveSeismicResponse(30);
 }
 
 void example_cantilever()

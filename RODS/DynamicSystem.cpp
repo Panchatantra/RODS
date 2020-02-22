@@ -4,7 +4,7 @@
 #include <fstream>
 #include <vector>
 
-#include "material/elastic.h"
+#include "material/Elastic.h"
 #include "material/Elastoplastic.h"
 #include "material/SteelBilinear.h"
 #include "material/ConcreteTrilinear.h"
@@ -14,7 +14,10 @@ DynamicSystem::DynamicSystem(const double z) :
 	zeta(z), eqnCount(0), fixedDofCount(0), eigenVectorNormed(false),
 	dynamicSolver(StateSpace), dt(0.02), ctime(0.0), nsteps(0), cstep(0),
 	useRayleighDamping(true), RayleighOmg1(2 * PI / 0.3), RayleighOmg2(2 * PI / 0.1),
-	NumModesInherentDamping(-1)
+	NumModesInherentDamping(-1),
+	XSeismicWaveId(-1), YSeismicWaveId(-1), ZSeismicWaveId(-1),
+	XSeismicWaveScale(0.0), YSeismicWaveScale(0.0), ZSeismicWaveScale(0.0),
+	NumDynamicSubSteps(1), tol(1e-6), maxIter(20)
 {
 }
 
@@ -39,12 +42,6 @@ void DynamicSystem::addNode(const int id, const double x, const int dofId)
 	addNode(nd);
 }
 
-void DynamicSystem::addNode(const int id, const double x, const double y, const double z)
-{
-	Node *nd = new Node(id, x, y, z);
-	addNode(nd);
-}
-
 void DynamicSystem::addNode(const int id, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId)
 {
 	DOF *dx = DOFs.at(dofXId);
@@ -58,6 +55,23 @@ void DynamicSystem::addNode(const int id, const double x, const double z, const 
 	{
 		nd->setDof(DOFs.at(dofRYId));
 	}
+
+	addNode(nd);
+}
+
+void DynamicSystem::addNode(const int id, const double x, const double y, const double z,
+				const int dofXId,  const int dofYId,  const int dofZId,
+				const int dofRXId, const int dofRYId, const int dofRZId)
+{
+	Node *nd = new Node(id, x, y, z);
+
+	nd->setDof(DOFs.at(dofXId));
+	nd->setDof(DOFs.at(dofYId));
+	nd->setDof(DOFs.at(dofZId));
+
+	if (dofRXId >= 0) nd->setDof(DOFs.at(dofRXId));
+	if (dofRYId >= 0) nd->setDof(DOFs.at(dofRYId));
+	if (dofRZId >= 0) nd->setDof(DOFs.at(dofRZId));
 
 	addNode(nd);
 }
@@ -218,24 +232,30 @@ void DynamicSystem::addDof(const int id, Direction dir, const double m, const bo
 
 void DynamicSystem::setMass(const int id, const double m)
 {
-	DOFs.at(id)->mass = m;
+	DOFs.at(id)->setMass(m);
 }
 
 void DynamicSystem::setNodeMass(const int id, const double m)
 {
 	Node *nd = Nodes.at(id);
-	if (nd->isActivated(Direction::X))
-	{
-		nd->dofX->mass = m;
-	}
-	if (nd->isActivated(Direction::Z))
-	{
-		nd->dofZ->mass = m;
-	}
-	if (nd->isActivated(Direction::RY))
-	{
-		nd->dofRY->mass = m;
-	}
+	if (nd->isActivated(Direction::X))  nd->dofX->setMass(m);
+	if (nd->isActivated(Direction::Y))  nd->dofY->setMass(m);
+	if (nd->isActivated(Direction::Z))  nd->dofZ->setMass(m);
+	if (nd->isActivated(Direction::RX)) nd->dofRX->setMass(m);
+	if (nd->isActivated(Direction::RY)) nd->dofRY->setMass(m);
+	if (nd->isActivated(Direction::RZ)) nd->dofRZ->setMass(m);
+
+}
+
+void DynamicSystem::setNodeMass(const int id, const double m, const double J)
+{
+	Node *nd = Nodes.at(id);
+	if (nd->isActivated(Direction::X))  nd->dofX->setMass(m);
+	if (nd->isActivated(Direction::Y))  nd->dofY->setMass(m);
+	if (nd->isActivated(Direction::Z))  nd->dofZ->setMass(m);
+	if (nd->isActivated(Direction::RX)) nd->dofRX->setMass(J);
+	if (nd->isActivated(Direction::RY)) nd->dofRY->setMass(J);
+	if (nd->isActivated(Direction::RZ)) nd->dofRZ->setMass(J);
 }
 
 void DynamicSystem::mapDofNode(DOF * d, Node * nd)
@@ -252,66 +272,78 @@ void DynamicSystem::mapDofNode(const int id_d, const int id_nd)
 	dofMapNode[id_d] = id_nd;
 }
 
-bool DynamicSystem::addMaterial1D(Material1D * mt)
+bool DynamicSystem::checkDuplicateMaterial1D(const int matId)
 {
-	if (Material1Ds.count(mt->id) == 0)
+	if (Material1Ds.count(matId) == 0)
 	{
-		Material1Ds[mt->id] = mt;
 		return true;
 	}
 	else
 	{
-		cout << "Material1D ID: " << mt->id << " already exists! The material will not be added." << endl;
+		cout << "Material1D ID: " << matId << " already exists! The material will not be added." << endl;
 		return false;
 	}
 }
 
-bool DynamicSystem::addMaterialElastic(const int id, const double E0)
+void DynamicSystem::addMaterialElastic(const int id, const double E0)
 {
-	Material1D *mtrl = new elastic(id, E0);
-	return addMaterial1D(mtrl);
+	if ( checkDuplicateMaterial1D(id) )
+	{
+		Material1D *mt = new Elastic(id, E0);
+		Material1Ds[id] = mt;
+	}
 }
 
-bool DynamicSystem::addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha)
+void DynamicSystem::addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha)
 {
-	Material1D *mtrl = new Elastoplastic(id, E0, fy, alpha);
-	return addMaterial1D(mtrl);
+	if ( checkDuplicateMaterial1D(id) )
+	{
+		Material1D *mt = new Elastoplastic(id, E0, fy, alpha);
+		Material1Ds[id] = mt;
+	}
 }
 
-bool DynamicSystem::addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha, const double beta)
+void DynamicSystem::addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha, const double beta)
 {
-	Material1D *mtrl = new SteelBilinear(id, E0, fy, alpha, beta);
-	return addMaterial1D(mtrl);
+	if ( checkDuplicateMaterial1D(id) )
+	{
+		Material1D *mt = new SteelBilinear(id, E0, fy, alpha, beta);
+		Material1Ds[id] = mt;
+	}
 }
 
-bool DynamicSystem::addMaterialConcreteTrilinear(const int id, const double E0, const double fc, const double epsilon_c, const double sigma_cr, const double sigma_u, const double epsilon_u)
+void DynamicSystem::addMaterialConcreteTrilinear(const int id, const double E0, const double fc, const double epsilon_c, const double sigma_cr, const double sigma_u, const double epsilon_u)
 {
-	Material1D *mtrl = new ConcreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u);
-	return addMaterial1D(mtrl);
+	if ( checkDuplicateMaterial1D(id) )
+	{
+		Material1D *mt = new ConcreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u);
+		Material1Ds[id] = mt;
+	}
 }
 
-bool DynamicSystem::addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift)
+void DynamicSystem::addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift)
 {
-	Material1D *mtrl = new SMABilinear(id, E0, fy, alpha, sigma_shift);
-	return addMaterial1D(mtrl);
+	if ( checkDuplicateMaterial1D(id) )
+	{
+		Material1D *mt = new SMABilinear(id, E0, fy, alpha, sigma_shift);
+		Material1Ds[id] = mt;
+	}
 }
 
-bool DynamicSystem::addFiber(const int id, const int matId, const double A, const double y, const double z)
+void DynamicSystem::addFiber(const int id, const int matId, const double A, const double y, const double z)
 {
 	if (Fibers.count(id) == 0)
 	{
 		Fiber *fiber = new Fiber(id, Material1Ds.at(matId), A, y, z);
 		Fibers[id] = fiber;
-		return true;
 	}
 	else
 	{
 		cout << "Fiber ID: " << id << " already exists! The fiber will not be added." << endl;
-		return false;
 	}
 }
 
-bool DynamicSystem::addSectionTruss(const int id, int* fiberIds, const int nFibers)
+void DynamicSystem::addSectionTruss(const int id, int* fiberIds, const int nFibers)
 {
 	if (Sections.count(id) == 0)
 	{
@@ -323,16 +355,14 @@ bool DynamicSystem::addSectionTruss(const int id, int* fiberIds, const int nFibe
 		SectionTruss *sec = new SectionTruss(id, fibers);
 		Sections[id] = sec;
 		SectionTrusss[id] = sec;
-		return true;
 	}
 	else
 	{
 		cout << "Section ID: " << id << " already exists! The section will not be added." << endl;
-		return false;
 	}
 }
 
-bool DynamicSystem::addSectionFrame2D(const int id, int* fiberIds, const int nFibers)
+void DynamicSystem::addSectionFrame2D(const int id, int* fiberIds, const int nFibers)
 {
 	if (Sections.count(id) == 0)
 	{
@@ -344,12 +374,10 @@ bool DynamicSystem::addSectionFrame2D(const int id, int* fiberIds, const int nFi
 		SectionFrame2D *sec = new SectionFrame2D(id, fibers);
 		Sections[id] = sec;
 		SectionFrame2Ds[id] = sec;
-		return true;
 	}
 	else
 	{
 		cout << "Section ID: " << id << " already exists! The section will not be added." << endl;
-		return false;
 	}
 }
 
@@ -367,71 +395,61 @@ bool DynamicSystem::addElement(Element * e)
 	}
 }
 
-void DynamicSystem::addSpring(Spring *s)
+bool DynamicSystem::checkDuplicateElement(const int eleId)
 {
-	if (addElement(s)) {
-		Springs[s->id] = s;
-		linearElasticElements[s->id] = s;
+	if (Elements.count(eleId) == 0)
+	{
+		return true;
+	}
+	else
+	{
+		cout << "Element ID: " << eleId << " already exists! The element will not be added." << endl;
+		return false;
 	}
 }
 
 void DynamicSystem::addSpring(const int id, const int ni, const int nj, const double k)
 {
-	DOF *i = DOFs.at(ni);
-	DOF *j = DOFs.at(nj);
-	Spring *s = new Spring(id, i, j, k);
-	addSpring(s);
-}
-
-void DynamicSystem::addSpringBilinear(SpringBilinear * s)
-{
-	if (addElement(s))
+	if ( checkDuplicateElement(id) )
 	{
-		SpringBilinears[s->id] = s;
-		nonlinearTangentElements[s->id] = s;
+		Spring *s = new Spring(id, DOFs.at(ni), DOFs.at(nj), k);
+		Elements[id] = s;
+		Springs[id] = s;
+		linearElasticElements[id] = s;
 	}
 }
 
 void DynamicSystem::addSpringBilinear(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha)
 {
-	DOF *i = DOFs.at(ni);
-	DOF *j = DOFs.at(nj);
-	SpringBilinear *s = new SpringBilinear(id, i, j, k0, uy, alpha);
-	addSpringBilinear(s);
-}
-
-void DynamicSystem::addSpringNonlinear(SpringNonlinear * s)
-{
-	if (addElement(s))
+	if ( checkDuplicateElement(id) )
 	{
-		SpringNonlinears[s->id] = s;
-		nonlinearTangentElements[s->id] = s;
+		SpringBilinear *s = new SpringBilinear(id, DOFs.at(ni), DOFs.at(nj), k0, uy, alpha);
+		Elements[id] = s;
+		SpringBilinears[id] = s;
+		nonlinearTangentElements[id] = s;
 	}
 }
 
 void DynamicSystem::addSpringNonlinear(const int id, const int ni, const int nj, const int matId)
 {
-	DOF *i = DOFs.at(ni);
-	DOF *j = DOFs.at(nj);
-	SpringNonlinear *s = new SpringNonlinear(id, i, j, Material1Ds.at(matId));
-	addSpringNonlinear(s);
-}
-
-void DynamicSystem::addSpringBoucWen(SpringBoucWen * s)
-{
-	if (addElement(s))
+	if ( checkDuplicateElement(id) )
 	{
-		SpringBoucWens[s->id] = s;
-		nonlinearTangentElements[s->id] = s;
+		SpringNonlinear *s = new SpringNonlinear(id, DOFs.at(ni), DOFs.at(nj), Material1Ds.at(matId));
+		Elements[id] = s;
+		SpringNonlinears[id] = s;
+		nonlinearTangentElements[id] = s;
 	}
 }
 
 void DynamicSystem::addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n)
 {
-	DOF *i = DOFs.at(ni);
-	DOF *j = DOFs.at(nj);
-	SpringBoucWen *s = new SpringBoucWen(id, i, j, k0, uy, alpha);
-	addSpringBoucWen(s);
+	if ( checkDuplicateElement(id) )
+	{
+		SpringBoucWen *s = new SpringBoucWen(id, DOFs.at(ni), DOFs.at(nj), k0, uy, alpha);
+		Elements[id] = s;
+		SpringBoucWens[id] = s;
+		nonlinearTangentElements[id] = s;
+	}
 }
 
 void DynamicSystem::addDashpot(Dashpot * d)
@@ -778,7 +796,7 @@ void DynamicSystem::addTimeSeries(const int id, const double dt, char* fileName)
 	addTimeSeries(ts);
 }
 
-void DynamicSystem::addDofRecorder(dofRecorder * dr)
+void DynamicSystem::addDofRecorder(DOFRecorder * dr)
 {
 	DOFRecorders[dr->id] = dr;
 }
@@ -792,11 +810,11 @@ void DynamicSystem::addDofRecorder(const int id, int *dofIds, const int n, respo
 		rdofs[i] = DOFs.at(dofIds[i]);
 	}
 
-	dofRecorder *dr = new dofRecorder(id, rdofs, rtype, fileName);
+	DOFRecorder *dr = new DOFRecorder(id, rdofs, rtype, fileName);
 	addDofRecorder(dr);
 }
 
-void DynamicSystem::addElementRecorder(elementRecorder * er)
+void DynamicSystem::addElementRecorder(ElementRecorder * er)
 {
 	ElementRecorders[er->id] = er;
 }
@@ -810,7 +828,7 @@ void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, 
 		reles[i] = Elements.at(eleIds[i]);
 	}
 
-	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);
+	ElementRecorder *er = new ElementRecorder(id, reles, rtype, fileName);
 	addElementRecorder(er);
 }
 
@@ -823,7 +841,7 @@ void DynamicSystem::addSpringRecorder(const int id, int * eleIds, const int n, r
 		reles[i] = Springs.at(eleIds[i]);
 	}
 
-	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);
+	ElementRecorder *er = new ElementRecorder(id, reles, rtype, fileName);
 	addElementRecorder(er);
 }
 
@@ -836,7 +854,7 @@ void DynamicSystem::addDashpotRecorder(const int id, int * eleIds, const int n, 
 		reles[i] = Dashpots.at(eleIds[i]);
 	}
 
-	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);
+	ElementRecorder *er = new ElementRecorder(id, reles, rtype, fileName);
 	addElementRecorder(er);
 }
 
@@ -849,7 +867,7 @@ void DynamicSystem::addInerterRecorder(const int id, int * eleIds, const int n, 
 		reles[i] = Inerters.at(eleIds[i]);
 	}
 
-	elementRecorder *er = new elementRecorder(id, reles, rtype, fileName);
+	ElementRecorder *er = new ElementRecorder(id, reles, rtype, fileName);
 	addElementRecorder(er);
 }
 
@@ -860,15 +878,55 @@ void DynamicSystem::setRayleighDamping(const double omg1, const double omg2)
 	RayleighOmg2 = omg2;
 }
 
-void DynamicSystem::activeGroundMotion(Direction dir)
+void DynamicSystem::activeGroundMotion(Direction dir, const int waveId, const double waveScale)
 {
-	for (int i = 0; i < eqnCount; i++)
+	if (Waves.count(waveId) == 0)
 	{
-		DOF *d = DOFs.at(eqnMapDof.at(i));
-		if (d->dir == dir)
-		{
-			E(i) = 1.0;
-		}
+		cout << "Wave " << waveId << "do not exist!" << endl;
+		return;
+	}
+
+	DOF *dof = nullptr;
+	switch (dir)
+	{
+		case Direction::X:
+			XSeismicWaveId = waveId;
+			XSeismicWaveScale = waveScale;
+			for (int i = 0; i < eqnCount; i++)
+			{
+				dof = DOFs.at(eqnMapDof.at(i));
+				if (dof->dir == dir)
+				{
+					EX(i) = 1.0;
+				}
+			}
+			break;
+		case Direction::Y:
+			YSeismicWaveId = waveId;
+			YSeismicWaveScale = waveScale;
+			for (int i = 0; i < eqnCount; i++)
+			{
+				dof = DOFs.at(eqnMapDof.at(i));
+				if (dof->dir == dir)
+				{
+					EY(i) = 1.0;
+				}
+			}
+			break;
+		case Direction::Z:
+			ZSeismicWaveId = waveId;
+			ZSeismicWaveScale = waveScale;
+			for (int i = 0; i < eqnCount; i++)
+			{
+				dof = DOFs.at(eqnMapDof.at(i));
+				if (dof->dir == dir)
+				{
+					EZ(i) = 1.0;
+				}
+			}
+			break;
+		default:
+			break;
 	}
 }
 
@@ -982,7 +1040,9 @@ void DynamicSystem::applyRestraint()
 	C.shed_cols(fixedIds);
 	C.shed_rows(fixedIds);
 
-	E = zeros<vec>(eqnCount); // Ground motion vector
+	EX = zeros<vec>(eqnCount); // Ground motion vector
+	EY = zeros<vec>(eqnCount); // Ground motion vector
+	EZ = zeros<vec>(eqnCount); // Ground motion vector
 	Q = zeros<vec>(eqnCount); // Nodal load vector
 	Q0 = zeros<vec>(eqnCount); // Const Nodal load vector
 }
@@ -1225,7 +1285,7 @@ void DynamicSystem::solveStochasticSeismicResponse(const double f_h, const int n
 	if (method == 'c')
 	{
 		vec F = zeros<vec>(2 * eqnCount);
-		F.head(eqnCount) = -Mp * E;
+		F.head(eqnCount) = -Mp * EX;
 
 		mat O = zeros<mat>(eqnCount, eqnCount);
 		mat A = join_cols(join_rows(C, M), join_rows(M, O));
@@ -1256,7 +1316,7 @@ void DynamicSystem::solveStochasticSeismicResponse(const double f_h, const int n
 	}
 	else if (method == 'd')
 	{
-		cx_mat P = cx_vec(-Mp * E, zeros<vec>(eqnCount));
+		cx_mat P = cx_vec(-Mp * EX, zeros<vec>(eqnCount));
 
 		cx_mat X = zeros<cx_mat>(eqnCount, nf + 1);
 		for (int i = 0; i < nf + 1; i++)
@@ -1268,6 +1328,12 @@ void DynamicSystem::solveStochasticSeismicResponse(const double f_h, const int n
 
 		dsp = sqrt(trapz(omg, Sx, 1));
 	}
+}
+
+void DynamicSystem::setConvergeParameter(const double tol, const int maxIter)
+{
+	this->tol = tol;
+	this->maxIter = maxIter;
 }
 
 void DynamicSystem::solveLinearStaticResponse()
@@ -1288,8 +1354,6 @@ void DynamicSystem::solveLinearStaticResponse()
 
 void DynamicSystem::solveNonlinearStaticResponse(const int nsub)
 {
-	double tol = 1e-6;
-	int maxIter = 20;
 	int nIter = 0;
 	double error = 1.0;
 
@@ -1311,7 +1375,7 @@ void DynamicSystem::solveNonlinearStaticResponse(const int nsub)
 		ctime = i*dt;
 		applyLoad();
 		nIter = 0;
-		
+
 		while (nIter<maxIter)
 		{
 			du = solve(K, Q-q-K0*dsp); // solve for the correction response vector
@@ -1360,17 +1424,15 @@ void DynamicSystem::solveNonlinearStaticResponse(const int nsub)
 	saveResponse();
 }
 
-void DynamicSystem::solveNonlinearStaticResponse(const double endTime, const int nsub)
+void DynamicSystem::solveNonlinearStaticResponse(const double loadedTime, const int nsub)
 {
-	double tol = 1e-6;
-	int maxIter = 10;
 	int nIter = 0;
 	double error = 1.0;
 
 	vec du = zeros<vec>(eqnCount);
 
 	nsteps = nsub;
-	dt = endTime/nsub;
+	dt = loadedTime/nsub;
 
 	initRecorders();
 
@@ -1462,8 +1524,6 @@ void DynamicSystem::solveNonlinearStaticResponseDispControl(const double loadedT
 	mat J = K;
 	J.col(dispControlEqn) = p;
 
-	double tol = 1e-4;
-	int maxIter = 20;
 	int nIter = 0;
 	double error = 1.0;
 	double cdisp = 0.0;
@@ -1519,7 +1579,7 @@ void DynamicSystem::solveNonlinearStaticResponseDispControl(const double loadedT
 					// calculate nonlinear force vector q and tangent stiffness matrix K,
 					// then go to next substep
 					// the following results maybe unreliable
-					
+
 					dsp = dsp0;
 					getElementResponse();
 					recordResponse();
@@ -1527,7 +1587,7 @@ void DynamicSystem::solveNonlinearStaticResponseDispControl(const double loadedT
 					//reassembleStiffnessMatrix();
 					//J = K;
 					//J.col(dispControlEqn) = -p;
-					
+
 				}
 			}
 			else  // converged
@@ -1563,8 +1623,6 @@ void DynamicSystem::solveNonlinearStaticResponseDispControlDelta(const double lo
 		p(i) = d->getLoad(ctime, false);
 	}
 
-	double tol = 1e-6; // tolerance for convergence check
-	int maxIter = 20; // maximum iteration times
 	int nIter = 0; // iteration count
 	double error = 1.0; // norm error for convergence check
 	double cdisp = 0.0; // current desired value of control DOF
@@ -1574,24 +1632,24 @@ void DynamicSystem::solveNonlinearStaticResponseDispControlDelta(const double lo
 	nsteps = nsub; // number of analysis steps
 	dt = loadedTime/nsub; // analysis time interval
 	initRecorders(); // initialize the recorders with given number of analysis steps
-	
+
 	vec du = zeros<vec>(eqnCount); // variation of displacement response
 	vec du0 = zeros<vec>(eqnCount); // reference variation of displacement response due to reference load and current Jacobian matrix
 	vec du_ = zeros<vec>(eqnCount); // initial variation of displacement and datum vector to calculate the relative norm error
 	double normDu; // datum value to calculate the relative norm error
-	
+
 	for (auto i=1; i<nsub+1; ++i)
 	{
 		cstep = i-1;
 		ctime = i*dt;
 		nIter = 0;
-		
+
 		du = solve(K, p);
 		cdisp = load->getValue(ctime);
 		dlambda = (cdisp - load->getValue(ctime-dt))/du(dispControlEqn);
 		du_ = du*dlambda; // initial trial displacement
 		normDu = norm(du_);
-		lambda += dlambda; // 
+		lambda += dlambda; //
 		dsp = dsp + du_; // initial trial displacement
 		dsp0 = dsp; // set the corrected response to the DOFs
 		setDofResponse(); // set the corrected response to the DOFs
@@ -1654,32 +1712,48 @@ void DynamicSystem::solveNonlinearStaticResponseDispControlDelta(const double lo
 	saveResponse();
 }
 
-void DynamicSystem::solveTimeDomainSeismicResponse(const int tsId, const double s, const int nsub)
+void DynamicSystem::solveSeismicResponse(const int nsub)
 {
+	bool isMultiDirectionExcitation = false;
+	if (XSeismicWaveId < 0)
+	{
+		cout << "Ground Motion in the X Direction is not activated!" << endl;
+		return;
+	}
+
+	if (YSeismicWaveId >= 0 || ZSeismicWaveId >= 0)
+	{
+		isMultiDirectionExcitation = true;
+	}
+
 	switch (dynamicSolver)
 	{
 	case Newmark:
-		solveTimeDomainSeismicResponseNMK(tsId, s, nsub);
+		if (isMultiDirectionExcitation) solveSeismicResponseNewmarkMD(nsub);
+		else solveSeismicResponseNewmark(nsub);
 		break;
 	case Newmark_NL:
-		solveTimeDomainSeismicResponseNMKNL(tsId, s, nsub);
+		if (isMultiDirectionExcitation) solveSeismicResponseNewmarkNLMD(nsub);
+		else solveSeismicResponseNewmarkNL(nsub);
 		break;
 	case StateSpace:
-		solveTimeDomainSeismicResponseStateSpace(tsId, s, nsub);
+		if (isMultiDirectionExcitation) solveSeismicResponseStateSpaceMD(nsub);
+		else solveSeismicResponseStateSpace(nsub);
 		break;
 	case StateSpace_NL:
-		solveTimeDomainSeismicResponseStateSpaceNL(tsId, s, nsub);
+		if (isMultiDirectionExcitation) solveSeismicResponseStateSpaceNLMD(nsub);
+		else solveSeismicResponseStateSpaceNL(nsub);
 		break;
 	default:
 		break;
 	}
 }
 
-void DynamicSystem::solveTimeDomainSeismicResponseNMK(const int tsId, const double s, const int nsub)
+void DynamicSystem::solveSeismicResponseNewmark(const int nsub)
 {
-	nsteps = Waves.at(tsId)->nsteps;
-	dt = Waves.at(tsId)->dt;
-	vec ag = s*Waves.at(tsId)->series;
+	nsteps = Waves.at(XSeismicWaveId)->nsteps;
+	dt = Waves.at(XSeismicWaveId)->dt;
+	vec agX = XSeismicWaveScale*Waves.at(XSeismicWaveId)->series;
 
 	vec u0(dsp);
 	vec v0(vel);
@@ -1707,7 +1781,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMK(const int tsId, const doub
 
 	mat K_h = c1*M + c3*C + K0;
 
-	a0 = solve(M, -Mp*E*ag(0) - C*v0);
+	a0 = solve(M, -Mp*EX*agX(0) - C*v0);
 
 	dsp = u0;
 	vel = v0;
@@ -1724,16 +1798,16 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMK(const int tsId, const doub
 	{
 		cstep += 1;
 		ctime += dt * nsub;
-		agd = (ag(i + 1) - ag(i)) / nsub;
-		agi = ag(i);
+		agd = (agX(i + 1) - agX(i)) / nsub;
+		agi = agX(i);
 		for (int j = 1; j < nsub + 1; j++)
 		{
 			agj = agi + agd * j;
-			p_h = -Mp*E*agj + c7*u0 + c8*v0 + c9*a0 + Q0;
+			p_h = -Mp*EX*agj + c7*u0 + c8*v0 + c9*a0 + Q0;
 			u_p = u0*1.0;
 			u0 = solve(K_h, p_h);
 			v0 = c3*(u0 - u_p) + c4*v0 + dt*c5*a0;
-			a0 = solve(M, -Mp*E*agj - C*v0 - K0*u0 + Q0);
+			a0 = solve(M, -Mp*EX*agj - C*v0 - K0*u0 + Q0);
 		}
 
 		dsp = u0;
@@ -1747,11 +1821,11 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMK(const int tsId, const doub
 	saveResponse();
 }
 
-void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const double s, const int nsub, const double tol, const int maxiter)
+void DynamicSystem::solveSeismicResponseNewmarkNL(const int nsub)
 {
-	nsteps = Waves.at(tsId)->nsteps;
-	dt = Waves.at(tsId)->dt;
-	vec ag = s*Waves.at(tsId)->series;
+	nsteps = Waves.at(XSeismicWaveId)->nsteps;
+	dt = Waves.at(XSeismicWaveId)->dt;
+	vec agX = XSeismicWaveScale*Waves.at(XSeismicWaveId)->series;
 
 	vec u0(dsp);
 	vec v0(vel);
@@ -1780,7 +1854,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 	mat K_h_ = c1*M + c3*C;
 	mat K_h = K_h_ + K0;
 
-	a0 = solve(M, -Mp*E*ag(0) - C*v0);
+	a0 = solve(M, -Mp*EX*agX(0) - C*v0);
 
 	dsp = u0;
 	vel = v0;
@@ -1799,23 +1873,23 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 	for (int i = 0; i < nsteps - 1; i++)
 	{
 		cstep += 1;
-		ctime += dt * nsub;
-		agd = (ag(i + 1) - ag(i)) / nsub;
-		agi = ag(i);
+		ctime += dt*nsub;
+		agd = (agX(i + 1) - agX(i)) / nsub;
+		agi = agX(i);
 		for (int j = 1; j < nsub + 1; j++)
 		{
 			agj = agi + agd * j;
-			p_h = -Mp*E*agj + c7*u0 + c8*v0 + c9*a0;
+			p_h = -Mp*EX*agj + c7*u0 + c8*v0 + c9*a0;
 			u_p = u0*1.0;
 			v_p = v0*1.0;
 			a_p = a0*1.0;
 			error = 1.0;
-			for (int l = 0; l < maxiter; l++)
+			for (int l = 0; l < maxIter; l++)
 			{
 				du = solve(K_h_ + K, -K_h*u0 - q + p_h + Q0);
 				u0 = u0 + du;
 				v0 = c3*(u0 - u_p) + c4*v_p + dt*c5*a_p;
-				a0 = solve(M, -Mp*E*agj - q - C*v0 - K0*u0 + Q0);
+				a0 = solve(M, -Mp*EX*agj - q - C*v0 - K0*u0 + Q0);
 
 				dsp = u0;
 				vel = v0;
@@ -1825,14 +1899,14 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 				error = norm(du)/norm(u0);
 				if (error > tol)
 				{
-					if (l < maxiter - 1)
+					if (l < maxIter - 1)
 					{
 						assembleNonlinearForceVector(false);
 						reassembleStiffnessMatrix();
 					}
 					else
 					{
-						cout << "Fail to Converge after " << maxiter << " iterations, "
+						cout << "Fail to Converge after " << maxIter << " iterations, "
 							<< "norm error = " << error << endl;
 						if (j == (nsub - 1))
 						{
@@ -1853,7 +1927,6 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 				}
 			}
 		}
-
 		dsp = u0;
 		vel = v0;
 		acc = a0;
@@ -1861,11 +1934,11 @@ void DynamicSystem::solveTimeDomainSeismicResponseNMKNL(const int tsId, const do
 	saveResponse();
 }
 
-void DynamicSystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, const double s, const int nsub)
+void DynamicSystem::solveSeismicResponseStateSpace(const int nsub)
 {
-	nsteps = Waves.at(tsId)->nsteps;
-	dt = Waves.at(tsId)->dt;
-	vec ag = s*Waves.at(tsId)->series;
+	nsteps = Waves.at(XSeismicWaveId)->nsteps;
+	dt = Waves.at(XSeismicWaveId)->dt;
+	vec agX = XSeismicWaveScale*Waves.at(XSeismicWaveId)->series;
 
 	vec x0 = zeros<vec>(2*eqnCount);
 	x0.head_rows(eqnCount) = dsp;
@@ -1891,7 +1964,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, con
 
 	dsp = x0.head_rows(eqnCount);
 	vel = x0.tail_rows(eqnCount);
-	acc = solve(M, -Mp*E*ag(0) - C*vel);
+	acc = solve(M, -Mp*EX*agX(0) - C*vel);
 
 	setDofResponse();
 	getElementResponse();
@@ -1902,18 +1975,18 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, con
 	{
 		cstep += 1;
 		ctime += dt*nsub;
-		agd = (ag(i + 1) - ag(i)) / nsub;
-		agi = ag(i);
+		agd = (agX(i + 1) - agX(i)) / nsub;
+		agi = agX(i);
 		for (int j = 0; j < nsub; j++)
 		{
 			agj = agi + agd*j;
-			F.tail_rows(eqnCount) = solve(M, -Mp*E*agj + Q0);
+			F.tail_rows(eqnCount) = solve(M, -Mp*EX*agj + Q0);
 			x0 = T*(x0 + F*h);
 		}
 
 		dsp = x0.head_rows(eqnCount);
 		vel = x0.tail_rows(eqnCount);
-		acc = solve(M, -Mp*E*agj - C*vel - K*dsp + Q0);
+		acc = solve(M, -Mp*EX*agj - C*vel - K*dsp + Q0);
 
 		setDofResponse();
 		getElementResponse();
@@ -1922,11 +1995,11 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpace(const int tsId, con
 	saveResponse();
 }
 
-void DynamicSystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, const double s, const int nsub)
+void DynamicSystem::solveSeismicResponseStateSpaceNL(const int nsub)
 {
-	nsteps = Waves.at(tsId)->nsteps;
-	dt = Waves.at(tsId)->dt;
-	vec ag = s*Waves.at(tsId)->series;
+	nsteps = Waves.at(XSeismicWaveId)->nsteps;
+	dt = Waves.at(XSeismicWaveId)->dt;
+	vec agX = XSeismicWaveScale*Waves.at(XSeismicWaveId)->series;
 
 	vec x0 = zeros<vec>(2*eqnCount);
 	x0.head_rows(eqnCount) = dsp;
@@ -1952,7 +2025,7 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, c
 
 	dsp = x0.head_rows(eqnCount);
 	vel = x0.tail_rows(eqnCount);
-	acc = solve(M, -Mp*E*ag(0) - C*vel);
+	acc = solve(M, -Mp*EX*agX(0) - C*vel);
 
 	setDofResponse();
 	getElementResponse();
@@ -1964,12 +2037,12 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, c
 	{
 		cstep += 1;
 		ctime += dt*nsub;
-		agd = (ag(i + 1) - ag(i)) / nsub;
-		agi = ag(i);
+		agd = (agX(i + 1) - agX(i)) / nsub;
+		agi = agX(i);
 		for (int j = 0; j < nsub; j++)
 		{
 			agj = agi + agd*j;
-			F.tail_rows(eqnCount) = solve(M, -Mp*E*agj - q + Q0);
+			F.tail_rows(eqnCount) = solve(M, -Mp*EX*agj - q + Q0);
 			x0 = T*(x0 + F*h);
 			dsp = x0.head_rows(eqnCount);
 			vel = x0.tail_rows(eqnCount);
@@ -1981,19 +2054,409 @@ void DynamicSystem::solveTimeDomainSeismicResponseStateSpaceNL(const int tsId, c
 			}
 			assembleNonlinearForceVector(true);
 		}
-		acc = solve(M, -Mp*E*agj - q - C*vel - K0*dsp + Q0);
+		acc = solve(M, -Mp*EX*agj - q - C*vel - K0*dsp + Q0);
 	}
 	saveResponse();
 }
 
-void DynamicSystem::solveTimeDomainSeismicResponseRK4(const int tsId, const double s, const int nsub)
+void DynamicSystem::solveSeismicResponseRK4(const int nsub)
 {
-	int nstep = Waves.at(tsId)->nsteps;
-	double dt = Waves.at(tsId)->dt;
-	vec ag = s*Waves.at(tsId)->series;
+	nsteps = Waves.at(XSeismicWaveId)->nsteps;
+	dt = Waves.at(XSeismicWaveId)->dt;
+	vec agX = XSeismicWaveScale*Waves.at(XSeismicWaveId)->series;
 
 	dt = dt / nsub;
 	Element::dt = dt;
+}
+
+void DynamicSystem::solveSeismicResponseNewmarkMD(const int nsub)
+{
+	nsteps = Waves.at(XSeismicWaveId)->nsteps;
+	dt = Waves.at(XSeismicWaveId)->dt;
+	vec agX = XSeismicWaveScale*Waves.at(XSeismicWaveId)->series;
+	vec agY = zeros<vec>(nsteps);
+	vec agZ = zeros<vec>(nsteps);
+
+	if (YSeismicWaveId >= 0)
+	{
+		agY = YSeismicWaveScale*Waves.at(YSeismicWaveId)->series;
+	}
+
+	if (ZSeismicWaveId >= 0)
+	{
+		agZ = ZSeismicWaveScale*Waves.at(ZSeismicWaveId)->series;
+	}
+
+	vec u0(dsp);
+	vec v0(vel);
+	vec a0(acc);
+
+	cstep = 0;
+	ctime = 0.0;
+	initRecorders();
+
+	dt = dt/nsub;
+	Element::dt = dt;
+
+	double gma = 0.5;
+	double bta = 0.25;
+	double c1 = 1.0 / bta / dt / dt;
+	double c2 = 1.0 / bta / dt;
+	double c3 = gma / bta / dt;
+	double c4 = 1.0 - gma / bta;
+	double c5 = 1.0 - 0.5*gma / bta;
+	double c6 = 0.5 / bta - 1.0;
+
+	mat c7 = c1*M + c3*C;
+	mat c8 = c2*M - c4*C;
+	mat c9 = c6*M - dt*c5*C;
+
+	mat K_h = c1*M + c3*C + K0;
+
+	a0 = solve(M, -Mp*EX*agX(0) - C*v0);
+
+	dsp = u0;
+	vel = v0;
+	acc = a0;
+
+	setDofResponse();
+	getElementResponse();
+	recordResponse();
+
+	vec p_h;
+	vec u_p;
+	double agdX, agiX, agjX;
+	double agdY, agiY, agjY;
+	double agdZ, agiZ, agjZ;
+	for (int i = 0; i < nsteps - 1; i++)
+	{
+		cstep += 1;
+		ctime += dt*nsub;
+		agdX = (agX(i + 1) - agX(i))/nsub;
+		agiX = agX(i);
+		agdY = (agY(i + 1) - agY(i))/nsub;
+		agiY = agY(i);
+		agdZ = (agZ(i + 1) - agZ(i))/nsub;
+		agiZ = agZ(i);
+		for (int j = 1; j < nsub + 1; j++)
+		{
+			agjX = agiX + agdX*j;
+			agjY = agiY + agdY*j;
+			agjZ = agiZ + agdZ*j;
+			p_h = -Mp*(EX*agjX + EY*agjY + EZ*agjZ) + c7*u0 + c8*v0 + c9*a0 + Q0;
+			u_p = u0*1.0;
+			u0 = solve(K_h, p_h);
+			v0 = c3*(u0 - u_p) + c4*v0 + dt*c5*a0;
+			a0 = solve(M, -Mp*(EX*agjX + EY*agjY + EZ*agjZ) - C*v0 - K0*u0 + Q0);
+		}
+
+		dsp = u0;
+		vel = v0;
+		acc = a0;
+
+		setDofResponse();
+		getElementResponse();
+		recordResponse();
+	}
+	saveResponse();
+}
+
+void DynamicSystem::solveSeismicResponseNewmarkNLMD(const int nsub)
+{
+	nsteps = Waves.at(XSeismicWaveId)->nsteps;
+	dt = Waves.at(XSeismicWaveId)->dt;
+	vec agX = XSeismicWaveScale*Waves.at(XSeismicWaveId)->series;
+	vec agY = zeros<vec>(nsteps);
+	vec agZ = zeros<vec>(nsteps);
+
+	if (YSeismicWaveId >= 0)
+	{
+		agY = YSeismicWaveScale*Waves.at(YSeismicWaveId)->series;
+	}
+
+	if (ZSeismicWaveId >= 0)
+	{
+		agZ = ZSeismicWaveScale*Waves.at(ZSeismicWaveId)->series;
+	}
+
+	vec u0(dsp);
+	vec v0(vel);
+	vec a0(acc);
+
+	cstep = 0;
+	ctime = 0.0;
+	initRecorders();
+
+	dt = dt/nsub;
+	Element::dt = dt;
+
+	double gma = 0.5;
+	double bta = 0.25;
+	double c1 = 1.0 / bta / dt / dt;
+	double c2 = 1.0 / bta / dt;
+	double c3 = gma / bta / dt;
+	double c4 = 1.0 - gma / bta;
+	double c5 = 1.0 - 0.5*gma / bta;
+	double c6 = 0.5 / bta - 1.0;
+
+	mat c7 = c1*M + c3*C;
+	mat c8 = c2*M - c4*C;
+	mat c9 = c6*M - dt*c5*C;
+
+	mat K_h_ = c1*M + c3*C;
+	mat K_h = K_h_ + K0;
+
+	a0 = solve(M, -Mp*EX*agX(0) - C*v0);
+
+	dsp = u0;
+	vel = v0;
+	acc = a0;
+
+	setDofResponse();
+	getElementResponse();
+	assembleNonlinearForceVector(true);
+	recordResponse();
+
+	vec p_h;
+	vec u_p, v_p, a_p;
+	vec du;
+	double agdX, agiX, agjX;
+	double agdY, agiY, agjY;
+	double agdZ, agiZ, agjZ;
+	double error = 1.0;
+	for (int i = 0; i < nsteps - 1; i++)
+	{
+		cstep += 1;
+		ctime += dt*nsub;
+		agdX = (agX(i + 1) - agX(i))/nsub;
+		agiX = agX(i);
+		agdY = (agY(i + 1) - agY(i))/nsub;
+		agiY = agY(i);
+		agdZ = (agZ(i + 1) - agZ(i))/nsub;
+		agiZ = agZ(i);
+		for (int j = 1; j < nsub + 1; j++)
+		{
+			agjX = agiX + agdX*j;
+			agjY = agiY + agdY*j;
+			agjZ = agiZ + agdZ*j;
+			p_h = -Mp*(EX*agjX + EY*agjY + EZ*agjZ) + c7*u0 + c8*v0 + c9*a0;
+			u_p = u0*1.0;
+			v_p = v0*1.0;
+			a_p = a0*1.0;
+			error = 1.0;
+			for (int l = 0; l < maxIter; l++)
+			{
+				du = solve(K_h_ + K, -K_h*u0 - q + p_h + Q0);
+				u0 = u0 + du;
+				v0 = c3*(u0 - u_p) + c4*v_p + dt*c5*a_p;
+				a0 = solve(M, -Mp*(EX*agjX + EY*agjY + EZ*agjZ) - q - C*v0 - K0*u0 + Q0);
+
+				dsp = u0;
+				vel = v0;
+				acc = a0;
+
+				setDofResponse();
+				error = norm(du)/norm(u0);
+				if (error > tol)
+				{
+					if (l < maxIter - 1)
+					{
+						assembleNonlinearForceVector(false);
+						reassembleStiffnessMatrix();
+					}
+					else
+					{
+						cout << "Fail to Converge after " << maxIter << " iterations, "
+							<< "norm error = " << error << endl;
+						if (j == (nsub - 1))
+						{
+							getElementResponse();
+							recordResponse();
+						}
+						assembleNonlinearForceVector(true);
+						reassembleStiffnessMatrix();
+					}
+				}
+				else
+				{
+					getElementResponse();
+					recordResponse();
+					assembleNonlinearForceVector(true);
+					reassembleStiffnessMatrix();
+					break;
+				}
+			}
+		}
+		dsp = u0;
+		vel = v0;
+		acc = a0;
+	}
+	saveResponse();
+}
+
+void DynamicSystem::solveSeismicResponseStateSpaceMD(const int nsub)
+{
+	nsteps = Waves.at(XSeismicWaveId)->nsteps;
+	dt = Waves.at(XSeismicWaveId)->dt;
+	vec agX = XSeismicWaveScale*Waves.at(XSeismicWaveId)->series;
+	vec agY = zeros<vec>(nsteps);
+	vec agZ = zeros<vec>(nsteps);
+
+	if (YSeismicWaveId >= 0)
+	{
+		agY = YSeismicWaveScale*Waves.at(YSeismicWaveId)->series;
+	}
+
+	if (ZSeismicWaveId >= 0)
+	{
+		agZ = ZSeismicWaveScale*Waves.at(ZSeismicWaveId)->series;
+	}
+
+	vec x0 = zeros<vec>(2*eqnCount);
+	x0.head_rows(eqnCount) = dsp;
+	x0.tail_rows(eqnCount) = vel;
+	vec F = zeros<vec>(2*eqnCount);
+
+	cstep = 0;
+	ctime = 0.0;
+	initRecorders();
+
+	dt = dt/nsub;
+	Element::dt = dt;
+
+	mat O = zeros<mat>(eqnCount, eqnCount);
+	mat I = eye<mat>(eqnCount, eqnCount);
+	mat A = -solve(M, K0);
+	mat B = -solve(M, C);
+	mat H = join_cols(join_rows(O, I), join_rows(A, B));
+
+	double h = dt;
+	//mat T = expmat(H*h);
+	mat T = expm(H, h);
+
+	dsp = x0.head_rows(eqnCount);
+	vel = x0.tail_rows(eqnCount);
+	acc = solve(M, -Mp*EX*agX(0) - C*vel);
+
+	setDofResponse();
+	getElementResponse();
+	recordResponse();
+
+	double agdX, agiX, agjX;
+	double agdY, agiY, agjY;
+	double agdZ, agiZ, agjZ;
+	for (int i = 0; i < nsteps - 1; i++)
+	{
+		cstep += 1;
+		ctime += dt*nsub;
+		agdX = (agX(i + 1) - agX(i))/nsub;
+		agiX = agX(i);
+		agdY = (agY(i + 1) - agY(i))/nsub;
+		agiY = agY(i);
+		agdZ = (agZ(i + 1) - agZ(i))/nsub;
+		agiZ = agZ(i);
+		for (int j = 0; j < nsub; j++)
+		{
+			agjX = agiX + agdX*j;
+			agjY = agiY + agdY*j;
+			agjZ = agiZ + agdZ*j;
+			F.tail_rows(eqnCount) = solve(M, -Mp*(EX*agjX + EY*agjY + EZ*agjZ) + Q0);
+			x0 = T*(x0 + F*h);
+		}
+
+		dsp = x0.head_rows(eqnCount);
+		vel = x0.tail_rows(eqnCount);
+		acc = solve(M, -Mp*(EX*agjX + EY*agjY + EZ*agjZ) - C*vel - K*dsp + Q0);
+
+		setDofResponse();
+		getElementResponse();
+		recordResponse();
+	}
+	saveResponse();
+}
+
+void DynamicSystem::solveSeismicResponseStateSpaceNLMD(const int nsub)
+{
+	nsteps = Waves.at(XSeismicWaveId)->nsteps;
+	dt = Waves.at(XSeismicWaveId)->dt;
+	vec agX = XSeismicWaveScale*Waves.at(XSeismicWaveId)->series;
+	vec agY = zeros<vec>(nsteps);
+	vec agZ = zeros<vec>(nsteps);
+
+	if (YSeismicWaveId >= 0)
+	{
+		agY = YSeismicWaveScale*Waves.at(YSeismicWaveId)->series;
+	}
+
+	if (ZSeismicWaveId >= 0)
+	{
+		agZ = ZSeismicWaveScale*Waves.at(ZSeismicWaveId)->series;
+	}
+
+	vec x0 = zeros<vec>(2*eqnCount);
+	x0.head_rows(eqnCount) = dsp;
+	x0.tail_rows(eqnCount) = vel;
+	vec F = zeros<vec>(2*eqnCount);
+
+	cstep = 0;
+	ctime = 0.0;
+	initRecorders();
+
+	dt = dt/nsub;
+	Element::dt = dt;
+
+	mat O = zeros<mat>(eqnCount, eqnCount);
+	mat I = eye<mat>(eqnCount, eqnCount);
+	mat A = -solve(M, K0);
+	mat B = -solve(M, C);
+	mat H = join_cols(join_rows(O, I), join_rows(A, B));
+
+	double h = dt;
+	//mat T = expmat(H*h);
+	mat T = expm(H, h);
+
+	dsp = x0.head_rows(eqnCount);
+	vel = x0.tail_rows(eqnCount);
+	acc = solve(M, -Mp*EX*agX(0) - C*vel);
+
+	setDofResponse();
+	getElementResponse();
+	assembleNonlinearForceVector(true);
+	recordResponse();
+
+	double agdX, agiX, agjX;
+	double agdY, agiY, agjY;
+	double agdZ, agiZ, agjZ;
+	for (int i = 0; i < nsteps - 1; i++)
+	{
+		cstep += 1;
+		ctime += dt*nsub;
+		agdX = (agX(i + 1) - agX(i))/nsub;
+		agiX = agX(i);
+		agdY = (agY(i + 1) - agY(i))/nsub;
+		agiY = agY(i);
+		agdZ = (agZ(i + 1) - agZ(i))/nsub;
+		agiZ = agZ(i);
+		for (int j = 0; j < nsub; j++)
+		{
+			agjX = agiX + agdX*j;
+			agjY = agiY + agdY*j;
+			agjZ = agiZ + agdZ*j;
+			F.tail_rows(eqnCount) = solve(M, -Mp*(EX*agjX + EY*agjY + EZ*agjZ) - q + Q0);
+			x0 = T*(x0 + F*h);
+			dsp = x0.head_rows(eqnCount);
+			vel = x0.tail_rows(eqnCount);
+			setDofResponse();
+			getElementResponse();
+			if (j == (nsub - 1))
+			{
+				recordResponse();
+			}
+			assembleNonlinearForceVector(true);
+		}
+		acc = solve(M, -Mp*(EX*agjX + EY*agjY + EZ*agjZ) - q - C*vel - K0*dsp + Q0);
+	}
+	saveResponse();
 }
 
 void DynamicSystem::setDofResponse()
@@ -2002,6 +2465,15 @@ void DynamicSystem::setDofResponse()
 	{
 		DOF *d = DOFs.at(eqnMapDof.at(i));
 		d->setResponse(dsp(i), vel(i), acc(i));
+	}
+}
+
+void DynamicSystem::setDofStaticResponse()
+{
+	for (int i = 0; i < eqnCount; i++)
+	{
+		DOF *d = DOFs.at(eqnMapDof.at(i));
+		d->setResponse(dsp(i));
 	}
 }
 

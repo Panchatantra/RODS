@@ -1,11 +1,11 @@
-#include "elastic.h"
+#include "Elastic.h"
 
 
-elastic::elastic(const int id, const double E) :
+Elastic::Elastic(const int id, const double E) :
 	Material1D(id, E)
 {
 }
 
-elastic::~elastic()
+Elastic::~Elastic()
 {
 }

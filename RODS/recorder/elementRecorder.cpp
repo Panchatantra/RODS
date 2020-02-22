@@ -1,6 +1,6 @@
-#include "elementRecorder.h"
+#include "ElementRecorder.h"
 
-elementRecorder::elementRecorder(const int id, std::vector<Element *> eles, response rtype, char * fileName):
+ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, response rtype, char * fileName):
 	Recorder(id, rtype, fileName), eles(eles)
 {
 	if (rtype == ALL)
@@ -13,11 +13,11 @@ elementRecorder::elementRecorder(const int id, std::vector<Element *> eles, resp
 	}
 }
 
-elementRecorder::~elementRecorder()
+ElementRecorder::~ElementRecorder()
 {
 }
 
-void elementRecorder::record(const int cstep, const double ctime)
+void ElementRecorder::record(const int cstep, const double ctime)
 {
 	Res(cstep, 0) = ctime;
 	int k = 1;

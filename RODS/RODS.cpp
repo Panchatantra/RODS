@@ -16,9 +16,9 @@ DLL_API void set_damping_ratio(const double zeta) {
 	ds->zeta = zeta;
 }
 
-DLL_API void active_ground_motion(const int dir)
+DLL_API void active_ground_motion(const int dir, const int waveId, const double waveScale)
 {
-	ds->activeGroundMotion(Direction(dir));
+	ds->activeGroundMotion(Direction(dir), waveId, waveScale);
 }
 
 DLL_API void fix_dof(const int id) {
@@ -76,8 +76,8 @@ DLL_API size_t set_dynamic_solver(const int s) {
 	return ds->dynamicSolver;
 }
 
-DLL_API size_t solve_seismic_response(const int tsId, const double s, const int nsub) {
-	ds->solveTimeDomainSeismicResponse(tsId, s, nsub);
+DLL_API size_t solve_seismic_response(const int nsub) {
+	ds->solveSeismicResponse(nsub);
 	return ds->cstep;
 }
 

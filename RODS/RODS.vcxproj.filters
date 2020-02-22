@@ -11,12 +11,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="timeseries.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="material\elastic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="material\SMABilinear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -164,12 +158,15 @@
     <ClCompile Include="material\SteelBilinear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Timeseries.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material\Elastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="numeric.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="timeseries.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="material\elastic.h">
@@ -320,6 +317,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="material\SteelBilinear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timeseries.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

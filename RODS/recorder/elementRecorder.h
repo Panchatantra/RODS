@@ -2,14 +2,14 @@
 #include "Recorder.h"
 #include "element/Element.h"
 
-class elementRecorder :
+class ElementRecorder :
 	public Recorder
 {
 public:
-	elementRecorder(const int id, std::vector<Element *> eles, response rtype, char * fileName);
-	~elementRecorder();
+	ElementRecorder(const int id, std::vector<Element *> eles, response rtype, char * fileName);
+	~ElementRecorder();
 
-	virtual void record(const int cstep, const double ctime);
+	void record(const int cstep, const double ctime) override;
 
 	std::vector<Element *> eles;
 };

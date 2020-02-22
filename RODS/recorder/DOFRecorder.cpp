@@ -1,17 +1,17 @@
-#include "dofRecorder.h"
+#include "DOFRecorder.h"
 
-dofRecorder::dofRecorder(const int id, std::vector<DOF *> dofs, response rtype, char * fileName):
+DOFRecorder::DOFRecorder(const int id, std::vector<DOF *> dofs, response rtype, char * fileName):
 	Recorder(id, rtype, fileName), dofs(dofs)
 
 {
 	n = dofs.size();
 }
 
-dofRecorder::~dofRecorder()
+DOFRecorder::~DOFRecorder()
 {
 }
 
-void dofRecorder::record(const int cstep, const double ctime)
+void DOFRecorder::record(const int cstep, const double ctime)
 {
 	Res(cstep, 0) = ctime;
 	for (size_t i = 0; i < n; i++)

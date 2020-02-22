@@ -18,11 +18,21 @@ DOF::~DOF()
 {
 }
 
+void DOF::setMass(const double m)
+{
+	mass = m;
+}
+
 void DOF::setResponse(const double dsp, const double vel, const double acc)
 {
 	this->dsp = dsp;
 	this->vel = vel;
 	this->acc = acc;
+}
+
+void DOF::setResponse(const double dsp)
+{
+	this->dsp = dsp;
 }
 
 void DOF::addLoad(Load* load)

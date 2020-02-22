@@ -27,7 +27,7 @@ public:
 	 * @brief      Constructs a new instance.
 	 *
 	 * @param[in]  id    The identifier
-	 * @param[in]  dir   The #Direction
+	 * @param[in]  dir   The Direction
 	 */
 	DOF(const int id, Direction dir);
 
@@ -43,13 +43,27 @@ public:
 	~DOF();
 
 	/**
+	 * @brief      Sets the mass.
+	 *
+	 * @param[in]  m     The mass or inertance or moment of inertia
+	 */
+	void setMass(const double m);
+
+	/**
 	 * @brief      Sets the response.
 	 *
-	 * @param[in]  dsp   The new value of displacement
-	 * @param[in]  vel   The new value of velocity
-	 * @param[in]  acc   The new value of acceleration
+	 * @param[in]  dsp   The displacement
+	 * @param[in]  vel   The velocity
+	 * @param[in]  acc   The acceleration
 	 */
 	void setResponse(const double dsp, const double vel, const double acc);
+
+	/**
+	 * @brief      Sets the response.
+	 *
+	 * @param[in]  dsp   The displacement
+	 */
+	void setResponse(const double dsp);
 
 	/**
 	 * @brief      Adds a load.
