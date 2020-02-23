@@ -13,8 +13,8 @@ public:
 	~Node();
 
 	void setDof(DOF *d);
-	void fixDof();
-	void fixDof(Direction dir);
+	void fixDOF();
+	void fixDOF(Direction dir);
 	bool isActivated(Direction dir);
 
 	double x, y, z;

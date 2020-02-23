@@ -5,7 +5,7 @@
 using namespace arma;
 
 namespace ELE {
-	enum localAxis
+	enum LocalAxis
 	{
 		U1, U2, U3
 	};

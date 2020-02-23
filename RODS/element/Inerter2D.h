@@ -12,7 +12,7 @@ using namespace arma;
 class Inerter2D : public Element2D
 {
 public:
-	Inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, ELE::localAxis axis);
+	Inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, ELE::LocalAxis axis);
 	~Inerter2D();
 
 	virtual void buildMatrix();

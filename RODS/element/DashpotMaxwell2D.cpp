@@ -1,7 +1,7 @@
 #include "DashpotMaxwell2D.h"
 
 DashpotMaxwell2D::DashpotMaxwell2D(const int id, Node * nodeI, Node * nodeJ, const double k, const double c, const double alpha,
-	ELE::localAxis axis) :
+	ELE::LocalAxis axis) :
 	Element2D(id, nodeI, nodeJ), k(k), c(c), alpha(alpha),
 	ue(0.0), f(0.0), ud(0.0), udp(0.0)
 {

@@ -1,6 +1,6 @@
-#include "BeamElastic.h"
+#include "BeamElastic2D.h"
 
-BeamElastic::BeamElastic(const int id, Node * nodeI, Node * nodeJ, const double EI):
+BeamElastic2D::BeamElastic2D(const int id, Node * nodeI, Node * nodeJ, const double EI):
 	Element2D(id, nodeI, nodeJ), EI(EI), ue(new double[2]{ 0.0, 0.0 }), f(new double[2]{ 0.0, 0.0 })
 {
 	k = mat({	{4*EI/L, 2*EI/L},
@@ -11,16 +11,16 @@ BeamElastic::BeamElastic(const int id, Node * nodeI, Node * nodeJ, const double 
 	nv = 2;
 }
 
-BeamElastic::~BeamElastic()
+BeamElastic2D::~BeamElastic2D()
 {
 }
 
-void BeamElastic::buildMatrix()
+void BeamElastic2D::buildMatrix()
 {
 	K = T.t()*k*T;
 }
 
-void BeamElastic::getResponse(const bool update)
+void BeamElastic2D::getResponse(const bool update)
 {
 	u = vec( { nodeI->dofX->dsp, nodeI->dofZ->dsp, nodeI->dofRY->dsp,
 		       nodeJ->dofX->dsp, nodeJ->dofZ->dsp, nodeJ->dofRY->dsp } );
@@ -44,7 +44,7 @@ void BeamElastic::getResponse(const bool update)
 	deformation = ue;
 }
 
-void BeamElastic::assembleStiffnessMatrix(mat &K)
+void BeamElastic2D::assembleStiffnessMatrix(mat &K)
 {
 	int local[6] = {0,1,2,3,4,5};
 	int global[6] = {nodeI->dofX->eqnId, nodeI->dofZ->eqnId, nodeI->dofRY->eqnId,

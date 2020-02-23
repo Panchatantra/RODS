@@ -13,7 +13,7 @@ class DashpotExp2D : public Element2D
 {
 public:
 	DashpotExp2D(const int id, Node * nodeI, Node * nodeJ, const double c, const double alpha,
-		ELE::localAxis axis);
+		ELE::LocalAxis axis);
 	~DashpotExp2D();
 
 	virtual void buildMatrix();

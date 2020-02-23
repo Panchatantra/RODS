@@ -58,6 +58,8 @@ public:
 	 */
 	void setMass(const double m);
 
+	void setFixed(const bool isFixed = true);
+
 	/**
 	 * @brief      Sets the response.
 	 *

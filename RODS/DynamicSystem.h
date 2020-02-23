@@ -24,7 +24,7 @@
 #include "element/Inerter2D.h"
 #include "element/DashpotMaxwell2D.h"
 #include "element/TrussElastic2D.h"
-#include "element/BeamElastic.h"
+#include "element/BeamElastic2D.h"
 #include "element/FrameElastic2D.h"
 #include "element/Quad4Elastic.h"
 #include "element/Truss2D.h"
@@ -70,28 +70,28 @@ public:
 	/**
 	 * @brief      Adds a 1D Node into the system.
 	 *
-	 * @param[in]  id     The identifier
+	 * @param[in]  nodeId     The identifier
 	 * @param[in]  x      The X coordinate
 	 * @param[in]  dofId  The DOF identifier
 	 */
-	void addNode(const int id, const double x, const int dofId);
+	void addNode(const int nodeId, const double x, const int dofId);
 
 	/**
 	 * @brief      Adds a 2D Node into the system.
 	 *
-	 * @param[in]  id       The identifier
+	 * @param[in]  nodeId       The identifier
 	 * @param[in]  x        The X coordinate
 	 * @param[in]  z        The Z coordinate
 	 * @param[in]  dofXId   The DOF X identifier
 	 * @param[in]  dofZId   The DOF Z identifier
 	 * @param[in]  dofRYId  The DOF RY identifier, set a negative integer to deactive the rotational DOF
 	 */
-	void addNode(const int id, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId);
+	void addNode(const int nodeId, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId);
 
 	/**
 	 * @brief      Adds a 3D Node into the system.
 	 *
-	 * @param[in]  id       The identifier
+	 * @param[in]  nodeId       The identifier
 	 * @param[in]  x        The X coordinate
 	 * @param[in]  y        The Y coordinate
 	 * @param[in]  z        The Z coordinate
@@ -102,7 +102,7 @@ public:
 	 * @param[in]  dofRYId  The DOF RY identifier, set a negative integer to deactive the rotational DOF
 	 * @param[in]  dofRZId  The DOF RZ identifier, set a negative integer to deactive the rotational DOF
 	 */
-	void addNode(const int id, const double x, const double y, const double z,
+	void addNode(const int nodeId, const double x, const double y, const double z,
 				const int dofXId,  const int dofYId,  const int dofZId,
 				const int dofRXId, const int dofRYId, const int dofRZId);
 
@@ -116,7 +116,7 @@ public:
 	 *
 	 * @param[in]  id    The DOF identifier
 	 */
-	void fixDof(const int id);
+	void fixDOF(const int id);
 
 	/**
 	 * @brief      Fix all the DOFs of a Node.
@@ -124,6 +124,14 @@ public:
 	 * @param[in]  id    The Node identifier
 	 */
 	void fixNode(const int id);
+
+	/**
+	 * @brief      Fix a DOF of a Node.
+	 *
+	 * @param[in]  nodeId  The node identifier
+	 * @param[in]  dir     The Direction to be fixed
+	 */
+	void fixNode(const int nodeId, Direction dir);
 
 	/**
 	 * @brief      Adds a load into the system.
@@ -152,16 +160,16 @@ public:
 	 */
 	void exportGmsh(char * fileName);
 
-    void addDof(DOF *d);
+    void addDOF(DOF *d);
 
     /**
-     * @brief      Adds a DOF into the system.
+     * @brief      Adds a DOF (X Direction) into the system.
      *
      * @param[in]  id     The identifier
      * @param[in]  m      The mass of the DOF
      * @param[in]  fixed  Indicates if the DOF is fixed
      */
-	void addDof(const int id, const double m, const bool fixed=false);
+	void addDOF(const int id, const double m, const bool fixed=false);
 
 	/**
 	 * @brief      Adds a DOF into the system.
@@ -171,7 +179,7 @@ public:
 	 * @param[in]  m      The mass of the DOF
 	 * @param[in]  fixed  Indicates if the DOF is fixed
 	 */
-	void addDof(const int id, Direction dir, const double m, const bool fixed=false);
+	void addDOF(const int id, Direction dir, const double m, const bool fixed=false);
 
 	/**
 	 * @brief      Sets the mass of a DOF.
@@ -339,17 +347,25 @@ public:
 	 */
 	void addDashpot(const int id, const int ni, const int nj, const double c);
 
-	void addDashpotExp(DashpotExp *d);
+	/**
+	 * @brief      Adds a nonlinear dashpot.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  ni     The identifier of DOF i
+	 * @param[in]  nj     The identifier of DOF j
+	 * @param[in]  c      The damping coefficient
+	 * @param[in]  alpha  The damping exponent
+	 */
 	void addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha = 0.1);
-	void addDashpotMaxwell(DashpotMaxwell *d);
+
 	void addDashpotMaxwell(const int id, const int ni, const int nj, const double k, const double c, const double alpha = 1.0);
-	void addInerter(Inerter *in);
+
 	void addInerter(const int id, const int ni, const int nj, const double m);
-	void addSlider(Slider *s);
+
 	void addSlider(const int id, const int ni, const int nj, const double muN);
-	void addSPIS2(SPIS2 *s);
+
 	void addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k);
-	void addTVMD(TVMD *d);
+
 	void addTVMD(const int id, const int ni, const int nj, const double m, const double c, const double k);
 
 	/**
@@ -361,7 +377,7 @@ public:
 	 * @param[in]  k     The stiffness
 	 * @param[in]  U     The local axis
 	 */
-	void addSpring2D(const int id, const int ni, const int nj, const double k, ELE::localAxis U=ELE::U1);
+	void addSpring2D(const int id, const int ni, const int nj, const double k, ELE::LocalAxis U=ELE::U1);
 
 	/**
 	 * @brief      Adds a SpringBoucWen2D.
@@ -376,24 +392,60 @@ public:
 	 * @param[in]  n      The n
 	 * @param[in]  U      The local axis
 	 */
-	void addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta=0.5, const double n=20, ELE::localAxis U = ELE::U1);
+	void addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta=0.5, const double n=20, ELE::LocalAxis U = ELE::U1);
 
-	void addDashpot2D(Dashpot2D *s);
-	void addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::localAxis U=ELE::U1);
-	void addInerter2D(Inerter2D *s);
-	void addInerter2D(const int id, const int ni, const int nj, const double m, ELE::localAxis U=ELE::U1);
-	void addDashpotExp2D(DashpotExp2D *s);
-	void addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, ELE::localAxis U = ELE::U1);
-	void addDashpotMaxwell2D(DashpotMaxwell2D *s);
-	void addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::localAxis U = ELE::U1);
+	void addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::LocalAxis U=ELE::U1);
 
-	void addTrussElastic(TrussElastic2D *truss);
-	void addTrussElastic(const int id, const int ni, const int nj, const double EA);
-	void addBeamElastic(BeamElastic *beam);
-	void addBeamElastic(const int id, const int ni, const int nj, const double EI);
-	void addFrameElastic(FrameElastic2D *frame);
-	void addFrameElastic(const int id, const int ni, const int nj, const double EA, const double EI);
-	void addQuad4Elastic(Quad4Elastic *quad);
+	void addInerter2D(const int id, const int ni, const int nj, const double m, ELE::LocalAxis U=ELE::U1);
+
+	void addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, ELE::LocalAxis U = ELE::U1);
+
+	void addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::LocalAxis U = ELE::U1);
+
+	/**
+	 * @brief      Adds a TrussElastic2D element.
+	 *
+	 * @param[in]  id    The identifier
+	 * @param[in]  ni    The identifier of Node i
+	 * @param[in]  nj    The identifier of Node j
+	 * @param[in]  EA    E*A of the truss section
+	 */
+	void addTrussElastic2D(const int id, const int ni, const int nj, const double EA);
+
+	/**
+	 * @brief      Adds a BeamElastic2D element.
+	 *
+	 * @param[in]  id    The identifier
+	 * @param[in]  ni    The identifier of Node i
+	 * @param[in]  nj    The identifier of Node j
+	 * @param[in]  EI    E*I of the beam section
+	 */
+	void addBeamElastic2D(const int id, const int ni, const int nj, const double EI);
+
+	/**
+	 * @brief      Adds a FrameElastic2D element.
+	 *
+	 * @param[in]  id    The identifier
+	 * @param[in]  ni    The identifier of Node i
+	 * @param[in]  nj    The identifier of Node j
+	 * @param[in]  EA    E*A of the frame section
+	 * @param[in]  EI    E*I of the frame section
+	 */
+	void addFrameElastic2D(const int id, const int ni, const int nj, const double EA, const double EI);
+
+
+	/**
+	 * @brief      Adds a Quad4Elastic element.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  nodeI  The identifier of node I
+	 * @param[in]  nodeJ  The identifier of node J
+	 * @param[in]  nodeP  The identifier of node P
+	 * @param[in]  nodeQ  The identifier of node Q
+	 * @param[in]  E      The elastic module
+	 * @param[in]  nu     The Poisson ratio
+	 * @param[in]  t      The thickness
+	 */
 	void addQuad4Elastic(const int id, const int nodeI, const int nodeJ,
 						const int nodeP, const int nodeQ,
 						const double E, const double nu, const double t);
@@ -407,11 +459,45 @@ public:
 	 * @param[in]  secId  The identifier of SectionTruss
 	 */
 	void addTruss2D(const int id, const int ni, const int nj, const int secId);
-	void addFrame2D(const int id, const int ni, const int nj, const int secId, const int nIntP=5);
-	void addFramePDelta2D(const int id, const int ni, const int nj, const int secId, const int nIntP=5);
 
-	void addWave(Wave *ts);
+	/**
+	 * @brief      Adds a nonlinear Frame2D element.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  ni     The identifier of Node i
+	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  secId  The identifier of SectionFrame2D
+	 * @param[in]  nIntP  The number of Gauss integration points
+	 */
+	void addFrame2D(const int id, const int ni, const int nj, const int secId, const int nIntP=2);
+
+	/**
+	 * @brief      Adds a nonlinear FramePDelta2D element.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  ni     The identifier of Node i
+	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  secId  The identifier of SectionFrame2D
+	 * @param[in]  nIntP  The number of Gauss integration points
+	 */
+	void addFramePDelta2D(const int id, const int ni, const int nj, const int secId, const int nIntP=2);
+
+	/**
+	 * @brief      Adds a wave from a armadillo vector.
+	 *
+	 * @param[in]  id    The identifier
+	 * @param[in]  dt    The time interval
+	 * @param[in]  s     The time series
+	 */
 	void addWave(const int id, const double dt, const vec &s);
+
+	/**
+	 * @brief      Adds a wave from a file (one column data file).
+	 *
+	 * @param[in]  id        The identifier
+	 * @param[in]  dt        The time interval
+	 * @param      fileName  The file name
+	 */
 	void addWave(const int id, const double dt, char * fileName);
 
 	/**
@@ -656,11 +742,11 @@ public:
 	std::map<int, DashpotExp2D *> DashpotExp2Ds; ///< DashpotExp2Ds in the system
 	std::map<int, Inerter2D *> Inerter2Ds; ///< Inerter2Ds in the system
 
-	std::map<int, TrussElastic2D *> TrussElastics; ///< TrussElastics in the system
+	std::map<int, TrussElastic2D *> TrussElastic2Ds; ///< TrussElastic2Ds in the system
 	std::map<int, Truss2D *> Truss2Ds; ///< Truss2Ds in the system
 	std::map<int, Frame2D *> Frame2Ds; ///< Frame2Ds in the system
 	std::map<int, FramePDelta2D *> FramePDelta2Ds; ///< FramePDelta2Ds in the system
-	std::map<int, BeamElastic *> BeamElastics; ///< BeamElastics in the system
+	std::map<int, BeamElastic2D *> BeamElastic2Ds; ///< BeamElastic2Ds in the system
 	std::map<int, FrameElastic2D *> FrameElastic2Ds; ///< FrameElastic2Ds in the system
 	std::map<int, Quad4Elastic *> Quad4Elastics; ///< Quad4Elastics in the system
 

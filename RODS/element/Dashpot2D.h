@@ -12,7 +12,7 @@ using namespace arma;
 class Dashpot2D : public Element2D
 {
 public:
-	Dashpot2D(const int id, Node * nodeI, Node * nodeJ, double c, ELE::localAxis axis);
+	Dashpot2D(const int id, Node * nodeI, Node * nodeJ, double c, ELE::LocalAxis axis);
 	~Dashpot2D();
 
 	virtual void buildMatrix();

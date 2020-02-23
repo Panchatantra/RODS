@@ -41,7 +41,7 @@ void Node::setDof(DOF * d)
 	}
 }
 
-void Node::fixDof()
+void Node::fixDOF()
 {
 	if (dofX != nullptr) dofX->isFixed = true;
 	if (dofY != nullptr) dofY->isFixed = true;
@@ -51,7 +51,7 @@ void Node::fixDof()
 	if (dofRZ != nullptr) dofRZ->isFixed = true;
 }
 
-void Node::fixDof(Direction dir)
+void Node::fixDOF(Direction dir)
 {
 	if (isActivated(dir))
 	{

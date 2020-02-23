@@ -23,7 +23,7 @@ void example_sdof()
 	print_info();
 
 	char eq[] = "data/EQ-S-1.txt";
-	add_timeseries(1, 0.005, eq);
+	add_wave(1, 0.005, eq);
 
 	int nrd = 2;
 	int *dofIds = new int[nrd] { 0, 1 };
@@ -49,8 +49,8 @@ void example_sdof()
 //
 //	DynamicSystem *ds = new DynamicSystem();
 //
-//	ds->addDof(1, m, FIXED);
-//	ds->addDof(2, m);
+//	ds->addDOF(1, m, FIXED);
+//	ds->addDOF(2, m);
 //
 //	ds->addSpring(1, 1, 2, k);
 //	ds->addDashpot(2, 1, 2, c);
@@ -62,7 +62,7 @@ void example_sdof()
 //	double k_s = kp * k;
 //	double c_d = 2.0*xi*sqrt(m*k);
 //
-//	//ds->addDof(11, 0.0);
+//	//ds->addDOF(11, 0.0);
 //	//ds->addInerter(11, 1, 11, m_in);
 //	//ds->addDashpot(12, 1, 11, c_d);
 //	//ds->addSpring(13, 11, 2, k_s);
@@ -105,8 +105,8 @@ void example_sdof()
 //
 //	DynamicSystem *ds = new DynamicSystem();
 //
-//	ds->addDof(0, m, FIXED);
-//	ds->addDof(1, m);
+//	ds->addDOF(0, m, FIXED);
+//	ds->addDOF(1, m);
 //
 //	ds->addMaterialElastoplastic(0, k, k*uy, alpha);
 //	ds->addMaterialSMABilinear(1, k, k*uy, alpha, 0.5*k*uy);
@@ -160,10 +160,10 @@ void example_sdof()
 //	int ndof = 1;
 //	DynamicSystem *ds = new DynamicSystem(zeta);
 //
-//	ds->addDof(0, m, FIXED);
+//	ds->addDOF(0, m, FIXED);
 //	for (int i = 1; i <= ndof; i++)
 //	{
-//		ds->addDof(i, m);
+//		ds->addDOF(i, m);
 //		ds->addSpring(i, i - 1, i, k);
 //	}
 //
@@ -229,12 +229,12 @@ void example_sdof()
 //	double c_d = 2.0*xi*sqrt(m*k);
 //	double k_s = kp * k;
 //
-//	ds->addDof(0, m, FIXED);
+//	ds->addDOF(0, m, FIXED);
 //	for (int i = 1; i <= ndof; i++)
 //	{
-//		ds->addDof(i * 10, m);
+//		ds->addDOF(i * 10, m);
 //		ds->addSpring(i, (i - 1) * 10, i * 10, k);
-//		ds->addDof(i * 10 + 1, 0.0);
+//		ds->addDOF(i * 10 + 1, 0.0);
 //		ds->addSPIS2(i, (i - 1) * 10, i * 10, i * 10 + 1, m_in, c_d, k_s);
 //	}
 //
@@ -320,8 +320,8 @@ void example_sdof()
 //
 //	for (int i = 0; i < nnd; i++)
 //	{
-//		ds->addDof(2 * i + 1, X, mass);
-//		ds->addDof(2 * i + 2, Z, mass);
+//		ds->addDOF(2 * i + 1, X, mass);
+//		ds->addDOF(2 * i + 2, Z, mass);
 //
 //		x = nodeCoord[i][0];
 //		z = nodeCoord[i][1];
@@ -348,7 +348,7 @@ void example_sdof()
 //	{
 //		ni = elementConnect[i][0];
 //		nj = elementConnect[i][1];
-//		ds->addTrussElastic(i + 1, ni, nj, EA);
+//		ds->addTrussElastic2D(i + 1, ni, nj, EA);
 //	}
 //
 //	ds->assembleMatrix();
@@ -391,9 +391,9 @@ void example_sdof()
 //
 //	for (int i = 0; i < nnd; i++)
 //	{
-//		ds->addDof(3 * i + 1, X, mass);
-//		ds->addDof(3 * i + 2, Z, mass);
-//		ds->addDof(3 * i + 3, RY, mass);
+//		ds->addDOF(3 * i + 1, X, mass);
+//		ds->addDOF(3 * i + 2, Z, mass);
+//		ds->addDOF(3 * i + 3, RY, mass);
 //
 //		x = nodeCoord[i][0];
 //		z = nodeCoord[i][1];
@@ -433,11 +433,11 @@ void example_sdof()
 //		st = elementConnect[i][2];
 //		if (st == 1)
 //		{
-//			ds->addFrameElastic(i + 1, ni, nj, EA_c, EI_c);
+//			ds->addFrameElastic2D(i + 1, ni, nj, EA_c, EI_c);
 //		}
 //		else
 //		{
-//			ds->addFrameElastic(i + 1, ni, nj, EA_b, EI_b);
+//			ds->addFrameElastic2D(i + 1, ni, nj, EA_b, EI_b);
 //		}
 //	}
 //
@@ -521,9 +521,9 @@ void example_sdof()
 //	double x = 0, z = 0;
 //	for (int i = 0; i < nnd; i++)
 //	{
-//		ds->addDof(3 * i + 1, X, mass);
-//		ds->addDof(3 * i + 2, Z, mass);
-//		ds->addDof(3 * i + 3, RY, mass*1.0e-1);
+//		ds->addDOF(3 * i + 1, X, mass);
+//		ds->addDOF(3 * i + 2, Z, mass);
+//		ds->addDOF(3 * i + 3, RY, mass*1.0e-1);
 //
 //		x = nodeCoord[i][0];
 //		z = nodeCoord[i][1];
@@ -542,13 +542,13 @@ void example_sdof()
 //		st = elementConnect[i][2];
 //		if (st == 1)
 //		{
-//			ds->addFrameElastic(i + 1, ni, nj, EA_b, EI_b);
-//			//ds->addBeamElastic(i + 1, ni, nj, EI_b);
+//			ds->addFrameElastic2D(i + 1, ni, nj, EA_b, EI_b);
+//			//ds->addBeamElastic2D(i + 1, ni, nj, EI_b);
 //		}
 //		else
 //		{
-//			ds->addFrameElastic(i + 1, ni, nj, EA_c, EI_c);
-//			//ds->addBeamElastic(i + 1, ni, nj, EI_c);
+//			ds->addFrameElastic2D(i + 1, ni, nj, EA_c, EI_c);
+//			//ds->addBeamElastic2D(i + 1, ni, nj, EI_c);
 //		}
 //	}
 //

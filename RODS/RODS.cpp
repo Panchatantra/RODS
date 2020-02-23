@@ -22,16 +22,16 @@ DLL_API void active_ground_motion(const int dir, const int waveId, const double 
 }
 
 DLL_API void fix_dof(const int id) {
-	ds->fixDof(id);
+	ds->fixDOF(id);
 }
 
-DLL_API size_t add_dof(const int id, const double m) {
-	ds->addDof(id, m);
+DLL_API size_t add_dof_x(const int id, const double m) {
+	ds->addDOF(id, m);
 	return ds->DOFs.size();
 }
 
-DLL_API size_t add_dof_fixed(const int id, const double m) {
-	ds->addDof(id, m, FIXED);
+DLL_API size_t add_dof(const int id, const int dir, const double m) {
+	ds->addDOF(id, Direction(dir), m);
 	return ds->DOFs.size();
 }
 
@@ -45,7 +45,7 @@ DLL_API size_t add_dashpot(const int id, const int i, const int j, const double 
 	return ds->Dashpots.size();
 }
 
-DLL_API size_t add_timeseries(const int id, const double dt, char* fileName) {
+DLL_API size_t add_wave(const int id, const double dt, char* fileName) {
 	ds->addWave(id, dt, fileName);
 	return ds->Waves.size();
 }
@@ -84,4 +84,65 @@ DLL_API size_t solve_seismic_response(const int nsub) {
 DLL_API void print_info()
 {
 	ds->printInfo();
+}
+
+void fix_node(const int id)
+{
+	ds->fixNode(id);
+}
+
+void fix_node_dof(const int nodeId, const int dir)
+{
+	ds->fixNode(nodeId, Direction(dir));
+}
+
+size_t add_node_1d(const int nodeId, const double x, const int dofId)
+{
+	ds->addNode(nodeId, x, dofId);
+	return ds->Nodes.size();
+}
+
+size_t add_node_2d(const int nodeId, const double x, const double z, const int dofXId, const int dofZId,
+	const int dofRYId)
+{
+	ds->addNode(nodeId, x, z, dofXId, dofZId, dofRYId);
+	return ds->Nodes.size();
+}
+
+size_t add_node_3d(const int nodeId, const double x, const double y, const double z, const int dofXId, const int dofYId,
+	const int dofZId, const int dofRXId, const int dofRYId, const int dofRZId)
+{
+	ds->addNode(nodeId, x, y, z, dofXId,  dofYId,  dofZId, dofRXId, dofRYId, dofRZId);
+	return ds->Nodes.size();
+}
+
+size_t add_inerter(const int id, const int i, const int j, const double m)
+{
+	ds->addInerter(id, i, j, m);
+	return ds->Inerters.size();
+}
+
+DLL_API size_t add_truss_elastic_2d(const int id, const int ni, const int nj, const double EA)
+{
+	ds->addTrussElastic2D(id, ni, nj ,EA);
+	return ds->TrussElastic2Ds.size();
+}
+
+DLL_API size_t add_frame_elastic_2d(const int id, const int ni, const int nj, const double EA, const double EI)
+{
+	ds->addFrameElastic2D(id, ni, nj ,EA, EI);
+	return ds->FrameElastic2Ds.size();
+}
+
+size_t add_quad4_elastic(const int id, const int nodeI, const int nodeJ, const int nodeP, const int nodeQ,
+	const double E, const double nu, const double t)
+{
+	ds->addQuad4Elastic(id, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
+	return ds->Quad4Elastics.size();
+}
+
+size_t add_spring_2d(const int id, const int ni, const int nj, const double k, const int localAxis)
+{
+	ds->addSpring2D(id, ni, nj, k, ELE::LocalAxis(localAxis));
+	return ds->Spring2Ds.size();
 }

@@ -23,6 +23,11 @@ void DOF::setMass(const double m)
 	mass = m;
 }
 
+void DOF::setFixed(const bool isFixed)
+{
+	this->isFixed = isFixed;
+}
+
 void DOF::setResponse(const double dsp, const double vel, const double acc)
 {
 	this->dsp = dsp;

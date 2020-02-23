@@ -1,5 +1,4 @@
 #include "ElementRecorder.h"
-#include "RODS.h"
 
 ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, Response rtype, char * fileName):
 	Recorder(id, rtype, fileName), eles(eles)

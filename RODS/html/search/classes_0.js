@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['basis_237',['Basis',['../class_basis.html',1,'']]],
-  ['beamelastic_238',['BeamElastic',['../class_beam_elastic.html',1,'']]]
+  ['basis_245',['Basis',['../class_basis.html',1,'']]],
+  ['beamelastic2d_246',['BeamElastic2D',['../class_beam_elastic2_d.html',1,'']]]
 ];

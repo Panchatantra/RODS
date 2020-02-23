@@ -6,12 +6,12 @@
  * @brief      The elastic beam element in X-Z plane.
  * @note       This element does not have an axial deformation, and thus can not be used in practice.
  */
-class BeamElastic :
+class BeamElastic2D :
 	public Element2D
 {
 public:
-	BeamElastic(const int id, Node * nodeI, Node * nodeJ, const double EI);
-	~BeamElastic();
+	BeamElastic2D(const int id, Node * nodeI, Node * nodeJ, const double EI);
+	~BeamElastic2D();
 
 	void buildMatrix();
 	void getResponse(const bool update = false);

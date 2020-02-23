@@ -1,6 +1,6 @@
 #include "SpringNonlinear2D.h"
 
-SpringNonlinear2D::SpringNonlinear2D(const int id, Node * nodeI, Node * nodeJ, Material1D *smat, ELE::localAxis axis) :
+SpringNonlinear2D::SpringNonlinear2D(const int id, Node * nodeI, Node * nodeJ, Material1D *smat, ELE::LocalAxis axis) :
 	Element2D(id, nodeI, nodeJ), smat(smat->copy()), k(smat->E), ue(0.0), f(0.0), axis(axis)
 {
 	if (axis == ELE::U1)

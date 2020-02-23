@@ -10,7 +10,7 @@ class Spring2D :
 	public Element2D
 {
 public:
-	Spring2D(const int id, Node * nodeI, Node * nodeJ, const double k, ELE::localAxis axis);
+	Spring2D(const int id, Node * nodeI, Node * nodeJ, const double k, ELE::LocalAxis axis);
 	~Spring2D();
 
 	virtual void buildMatrix();

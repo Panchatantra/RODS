@@ -13,7 +13,7 @@ class DashpotMaxwell2D : public Element2D
 {
 public:
 	DashpotMaxwell2D(const int id, Node * nodeI, Node * nodeJ, const double k, const double c, const double alpha,
-		ELE::localAxis axis);
+		ELE::LocalAxis axis);
 	~DashpotMaxwell2D();
 
 	virtual void getResponse(const bool update = false);

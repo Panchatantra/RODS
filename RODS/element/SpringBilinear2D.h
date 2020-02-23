@@ -13,7 +13,7 @@ class SpringBilinear2D : public Element2D
 {
 public:
 	SpringBilinear2D(const int id, DOF *i, DOF *j, const double k0, const double uy,
-					const double alpha, ELE::localAxis axis);
+					const double alpha, ELE::LocalAxis axis);
 	~SpringBilinear2D();
 
 	void buildMatrix() override;
@@ -25,7 +25,7 @@ public:
 	double k, ue, f;
 	double kp, up, dup, fp;
 	size_t status, sp;
-	ELE::localAxis axis;
+	ELE::LocalAxis axis;
 
 	rowvec::fixed<4> T;
 	mat::fixed<4, 4> K;

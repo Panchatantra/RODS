@@ -304,7 +304,7 @@
   <ItemGroup>
     <ClCompile Include="Basis.cpp" />
     <ClCompile Include="DOF.cpp" />
-    <ClCompile Include="element\BeamElastic.cpp" />
+    <ClCompile Include="element\BeamElastic2D.cpp" />
     <ClCompile Include="element\Dashpot.cpp" />
     <ClCompile Include="element\Dashpot2D.cpp" />
     <ClCompile Include="element\DashpotExp.cpp" />
@@ -359,7 +359,7 @@
   <ItemGroup>
     <ClInclude Include="Basis.h" />
     <ClInclude Include="DOF.h" />
-    <ClInclude Include="element\BeamElastic.h" />
+    <ClInclude Include="element\BeamElastic2D.h" />
     <ClInclude Include="element\Dashpot.h" />
     <ClInclude Include="element\Dashpot2D.h" />
     <ClInclude Include="element\DashpotExp.h" />

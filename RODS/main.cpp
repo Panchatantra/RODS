@@ -22,8 +22,8 @@ void example_sdof()
 
 	DynamicSystem *ds = new DynamicSystem();
 
-	ds->addDof(0, m, FIXED);
-	ds->addDof(1, m);
+	ds->addDOF(0, m, FIXED);
+	ds->addDOF(1, m);
 
 	ds->addSpring(0, 0, 1, k);
 	ds->addDashpot(1, 0, 1, c);
@@ -73,8 +73,8 @@ void example_sdof_inerter_system()
 
 	DynamicSystem *ds = new DynamicSystem();
 
-	ds->addDof(1, m, FIXED);
-	ds->addDof(2, m);
+	ds->addDOF(1, m, FIXED);
+	ds->addDOF(2, m);
 
 	ds->addSpring(1, 1, 2, k);
 	ds->addDashpot(2, 1, 2, c);
@@ -86,7 +86,7 @@ void example_sdof_inerter_system()
 	double k_s = kp * k;
 	double c_d = 2.0*xi*sqrt(m*k);
 
-	//ds->addDof(11, 0.0);
+	//ds->addDOF(11, 0.0);
 	//ds->addInerter(11, 1, 11, m_in);
 	//ds->addDashpot(12, 1, 11, c_d);
 	//ds->addSpring(13, 11, 2, k_s);
@@ -129,8 +129,8 @@ void example_sdof_bl()
 
 	DynamicSystem *ds = new DynamicSystem();
 
-	ds->addDof(0, m, FIXED);
-	ds->addDof(1, m);
+	ds->addDOF(0, m, FIXED);
+	ds->addDOF(1, m);
 
 	ds->addMaterialElastoplastic(0, k, k*uy, alpha);
 	ds->addMaterialSMABilinear(1, k, k*uy, alpha, 0.5*k*uy);
@@ -184,10 +184,10 @@ void example_shear_building()
 	int ndof = 1;
 	auto *ds = new DynamicSystem(zeta);
 
-	ds->addDof(0, m, FIXED);
+	ds->addDOF(0, m, FIXED);
 	for (int i = 1; i <= ndof; i++)
 	{
-		ds->addDof(i, m);
+		ds->addDOF(i, m);
 		ds->addSpring(i, i - 1, i, k);
 	}
 
@@ -252,12 +252,12 @@ void example_shear_building_spis2()
 	double c_d = 2.0*xi*sqrt(m*k);
 	double k_s = kp * k;
 
-	ds->addDof(0, m, FIXED);
+	ds->addDOF(0, m, FIXED);
 	for (int i = 1; i <= ndof; i++)
 	{
-		ds->addDof(i * 10, m);
+		ds->addDOF(i * 10, m);
 		ds->addSpring(i, (i - 1) * 10, i * 10, k);
-		ds->addDof(i * 10 + 1, 0.0);
+		ds->addDOF(i * 10 + 1, 0.0);
 		ds->addSPIS2(i, (i - 1) * 10, i * 10, i * 10 + 1, m_in, c_d, k_s);
 	}
 
@@ -343,8 +343,8 @@ void example_truss()
 
 	for (int i = 0; i < nnd; i++)
 	{
-		ds->addDof(2 * i + 1, Direction::X, mass);
-		ds->addDof(2 * i + 2, Direction::Z, mass);
+		ds->addDOF(2 * i + 1, Direction::X, mass);
+		ds->addDOF(2 * i + 2, Direction::Z, mass);
 
 		x = nodeCoord[i][0];
 		z = nodeCoord[i][1];
@@ -371,7 +371,7 @@ void example_truss()
 	{
 		ni = elementConnect[i][0];
 		nj = elementConnect[i][1];
-		ds->addTrussElastic(i + 1, ni, nj, EA);
+		ds->addTrussElastic2D(i + 1, ni, nj, EA);
 	}
 
 	ds->assembleMatrix();
@@ -413,9 +413,9 @@ void example_frame()
 	double x = 0, z = 0;
 	for (int i = 0; i < nnd; i++)
 	{
-		ds->addDof(3 * i + 1, Direction::X, mass);
-		ds->addDof(3 * i + 2, Direction::Z, mass);
-		ds->addDof(3 * i + 3, Direction::RY, mass);
+		ds->addDOF(3 * i + 1, Direction::X, mass);
+		ds->addDOF(3 * i + 2, Direction::Z, mass);
+		ds->addDOF(3 * i + 3, Direction::RY, mass);
 
 		x = nodeCoord[i][0];
 		z = nodeCoord[i][1];
@@ -450,11 +450,11 @@ void example_frame()
 		st = elementConnect[i][2];
 		if (st == 1)
 		{
-			ds->addFrameElastic(i + 1, ni, nj, EA_c, EI_c);
+			ds->addFrameElastic2D(i + 1, ni, nj, EA_c, EI_c);
 		}
 		else
 		{
-			ds->addFrameElastic(i + 1, ni, nj, EA_b, EI_b);
+			ds->addFrameElastic2D(i + 1, ni, nj, EA_b, EI_b);
 		}
 	}
 
@@ -536,9 +536,9 @@ void example_cantilever()
 	double x = 0, z = 0;
 	for (int i = 0; i < nnd; i++)
 	{
-		ds->addDof(3 * i + 1, Direction::X, mass);
-		ds->addDof(3 * i + 2, Direction::Z, mass);
-		ds->addDof(3 * i + 3, Direction::RY, mass*1.0e-1);
+		ds->addDOF(3 * i + 1, Direction::X, mass);
+		ds->addDOF(3 * i + 2, Direction::Z, mass);
+		ds->addDOF(3 * i + 3, Direction::RY, mass*1.0e-1);
 
 		x = nodeCoord[i][0];
 		z = nodeCoord[i][1];
@@ -557,13 +557,13 @@ void example_cantilever()
 		st = elementConnect[i][2];
 		if (st == 1)
 		{
-			ds->addFrameElastic(i + 1, ni, nj, EA_b, EI_b);
-			//ds->addBeamElastic(i + 1, ni, nj, EI_b);
+			ds->addFrameElastic2D(i + 1, ni, nj, EA_b, EI_b);
+			//ds->addBeamElastic2D(i + 1, ni, nj, EI_b);
 		}
 		else
 		{
-			ds->addFrameElastic(i + 1, ni, nj, EA_c, EI_c);
-			//ds->addBeamElastic(i + 1, ni, nj, EI_c);
+			ds->addFrameElastic2D(i + 1, ni, nj, EA_c, EI_c);
+			//ds->addBeamElastic2D(i + 1, ni, nj, EI_c);
 		}
 	}
 
@@ -625,8 +625,8 @@ void example_wall()
 	double x = 0.0, z = 0.0;
 	for (auto i = 0; i < nnd; i++)
 	{
-		ds->addDof(2 * i + 1, Direction::X, mass);
-		ds->addDof(2 * i + 2, Direction::Z, mass);
+		ds->addDOF(2 * i + 1, Direction::X, mass);
+		ds->addDOF(2 * i + 2, Direction::Z, mass);
 
 		x = crds[i][0];
 		z = crds[i][1];
@@ -685,8 +685,8 @@ void example_nonlinear_spring()
 	double A = 2148.84937505542;
 	auto ds = new DynamicSystem();
 	
-	ds->addDof(1,Direction::X,0.0,FIXED);
-	ds->addDof(2,Direction::X,0.0);
+	ds->addDOF(1,Direction::X,0.0,FIXED);
+	ds->addDOF(2,Direction::X,0.0);
 
 	ds->addSpringBilinear(1,1,2,E*A/L,fy*A/(E*A/L),alpha);
 
@@ -726,12 +726,12 @@ void example_nonlinear_truss()
 	ds->addFiber(fiberId, matId, A,0.0);
 	ds->addSectionTruss(secId, &fiberId, 1);
 
-	ds->addDof(1,Direction::X,0.0,FIXED);
-	ds->addDof(2,Direction::Z,0.0,FIXED);
-	ds->addDof(3,Direction::X,0.0,FIXED);
-	ds->addDof(4,Direction::Z,0.0);
-	ds->addDof(5,Direction::X,0.0,FIXED);
-	ds->addDof(6,Direction::Z,0.0);
+	ds->addDOF(1,Direction::X,0.0,FIXED);
+	ds->addDOF(2,Direction::Z,0.0,FIXED);
+	ds->addDOF(3,Direction::X,0.0,FIXED);
+	ds->addDOF(4,Direction::Z,0.0);
+	ds->addDOF(5,Direction::X,0.0,FIXED);
+	ds->addDOF(6,Direction::Z,0.0);
 	
 	double L = 1000.0;
 	ds->addNode(1,0.0,0.0,1,2,-1);
@@ -802,17 +802,17 @@ void example_nonlinear_cantilever()
 	
 	ds->addSectionFrame2D(secId, fiberIds, nLayer+2);
 
-	ds->addDof(1,Direction::X,0.0,FIXED);
-	ds->addDof(2,Direction::Z,0.0,FIXED);
-	ds->addDof(3,Direction::RY,0.0,FIXED);
+	ds->addDOF(1,Direction::X,0.0,FIXED);
+	ds->addDOF(2,Direction::Z,0.0,FIXED);
+	ds->addDOF(3,Direction::RY,0.0,FIXED);
 	
-	ds->addDof(4,Direction::X,0.0);
-	ds->addDof(5,Direction::Z,0.0);
-	ds->addDof(6,Direction::RY,0.0);
+	ds->addDOF(4,Direction::X,0.0);
+	ds->addDOF(5,Direction::Z,0.0);
+	ds->addDOF(6,Direction::RY,0.0);
 
-	ds->addDof(7,Direction::X,0.0);
-	ds->addDof(8,Direction::Z,0.0);
-	ds->addDof(9,Direction::RY,0.0);
+	ds->addDOF(7,Direction::X,0.0);
+	ds->addDOF(8,Direction::Z,0.0);
+	ds->addDOF(9,Direction::RY,0.0);
 
 	double L = 750.0;
 	ds->addNode(1,0.0,0.0,1,2,3);
@@ -833,8 +833,8 @@ void example_nonlinear_cantilever()
 
 	double EA = Ec*b*h;
 	double EI = Ec*b*h*h*h/12.0;
-	//ds->addFrameElastic(1,1,2,EA,EI);
-	//ds->addFrameElastic(2,2,4,EA,EI);
+	//ds->addFrameElastic2D(1,1,2,EA,EI);
+	//ds->addFrameElastic2D(2,2,4,EA,EI);
 
 	ds->assembleMatrix();
 

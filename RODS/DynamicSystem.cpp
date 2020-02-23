@@ -34,20 +34,20 @@ void DynamicSystem::addNode(Node * nd)
 	}
 }
 
-void DynamicSystem::addNode(const int id, const double x, const int dofId)
+void DynamicSystem::addNode(const int nodeId, const double x, const int dofId)
 {
 	DOF *d = DOFs.at(dofId);
-	Node *nd = new Node(id, x);
+	Node *nd = new Node(nodeId, x);
 	nd->setDof(d);
 	addNode(nd);
 }
 
-void DynamicSystem::addNode(const int id, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId)
+void DynamicSystem::addNode(const int nodeId, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId)
 {
 	DOF *dx = DOFs.at(dofXId);
 	DOF *dz = DOFs.at(dofZId);
 
-	Node *nd = new Node(id, x, 0.0, z);
+	Node *nd = new Node(nodeId, x, 0.0, z);
 	nd->setDof(dx);
 	nd->setDof(dz);
 
@@ -59,11 +59,11 @@ void DynamicSystem::addNode(const int id, const double x, const double z, const 
 	addNode(nd);
 }
 
-void DynamicSystem::addNode(const int id, const double x, const double y, const double z,
+void DynamicSystem::addNode(const int nodeId, const double x, const double y, const double z,
 				const int dofXId,  const int dofYId,  const int dofZId,
 				const int dofRXId, const int dofRYId, const int dofRZId)
 {
-	Node *nd = new Node(id, x, y, z);
+	Node *nd = new Node(nodeId, x, y, z);
 
 	nd->setDof(DOFs.at(dofXId));
 	nd->setDof(DOFs.at(dofYId));
@@ -82,7 +82,7 @@ void DynamicSystem::addNodeWithDof(const int id, const double x, const int dofId
 	Node *nd = new Node(id, x, 0.0, 0.0);
 	nd->setDof(d);
 
-	addDof(d);
+	addDOF(d);
 	addNode(nd);
 }
 
@@ -101,18 +101,23 @@ void DynamicSystem::addLine(const int id, const int ni, const int nj)
 	addLine(l);
 }
 
-void DynamicSystem::fixDof(const int id)
+void DynamicSystem::fixDOF(const int id)
 {
-	DOFs.at(id)->isFixed = true;
+	DOFs.at(id)->setFixed();
 }
 
 void DynamicSystem::fixNode(const int id)
 {
-	Nodes.at(id)->fixDof();
+	Nodes.at(id)->fixDOF();
+}
+
+void DynamicSystem::fixNode(const int nodeId, Direction dir)
+{
+	Nodes.at(id)->fixDOF(dir);
 }
 
 void DynamicSystem::addLoad(const int id, double* t, double* p, const int nP, const double arriveTime,
-	const double scale)
+                            const double scale)
 {
 	if (Loads.count(id) == 0)
 	{
@@ -206,7 +211,7 @@ void DynamicSystem::exportGmsh(char * fileName)
 	}
 }
 
-void DynamicSystem::addDof(DOF * d)
+void DynamicSystem::addDOF(DOF * d)
 {
 	if (DOFs.count(d->id) == 0)
 	{
@@ -218,16 +223,16 @@ void DynamicSystem::addDof(DOF * d)
 	}
 }
 
-void DynamicSystem::addDof(const int id, const double m, const bool fixed)
+void DynamicSystem::addDOF(const int id, const double m, const bool fixed)
 {
 	DOF *d = new DOF(id, Direction::X, m, fixed);
-	addDof(d);
+	addDOF(d);
 }
 
-void DynamicSystem::addDof(const int id, Direction dir, const double m, const bool fixed)
+void DynamicSystem::addDOF(const int id, Direction dir, const double m, const bool fixed)
 {
 	DOF *d = new DOF(id, dir, m, fixed);
-	addDof(d);
+	addDOF(d);
 }
 
 void DynamicSystem::setMass(const int id, const double m)
@@ -410,152 +415,116 @@ bool DynamicSystem::checkDuplicateElement(const int eleId)
 
 void DynamicSystem::addSpring(const int id, const int ni, const int nj, const double k)
 {
-	if ( checkDuplicateElement(id) )
-	{
-		Spring *s = new Spring(id, DOFs.at(ni), DOFs.at(nj), k);
-		Elements[id] = s;
-		Springs[id] = s;
-		linearElasticElements[id] = s;
-	}
+	if ( !checkDuplicateElement(id) ) return;
+	Spring *s = new Spring(id, DOFs.at(ni), DOFs.at(nj), k);
+	Elements[id] = s;
+	Springs[id] = s;
+	linearElasticElements[id] = s;
 }
 
 void DynamicSystem::addSpringBilinear(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha)
 {
-	if ( checkDuplicateElement(id) )
-	{
-		SpringBilinear *s = new SpringBilinear(id, DOFs.at(ni), DOFs.at(nj), k0, uy, alpha);
-		Elements[id] = s;
-		SpringBilinears[id] = s;
-		nonlinearTangentElements[id] = s;
-	}
+	if ( !checkDuplicateElement(id) ) return;
+
+	SpringBilinear *s = new SpringBilinear(id, DOFs.at(ni), DOFs.at(nj), k0, uy, alpha);
+	Elements[id] = s;
+	SpringBilinears[id] = s;
+	nonlinearTangentElements[id] = s;
 }
 
 void DynamicSystem::addSpringNonlinear(const int id, const int ni, const int nj, const int matId)
 {
-	if ( checkDuplicateElement(id) )
-	{
-		SpringNonlinear *s = new SpringNonlinear(id, DOFs.at(ni), DOFs.at(nj), Material1Ds.at(matId));
-		Elements[id] = s;
-		SpringNonlinears[id] = s;
-		nonlinearTangentElements[id] = s;
-	}
+	if ( !checkDuplicateElement(id) ) return;
+
+	SpringNonlinear *s = new SpringNonlinear(id, DOFs.at(ni), DOFs.at(nj), Material1Ds.at(matId));
+	Elements[id] = s;
+	SpringNonlinears[id] = s;
+	nonlinearTangentElements[id] = s;
 }
 
 void DynamicSystem::addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n)
 {
-	if ( checkDuplicateElement(id) )
-	{
-		SpringBoucWen *s = new SpringBoucWen(id, DOFs.at(ni), DOFs.at(nj), k0, uy, alpha);
-		Elements[id] = s;
-		SpringBoucWens[id] = s;
-		nonlinearTangentElements[id] = s;
-	}
+	if ( !checkDuplicateElement(id) ) return;
+
+	SpringBoucWen *s = new SpringBoucWen(id, DOFs.at(ni), DOFs.at(nj), k0, uy, alpha);
+	Elements[id] = s;
+	SpringBoucWens[id] = s;
+	nonlinearTangentElements[id] = s;
 }
 
 void DynamicSystem::addDashpot(const int id, const int ni, const int nj, const double c)
 {
-	if ( checkDuplicateElement(id) )
-	{
-		Dashpot *d = new Dashpot(id, DOFs.at(ni), DOFs.at(nj), c);
-		Elements[id] = d;
-		Dashpots[id] = d;
-		linearDampingElements[id] = d;
-	}
-}
+	if ( !checkDuplicateElement(id) ) return;
 
-void DynamicSystem::addDashpotExp(DashpotExp * d)
-{
-	if (addElement(d))
-	{
-		DashpotExps[d->id] = d;
-		nonlinearElements[d->id] = d;
-	}
+	Dashpot *d = new Dashpot(id, DOFs.at(ni), DOFs.at(nj), c);
+	Elements[id] = d;
+	Dashpots[id] = d;
+	linearDampingElements[id] = d;
+
 }
 
 void DynamicSystem::addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha)
 {
-	DashpotExp *d = new DashpotExp(id, DOFs.at(ni), DOFs.at(nj), c, alpha);
-	addDashpotExp(d);
-}
+	if ( !checkDuplicateElement(id) ) return;
 
-void DynamicSystem::addDashpotMaxwell(DashpotMaxwell * d)
-{
-	if (addElement(d))
-	{
-		DashpotMaxwells[d->id] = d;
-		nonlinearElements[d->id] = d;
-	}
+	DashpotExp *d = new DashpotExp(id, DOFs.at(ni), DOFs.at(nj), c, alpha);
+	Elements[id] = d;
+	DashpotExps[id] = d;
+	nonlinearElements[id] = d;
 }
 
 void DynamicSystem::addDashpotMaxwell(const int id, const int ni, const int nj, const double k, const double c, const double alpha)
 {
-	DashpotMaxwell *d = new DashpotMaxwell(id, DOFs.at(ni), DOFs.at(nj), c, alpha);
-	addDashpotMaxwell(d);
-}
+	if ( !checkDuplicateElement(id) ) return;
 
-void DynamicSystem::addInerter(Inerter * in)
-{
-	if (addElement(in))
-	{
-		Inerters[in->id] = in;
-		inertialMassElements[in->id] = in;
-	}
+	DashpotMaxwell *d = new DashpotMaxwell(id, DOFs.at(ni), DOFs.at(nj), c, alpha);
+	Elements[id] = d;
+	DashpotMaxwells[id] = d;
+	nonlinearElements[id] = d;
 }
 
 void DynamicSystem::addInerter(const int id, const int ni, const int nj, const double m)
 {
+	if ( !checkDuplicateElement(id) ) return;
 	Inerter *in = new Inerter(id, DOFs.at(ni), DOFs.at(nj), m);
-	addInerter(in);
-}
-
-void DynamicSystem::addSlider(Slider * s)
-{
-	if (addElement(s))
-	{
-		Sliders[s->id] = s;
-		nonlinearElements[s->id] = s;
-	}
+	Elements[id] = in;
+	Inerters[id] = in;
+	inertialMassElements[id] = in;
 }
 
 void DynamicSystem::addSlider(const int id, const int ni, const int nj, const double muN)
 {
-	Slider *s = new Slider(id, DOFs.at(ni), DOFs.at(nj), muN);
-	addSlider(s);
-}
+	if ( !checkDuplicateElement(id) ) return;
 
-void DynamicSystem::addSPIS2(SPIS2 * s)
-{
-	if (addElement(s))
-	{
-		SPIS2s[s->id] = s;
-		linearElasticElements[s->id] = s;
-		linearDampingElements[s->id] = s;
-		inertialMassElements[s->id] = s;
-	}
+	Slider *s = new Slider(id, DOFs.at(ni), DOFs.at(nj), muN);
+	Elements[id] = s;
+	Sliders[id] = s;
+	nonlinearElements[id] = s;
 }
 
 void DynamicSystem::addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k)
 {
-	SPIS2 *s = new SPIS2(id, DOFs.at(ni), DOFs.at(nj), DOFs.at(nin), m, c, k);
-	addSPIS2(s);
-}
+	if ( !checkDuplicateElement(id) ) return;
 
-void DynamicSystem::addTVMD(TVMD *d)
-{
-	if (addElement(d))
-	{
-		TVMDs[d->id] = d;
-		nonlinearElements[d->id] = d;
-	}
+	SPIS2 *s = new SPIS2(id, DOFs.at(ni), DOFs.at(nj), DOFs.at(nin), m, c, k);
+	Elements[id] = s;
+	SPIS2s[id] = s;
+	linearElasticElements[id] = s;
+	linearDampingElements[id] = s;
+	inertialMassElements[id] = s;
 }
 
 void DynamicSystem::addTVMD(const int id, const int ni, const int nj, const double m, const double c, const double k)
 {
+	if ( !checkDuplicateElement(id) ) return;
+
 	TVMD *d = new TVMD(id, DOFs.at(ni), DOFs.at(nj), m, c, k);
-	addTVMD(d);
+	Elements[id] = d;
+	TVMDs[id] = d;
+	nonlinearElements[id] = d;
 }
 
-void DynamicSystem::addSpring2D(const int id, const int ni, const int nj, const double k, ELE::localAxis U)
+void DynamicSystem::addSpring2D(const int id, const int ni, const int nj, const double k, ELE::LocalAxis U)
 {
 	if (!checkDuplicateElement(id)) return;
 
@@ -566,7 +535,7 @@ void DynamicSystem::addSpring2D(const int id, const int ni, const int nj, const 
 	linearElasticElements[id] = s;
 }
 
-void DynamicSystem::addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n, ELE::localAxis U /*= ELE::U1*/)
+void DynamicSystem::addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n, ELE::LocalAxis U /*= ELE::U1*/)
 {
 	if (!checkDuplicateElement(id)) return;
 
@@ -577,194 +546,149 @@ void DynamicSystem::addSpringBoucWen2D(const int id, const int ni, const int nj,
 	nonlinearTangentElements[id] = s;
 }
 
-void DynamicSystem::addDashpot2D(Dashpot2D *s)
+void DynamicSystem::addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::LocalAxis U)
 {
-	if (addElement(s))
-	{
-		Element2Ds[s->id] = s;
-		Dashpot2Ds[s->id] = s;
-		linearDampingElements[s->id] = s;
-	}
+	if (!checkDuplicateElement(id)) return;
+
+	Dashpot2D *d = new Dashpot2D(id, Nodes.at(ni), Nodes.at(nj), c, U);
+	Elements[id] = d;
+	Element2Ds[id] = d;
+	Dashpot2Ds[id] = d;
+	linearDampingElements[id] = d;
 }
 
-void DynamicSystem::addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::localAxis U)
+void DynamicSystem::addInerter2D(const int id, const int ni, const int nj, const double m, ELE::LocalAxis U)
 {
-	Dashpot2D *s = new Dashpot2D(id, Nodes.at(ni), Nodes.at(nj), c, U);
-	addDashpot2D(s);
+	if (!checkDuplicateElement(id)) return;
+
+	Inerter2D *in = new Inerter2D(id, Nodes.at(ni), Nodes.at(nj), m, U);
+	Elements[id] = in;
+	Element2Ds[id] = in;
+	Inerter2Ds[id] = in;
+	inertialMassElements[id] = in;
 }
 
-void DynamicSystem::addInerter2D(Inerter2D *s)
+void DynamicSystem::addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, ELE::LocalAxis U /*= ELE::U1*/)
 {
-	if (addElement(s))
-	{
-		Element2Ds[s->id] = s;
-		Inerter2Ds[s->id] = s;
-		inertialMassElements[s->id] = s;
-	}
+	if (!checkDuplicateElement(id)) return;
+
+	DashpotExp2D *d = new DashpotExp2D(id, Nodes.at(ni), Nodes.at(nj), c, alpha, U);
+	Elements[id] = d;
+	Element2Ds[id] = d;
+	DashpotExp2Ds[id] = d;
+	nonlinearElements[id] = d;
 }
 
-void DynamicSystem::addInerter2D(const int id, const int ni, const int nj, const double m, ELE::localAxis U)
+void DynamicSystem::addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::LocalAxis U)
 {
-	Inerter2D *s = new Inerter2D(id, Nodes.at(ni), Nodes.at(nj), m, U);
-	addInerter2D(s);
+	if (!checkDuplicateElement(id)) return;
+	DashpotMaxwell2D *d = new DashpotMaxwell2D(id, Nodes.at(ni), Nodes.at(nj), k, c, alpha, U);
+	Elements[id] = d;
+	Element2Ds[id] = d;
+	DashpotMaxwell2Ds[id] = d;
+	nonlinearElements[id] = d;
 }
 
-void DynamicSystem::addDashpotExp2D(DashpotExp2D *s)
+void DynamicSystem::addTrussElastic2D(const int id, const int ni, const int nj, const double EA)
 {
-	if (addElement(s))
-	{
-		Element2Ds[s->id] = s;
-		DashpotExp2Ds[s->id] = s;
-		nonlinearElements[s->id] = s;
-	}
-}
+	if (!checkDuplicateElement(id)) return;
 
-void DynamicSystem::addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, ELE::localAxis U /*= ELE::U1*/)
-{
-	DashpotExp2D *s = new DashpotExp2D(id, Nodes.at(ni), Nodes.at(nj), c, alpha, U);
-	addDashpotExp2D(s);
-}
-
-void DynamicSystem::addDashpotMaxwell2D(DashpotMaxwell2D *s)
-{
-	if (addElement(s))
-	{
-		Element2Ds[s->id] = s;
-		DashpotMaxwell2Ds[s->id] = s;
-		nonlinearElements[s->id] = s;
-	}
-}
-
-void DynamicSystem::addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::localAxis U)
-{
-	DashpotMaxwell2D *s = new DashpotMaxwell2D(id, Nodes.at(ni), Nodes.at(nj), k, c, alpha, U);
-	addDashpotMaxwell2D(s);
-}
-
-void DynamicSystem::addTrussElastic(TrussElastic2D *truss)
-{
-	if (addElement(truss)) {
-		Element2Ds[truss->id] = truss;
-		TrussElastics[truss->id] = truss;
-		linearElasticElements[truss->id] = truss;
-	}
-}
-
-void DynamicSystem::addTrussElastic(const int id, const int ni, const int nj, const double EA)
-{
 	TrussElastic2D *truss = new TrussElastic2D(id, Nodes.at(ni), Nodes.at(nj), EA);
-	addTrussElastic(truss);
+	Elements[id] = truss;
+	Element2Ds[id] = truss;
+	TrussElastic2Ds[id] = truss;
+	linearElasticElements[id] = truss;
 }
 
-void DynamicSystem::addBeamElastic(BeamElastic *beam)
+void DynamicSystem::addBeamElastic2D(const int id, const int ni, const int nj, const double EI)
 {
-	if (addElement(beam)) {
-		Element2Ds[beam->id] = beam;
-		BeamElastics[beam->id] = beam;
-		linearElasticElements[beam->id] = beam;
-	}
+	if (!checkDuplicateElement(id)) return;
+
+	BeamElastic2D *beam = new BeamElastic2D(id, Nodes.at(ni), Nodes.at(nj), EI);
+	Elements[id] = beam;
+	Element2Ds[id] = beam;
+	BeamElastic2Ds[id] = beam;
+	linearElasticElements[id] = beam;
 }
 
-void DynamicSystem::addBeamElastic(const int id, const int ni, const int nj, const double EI)
+void DynamicSystem::addFrameElastic2D(const int id, const int ni, const int nj, const double EA, const double EI)
 {
-	BeamElastic *beam = new BeamElastic(id, Nodes.at(ni), Nodes.at(nj), EI);
-	addBeamElastic(beam);
-}
+	if (!checkDuplicateElement(id)) return;
 
-void DynamicSystem::addFrameElastic(FrameElastic2D *frame)
-{
-	if (addElement(frame)) {
-		Element2Ds[frame->id] = frame;
-		FrameElastic2Ds[frame->id] = frame;
-		linearElasticElements[frame->id] = frame;
-	}
-}
-
-void DynamicSystem::addFrameElastic(const int id, const int ni, const int nj, const double EA, const double EI)
-{
 	FrameElastic2D *frame = new FrameElastic2D(id, Nodes.at(ni), Nodes.at(nj), EA, EI);
-	addFrameElastic(frame);
-}
-
-void DynamicSystem::addQuad4Elastic(Quad4Elastic* quad)
-{
-	if (addElement(quad)) {
-		Quad4Elastics[quad->id] = quad;
-		Plane2Ds[quad->id] = quad;
-		linearElasticElements[quad->id] = quad;
-	}
+	Elements[id] = frame;
+	Element2Ds[id] = frame;
+	FrameElastic2Ds[id] = frame;
+	linearElasticElements[id] = frame;
 }
 
 void DynamicSystem::addQuad4Elastic(const int id, const int nodeI, const int nodeJ, const int nodeP, const int nodeQ,
 	const double E, const double nu, const double t)
 {
+	if (!checkDuplicateElement(id)) return;
+
 	Quad4Elastic *quad = new Quad4Elastic(id, Nodes.at(nodeI), Nodes.at(nodeJ), Nodes.at(nodeP), Nodes.at(nodeQ), E, nu, t);
-	addQuad4Elastic(quad);
+	Elements[id] = quad;
+	Quad4Elastics[id] = quad;
+	Plane2Ds[id] = quad;
+	linearElasticElements[id] = quad;
 }
 
 void DynamicSystem::addTruss2D(const int id, const int ni, const int nj, const int secId)
 {
-	if (Elements.count(id) == 0)
-	{
-		Truss2D *truss = new Truss2D(id, Nodes.at(ni), Nodes.at(nj), SectionTrusss.at(secId));
-		Elements[id] = truss;
-		Element2Ds[id] = truss;
-		Truss2Ds[id] = truss;
-		nonlinearInitialTangentElements[id] = truss;
-	}
-	else
-	{
-		cout << "Element ID: " << id << " already exists! The element will not be added." << endl;
-	}
+	if (!checkDuplicateElement(id)) return;
+
+	Truss2D *truss = new Truss2D(id, Nodes.at(ni), Nodes.at(nj), SectionTrusss.at(secId));
+	Elements[id] = truss;
+	Element2Ds[id] = truss;
+	Truss2Ds[id] = truss;
+	nonlinearInitialTangentElements[id] = truss;
 }
 
 void DynamicSystem::addFrame2D(const int id, const int ni, const int nj, const int secId, const int nIntP)
 {
-	if (Elements.count(id) == 0)
-	{
-		Frame2D *frame = new Frame2D(id, Nodes.at(ni), Nodes.at(nj), SectionFrame2Ds.at(secId), nIntP);
-		Elements[id] = frame;
-		Element2Ds[id] = frame;
-		Frame2Ds[id] = frame;
-		nonlinearInitialTangentElements[id] = frame;
-	}
-	else
-	{
-		cout << "Element ID: " << id << " already exists! The element will not be added." << endl;
-	}
+	if (!checkDuplicateElement(id)) return;
+
+	Frame2D *frame = new Frame2D(id, Nodes.at(ni), Nodes.at(nj), SectionFrame2Ds.at(secId), nIntP);
+	Elements[id] = frame;
+	Element2Ds[id] = frame;
+	Frame2Ds[id] = frame;
+	nonlinearInitialTangentElements[id] = frame;
 }
 
 void DynamicSystem::addFramePDelta2D(const int id, const int ni, const int nj, const int secId, const int nIntP)
 {
-	if (Elements.count(id) == 0)
-	{
-		FramePDelta2D *frame = new FramePDelta2D(id, Nodes.at(ni), Nodes.at(nj), SectionFrame2Ds.at(secId), nIntP);
-		Elements[id] = frame;
-		Element2Ds[id] = frame;
-		FramePDelta2Ds[id] = frame;
-		nonlinearInitialTangentElements[id] = frame;
-	}
-	else
-	{
-		cout << "Element ID: " << id << " already exists! The element will not be added." << endl;
-	}
-}
+	if (!checkDuplicateElement(id)) return;
 
-void DynamicSystem::addWave(Wave * ts)
-{
-	Waves[ts->id] = ts;
+	FramePDelta2D *frame = new FramePDelta2D(id, Nodes.at(ni), Nodes.at(nj), SectionFrame2Ds.at(secId), nIntP);
+	Elements[id] = frame;
+	Element2Ds[id] = frame;
+	FramePDelta2Ds[id] = frame;
+	nonlinearInitialTangentElements[id] = frame;
 }
 
 void DynamicSystem::addWave(const int id, const double dt, const vec &s)
 {
+	if (Waves.count(id) > 0)
+	{
+		cout << "Wave ID: " << id << " already exists! The wave will not be added." << endl;
+		return;
+	}
+
 	Wave *ts = new Wave(id, dt, s);
-	addWave(ts);
+	Waves[ts->id] = ts;
 }
 
 void DynamicSystem::addWave(const int id, const double dt, char* fileName)
 {
+	if (Waves.count(id) > 0)
+	{
+		cout << "Wave ID: " << id << " already exists! The wave will not be added." << endl;
+		return;
+	}
+
 	Wave *ts = new Wave(id, dt, fileName);
-	addWave(ts);
+	Waves[ts->id] = ts;
 }
 
 void DynamicSystem::addDOFRecorder(const int id, int *dofIds, const int n, Response rtype, char * fileName)
