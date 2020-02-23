@@ -3,6 +3,9 @@
 #include "Element2D.h"
 #include "section/SectionTruss.h"
 
+/**
+ * @brief      The nonlinear truss element in X-Z plane.
+ */
 class Truss2D :
 	public Element2D
 {

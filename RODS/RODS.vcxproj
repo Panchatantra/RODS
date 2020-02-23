@@ -326,9 +326,11 @@
     <ClCompile Include="element\Spring.cpp" />
     <ClCompile Include="element\Spring2D.cpp" />
     <ClCompile Include="element\SpringBilinear.cpp" />
+    <ClCompile Include="element\SpringBilinear2D.cpp" />
     <ClCompile Include="element\SpringBoucWen.cpp" />
     <ClCompile Include="element\SpringBoucWen2D.cpp" />
     <ClCompile Include="element\SpringNonlinear.cpp" />
+    <ClCompile Include="element\SpringNonlinear2D.cpp" />
     <ClCompile Include="element\Truss2D.cpp" />
     <ClCompile Include="element\TrussElastic2D.cpp" />
     <ClCompile Include="element\TVMD.cpp" />
@@ -379,9 +381,11 @@
     <ClInclude Include="element\Spring.h" />
     <ClInclude Include="element\Spring2D.h" />
     <ClInclude Include="element\SpringBilinear.h" />
+    <ClInclude Include="element\SpringBilinear2D.h" />
     <ClInclude Include="element\SpringBoucWen.h" />
     <ClInclude Include="element\SpringBoucWen2D.h" />
     <ClInclude Include="element\SpringNonlinear.h" />
+    <ClInclude Include="element\SpringNonlinear2D.h" />
     <ClInclude Include="element\Truss2D.h" />
     <ClInclude Include="element\TrussElastic2D.h" />
     <ClInclude Include="element\TVMD.h" />

@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The inerter in X-Z plane.
+ */
 class Inerter2D : public Element2D
 {
 public:

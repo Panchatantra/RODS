@@ -3,6 +3,9 @@
 #include "Element2D.h"
 #include "Node.h"
 
+/**
+ * @brief      The spring in X-Z plane.
+ */
 class Spring2D :
 	public Element2D
 {

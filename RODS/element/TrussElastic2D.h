@@ -2,6 +2,9 @@
 
 #include "Element2D.h"
 
+/**
+ * @brief      The elastic truss element in X-Z plane.
+ */
 class TrussElastic2D :
 	public Element2D
 {

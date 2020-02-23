@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The Bouc-Wen spring in X-Z plane.
+ */
 class SpringBoucWen2D : public Element2D
 {
 public:

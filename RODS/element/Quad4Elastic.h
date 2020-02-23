@@ -2,6 +2,9 @@
 
 #include "Plane2D.h"
 
+/**
+ * @brief      The 4-node elastic plane element.
+ */
 class Quad4Elastic :
 	public Plane2D
 {

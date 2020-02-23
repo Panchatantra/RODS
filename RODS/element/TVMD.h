@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The tuned viscous mass damper in X direction.
+ */
 class TVMD : public Element1D
 {
 public:

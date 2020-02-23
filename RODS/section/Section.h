@@ -2,6 +2,9 @@
 
 #include "Basis.h"
 
+/**
+ * @brief      The basic class of nonlinear section.
+ */
 class Section : public Basis
 {
 public:

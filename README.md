@@ -1,4 +1,8 @@
 # RODS
+***
+
+**R**esponse solver for **O**scillated **D**ynamic **S**ystem based on finite element method
+
 ## About the name
 
 * Abbreviation for
@@ -28,7 +32,9 @@
 * Inerter2D
 * Spring2D
 * Dashpot2D
+* SpringBilinear2D
 * SpringBoucWen2D
+* SpringNonlinear2D
 * DashpotExp2D
 * DashpotMaxwell2D
 * TrussElastic2D
@@ -88,3 +94,7 @@
 ## Visualization
 
 * Gmsh
+
+## API Documentation
+
+[Link](RODS/html/index.html)

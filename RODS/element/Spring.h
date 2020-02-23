@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The spring in X direction.
+ */
 class Spring : public Element1D
 {
 public:

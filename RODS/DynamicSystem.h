@@ -287,8 +287,8 @@ public:
 	 * @brief      Adds a spring.
 	 *
 	 * @param[in]  id    The identifier
-	 * @param[in]  ni    The identifier of Node i
-	 * @param[in]  nj    The identifier of Node j
+	 * @param[in]  ni    The identifier of DOF i
+	 * @param[in]  nj    The identifier of DOF j
 	 * @param[in]  k     The stiffness
 	 */
 	void addSpring(const int id, const int ni, const int nj, const double k);
@@ -297,8 +297,8 @@ public:
 	 * @brief      Adds a bilinear spring.
 	 *
 	 * @param[in]  id     The identifier
-	 * @param[in]  ni     The identifier of Node i
-	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  ni     The identifier of DOF i
+	 * @param[in]  nj     The identifier of DOF j
 	 * @param[in]  k0     The initial stiffness
 	 * @param[in]  uy     The yield deformation
 	 * @param[in]  alpha  The post-yield stiffness ratio
@@ -306,11 +306,11 @@ public:
 	void addSpringBilinear(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
 
 	/**
-	 * @brief      Adds a nonlinear spring related to a Material1D.
+	 * @brief      Adds a nonlinear spring related to a nonlinear Material1D.
 	 *
 	 * @param[in]  id     The identifier
-	 * @param[in]  ni     The identifier of Node i
-	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  ni     The identifier of DOF i
+	 * @param[in]  nj     The identifier of DOF j
 	 * @param[in]  matId  The Material1D identifier
 	 */
 	void addSpringNonlinear(const int id, const int ni, const int nj, const int matId);
@@ -319,8 +319,8 @@ public:
 	 * @brief      Adds a Bouc-Wen spring.
 	 *
 	 * @param[in]  id     The identifier
-	 * @param[in]  ni     The identifier of Node i
-	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  ni     The identifier of DOF i
+	 * @param[in]  nj     The identifier of DOF j
 	 * @param[in]  k0     The initial stiffness
 	 * @param[in]  uy     The yield deformation
 	 * @param[in]  alpha  The post-yield stiffness ratio
@@ -333,8 +333,8 @@ public:
 	 * @brief      Adds a dashpot.
 	 *
 	 * @param[in]  id    The identifier
-	 * @param[in]  ni    The identifier of Node i
-	 * @param[in]  nj    The identifier of Node j
+	 * @param[in]  ni    The identifier of DOF i
+	 * @param[in]  nj    The identifier of DOF j
 	 * @param[in]  c     The damping coefficient
 	 */
 	void addDashpot(const int id, const int ni, const int nj, const double c);
@@ -352,10 +352,32 @@ public:
 	void addTVMD(TVMD *d);
 	void addTVMD(const int id, const int ni, const int nj, const double m, const double c, const double k);
 
-	void addSpring2D(Spring2D *s);
+	/**
+	 * @brief      Adds a Spring2D.
+	 *
+	 * @param[in]  id    The identifier
+	 * @param[in]  ni    The identifier of Node i
+	 * @param[in]  nj    The identifier of Node j
+	 * @param[in]  k     The stiffness
+	 * @param[in]  U     The local axis
+	 */
 	void addSpring2D(const int id, const int ni, const int nj, const double k, ELE::localAxis U=ELE::U1);
-	void addSpringBoucWen2D(SpringBoucWen2D *s);
+
+	/**
+	 * @brief      Adds a SpringBoucWen2D.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  ni     The identifier of Node i
+	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  k0     The initial stiffness
+	 * @param[in]  uy     The yield deformation
+	 * @param[in]  alpha  The post-yield stiffness ratio
+	 * @param[in]  beta   The beta
+	 * @param[in]  n      The n
+	 * @param[in]  U      The local axis
+	 */
 	void addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta=0.5, const double n=20, ELE::localAxis U = ELE::U1);
+
 	void addDashpot2D(Dashpot2D *s);
 	void addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::localAxis U=ELE::U1);
 	void addInerter2D(Inerter2D *s);
@@ -388,9 +410,9 @@ public:
 	void addFrame2D(const int id, const int ni, const int nj, const int secId, const int nIntP=5);
 	void addFramePDelta2D(const int id, const int ni, const int nj, const int secId, const int nIntP=5);
 
-	void addTimeSeries(Wave *ts);
-	void addTimeSeries(const int id, const double dt, const vec &s);
-	void addTimeSeries(const int id, const double dt, char * fileName);
+	void addWave(Wave *ts);
+	void addWave(const int id, const double dt, const vec &s);
+	void addWave(const int id, const double dt, char * fileName);
 
 	/**
 	 * @brief      Adds a DOF Recorder.

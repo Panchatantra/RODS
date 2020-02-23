@@ -164,6 +164,12 @@
     <ClCompile Include="Wave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="element\SpringNonlinear2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\SpringBilinear2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="numeric.h">
@@ -320,6 +326,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Wave.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\SpringNonlinear2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\SpringBilinear2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

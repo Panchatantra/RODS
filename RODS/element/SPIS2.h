@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The serial-parallel inerter system in the X direction.
+ */
 class SPIS2 : public Element1D
 {
 public:

@@ -7,6 +7,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The nonlinear spring related to a nonlinear Material1D in X direction.
+ */
 class SpringNonlinear : public Element1D
 {
 public:
@@ -16,10 +19,10 @@ public:
 	void buildMatrix();
 	void assembleStiffnessMatrix(mat &K);
 	void getResponse(const bool update=false);
-
 	void assembleNonlinearForceVector(vec &q);
 
 	Material1D *smat;
+	double k;
 	double u, f;
 
 	mat::fixed<2, 2> K;

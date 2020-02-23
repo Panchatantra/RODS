@@ -50,16 +50,16 @@ void SpringBilinear::getResponse(const bool update)
 	status = sp;
 
 	if (du == 0.0)
-	{	
+	{
 		k = kp;
 		f = fp;
 	}
 	else if (status == 0)
-	{	
+	{
 		if (du > 0.0)
 		{
 			if (f_try > bup)
-			{	
+			{
 				f = bup;
 				k = k1;
 				status = 1;
@@ -79,7 +79,7 @@ void SpringBilinear::getResponse(const bool update)
 				status = 1;
 			}
 			else
-			{	
+			{
 				k = k0;
 				f = f_try;
 			}

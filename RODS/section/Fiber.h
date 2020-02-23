@@ -3,6 +3,9 @@
 #include "Basis.h"
 #include "Material1D.h"
 
+/**
+ * @brief      The fiber of a material.
+ */
 class Fiber : public Basis
 {
 public:

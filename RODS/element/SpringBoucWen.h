@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The Bouc-Wen spring in X direction.
+ */
 class SpringBoucWen : public Element1D
 {
 public:

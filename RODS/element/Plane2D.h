@@ -2,6 +2,9 @@
 #include "Element.h"
 #include "Node.h"
 
+/**
+ * @brief      The basic class of plane element.
+ */
 class Plane2D :
 	public Element
 {

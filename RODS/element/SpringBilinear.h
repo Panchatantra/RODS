@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The bilinear spring in X direction.
+ */
 class SpringBilinear : public Element1D
 {
 public:

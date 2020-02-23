@@ -555,36 +555,26 @@ void DynamicSystem::addTVMD(const int id, const int ni, const int nj, const doub
 	addTVMD(d);
 }
 
-void DynamicSystem::addSpring2D(Spring2D *s)
-{
-	if (addElement(s))
-	{
-		Element2Ds[s->id] = s;
-		Spring2Ds[s->id] = s;
-		linearElasticElements[s->id] = s;
-	}
-}
-
 void DynamicSystem::addSpring2D(const int id, const int ni, const int nj, const double k, ELE::localAxis U)
 {
-	Spring2D *s = new Spring2D(id, Nodes.at(ni), Nodes.at(nj), k, U);
-	addSpring2D(s);
-}
+	if (!checkDuplicateElement(id)) return;
 
-void DynamicSystem::addSpringBoucWen2D(SpringBoucWen2D *s)
-{
-	if (addElement(s))
-	{
-		Element2Ds[s->id] = s;
-		SpringBoucWen2Ds[s->id] = s;
-		nonlinearTangentElements[s->id] = s;
-	}
+	Spring2D *s = new Spring2D(id, Nodes.at(ni), Nodes.at(nj), k, U);
+	Elements[id] = s;
+	Element2Ds[id] = s;
+	Spring2Ds[id] = s;
+	linearElasticElements[id] = s;
 }
 
 void DynamicSystem::addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n, ELE::localAxis U /*= ELE::U1*/)
 {
+	if (!checkDuplicateElement(id)) return;
+
 	SpringBoucWen2D *s = new SpringBoucWen2D(id, Nodes.at(ni), Nodes.at(nj), k0, uy, alpha, beta, n, U);
-	addSpringBoucWen2D(s);
+	Elements[id] = s;
+	Element2Ds[id] = s;
+	SpringBoucWen2Ds[id] = s;
+	nonlinearTangentElements[id] = s;
 }
 
 void DynamicSystem::addDashpot2D(Dashpot2D *s)
@@ -760,21 +750,21 @@ void DynamicSystem::addFramePDelta2D(const int id, const int ni, const int nj, c
 	}
 }
 
-void DynamicSystem::addTimeSeries(Wave * ts)
+void DynamicSystem::addWave(Wave * ts)
 {
 	Waves[ts->id] = ts;
 }
 
-void DynamicSystem::addTimeSeries(const int id, const double dt, const vec &s)
+void DynamicSystem::addWave(const int id, const double dt, const vec &s)
 {
 	Wave *ts = new Wave(id, dt, s);
-	addTimeSeries(ts);
+	addWave(ts);
 }
 
-void DynamicSystem::addTimeSeries(const int id, const double dt, char* fileName)
+void DynamicSystem::addWave(const int id, const double dt, char* fileName)
 {
 	Wave *ts = new Wave(id, dt, fileName);
-	addTimeSeries(ts);
+	addWave(ts);
 }
 
 void DynamicSystem::addDOFRecorder(const int id, int *dofIds, const int n, Response rtype, char * fileName)

@@ -6,6 +6,9 @@
 
 using namespace std;
 
+/**
+ * @brief      The nonlinear truss section.
+ */
 class SectionTruss : public Section
 {
 public:

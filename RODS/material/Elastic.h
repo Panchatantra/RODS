@@ -1,6 +1,9 @@
 #pragma once
 #include "Material1D.h"
 
+/**
+ * @brief      The elastic material.
+ */
 class Elastic :
 	public Material1D
 {

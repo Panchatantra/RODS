@@ -9,6 +9,9 @@
 using namespace std;
 using namespace arma;
 
+/**
+ * @brief      The nonlinear frame section for the Frame2D element.
+ */
 class SectionFrame2D : public Section
 {
 public:

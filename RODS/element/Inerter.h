@@ -6,6 +6,9 @@
 
 using namespace arma;
 
+/**
+ * @brief      The inerter in X direction.
+ */
 class Inerter : public Element1D
 {
 public:
