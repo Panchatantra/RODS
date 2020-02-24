@@ -1,9 +1,9 @@
 #include "ElementRecorder.h"
 
-ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, Response rtype, char * fileName):
-	Recorder(id, rtype, fileName), eles(eles)
+ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, RODS::Response rType, char * fileName):
+	Recorder(id, rType, fileName), eles(eles)
 {
-	if (rtype == Response::ALL)
+	if (rType == RODS::Response::ALL)
 	{
 		n = 2*eles.size()*eles[0]->nv;
 	}
@@ -28,21 +28,21 @@ void ElementRecorder::record(const int cstep, const double ctime)
 		Element *ele = eles[i];
 		switch (rtype)
 		{
-		case Response::FORCE:
+		case RODS::Response::FORCE:
 			for (int j = 0; j < nv; j++)
 			{
 				Res(cstep, k) = ele->force[j];
 				k++;
 			}
 			break;
-		case Response::DEF:
+		case RODS::Response::DEF:
 			for (int j = 0; j < nv; j++)
 			{
 				Res(cstep, k) = ele->deformation[j];
 				k++;
 			}
 			break;
-		case Response::ALL:
+		case RODS::Response::ALL:
 			for (int j = 0; j < nv; j++)
 			{
 				Res(cstep, k) = ele->deformation[j];

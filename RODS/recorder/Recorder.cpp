@@ -1,7 +1,7 @@
 #include "Recorder.h"
 
-Recorder::Recorder(const int id, Response rtype, char * fileName) :
-Basis(id), n(0), rtype(rtype), fileName(fileName)
+Recorder::Recorder(const int id, RODS::Response rType, char * fileName) :
+Basis(id), n(0), rtype(rType), fileName(fileName)
 {
 }
 

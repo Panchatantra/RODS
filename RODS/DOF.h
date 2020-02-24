@@ -23,8 +23,6 @@ namespace RODS
 	};
 }
 
-using namespace RODS;
-
 /**
  * @brief      The Degree-Of-Freedom.
  * @details    DOF is the basic unit for analysis in RODS.
@@ -38,7 +36,7 @@ public:
 	 * @param[in]  id    The identifier
 	 * @param[in]  dir   The Direction
 	 */
-	DOF(const int id, Direction dir);
+	DOF(const int id, RODS::Direction dir);
 
 	/**
 	 * @brief      Constructs a new instance.
@@ -48,7 +46,7 @@ public:
 	 * @param[in]  m      The mass or inertance or moment of inertia
 	 * @param[in]  fixed  If the DOF is fixed
 	 */
-	DOF(const int id, Direction dir, const double m, const bool fixed = false);
+	DOF(const int id, RODS::Direction dir, const double m, const bool fixed = false);
 	~DOF();
 
 	/**
@@ -95,7 +93,7 @@ public:
 
     int eqnId; ///< The identifier of the DOF in system equations
 	double mass; ///< mass
-	Direction dir; ///< Direction
+	RODS::Direction dir; ///< Direction
 	vector<Load *> loads; ///< loads
 	bool isFixed; ///< if the DOF is fixed
 

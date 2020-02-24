@@ -89,6 +89,19 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a2298bdc1c4e9713e2d8e68158573ae64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direction of <a class="el" href="class_d_o_f.html" title="The Degree-Of-Freedom.">DOF</a> in the global coordinate.  <a href="namespace_r_o_d_s.html#a2298bdc1c4e9713e2d8e68158573ae64">More...</a><br /></td></tr>
 <tr class="separator:a2298bdc1c4e9713e2d8e68158573ae64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9824629cb8b1c5d29b25ffae21858f2d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_r_o_d_s.html#a9824629cb8b1c5d29b25ffae21858f2d">DynamicSolver</a> { <a class="el" href="namespace_r_o_d_s.html#a9824629cb8b1c5d29b25ffae21858f2da9bb7bd364e8a1559708a9db1adc97aaa">DynamicSolver::Newmark</a>, 
+<a class="el" href="namespace_r_o_d_s.html#a9824629cb8b1c5d29b25ffae21858f2daa12cab7783965199e2ee1130c1b026db">DynamicSolver::Newmark_NL</a>, 
+<a class="el" href="namespace_r_o_d_s.html#a9824629cb8b1c5d29b25ffae21858f2da6720aeb34216c21b0e1af0e1ed3d8aba">DynamicSolver::StateSpace</a>, 
+<a class="el" href="namespace_r_o_d_s.html#a9824629cb8b1c5d29b25ffae21858f2da6f34891c1f0b167546a47c2beae1ce20">DynamicSolver::StateSpace_NL</a>
+ }</td></tr>
+<tr class="memdesc:a9824629cb8b1c5d29b25ffae21858f2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The dynamic solver.  <a href="namespace_r_o_d_s.html#a9824629cb8b1c5d29b25ffae21858f2d">More...</a><br /></td></tr>
+<tr class="separator:a9824629cb8b1c5d29b25ffae21858f2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36f4ca191509f8eaa429d69e81262da6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_r_o_d_s.html#a36f4ca191509f8eaa429d69e81262da6">LocalAxis</a> { <a class="el" href="namespace_r_o_d_s.html#a36f4ca191509f8eaa429d69e81262da6af89412c11bdc0ab44f99f92d5e9a3c5e">LocalAxis::U1</a>, 
+<a class="el" href="namespace_r_o_d_s.html#a36f4ca191509f8eaa429d69e81262da6a4684821448f0ae2437312daece9d1cd9">LocalAxis::U2</a>, 
+<a class="el" href="namespace_r_o_d_s.html#a36f4ca191509f8eaa429d69e81262da6ac960375866797bcd97f4f6c22c94b2aa">LocalAxis::U3</a>
+ }</td></tr>
+<tr class="memdesc:a36f4ca191509f8eaa429d69e81262da6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local axis of rod-like elements.  <a href="namespace_r_o_d_s.html#a36f4ca191509f8eaa429d69e81262da6">More...</a><br /></td></tr>
+<tr class="separator:a36f4ca191509f8eaa429d69e81262da6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefb0c1ec231c5aeb4dabe32e05718c4b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_r_o_d_s.html#aefb0c1ec231c5aeb4dabe32e05718c4b">Response</a> { <br />
 &#160;&#160;<a class="el" href="namespace_r_o_d_s.html#aefb0c1ec231c5aeb4dabe32e05718c4ba6dd45f89c3e5ce1ce480c242b696793a">Response::DISP</a>, 
 <a class="el" href="namespace_r_o_d_s.html#aefb0c1ec231c5aeb4dabe32e05718c4baa3a448d1135671c0db409157841e73d5">Response::VEL</a>, 
@@ -138,6 +151,72 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a2298bdc1c4e9713e2d8e68158573ae64accb21680cb44cbc3715ed8acc0145efe"></a>RY&#160;</td><td class="fielddoc"><p>Direction RY. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a2298bdc1c4e9713e2d8e68158573ae64a25e29a048984cda66521f1eab1182666"></a>RZ&#160;</td><td class="fielddoc"><p>Direction RZ. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="a9824629cb8b1c5d29b25ffae21858f2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9824629cb8b1c5d29b25ffae21858f2d">&#9670;&nbsp;</a></span>DynamicSolver</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespace_r_o_d_s.html#a9824629cb8b1c5d29b25ffae21858f2d">RODS::DynamicSolver</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The dynamic solver. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9824629cb8b1c5d29b25ffae21858f2da9bb7bd364e8a1559708a9db1adc97aaa"></a>Newmark&#160;</td><td class="fielddoc"><p>Linear Newmark-β solver. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9824629cb8b1c5d29b25ffae21858f2daa12cab7783965199e2ee1130c1b026db"></a>Newmark_NL&#160;</td><td class="fielddoc"><p>Linear state space solver. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9824629cb8b1c5d29b25ffae21858f2da6720aeb34216c21b0e1af0e1ed3d8aba"></a>StateSpace&#160;</td><td class="fielddoc"><p>Nonlinear Newmark-β solver with Newton Iteration. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9824629cb8b1c5d29b25ffae21858f2da6f34891c1f0b167546a47c2beae1ce20"></a>StateSpace_NL&#160;</td><td class="fielddoc"><p>Nonlinear state space solver. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="a36f4ca191509f8eaa429d69e81262da6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36f4ca191509f8eaa429d69e81262da6">&#9670;&nbsp;</a></span>LocalAxis</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespace_r_o_d_s.html#a36f4ca191509f8eaa429d69e81262da6">RODS::LocalAxis</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Local axis of rod-like elements. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a36f4ca191509f8eaa429d69e81262da6af89412c11bdc0ab44f99f92d5e9a3c5e"></a>U1&#160;</td><td class="fielddoc"><p>The axial axis of a rod. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a36f4ca191509f8eaa429d69e81262da6a4684821448f0ae2437312daece9d1cd9"></a>U2&#160;</td><td class="fielddoc"><p>The normal axis of a rod. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a36f4ca191509f8eaa429d69e81262da6ac960375866797bcd97f4f6c22c94b2aa"></a>U3&#160;</td><td class="fielddoc"><p>The normal axis of a rod. </p>
 </td></tr>
 </table>
 

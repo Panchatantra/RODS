@@ -34,7 +34,6 @@
 #include "recorder/Recorder.h"
 #include "recorder/DOFRecorder.h"
 #include "recorder/ElementRecorder.h"
-#include "material/Material.h"
 #include "material/Material1D.h"
 #include "section/Section.h"
 #include "section/Fiber.h"
@@ -46,10 +45,16 @@ using namespace arma;
 constexpr double PI = 3.14159265;
 constexpr bool NORM = true;
 
-enum dsolver
-{
-	Newmark, Newmark_NL, StateSpace, StateSpace_NL
-};
+namespace RODS {
+	/// The dynamic solver
+	enum class DynamicSolver
+	{
+		Newmark, ///< Linear Newmark-β solver
+		Newmark_NL, ///< Linear state space solver
+		StateSpace, ///< Nonlinear Newmark-β solver with Newton Iteration
+		StateSpace_NL ///< Nonlinear state space solver
+	};
+}
 
 /**
  * @brief      The dynamic system.
@@ -131,7 +136,7 @@ public:
 	 * @param[in]  nodeId  The node identifier
 	 * @param[in]  dir     The Direction to be fixed
 	 */
-	void fixNode(const int nodeId, Direction dir);
+	void fixNode(const int nodeId, RODS::Direction dir);
 
 	/**
 	 * @brief      Adds a load into the system.
@@ -179,7 +184,7 @@ public:
 	 * @param[in]  m      The mass of the DOF
 	 * @param[in]  fixed  Indicates if the DOF is fixed
 	 */
-	void addDOF(const int id, Direction dir, const double m, const bool fixed=false);
+	void addDOF(const int id, RODS::Direction dir, const double m, const bool fixed=false);
 
 	/**
 	 * @brief      Sets the mass of a DOF.
@@ -375,9 +380,9 @@ public:
 	 * @param[in]  ni    The identifier of Node i
 	 * @param[in]  nj    The identifier of Node j
 	 * @param[in]  k     The stiffness
-	 * @param[in]  U     The local axis
+	 * @param[in]  U     The RODS::LocalAxis
 	 */
-	void addSpring2D(const int id, const int ni, const int nj, const double k, ELE::LocalAxis U=ELE::U1);
+	void addSpring2D(const int id, const int ni, const int nj, const double k, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
 	/**
 	 * @brief      Adds a SpringBoucWen2D.
@@ -390,17 +395,56 @@ public:
 	 * @param[in]  alpha  The post-yield stiffness ratio
 	 * @param[in]  beta   The beta
 	 * @param[in]  n      The n
-	 * @param[in]  U      The local axis
+	 * @param[in]  U      The RODS::LocalAxis
 	 */
-	void addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta=0.5, const double n=20, ELE::LocalAxis U = ELE::U1);
+	void addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta=0.5, const double n=20, RODS::LocalAxis U = RODS::LocalAxis::U1);
 
-	void addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::LocalAxis U=ELE::U1);
+	/**
+	 * @brief      Adds a Dashpot2D.
+	 *
+	 * @param[in]  id    The identifier
+	 * @param[in]  ni    The identifier of Node i
+	 * @param[in]  nj    The identifier of Node j
+	 * @param[in]  c     The damping coefficient
+	 * @param[in]  U     The RODS::LocalAxis
+	 */
+	void addDashpot2D(const int id, const int ni, const int nj, const double c, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
-	void addInerter2D(const int id, const int ni, const int nj, const double m, ELE::LocalAxis U=ELE::U1);
+	/**
+	 * @brief      Adds a Inerter2D.
+	 *
+	 * @param[in]  id    The identifier
+	 * @param[in]  ni    The identifier of Node i
+	 * @param[in]  nj    The identifier of Node j
+	 * @param[in]  m     The inertance
+	 * @param[in]  U     The RODS::LocalAxis
+	 */
+	void addInerter2D(const int id, const int ni, const int nj, const double m, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
-	void addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, ELE::LocalAxis U = ELE::U1);
+	/**
+	 * @brief      Adds a DashpotExp2D.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  ni     The identifier of Node i
+	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  c      The damping coefficient
+	 * @param[in]  alpha  The damping exponent
+	 * @param[in]  U      The RODS::LocalAxis
+	 */
+	void addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, RODS::LocalAxis U = RODS::LocalAxis::U1);
 
-	void addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::LocalAxis U = ELE::U1);
+	/**
+	 * @brief      Adds a DashpotMaxwell2D.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  ni     The identifier of Node i
+	 * @param[in]  nj     The identifier of Node j
+	 * @param[in]  k      The stiffness
+	 * @param[in]  c      The damping coefficient
+	 * @param[in]  alpha  The damping exponent
+	 * @param[in]  U      The RODS::LocalAxis
+	 */
+	void addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, RODS::LocalAxis U = RODS::LocalAxis::U1);
 
 	/**
 	 * @brief      Adds a TrussElastic2D element.
@@ -506,10 +550,10 @@ public:
 	 * @param[in]  id        The identifier
 	 * @param      dofIds    The DOF identifiers
 	 * @param[in]  n         The number of DOFs
-	 * @param[in]  rtype     The Response type
+	 * @param[in]  rType     The Response type
 	 * @param      fileName  The record file name
 	 */
-	void addDOFRecorder(const int id, int *dofIds, const int n, Response rtype, char * fileName);
+	void addDOFRecorder(const int id, int *dofIds, const int n, RODS::Response rType, char * fileName);
 
 	/**
 	 * @brief      Adds a Element Recorder.
@@ -517,10 +561,10 @@ public:
 	 * @param[in]  id        The identifier
 	 * @param      dofIds    The Element identifiers
 	 * @param[in]  n         The number of Elements
-	 * @param[in]  rtype     The Response type
+	 * @param[in]  rType     The Response type
 	 * @param      fileName  The record file name
 	 */
-	void addElementRecorder(const int id, int *eleIds, const int n, Response rtype, char * fileName);
+	void addElementRecorder(const int id, int *eleIds, const int n, RODS::Response rType, char * fileName);
 
 	/**
 	 * @brief      Sets the frequencies of Rayleigh damping.
@@ -537,7 +581,7 @@ public:
 	 * @param[in]  waveId     The wave identifier
 	 * @param[in]  waveScale  The wave scale factor
 	 */
-	void activeGroundMotion(Direction dir, const int waveId, const double waveScale);
+	void activeGroundMotion(RODS::Direction dir, const int waveId, const double waveScale);
 
 	void buildDofEqnMap();
 
@@ -647,7 +691,7 @@ public:
 	 *
 	 * @param[in]  s     The solver
 	 */
-	void setDynamicSolver(dsolver s) { this->dynamicSolver = s; }
+	void setDynamicSolver(RODS::DynamicSolver s) { this->dynamicSolver = s; }
 
 	/**
 	 * @brief      Solves seismic response.
@@ -669,7 +713,16 @@ public:
 	void setDofResponse();
 	void setDofStaticResponse();
 
+	/**
+	 * @brief      Gets the element responses.
+	 */
 	void getElementResponse();
+
+	/**
+	 * @brief      Assembles nonlinear force vector.
+	 *
+	 * @param[in]  update  If update the history variables
+	 */
 	void assembleNonlinearForceVector(const bool update=false);
 
 	/**
@@ -786,7 +839,7 @@ public:
     int fixedDofCount;			///< The number of fixed DOFs
     bool eigenVectorNormed;		///< If the eigen vectors are normed
 
-	dsolver dynamicSolver;		///< The dynamic solver
+	RODS::DynamicSolver dynamicSolver;		///< The dynamic solver
 	double dt;					///< The analysis time interval
 	double ctime;				///< The current analysis time
 	int nsteps;					///< The total analysis steps

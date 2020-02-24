@@ -14,14 +14,13 @@ public:
 
 	void setDof(DOF *d);
 	void fixDOF();
-	void fixDOF(Direction dir);
-	bool isActivated(Direction dir);
+	void fixDOF(RODS::Direction dir);
+	bool isActivated(RODS::Direction dir);
 
 	double x, y, z;
 	double x0, y0, z0;
 
 	DOF *dofX, *dofY, *dofZ;
 	DOF *dofRX, *dofRY, *dofRZ;
-
 };
 

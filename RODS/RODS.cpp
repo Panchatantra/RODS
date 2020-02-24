@@ -18,7 +18,7 @@ DLL_API void set_damping_ratio(const double zeta) {
 
 DLL_API void active_ground_motion(const int dir, const int waveId, const double waveScale)
 {
-	ds->activeGroundMotion(Direction(dir), waveId, waveScale);
+	ds->activeGroundMotion(RODS::Direction(dir), waveId, waveScale);
 }
 
 DLL_API void fix_dof(const int id) {
@@ -31,7 +31,7 @@ DLL_API size_t add_dof_x(const int id, const double m) {
 }
 
 DLL_API size_t add_dof(const int id, const int dir, const double m) {
-	ds->addDOF(id, Direction(dir), m);
+	ds->addDOF(id, RODS::Direction(dir), m);
 	return ds->DOFs.size();
 }
 
@@ -61,19 +61,18 @@ DLL_API size_t solve_eigen()
 	return ds->eqnCount;
 }
 
-DLL_API size_t add_dof_recorder(const int id, int *dofIds, const int n, const int rtype, char * fileName) {
-	ds->addDOFRecorder(id, dofIds, n, Response(rtype), fileName);
+DLL_API size_t add_dof_recorder(const int id, int *dofIds, const int n, const int rType, char * fileName) {
+	ds->addDOFRecorder(id, dofIds, n, RODS::Response(rType), fileName);
 	return ds->DOFRecorders.size();
 }
 
-DLL_API size_t add_ele_recorder(const int id, int *eleIds, const int n, const int rtype, char * fileName) {
-	ds->addElementRecorder(id, eleIds, n, Response(rtype), fileName);
+DLL_API size_t add_ele_recorder(const int id, int *eleIds, const int n, const int rType, char * fileName) {
+	ds->addElementRecorder(id, eleIds, n, RODS::Response(rType), fileName);
 	return ds->ElementRecorders.size();
 }
 
-DLL_API size_t set_dynamic_solver(const int s) {
-	ds->setDynamicSolver(dsolver(s));
-	return ds->dynamicSolver;
+DLL_API void set_dynamic_solver(const int s) {
+	ds->setDynamicSolver(RODS::DynamicSolver(s));
 }
 
 DLL_API size_t solve_seismic_response(const int nsub) {
@@ -93,7 +92,7 @@ void fix_node(const int id)
 
 void fix_node_dof(const int nodeId, const int dir)
 {
-	ds->fixNode(nodeId, Direction(dir));
+	ds->fixNode(nodeId, RODS::Direction(dir));
 }
 
 size_t add_node_1d(const int nodeId, const double x, const int dofId)
@@ -143,6 +142,18 @@ size_t add_quad4_elastic(const int id, const int nodeI, const int nodeJ, const i
 
 size_t add_spring_2d(const int id, const int ni, const int nj, const double k, const int localAxis)
 {
-	ds->addSpring2D(id, ni, nj, k, ELE::LocalAxis(localAxis));
+	ds->addSpring2D(id, ni, nj, k, RODS::LocalAxis(localAxis));
 	return ds->Spring2Ds.size();
+}
+
+size_t add_dashpot_2d(const int id, const int ni, const int nj, const double c, const int localAxis)
+{
+	ds->addDashpot2D(id, ni, nj, c, RODS::LocalAxis(localAxis));
+	return ds->Dashpot2Ds.size();
+}
+
+size_t add_inerter_2d(const int id, const int ni, const int nj, const double m, const int localAxis)
+{
+	ds->addInerter2D(id, ni, nj, m, RODS::LocalAxis(localAxis));
+	return ds->Inerter2Ds.size();
 }

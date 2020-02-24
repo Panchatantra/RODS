@@ -1,11 +1,11 @@
 #include "DashpotMaxwell2D.h"
 
 DashpotMaxwell2D::DashpotMaxwell2D(const int id, Node * nodeI, Node * nodeJ, const double k, const double c, const double alpha,
-	ELE::LocalAxis axis) :
+	RODS::LocalAxis axis) :
 	Element2D(id, nodeI, nodeJ), k(k), c(c), alpha(alpha),
 	ue(0.0), f(0.0), ud(0.0), udp(0.0)
 {
-	if (axis == ELE::U1)
+	if (axis == RODS::LocalAxis::U1)
 	{
 		T = rowvec({ -lxx , -lxy , lxx , lxy });
 	}

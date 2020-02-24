@@ -15,25 +15,25 @@ Node::~Node()
 
 void Node::setDof(DOF * d)
 {
-	Direction dir = d->dir;
+	RODS::Direction dir = d->dir;
 	switch (dir)
 	{
-	case Direction::X:
+	case RODS::Direction::X:
         this->dofX = d;
 		break;
-	case Direction::Y:
+	case RODS::Direction::Y:
         this->dofY = d;
 		break;
-	case Direction::Z:
+	case RODS::Direction::Z:
         this->dofZ = d;
 		break;
-	case Direction::RX:
+	case RODS::Direction::RX:
         this->dofRX = d;
 		break;
-	case Direction::RY:
+	case RODS::Direction::RY:
         this->dofRY = d;
 		break;
-	case Direction::RZ:
+	case RODS::Direction::RZ:
         this->dofRZ = d;
 		break;
 	default:
@@ -51,28 +51,28 @@ void Node::fixDOF()
 	if (dofRZ != nullptr) dofRZ->isFixed = true;
 }
 
-void Node::fixDOF(Direction dir)
+void Node::fixDOF(RODS::Direction dir)
 {
 	if (isActivated(dir))
 	{
 		switch (dir)
 		{
-		case Direction::X:
+		case RODS::Direction::X:
 			dofX->isFixed = true;
 			break;
-		case Direction::Y:
+		case RODS::Direction::Y:
 			dofY->isFixed = true;
 			break;
-		case Direction::Z:
+		case RODS::Direction::Z:
 			dofZ->isFixed = true;
 			break;
-		case Direction::RX:
+		case RODS::Direction::RX:
 			dofRX->isFixed = true;
 			break;
-		case Direction::RY:
+		case RODS::Direction::RY:
 			dofRY->isFixed = true;
 			break;
-		case Direction::RZ:
+		case RODS::Direction::RZ:
 			dofRZ->isFixed = true;
 			break;
 		default:
@@ -81,27 +81,27 @@ void Node::fixDOF(Direction dir)
 	}
 }
 
-bool Node::isActivated(Direction dir)
+bool Node::isActivated(RODS::Direction dir)
 {
 	DOF *d = nullptr;
 	switch (dir)
 	{
-	case Direction::X:
+	case RODS::Direction::X:
 		d = dofX;
 		break;
-	case Direction::Y:
+	case RODS::Direction::Y:
 		d = dofY;
 		break;
-	case Direction::Z:
+	case RODS::Direction::Z:
 		d = dofZ;
 		break;
-	case Direction::RX:
+	case RODS::Direction::RX:
 		d = dofRX;
 		break;
-	case Direction::RY:
+	case RODS::Direction::RY:
 		d = dofRY;
 		break;
-	case Direction::RZ:
+	case RODS::Direction::RZ:
 		d = dofRZ;
 		break;
 	default:

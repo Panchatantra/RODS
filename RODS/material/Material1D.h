@@ -17,6 +17,7 @@ public:
 
 	virtual Material1D *copy() = 0;
 
-	double sigma, epsilon;
+	double sigma; 	///< The stress
+	double epsilon; ///< The strain
 };
 

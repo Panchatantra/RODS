@@ -1,6 +1,5 @@
 #pragma once
 
-#include "DOF.h"
 #include "Element2D.h"
 #include "material/Material1D.h"
 #include <armadillo>
@@ -13,7 +12,7 @@ using namespace arma;
 class SpringNonlinear2D : public Element2D
 {
 public:
-	SpringNonlinear2D(const int id, Node * nodeI, Node * nodeJ, Material1D *smat, ELE::LocalAxis axis);
+	SpringNonlinear2D(const int id, Node * nodeI, Node * nodeJ, Material1D *smat, RODS::LocalAxis axis);
 	~SpringNonlinear2D();
 
 	void buildMatrix() override;
@@ -24,7 +23,7 @@ public:
 	Material1D *smat;
 	double k;
 	double ue, f;
-	ELE::LocalAxis axis;
+	RODS::LocalAxis axis;
 
 	rowvec::fixed<4> T;
 	mat::fixed<4, 4> K;

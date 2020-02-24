@@ -16,5 +16,5 @@ public:
 
 	virtual Material *copy() = 0;
 
-	double E;
+	double E; ///< The elastic module
 };

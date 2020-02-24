@@ -1,7 +1,7 @@
 #include "DOFRecorder.h"
 
-DOFRecorder::DOFRecorder(const int id, std::vector<DOF *> dofs, Response rtype, char * fileName):
-	Recorder(id, rtype, fileName), dofs(dofs)
+DOFRecorder::DOFRecorder(const int id, std::vector<DOF *> dofs, RODS::Response rType, char * fileName):
+	Recorder(id, rType, fileName), dofs(dofs)
 
 {
 	n = dofs.size();
@@ -19,18 +19,18 @@ void DOFRecorder::record(const int cstep, const double ctime)
 		DOF * d = dofs[i];
 		switch (rtype)
 		{
-		case Response::DISP:
+		case RODS::Response::DISP:
 			Res(cstep, i + 1) = d->dsp;
 			break;
-		case Response::VEL:
+		case RODS::Response::VEL:
 			Res(cstep, i + 1) = d->vel;
 			break;
-		case Response::ACC:
+		case RODS::Response::ACC:
 			Res(cstep, i + 1) = d->acc;
 			break;
-		case Response::FORCE:
+		case RODS::Response::FORCE:
 			break;
-		case Response::DEF:
+		case RODS::Response::DEF:
 			break;
 		default:
 			break;

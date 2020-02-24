@@ -1,9 +1,9 @@
 #include "Dashpot2D.h"
 
-Dashpot2D::Dashpot2D(const int id, Node * nodeI, Node * nodeJ, double c, ELE::LocalAxis axis) :
+Dashpot2D::Dashpot2D(const int id, Node * nodeI, Node * nodeJ, double c, RODS::LocalAxis axis) :
 	Element2D(id, nodeI, nodeJ), c(c), ue(0.0), f(0.0)
 {
-	if (axis == ELE::U1)
+	if (axis == RODS::LocalAxis::U1)
 	{
 		T = rowvec({ -lxx , -lxy , lxx , lxy });
 	}

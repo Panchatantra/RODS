@@ -322,6 +322,7 @@
     <ClCompile Include="element\Plane2D.cpp" />
     <ClCompile Include="element\Quad4Elastic.cpp" />
     <ClCompile Include="element\Slider.cpp" />
+    <ClCompile Include="element\Slider2D.cpp" />
     <ClCompile Include="element\SPIS2.cpp" />
     <ClCompile Include="element\Spring.cpp" />
     <ClCompile Include="element\Spring2D.cpp" />
@@ -377,6 +378,7 @@
     <ClInclude Include="element\Plane2D.h" />
     <ClInclude Include="element\Quad4Elastic.h" />
     <ClInclude Include="element\Slider.h" />
+    <ClInclude Include="element\Slider2D.h" />
     <ClInclude Include="element\SPIS2.h" />
     <ClInclude Include="element\Spring.h" />
     <ClInclude Include="element\Spring2D.h" />

@@ -1,13 +1,13 @@
 #include "DOF.h"
 
-DOF::DOF(const int id, Direction dir) :
+DOF::DOF(const int id, RODS::Direction dir) :
     Basis(id), eqnId(0), mass(0.0), dir(dir), isFixed(false),
     dsp(0.0), vel(0.0), acc(0.0)
 {
 	loads.clear();
 }
 
-DOF::DOF(const int id, Direction dir, const double m, const bool fixed) :
+DOF::DOF(const int id, RODS::Direction dir, const double m, const bool fixed) :
 	Basis(id), eqnId(0), mass(m), dir(dir), isFixed(fixed),
     dsp(0.0), vel(0.0), acc(0.0)
 {

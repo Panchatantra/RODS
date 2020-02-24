@@ -1,14 +1,14 @@
 #include "SpringBilinear2D.h"
 
 SpringBilinear2D::SpringBilinear2D(const int id, DOF *i, DOF *j, const double k0, const double uy,
-									const double alpha, ELE::LocalAxis axis) :
+									const double alpha, RODS::LocalAxis axis) :
 	Element2D(id, nodeI, nodeJ), k0(k0), uy(uy),
 	k1(alpha*k0), fy(k0*uy), alpha(alpha),
 	k(k0), ue(0), f(0),
 	kp(k0), up(0), dup(0), fp(0),
 	status(0), sp(0), axis(axis)
 {
-	if (axis == ELE::U1)
+	if (axis == RODS::LocalAxis::U1)
 	{
 		T = rowvec({ -lxx , -lxy , lxx , lxy });
 	}

@@ -4,10 +4,13 @@
 
 using namespace arma;
 
-namespace ELE {
-	enum LocalAxis
+namespace RODS {
+	/// Local axis of rod-like elements.
+	enum class LocalAxis
 	{
-		U1, U2, U3
+		U1, ///< The axial axis of a rod
+		U2, ///< The normal axis of a rod
+		U3  ///< The normal axis of a rod
 	};
 };
 

@@ -29,4 +29,4 @@ void Element::printResponse()
 }
 
 double Element::dt = 0.0;
-bool Element::isStatic = false;
+bool Element::isStatic = true;

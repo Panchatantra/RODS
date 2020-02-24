@@ -170,6 +170,9 @@
     <ClCompile Include="element\BeamElastic2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="element\Slider2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="numeric.h">
@@ -332,6 +335,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\BeamElastic2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Slider2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

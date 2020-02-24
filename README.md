@@ -77,10 +77,10 @@
 * Dynamic solver
     * Linear solver
         * Newmark-β solver
-        * State space solver 
+        * State space solver
     * Nonlinear solver
         * Newmark-β solver with Newton Iteration
-        * State space solver 
+        * State space solver
 * Stochastic solver
 
 

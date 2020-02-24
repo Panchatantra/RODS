@@ -50,16 +50,16 @@ void example_sdof()
 	int nrd = 2;
 	int *dofIds = new int[nrd] { 0, 1 };
 	char dispOutput[] = "disp.dat";
-	ds->addDOFRecorder(0, dofIds, nrd, Response::DISP, dispOutput);
+	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
 
 	int nre = 2;
 	int *eleIds = new int[nre] { 0, 1 };
 	char eleOutput[] = "force.dat";
-	ds->addElementRecorder(0, eleIds, nre, Response::FORCE, eleOutput);
+	ds->addElementRecorder(0, eleIds, nre, RODS::Response::FORCE, eleOutput);
 
 	int ts = 2;
-	ds->setDynamicSolver(StateSpace_NL);
-	ds->activeGroundMotion(Direction::X, ts, 700.0);
+	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
+	ds->activeGroundMotion(RODS::Direction::X, ts, 700.0);
 	ds->solveSeismicResponse(30);
 	//system("python post.py");
 }
@@ -107,11 +107,11 @@ void example_sdof_inerter_system()
 	int nrd = 1;
 	int *dofIds = new int[nrd] { 2 };
 	char dispOutput[] = "disp0.dat";
-	ds->addDOFRecorder(0, dofIds, nrd, Response::DISP, dispOutput);
+	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
 
 	int ts = 1;
-	ds->setDynamicSolver(StateSpace_NL);
-	ds->activeGroundMotion(Direction::X, ts, 700.0);
+	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
+	ds->activeGroundMotion(RODS::Direction::X, ts, 700.0);
 	ds->solveSeismicResponse(30);
 
 	plot(dispOutput, 2);
@@ -160,16 +160,16 @@ void example_sdof_bl()
 	int nrd = 2;
 	int *dofIds = new int[nrd] { 0, 1 };
 	char dispOutput[] = "disp.dat";
-	ds->addDOFRecorder(0, dofIds, nrd, Response::DISP, dispOutput);
+	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
 
 	int nre = 2;
 	int *eleIds = new int[nre] { 0, 1 };
 	char eleOutput[] = "force.dat";
-	ds->addElementRecorder(0, eleIds, nre, Response::FORCE, eleOutput);
+	ds->addElementRecorder(0, eleIds, nre, RODS::Response::FORCE, eleOutput);
 
 	int ts = 2;
-	ds->setDynamicSolver(StateSpace_NL);
-	ds->activeGroundMotion(Direction::X, ts, 700.0);
+	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
+	ds->activeGroundMotion(RODS::Direction::X, ts, 700.0);
 	ds->solveSeismicResponse(30);
 
 	system("python post.py");
@@ -231,8 +231,8 @@ void example_shear_building()
 	ds->addWave(2, 0.005, eq);
 
 	int ts = 2;
-	ds->setDynamicSolver(StateSpace);
-	ds->activeGroundMotion(Direction::X, ts, 700.0);
+	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace);
+	ds->activeGroundMotion(RODS::Direction::X, ts, 700.0);
 	ds->solveSeismicResponse(30);
 }
 
@@ -343,8 +343,8 @@ void example_truss()
 
 	for (int i = 0; i < nnd; i++)
 	{
-		ds->addDOF(2 * i + 1, Direction::X, mass);
-		ds->addDOF(2 * i + 2, Direction::Z, mass);
+		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
+		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
 
 		x = nodeCoord[i][0];
 		z = nodeCoord[i][1];
@@ -413,9 +413,9 @@ void example_frame()
 	double x = 0, z = 0;
 	for (int i = 0; i < nnd; i++)
 	{
-		ds->addDOF(3 * i + 1, Direction::X, mass);
-		ds->addDOF(3 * i + 2, Direction::Z, mass);
-		ds->addDOF(3 * i + 3, Direction::RY, mass);
+		ds->addDOF(3 * i + 1, RODS::Direction::X, mass);
+		ds->addDOF(3 * i + 2, RODS::Direction::Z, mass);
+		ds->addDOF(3 * i + 3, RODS::Direction::RY, mass);
 
 		x = nodeCoord[i][0];
 		z = nodeCoord[i][1];
@@ -498,20 +498,20 @@ void example_frame()
 		ds->Nodes.at(4)->dofX->id
 	};
 	char dispOutput[] = "data/disp_frame_damped.dat";
-	ds->addDOFRecorder(0, dofIds, nrd, Response::DISP, dispOutput);
+	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
 
 	int nre = 1;
 	int *eleIds = new int[nre] { 102 };
 	char eleOutput[] = "data/damper.dat";
-	ds->addElementRecorder(0, eleIds, nre, Response::ALL, eleOutput);
+	ds->addElementRecorder(0, eleIds, nre, RODS::Response::ALL, eleOutput);
 
 	int eqId = 1;
 	double dt = 0.005;
 	char eqFile[] = "data/EQ-S-1.txt";
 	ds->addWave(eqId, dt, eqFile);
 
-	ds->setDynamicSolver(StateSpace_NL);
-	ds->activeGroundMotion(Direction::X, eqId, 700.0);
+	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
+	ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
 	ds->solveSeismicResponse(30);
 }
 
@@ -536,9 +536,9 @@ void example_cantilever()
 	double x = 0, z = 0;
 	for (int i = 0; i < nnd; i++)
 	{
-		ds->addDOF(3 * i + 1, Direction::X, mass);
-		ds->addDOF(3 * i + 2, Direction::Z, mass);
-		ds->addDOF(3 * i + 3, Direction::RY, mass*1.0e-1);
+		ds->addDOF(3 * i + 1, RODS::Direction::X, mass);
+		ds->addDOF(3 * i + 2, RODS::Direction::Z, mass);
+		ds->addDOF(3 * i + 3, RODS::Direction::RY, mass*1.0e-1);
 
 		x = nodeCoord[i][0];
 		z = nodeCoord[i][1];
@@ -625,8 +625,8 @@ void example_wall()
 	double x = 0.0, z = 0.0;
 	for (auto i = 0; i < nnd; i++)
 	{
-		ds->addDOF(2 * i + 1, Direction::X, mass);
-		ds->addDOF(2 * i + 2, Direction::Z, mass);
+		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
+		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
 
 		x = crds[i][0];
 		z = crds[i][1];
@@ -685,8 +685,8 @@ void example_nonlinear_spring()
 	double A = 2148.84937505542;
 	auto ds = new DynamicSystem();
 	
-	ds->addDOF(1,Direction::X,0.0,FIXED);
-	ds->addDOF(2,Direction::X,0.0);
+	ds->addDOF(1,RODS::Direction::X,0.0,FIXED);
+	ds->addDOF(2,RODS::Direction::X,0.0);
 
 	ds->addSpringBilinear(1,1,2,E*A/L,fy*A/(E*A/L),alpha);
 
@@ -726,12 +726,12 @@ void example_nonlinear_truss()
 	ds->addFiber(fiberId, matId, A,0.0);
 	ds->addSectionTruss(secId, &fiberId, 1);
 
-	ds->addDOF(1,Direction::X,0.0,FIXED);
-	ds->addDOF(2,Direction::Z,0.0,FIXED);
-	ds->addDOF(3,Direction::X,0.0,FIXED);
-	ds->addDOF(4,Direction::Z,0.0);
-	ds->addDOF(5,Direction::X,0.0,FIXED);
-	ds->addDOF(6,Direction::Z,0.0);
+	ds->addDOF(1,RODS::Direction::X,0.0,FIXED);
+	ds->addDOF(2,RODS::Direction::Z,0.0,FIXED);
+	ds->addDOF(3,RODS::Direction::X,0.0,FIXED);
+	ds->addDOF(4,RODS::Direction::Z,0.0);
+	ds->addDOF(5,RODS::Direction::X,0.0,FIXED);
+	ds->addDOF(6,RODS::Direction::Z,0.0);
 	
 	double L = 1000.0;
 	ds->addNode(1,0.0,0.0,1,2,-1);
@@ -754,7 +754,7 @@ void example_nonlinear_truss()
 	int nre = 1;
 	int *eleIds = new int[nre] { 1 };
 	char eleOutput[] = "data/truss.dat";
-	ds->addElementRecorder(1, eleIds, nre, Response::ALL, eleOutput);
+	ds->addElementRecorder(1, eleIds, nre, RODS::Response::ALL, eleOutput);
 
 	ds->solveNonlinearStaticResponse(10);
 
@@ -802,17 +802,17 @@ void example_nonlinear_cantilever()
 	
 	ds->addSectionFrame2D(secId, fiberIds, nLayer+2);
 
-	ds->addDOF(1,Direction::X,0.0,FIXED);
-	ds->addDOF(2,Direction::Z,0.0,FIXED);
-	ds->addDOF(3,Direction::RY,0.0,FIXED);
+	ds->addDOF(1,RODS::Direction::X,0.0,FIXED);
+	ds->addDOF(2,RODS::Direction::Z,0.0,FIXED);
+	ds->addDOF(3,RODS::Direction::RY,0.0,FIXED);
 	
-	ds->addDOF(4,Direction::X,0.0);
-	ds->addDOF(5,Direction::Z,0.0);
-	ds->addDOF(6,Direction::RY,0.0);
+	ds->addDOF(4,RODS::Direction::X,0.0);
+	ds->addDOF(5,RODS::Direction::Z,0.0);
+	ds->addDOF(6,RODS::Direction::RY,0.0);
 
-	ds->addDOF(7,Direction::X,0.0);
-	ds->addDOF(8,Direction::Z,0.0);
-	ds->addDOF(9,Direction::RY,0.0);
+	ds->addDOF(7,RODS::Direction::X,0.0);
+	ds->addDOF(8,RODS::Direction::Z,0.0);
+	ds->addDOF(9,RODS::Direction::RY,0.0);
 
 	double L = 750.0;
 	ds->addNode(1,0.0,0.0,1,2,3);
@@ -843,12 +843,12 @@ void example_nonlinear_cantilever()
 		ds->Nodes.at(4)->dofX->id
 	};
 	char dispOutput[] = "data/disp_cantilever.dat";
-	ds->addDOFRecorder(1, dofIds, nrd, Response::DISP, dispOutput);
+	ds->addDOFRecorder(1, dofIds, nrd, RODS::Response::DISP, dispOutput);
 
 	int nre = 1;
 	int *eleIds = new int[nre] { 1 };
 	char eleOutput[] = "data/cantilever.dat";
-	ds->addElementRecorder(1, eleIds, nre, Response::ALL, eleOutput);
+	ds->addElementRecorder(1, eleIds, nre, RODS::Response::ALL, eleOutput);
 
 	ds->solveNonlinearStaticResponse(10);
 	ds->setLoadConst();

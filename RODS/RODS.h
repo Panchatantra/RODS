@@ -35,12 +35,15 @@ extern "C" {
 										const double E, const double nu, const double t);
 
 	DLL_API size_t add_spring_2d(const int id, const int ni, const int nj, const double k, const int localAxis);
+	DLL_API size_t add_dashpot_2d(const int id, const int ni, const int nj, const double c, const int localAxis);
+	DLL_API size_t add_inerter_2d(const int id, const int ni, const int nj, const double m, const int localAxis);
+
 	DLL_API size_t add_wave(const int id, const double dt, char* fileName);
 	DLL_API size_t assemble_matrix();
 	DLL_API size_t solve_eigen();
-	DLL_API size_t add_dof_recorder(const int id, int *dofIds, const int n, const int rtype, char * fileName);
-	DLL_API size_t add_ele_recorder(const int id, int *eleIds, const int n, const int rtype, char * fileName);
-	DLL_API size_t set_dynamic_solver(const int s);
+	DLL_API size_t add_dof_recorder(const int id, int *dofIds, const int n, const int rType, char * fileName);
+	DLL_API size_t add_ele_recorder(const int id, int *eleIds, const int n, const int rType, char * fileName);
+	DLL_API void set_dynamic_solver(const int s);
 	DLL_API size_t solve_seismic_response(const int nsub = 1);
 	DLL_API void print_info();
 }

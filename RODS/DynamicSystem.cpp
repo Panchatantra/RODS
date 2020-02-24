@@ -12,7 +12,7 @@
 
 DynamicSystem::DynamicSystem(const double z) :
 	zeta(z), eqnCount(0), fixedDofCount(0), eigenVectorNormed(false),
-	dynamicSolver(StateSpace), dt(0.02), ctime(0.0), nsteps(0), cstep(0),
+	dynamicSolver(RODS::DynamicSolver::StateSpace), dt(0.02), ctime(0.0), nsteps(0), cstep(0),
 	useRayleighDamping(true), RayleighOmg1(2 * PI / 0.3), RayleighOmg2(2 * PI / 0.1),
 	NumModesInherentDamping(-1),
 	XSeismicWaveId(-1), YSeismicWaveId(-1), ZSeismicWaveId(-1),
@@ -78,7 +78,7 @@ void DynamicSystem::addNode(const int nodeId, const double x, const double y, co
 
 void DynamicSystem::addNodeWithDof(const int id, const double x, const int dofId)
 {
-	DOF *d = new DOF(dofId, Direction::X);
+	DOF *d = new DOF(dofId, RODS::Direction::X);
 	Node *nd = new Node(id, x, 0.0, 0.0);
 	nd->setDof(d);
 
@@ -111,7 +111,7 @@ void DynamicSystem::fixNode(const int id)
 	Nodes.at(id)->fixDOF();
 }
 
-void DynamicSystem::fixNode(const int nodeId, Direction dir)
+void DynamicSystem::fixNode(const int nodeId, RODS::Direction dir)
 {
 	Nodes.at(id)->fixDOF(dir);
 }
@@ -225,11 +225,11 @@ void DynamicSystem::addDOF(DOF * d)
 
 void DynamicSystem::addDOF(const int id, const double m, const bool fixed)
 {
-	DOF *d = new DOF(id, Direction::X, m, fixed);
+	DOF *d = new DOF(id, RODS::Direction::X, m, fixed);
 	addDOF(d);
 }
 
-void DynamicSystem::addDOF(const int id, Direction dir, const double m, const bool fixed)
+void DynamicSystem::addDOF(const int id, RODS::Direction dir, const double m, const bool fixed)
 {
 	DOF *d = new DOF(id, dir, m, fixed);
 	addDOF(d);
@@ -243,24 +243,24 @@ void DynamicSystem::setMass(const int id, const double m)
 void DynamicSystem::setNodeMass(const int id, const double m)
 {
 	Node *nd = Nodes.at(id);
-	if (nd->isActivated(Direction::X))  nd->dofX->setMass(m);
-	if (nd->isActivated(Direction::Y))  nd->dofY->setMass(m);
-	if (nd->isActivated(Direction::Z))  nd->dofZ->setMass(m);
-	if (nd->isActivated(Direction::RX)) nd->dofRX->setMass(m);
-	if (nd->isActivated(Direction::RY)) nd->dofRY->setMass(m);
-	if (nd->isActivated(Direction::RZ)) nd->dofRZ->setMass(m);
+	if (nd->isActivated(RODS::Direction::X))  nd->dofX->setMass(m);
+	if (nd->isActivated(RODS::Direction::Y))  nd->dofY->setMass(m);
+	if (nd->isActivated(RODS::Direction::Z))  nd->dofZ->setMass(m);
+	if (nd->isActivated(RODS::Direction::RX)) nd->dofRX->setMass(m);
+	if (nd->isActivated(RODS::Direction::RY)) nd->dofRY->setMass(m);
+	if (nd->isActivated(RODS::Direction::RZ)) nd->dofRZ->setMass(m);
 
 }
 
 void DynamicSystem::setNodeMass(const int id, const double m, const double J)
 {
 	Node *nd = Nodes.at(id);
-	if (nd->isActivated(Direction::X))  nd->dofX->setMass(m);
-	if (nd->isActivated(Direction::Y))  nd->dofY->setMass(m);
-	if (nd->isActivated(Direction::Z))  nd->dofZ->setMass(m);
-	if (nd->isActivated(Direction::RX)) nd->dofRX->setMass(J);
-	if (nd->isActivated(Direction::RY)) nd->dofRY->setMass(J);
-	if (nd->isActivated(Direction::RZ)) nd->dofRZ->setMass(J);
+	if (nd->isActivated(RODS::Direction::X))  nd->dofX->setMass(m);
+	if (nd->isActivated(RODS::Direction::Y))  nd->dofY->setMass(m);
+	if (nd->isActivated(RODS::Direction::Z))  nd->dofZ->setMass(m);
+	if (nd->isActivated(RODS::Direction::RX)) nd->dofRX->setMass(J);
+	if (nd->isActivated(RODS::Direction::RY)) nd->dofRY->setMass(J);
+	if (nd->isActivated(RODS::Direction::RZ)) nd->dofRZ->setMass(J);
 }
 
 void DynamicSystem::mapDofNode(DOF * d, Node * nd)
@@ -524,7 +524,7 @@ void DynamicSystem::addTVMD(const int id, const int ni, const int nj, const doub
 	nonlinearElements[id] = d;
 }
 
-void DynamicSystem::addSpring2D(const int id, const int ni, const int nj, const double k, ELE::LocalAxis U)
+void DynamicSystem::addSpring2D(const int id, const int ni, const int nj, const double k, RODS::LocalAxis U)
 {
 	if (!checkDuplicateElement(id)) return;
 
@@ -535,7 +535,7 @@ void DynamicSystem::addSpring2D(const int id, const int ni, const int nj, const 
 	linearElasticElements[id] = s;
 }
 
-void DynamicSystem::addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n, ELE::LocalAxis U /*= ELE::U1*/)
+void DynamicSystem::addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n, RODS::LocalAxis U /*= RODS::U1*/)
 {
 	if (!checkDuplicateElement(id)) return;
 
@@ -546,7 +546,7 @@ void DynamicSystem::addSpringBoucWen2D(const int id, const int ni, const int nj,
 	nonlinearTangentElements[id] = s;
 }
 
-void DynamicSystem::addDashpot2D(const int id, const int ni, const int nj, const double c, ELE::LocalAxis U)
+void DynamicSystem::addDashpot2D(const int id, const int ni, const int nj, const double c, RODS::LocalAxis U)
 {
 	if (!checkDuplicateElement(id)) return;
 
@@ -557,7 +557,7 @@ void DynamicSystem::addDashpot2D(const int id, const int ni, const int nj, const
 	linearDampingElements[id] = d;
 }
 
-void DynamicSystem::addInerter2D(const int id, const int ni, const int nj, const double m, ELE::LocalAxis U)
+void DynamicSystem::addInerter2D(const int id, const int ni, const int nj, const double m, RODS::LocalAxis U)
 {
 	if (!checkDuplicateElement(id)) return;
 
@@ -568,7 +568,7 @@ void DynamicSystem::addInerter2D(const int id, const int ni, const int nj, const
 	inertialMassElements[id] = in;
 }
 
-void DynamicSystem::addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, ELE::LocalAxis U /*= ELE::U1*/)
+void DynamicSystem::addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, RODS::LocalAxis U /*= RODS::U1*/)
 {
 	if (!checkDuplicateElement(id)) return;
 
@@ -579,7 +579,7 @@ void DynamicSystem::addDashpotExp2D(const int id, const int ni, const int nj, co
 	nonlinearElements[id] = d;
 }
 
-void DynamicSystem::addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, ELE::LocalAxis U)
+void DynamicSystem::addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, RODS::LocalAxis U)
 {
 	if (!checkDuplicateElement(id)) return;
 	DashpotMaxwell2D *d = new DashpotMaxwell2D(id, Nodes.at(ni), Nodes.at(nj), k, c, alpha, U);
@@ -691,7 +691,7 @@ void DynamicSystem::addWave(const int id, const double dt, char* fileName)
 	Waves[ts->id] = ts;
 }
 
-void DynamicSystem::addDOFRecorder(const int id, int *dofIds, const int n, Response rtype, char * fileName)
+void DynamicSystem::addDOFRecorder(const int id, int *dofIds, const int n, RODS::Response rType, char * fileName)
 {
 	if (DOFRecorders.count(id) > 0)
 	{
@@ -706,11 +706,11 @@ void DynamicSystem::addDOFRecorder(const int id, int *dofIds, const int n, Respo
 		rdofs[i] = DOFs.at(dofIds[i]);
 	}
 
-	DOFRecorder *dr = new DOFRecorder(id, rdofs, rtype, fileName);
+	DOFRecorder *dr = new DOFRecorder(id, rdofs, rType, fileName);
 	DOFRecorders[dr->id] = dr;
 }
 
-void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, Response rtype, char * fileName)
+void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, RODS::Response rType, char * fileName)
 {
 	if (ElementRecorders.count(id) > 0)
 	{
@@ -725,7 +725,7 @@ void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, 
 		reles[i] = Elements.at(eleIds[i]);
 	}
 
-	ElementRecorder *er = new ElementRecorder(id, reles, rtype, fileName);
+	ElementRecorder *er = new ElementRecorder(id, reles, rType, fileName);
 	ElementRecorders[er->id] = er;
 }
 
@@ -736,18 +736,18 @@ void DynamicSystem::setRayleighDamping(const double omg1, const double omg2)
 	RayleighOmg2 = omg2;
 }
 
-void DynamicSystem::activeGroundMotion(Direction dir, const int waveId, const double waveScale)
+void DynamicSystem::activeGroundMotion(RODS::Direction dir, const int waveId, const double waveScale)
 {
 	if (Waves.count(waveId) == 0)
 	{
-		cout << "Wave " << waveId << "do not exist!" << endl;
+		cout << "Wave " << waveId << "do not exist! The groud motion is not activated." << endl;
 		return;
 	}
 
 	DOF *dof = nullptr;
 	switch (dir)
 	{
-		case Direction::X:
+		case RODS::Direction::X:
 			XSeismicWaveId = waveId;
 			XSeismicWaveScale = waveScale;
 			for (int i = 0; i < eqnCount; i++)
@@ -759,7 +759,7 @@ void DynamicSystem::activeGroundMotion(Direction dir, const int waveId, const do
 				}
 			}
 			break;
-		case Direction::Y:
+		case RODS::Direction::Y:
 			YSeismicWaveId = waveId;
 			YSeismicWaveScale = waveScale;
 			for (int i = 0; i < eqnCount; i++)
@@ -771,7 +771,7 @@ void DynamicSystem::activeGroundMotion(Direction dir, const int waveId, const do
 				}
 			}
 			break;
-		case Direction::Z:
+		case RODS::Direction::Z:
 			ZSeismicWaveId = waveId;
 			ZSeismicWaveScale = waveScale;
 			for (int i = 0; i < eqnCount; i++)
@@ -1196,6 +1196,8 @@ void DynamicSystem::setConvergeParameter(const double tol, const int maxIter)
 
 void DynamicSystem::solveLinearStaticResponse()
 {
+	Element::isStatic = true;
+
 	ctime = 1.0;
 	applyLoad();
 	dsp = solve(K, Q);
@@ -1212,6 +1214,8 @@ void DynamicSystem::solveLinearStaticResponse()
 
 void DynamicSystem::solveNonlinearStaticResponse(const int nsub)
 {
+	Element::isStatic = true;
+
 	int nIter = 0;
 	double error = 1.0;
 
@@ -1284,6 +1288,8 @@ void DynamicSystem::solveNonlinearStaticResponse(const int nsub)
 
 void DynamicSystem::solveNonlinearStaticResponse(const double loadedTime, const int nsub)
 {
+	Element::isStatic = true;
+
 	int nIter = 0;
 	double error = 1.0;
 
@@ -1362,6 +1368,8 @@ void DynamicSystem::setDispControlDof(const int dofId, const int loadId)
 
 void DynamicSystem::solveNonlinearStaticResponseDispControl(const double loadedTime, const int nsub)
 {
+	Element::isStatic = true;
+
 	int dispControlEqn = dofMapEqn.at(dispControlDOFId);
 	Load *load = Loads.at(dispControlLoadId);
 
@@ -1469,6 +1477,8 @@ void DynamicSystem::solveNonlinearStaticResponseDispControl(const double loadedT
 
 void DynamicSystem::solveNonlinearStaticResponseDispControlDelta(const double loadedTime, const int nsub)
 {
+	Element::isStatic = true;
+
 	Load *load = Loads.at(dispControlLoadId); // time-varying load pattern of the control DOF
 
 	// obtain the reference load vector:
@@ -1584,21 +1594,24 @@ void DynamicSystem::solveSeismicResponse(const int nsub)
 		isMultiDirectionExcitation = true;
 	}
 
+	Element::isStatic = false;
+	reassembleStiffnessMatrix();
+
 	switch (dynamicSolver)
 	{
-	case Newmark:
+	case RODS::DynamicSolver::Newmark:
 		if (isMultiDirectionExcitation) solveSeismicResponseNewmarkMD(nsub);
 		else solveSeismicResponseNewmark(nsub);
 		break;
-	case Newmark_NL:
+	case RODS::DynamicSolver::Newmark_NL:
 		if (isMultiDirectionExcitation) solveSeismicResponseNewmarkNLMD(nsub);
 		else solveSeismicResponseNewmarkNL(nsub);
 		break;
-	case StateSpace:
+	case RODS::DynamicSolver::StateSpace:
 		if (isMultiDirectionExcitation) solveSeismicResponseStateSpaceMD(nsub);
 		else solveSeismicResponseStateSpace(nsub);
 		break;
-	case StateSpace_NL:
+	case RODS::DynamicSolver::StateSpace_NL:
 		if (isMultiDirectionExcitation) solveSeismicResponseStateSpaceNLMD(nsub);
 		else solveSeismicResponseStateSpaceNL(nsub);
 		break;

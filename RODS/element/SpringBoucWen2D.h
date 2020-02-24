@@ -1,6 +1,5 @@
 #pragma once
 
-#include "DOF.h"
 #include "Element2D.h"
 #include <armadillo>
 
@@ -13,7 +12,7 @@ class SpringBoucWen2D : public Element2D
 {
 public:
 	SpringBoucWen2D(const int id, Node * nodeI, Node * nodeJ, const double k0, const double uy,
-		const double alpha, const double beta, const double n, ELE::LocalAxis axis);
+		const double alpha, const double beta, const double n, RODS::LocalAxis axis);
 	~SpringBoucWen2D();
 
 	virtual void buildMatrix();
@@ -23,7 +22,7 @@ public:
 
 	double k0, uy, fy, alpha, beta, n;
 	double k, ue, f, ve, z, zp;
-	ELE::LocalAxis axis;
+	RODS::LocalAxis axis;
 
 	rowvec::fixed<4> T;
 	mat::fixed<4, 4> K;

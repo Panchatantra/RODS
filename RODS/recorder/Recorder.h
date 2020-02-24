@@ -18,8 +18,6 @@ namespace RODS
 	};
 }
 
-using namespace RODS;
-
 /**
  * @brief      The response recorder.
  */
@@ -31,10 +29,10 @@ public:
 	 * @brief      Constructs a new instance.
 	 *
 	 * @param[in]  id        The identifier
-	 * @param[in]  rtype     The Response type
+	 * @param[in]  rType     The Response type
 	 * @param      fileName  The record file name
 	 */
-	Recorder(const int id, Response rtype, char * fileName);
+	Recorder(const int id, RODS::Response rType, char * fileName);
 	~Recorder();
 
 	void init(const int nsteps);
@@ -50,7 +48,7 @@ public:
 
 	int n; 				///< The number of instances to record
 	int nsteps;			///< The number of analysis steps
-	Response rtype;		///< The RODS::Response Type
+	RODS::Response rtype;		///< The RODS::Response Type
 	char * fileName;	///< The record file name
 	mat Res;			///< The matrix to record results
 };

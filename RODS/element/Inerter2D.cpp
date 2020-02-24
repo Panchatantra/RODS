@@ -1,10 +1,10 @@
 #include "Inerter2D.h"
 
-Inerter2D::Inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, ELE::LocalAxis axis) :
+Inerter2D::Inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, RODS::LocalAxis axis) :
 	Element2D(id, nodeI, nodeJ), m(m),
 	ue(0.0), f(0.0)
 {
-	if (axis == ELE::U1)
+	if (axis == RODS::LocalAxis::U1)
 	{
 		T = rowvec({ -lxx , -lxy , lxx , lxy });
 	}
