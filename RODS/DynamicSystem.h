@@ -263,6 +263,10 @@ public:
 	 */
 	void addMaterialSMABilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift);
 
+
+	void addMaterialCyclicHardenTrilinear(const int id, const double E, const double sigma1, const double alpha1,
+											const double sigma2, const double alpha2);
+
 	/**
 	 * @brief      Adds a fiber.
 	 *

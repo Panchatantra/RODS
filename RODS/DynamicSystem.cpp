@@ -9,6 +9,7 @@
 #include "material/SteelBilinear.h"
 #include "material/ConcreteTrilinear.h"
 #include "material/SMABilinear.h"
+#include "material/CyclicHardenTrilinear.h"
 
 DynamicSystem::DynamicSystem(const double z) :
 	zeta(z), eqnCount(0), fixedDofCount(0), eigenVectorNormed(false),
@@ -331,6 +332,16 @@ void DynamicSystem::addMaterialSMABilinear(const int id, const double E0, const 
 	if ( checkDuplicateMaterial1D(id) )
 	{
 		Material1D *mt = new SMABilinear(id, E0, fy, alpha, sigma_shift);
+		Material1Ds[id] = mt;
+	}
+}
+
+void DynamicSystem::addMaterialCyclicHardenTrilinear(const int id, const double E, const double sigma1,
+	const double alpha1, const double sigma2, const double alpha2)
+{
+	if ( checkDuplicateMaterial1D(id) )
+	{
+		Material1D *mt = new CyclicHardenTrilinear(id, E, sigma1, alpha1, sigma2, alpha2);
 		Material1Ds[id] = mt;
 	}
 }
