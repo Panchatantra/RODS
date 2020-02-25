@@ -339,6 +339,7 @@
     <ClCompile Include="Load.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="material\ConcreteTrilinear.cpp" />
+    <ClCompile Include="material\CyclicHardenTrilinear.cpp" />
     <ClCompile Include="material\Elastic.cpp" />
     <ClCompile Include="material\Elastoplastic.cpp" />
     <ClCompile Include="material\Material.cpp" />
@@ -394,6 +395,7 @@
     <ClInclude Include="Line.h" />
     <ClInclude Include="Load.h" />
     <ClInclude Include="material\ConcreteTrilinear.h" />
+    <ClInclude Include="material\CyclicHardenTrilinear.h" />
     <ClInclude Include="material\Elastic.h" />
     <ClInclude Include="material\Elastoplastic.h" />
     <ClInclude Include="material\Material.h" />

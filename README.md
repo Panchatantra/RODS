@@ -55,7 +55,7 @@
 * Elastoplastic
 * ConcreteTrilinear
 * SteelBilinear
-* SMABilinear
+* CyclicHardenTrilinear
 * ...
 
 ### Section

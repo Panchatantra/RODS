@@ -8,6 +8,7 @@
 #include "material/SteelBilinear.h"
 #include "material/ConcreteTrilinear.h"
 #include "material/SMABilinear.h"
+#include "material/CyclicHardenTrilinear.h"
 
 #include "plot.h"
 
@@ -302,11 +303,14 @@ void test_material()
 	double sigma_shift = 0.5*fy;
 	SMABilinear *mat3 = new SMABilinear(3, E, fy, alpha, sigma_shift);
 
-	tmat = mat3->copy();
+	auto *mat4 = new CyclicHardenTrilinear(4, E, fy, 0.2, 1.5*fy, 0.02);
+
+	tmat = mat4->copy();
 	size_t n = 1001;
 	mat s = zeros<mat>(n, 2);
-	vec t = linspace(0, 10, n);
-	s.col(0) = eps_y * t%arma::sin(2.0*PI / 1.0*t);
+	vec t = linspace(0, 5, n);
+	s.col(0) = eps_y * t%arma::sin(2.0*PI / 0.5*t);
+	//s.col(0) = eps_y *5.0* arma::sin(2.0*PI / 5.0*t);
 
 	for (size_t i = 0; i < n; i++)
 	{
@@ -315,8 +319,8 @@ void test_material()
 		s(i, 1) = tmat->sigma;
 	}
 
-	s.save("mat.txt", raw_ascii);
-	system(R"(gnuplot -e "set term pdf; set output \"mat.pdf\"; plot \"mat.txt\" using 1:2 with line" )");
+	s.save("data/mat.txt", raw_ascii);
+	system(R"(gnuplot -e "set term pdf; set output 'data/mat.pdf'; plot 'data/mat.txt' using 1:2 with line")");
 }
 
 void example_truss()
@@ -885,9 +889,9 @@ int main()
 	//example_sdof_bl();
 	//example_shear_building();
 	//example_shear_building_spis2();
-	//test_material();
+	test_material();
 	//example_truss();
-	example_frame();
+	//example_frame();
 	//example_cantilever();
 	//example_wall();
 	//example_nonlinear_spring();
