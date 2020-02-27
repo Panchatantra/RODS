@@ -4,8 +4,8 @@ Slider2D::Slider2D(const int id, Node * nodeI, Node * nodeJ, const double mu, co
 	Element2D(id, nodeI, nodeJ), mu(mu), ka(ka)
 {
 	T = mat({
-		{ -lxx , -lxy , lxx , lxy },
-		{ -lyx , -lyy , lyx , lyy }
+		{ -lxx , -lxz , lxx , lxz },
+		{ -lzx , -lzz , lzx , lzz }
 			});
 	buildMatrix();
 }

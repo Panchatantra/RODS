@@ -21,9 +21,9 @@ Frame2D::Frame2D(const int id, Node *nodeI, Node *nodeJ, SectionFrame2D *sec, co
 	k0 = k;
 
 	T = mat({
-				{-lxx,  -lxy,  0.0,  lxx,   lxy,   0.0},
-				{lyx/L, lyy/L, 1.0, -lyx/L, -lyy/L, 0.0},
-				{lyx/L, lyy/L, 0.0, -lyx/L, -lyy/L, 1.0}
+				{-lxx,  -lxz,  0.0,  lxx,   lxz,   0.0},
+				{lzx/L, lzz/L, 1.0, -lzx/L, -lzz/L, 0.0},
+				{lzx/L, lzz/L, 0.0, -lzx/L, -lzz/L, 1.0}
 			});
 
 	buildMatrix();

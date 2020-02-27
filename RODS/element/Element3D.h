@@ -5,12 +5,12 @@
 /**
  * @brief      The base class of element in X-Z direction.
  */
-class Element2D :
+class Element3D :
 	public Element
 {
 public:
-	Element2D(const int id, Node * nodeI, Node * nodeJ);
-	~Element2D();
+	Element3D(const int id, Node * nodeI, Node * nodeJ);
+	~Element3D();
 
 	virtual void buildMatrix() {}
 	virtual void getResponse(const bool update = false) {}
@@ -23,5 +23,13 @@ public:
 	Node *nodeI, *nodeJ;
 
 	double L;
-	double lxx, lxz, lzx, lzz;
+	double lxx;
+	double lxy;
+	double lxz;
+	double lyx;
+	double lyy;
+	double lyz;
+	double lzx;
+	double lzy;
+	double lzz;
 };

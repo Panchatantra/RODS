@@ -1,5 +1,4 @@
 #include "CyclicHardenTrilinear.h"
-#include <iostream>
 
 using namespace MAT_CHT;
 
@@ -235,8 +234,6 @@ void CyclicHardenTrilinear::getResponse(const bool update)
 		epsilon_max = epsilon_max_;
 		epsilon_min = epsilon_min_;
 	}
-
-	std::cout << state << std::endl;
 }
 
 void CyclicHardenTrilinear::changeToStateElastic()

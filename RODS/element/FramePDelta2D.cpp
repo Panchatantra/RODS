@@ -21,9 +21,9 @@ FramePDelta2D::FramePDelta2D(const int id, Node *nodeI, Node *nodeJ, SectionFram
 	k0 = k;
 
 	T = mat({
-				{-lxx,  -lxy,  0.0,  lxx,   lxy,   0.0},
-				{lyx/L, lyy/L, 1.0, -lyx/L, -lyy/L, 0.0},
-				{lyx/L, lyy/L, 0.0, -lyx/L, -lyy/L, 1.0}
+				{-lxx,  -lxz,  0.0,  lxx,   lxz,   0.0},
+				{lzx/L, lzz/L, 1.0, -lzx/L, -lzz/L, 0.0},
+				{lzx/L, lzz/L, 0.0, -lzx/L, -lzz/L, 1.0}
 			});
 
 	Kg = 1.0/30.0/L*mat(
@@ -39,11 +39,11 @@ FramePDelta2D::FramePDelta2D(const int id, Node *nodeI, Node *nodeJ, SectionFram
 
 	T3 = mat(
 		{
-			{lxx,lxy,0,0,0,0},
-			{lyx,lyy,0,0,0,0},
+			{lxx,lxz,0,0,0,0},
+			{lzx,lzz,0,0,0,0},
 			{0,0,1,0,0,0},
-			{0,0,0,lxx,lxy,0},
-			{0,0,0,lyx,lyy,0},
+			{0,0,0,lxx,lxz,0},
+			{0,0,0,lzx,lzz,0},
 			{0,0,0,0,0,1}
 		}
 	);

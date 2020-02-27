@@ -7,11 +7,11 @@ DashpotMaxwell2D::DashpotMaxwell2D(const int id, Node * nodeI, Node * nodeJ, con
 {
 	if (axis == RODS::LocalAxis::U1)
 	{
-		T = rowvec({ -lxx , -lxy , lxx , lxy });
+		T = rowvec({ -lxx , -lxz , lxx , lxz });
 	}
 	else
 	{
-		T = rowvec({ -lyx , -lyy , lyx , lyy });
+		T = rowvec({ -lzx , -lzz , lzx , lzz });
 	}
 }
 

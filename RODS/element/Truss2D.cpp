@@ -3,7 +3,7 @@
 Truss2D::Truss2D(const int id, Node *nodeI, Node *nodeJ, SectionTruss *sec):
 	Element2D(id, nodeI, nodeJ), sec(sec->copy()), k(sec->k/L), k0(sec->k/L), ue(0.0), f(0.0)
 {
-	T = rowvec( {-lxx, -lxy, lxx, lxy} );
+	T = rowvec( {-lxx, -lxz, lxx, lxz} );
 	buildMatrix();
 	K0 = K;
 }

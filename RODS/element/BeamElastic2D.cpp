@@ -5,8 +5,8 @@ BeamElastic2D::BeamElastic2D(const int id, Node * nodeI, Node * nodeJ, const dou
 {
 	k = mat({	{4*EI/L, 2*EI/L},
 				{2*EI/L, 4*EI/L} });
-	T = mat( {{lyx/L, lyy/L, 1.0, -lyx/L, -lyy/L, 0.0},
-		      {lyx/L, lyy/L, 0.0, -lyx/L, -lyy/L, 1.0} });
+	T = mat( {{lzx/L, lzz/L, 1.0, -lzx/L, -lzz/L, 0.0},
+		      {lzx/L, lzz/L, 0.0, -lzx/L, -lzz/L, 1.0} });
 	buildMatrix();
 	nv = 2;
 }

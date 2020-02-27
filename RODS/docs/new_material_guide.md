@@ -4,6 +4,8 @@
 
 * 新材料以新C++类的形式加入。
 
+## 一维材料
+
 * 新加一维材料应继承自Material1D类。
   * Material1D 已有成员变量：
     ``` C++
@@ -12,7 +14,7 @@
     double sigma; 	    ///< 应力
     double epsilon;     ///< 应变
     ```
-  * 新材料类应重新定义Material1D的虚函数：
+  * 新材料类应重新定义下列Material1D的虚函数：
     ``` C++
     /// 设置材料的应变
     void setStrain(const double *strain);
