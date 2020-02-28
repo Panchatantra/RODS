@@ -7,6 +7,7 @@ Element3D::Element3D(const int id, Node * nodeI, Node * nodeJ):
 	double dy = nodeJ->y0 - nodeI->y0;
 	double dz = nodeJ->z0 - nodeI->z0;
 	L = sqrt(dx*dx + dy*dy + dz*dz);
+	double l = sqrt(dx*dx + dy*dy);
 
 	if (dx == 0.0 && dy == 0.0)
 	{
@@ -25,8 +26,12 @@ Element3D::Element3D(const int id, Node * nodeI, Node * nodeJ):
 		lxx = dx/L;
 		lxy = dy/L;
 		lxz = dz/L;
-
-		
+		lyx = -dx*dz/(L*l);
+		lyy = dy*dz/(L*l);
+		lyz = l/L;
+		lzx = dy/l;
+		lzy = -dx/l;
+		lzz = 0.0;
 	}
 }
 
