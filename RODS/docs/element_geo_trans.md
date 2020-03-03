@@ -47,7 +47,7 @@ v_2 \\
 \end{matrix}\right)=
 \mathbf{T_g}\mathbf{u}
 $$
-其中，$l_{u \hat v}$ 意为整体 $u$ 轴单位向量和局部 $\hat v$ 轴单位向量的点乘积。
+其中，$l_{u \hat v}$ 意为整体 $u$ 轴单位向量和局部 $\hat v$ 轴单位向量的点乘积。或局部 $\hat v$ 轴在整体 $u$ 轴方向的方向余弦。
 
 * 单元局部变形向量：
 $$\mathbf{\hat u_e} = \left(\begin{matrix}
@@ -417,4 +417,20 @@ $$\mathbf{\Delta u} =
 \theta_{z2} \\
 \end{matrix}\right)=
 \mathbf{T_1}\mathbf{\hat u_e}
+$$
+
+* 单元基本变形与整体坐标系变形的关系：
+$$
+\mathbf{\Delta u} = \mathbf{T_1 T_2 T_g u} = \mathbf{Tu}
+$$
+其中
+$$
+\mathbf{T} = \begin{bmatrix}
+-{l_{\mathit{x\hat x}}} & -{l_{\mathit{x\hat y}}} & -{l_{\mathit{x\hat z}}} & 0 & 0 & 0 & {l_{\mathit{x\hat x}}} & {l_{\mathit{x\hat y}}} & {l_{\mathit{x\hat z}}} & 0 & 0 & 0\\
+0 & 0 & 0 & -{l_{\mathit{x\hat x}}} & -{l_{\mathit{x\hat y}}} & -{l_{\mathit{x\hat z}}} & 0 & 0 & 0 & {l_{\mathit{x\hat x}}} & {l_{\mathit{x\hat y}}} & {l_{\mathit{x\hat z}}}\\
+-\frac{{l_{\mathit{z\hat x}}}}{L} & -\frac{{l_{\mathit{z\hat y}}}}{L} & -\frac{{l_{\mathit{z\hat z}}}}{L} & {l_{\mathit{y\hat x}}} & {l_{\mathit{y\hat y}}} & {l_{\mathit{y\hat z}}} & \frac{{l_{\mathit{z\hat x}}}}{L} & \frac{{l_{\mathit{z\hat y}}}}{L} & \frac{{l_{\mathit{z\hat z}}}}{L} & 0 & 0 & 0\\
+-\frac{{l_{\mathit{z\hat x}}}}{L} & -\frac{{l_{\mathit{z\hat y}}}}{L} & -\frac{{l_{\mathit{z\hat z}}}}{L} & 0 & 0 & 0 & \frac{{l_{\mathit{z\hat x}}}}{L} & \frac{{l_{\mathit{z\hat y}}}}{L} & \frac{{l_{\mathit{z\hat z}}}}{L} & {l_{\mathit{y\hat x}}} & {l_{\mathit{y\hat y}}} & {l_{\mathit{y\hat z}}}\\
+\frac{{l_{\mathit{y\hat x}}}}{L} & \frac{{l_{\mathit{y\hat y}}}}{L} & \frac{{l_{\mathit{y\hat z}}}}{L} & {l_{\mathit{z\hat x}}} & {l_{\mathit{z\hat y}}} & {l_{\mathit{z\hat z}}} & -\frac{{l_{\mathit{y\hat x}}}}{L} & -\frac{{l_{\mathit{y\hat y}}}}{L} & -\frac{{l_{\mathit{y\hat z}}}}{L} & 0 & 0 & 0\\
+\frac{{l_{\mathit{y\hat x}}}}{L} & \frac{{l_{\mathit{y\hat y}}}}{L} & \frac{{l_{\mathit{y\hat z}}}}{L} & 0 & 0 & 0 & -\frac{{l_{\mathit{y\hat x}}}}{L} & -\frac{{l_{\mathit{y\hat y}}}}{L} & -\frac{{l_{\mathit{y\hat z}}}}{L} & {l_{\mathit{z\hat x}}} & {l_{\mathit{z\hat y}}} & {l_{\mathit{z\hat z}}}
+\end{bmatrix}
 $$
