@@ -1,4 +1,4 @@
-# 杆系单元的局部坐标系及几何变换
+# 杆系单元的局部坐标系及坐标变换
 
 [TOC]
 
@@ -82,6 +82,8 @@ $$
 
 ## 三维
 
+* 右手坐标系
+
 ### 公式
 
 * 整体坐标轴的单位向量
@@ -119,6 +121,42 @@ $$ \mathbf{\lambda} = \frac{1}{L \cdot l} \left[ \begin{aligned}
 -\Delta x \Delta z \quad & \Delta y \Delta z \quad & l^2 \\
 L\Delta y \quad & -L\Delta x \quad & 0 \\
 \end{aligned} \right]
+$$
+
+* 当 $\Delta x = \Delta y = 0$ 时
+  * 若 $\Delta z > 0$
+$$
+\begin{aligned}
+\mathbf{\overline i} = 
+\left (
+0, 0, 1
+\right )^T\\
+\mathbf{\overline j} = 
+\left (
+1, 0, 0
+\right )^T\\
+\mathbf{\overline k} = 
+\left (
+0, 1, 0
+\right )^T
+\end{aligned}
+$$
+  * 若 $\Delta z < 0$
+$$
+\begin{aligned}
+\mathbf{\overline i} = 
+\left (
+0, 0, -1
+\right )^T\\
+\mathbf{\overline j} = 
+\left (
+-1, 0, 0
+\right )^T\\
+\mathbf{\overline k} = 
+\left (
+0, 1, 0
+\right )^T
+\end{aligned}
 $$
 
 ### 推导过程
@@ -222,6 +260,22 @@ $$
 \right |  \\
  &= \left (
 1, 0, 0
+\right )^T
+\end{aligned}
+$$
+或
+$$
+\begin{aligned}
+\mathbf{\overline j} &= \mathbf{\overline k} \times \mathbf{\overline i} = 
+\left |
+\begin{matrix}
+\mathbf{i} & \mathbf{j} & \mathbf{k}\\
+0 & 1 & 0 \\
+0 & 0 & -1
+\end{matrix}
+\right |  \\
+ &= \left (
+-1, 0, 0
 \right )^T
 \end{aligned}
 $$
