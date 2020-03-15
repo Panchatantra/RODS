@@ -33,7 +33,7 @@ public:
 	mat::fixed<6, 6> K0;
 	mat::fixed<6, 6> K;
 	mat::fixed<6, 6> Kg;
-	mat::fixed<6, 6> T3;
+	mat::fixed<6, 6> Tg;
 	vec::fixed<6> u;
 	vec::fixed<6> q;
 };

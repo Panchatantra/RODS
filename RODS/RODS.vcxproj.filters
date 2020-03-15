@@ -179,6 +179,9 @@
     <ClCompile Include="element\Element3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="element\FrameElastic3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="numeric.h">
@@ -350,6 +353,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\Element3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\FrameElastic3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

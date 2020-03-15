@@ -21,9 +21,9 @@ FramePDelta2D::FramePDelta2D(const int id, Node *nodeI, Node *nodeJ, SectionFram
 	k0 = k;
 
 	T = mat({
-				{-lxx,  -lxz,  0.0,  lxx,   lxz,   0.0},
-				{lzx/L, lzz/L, 1.0, -lzx/L, -lzz/L, 0.0},
-				{lzx/L, lzz/L, 0.0, -lzx/L, -lzz/L, 1.0}
+				{-lxx,   -lxz,   0.0,  lxx,   lxz,   0.0},
+				{-lzx/L, -lzz/L, 1.0, lzx/L,  lzz/L, 0.0},
+				{-lzx/L, -lzz/L, 0.0, lzx/L,  lzz/L, 1.0}
 			});
 
 	Kg = 1.0/30.0/L*mat(
@@ -37,7 +37,7 @@ FramePDelta2D::FramePDelta2D(const int id, Node *nodeI, Node *nodeJ, SectionFram
 		}
 	);
 
-	T3 = mat(
+	Tg = mat(
 		{
 			{lxx,lxz,0,0,0,0},
 			{lzx,lzz,0,0,0,0},
@@ -105,7 +105,7 @@ void FramePDelta2D::getResponse(const bool update)
 
 	buildMatrix();
 
-	q = T.t()*(f - k0*ue) + f(0)*Kg*T3*u;
+	q = T.t()*(f - k0*ue) + f(0)*Kg*Tg*u;
 }
 
 void FramePDelta2D::assembleStiffnessMatrix(mat &K)

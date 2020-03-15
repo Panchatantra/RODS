@@ -16,8 +16,8 @@ using namespace std;
 
 void example_sdof()
 {
-	double m = 1.0;
-	double k = 100.0;
+	double m = 800.0;
+	double k = m*400.0;
 	double zeta = 0.02;
 	double c = 2.0*zeta*sqrt(m*k);
 
@@ -34,9 +34,9 @@ void example_sdof()
 	ds->solveEigen();
 	ds->P.print("Natural Periods:");
 
-	ds->solveStochasticSeismicResponse();
-	ds->dsp.print("StochasticSeismicResponse:");
-	cout << "AnalyticalSolution: " << sqrt(PI / 4 / ds->omg(0) / zeta) / ds->omg(0) << endl;
+	//ds->solveStochasticSeismicResponse();
+	//ds->dsp.print("StochasticSeismicResponse:");
+	//cout << "AnalyticalSolution: " << sqrt(PI / 4 / ds->omg(0) / zeta) / ds->omg(0) << endl;
 
 	double dt = 0.01;
 	int nsteps = 1000;
@@ -45,22 +45,22 @@ void example_sdof()
 	vec ag = arma::sin(Omg*t);
 	ds->addWave(1, dt, ag);
 
-	char eq[] = "EQ-S-1.txt";
+	char eq[] = "data/EQ-S-1.txt";
 	ds->addWave(2, 0.005, eq);
 
 	int nrd = 2;
 	int *dofIds = new int[nrd] { 0, 1 };
-	char dispOutput[] = "disp.dat";
+	char dispOutput[] = "data/disp0.dat";
 	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
 
 	int nre = 2;
 	int *eleIds = new int[nre] { 0, 1 };
-	char eleOutput[] = "force.dat";
+	char eleOutput[] = "data/force0.dat";
 	ds->addElementRecorder(0, eleIds, nre, RODS::Response::FORCE, eleOutput);
 
 	int ts = 2;
 	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
-	ds->activeGroundMotion(RODS::Direction::X, ts, 700.0);
+	ds->activeGroundMotion(RODS::Direction::X, ts, 4000.0);
 	ds->solveSeismicResponse(30);
 	//system("python post.py");
 }
@@ -68,8 +68,8 @@ void example_sdof()
 void example_sdof_inerter_system()
 {
 	double zeta = 0.02;
-	double m = 1.0;
-	double k = 100.0;
+	double m = 800.0;
+	double k = m*400.0;
 	double c = 2.0*zeta*sqrt(m*k);
 
 	DynamicSystem *ds = new DynamicSystem();
@@ -80,17 +80,17 @@ void example_sdof_inerter_system()
 	ds->addSpring(1, 1, 2, k);
 	ds->addDashpot(2, 1, 2, c);
 
-	double mu = 0.2;
+	double mu = 0.1;
 	double kp = mu / (1.0 - mu);
 	double xi = mu / 2.0*sqrt(kp / 2.0);
 	double m_in = mu * m;
 	double k_s = kp * k;
 	double c_d = 2.0*xi*sqrt(m*k);
 
-	//ds->addDOF(11, 0.0);
-	//ds->addInerter(11, 1, 11, m_in);
-	//ds->addDashpot(12, 1, 11, c_d);
-	//ds->addSpring(13, 11, 2, k_s);
+	ds->addDOF(11, 0.0);
+	ds->addInerter(11, 1, 11, m_in);
+	ds->addDashpot(12, 1, 11, c_d);
+	ds->addSpring(13, 11, 2, k_s);
 
 	//ds->addSPIS2(3, 1, 2, 11, m_in, c_d, k_s);
 
@@ -101,21 +101,103 @@ void example_sdof_inerter_system()
 	ds->solveEigen();
 	ds->P.print("Natural Periods:");
 
-	char eq[] = "EQ-S-1.txt";
+	char eq[] = "data/EQ-S-1.txt";
 	double dt = 0.005;
 	ds->addWave(1, dt, eq);
 
 	int nrd = 1;
 	int *dofIds = new int[nrd] { 2 };
-	char dispOutput[] = "disp0.dat";
+	//char dispOutput[] = "data/disp0.dat";
+	char dispOutput[] = "data/disp.dat";
 	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
 
 	int ts = 1;
 	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
-	ds->activeGroundMotion(RODS::Direction::X, ts, 700.0);
+	ds->activeGroundMotion(RODS::Direction::X, ts, 4000.0);
 	ds->solveSeismicResponse(30);
+}
 
-	plot(dispOutput, 2);
+void example_sdof_inerter_system_nl()
+{
+	double zeta = 0.02;
+	double m = 800.0;
+	double k = m*400.0;
+	double c = 2.0*zeta*sqrt(m*k);
+
+	double uy = 10.0;
+	double alpha = 0.1;
+
+	DynamicSystem *ds0 = new DynamicSystem();
+	DynamicSystem *ds = new DynamicSystem();
+
+	ds0->addDOF(1, m, FIXED);
+	ds0->addDOF(2, m);
+
+	ds->addDOF(1, m, FIXED);
+	ds->addDOF(2, m);
+
+	//ds0->addSpring(1, 1, 2, k);
+	//ds0->addSpringBilinear(1, 1, 2, k, uy, alpha);
+	ds0->addMaterialSteelBilinear(1, k, k*uy, alpha, 0.0);
+	ds0->addSpringNonlinear(1, 1, 2, 1);
+	ds0->addDashpot(2, 1, 2, c);
+
+	//ds->addSpring(1, 1, 2, k);
+	//ds->addSpringBilinear(1, 1, 2, k, uy, alpha);
+	ds->addMaterialSteelBilinear(1, k, k*uy, alpha, 0.0);
+	ds->addSpringNonlinear(1, 1, 2, 1);
+	ds->addDashpot(2, 1, 2, c);
+
+	double mu = 0.1;
+	double kp = mu / (1.0 - mu);
+	double xi = mu / 2.0*sqrt(kp / 2.0);
+	double m_in = mu * m;
+	double k_s = kp * k;
+	double c_d = 2.0*xi*sqrt(m*k);
+
+	ds->addDOF(11, 0.0);
+	ds->addInerter(11, 1, 11, m_in);
+	ds->addDashpot(12, 1, 11, c_d);
+	//ds->addSpring(13, 11, 2, k_s);
+	//ds->addSpringBilinear(13, 11, 2, k_s, 1.4*uy, alpha);
+	ds->addMaterialSMABilinear(2, k_s, 1.5*k_s*uy, alpha, 0.5*k_s*uy);
+	ds->addSpringNonlinear(13, 11, 2, 2);
+
+	//ds->addSPIS2(3, 1, 2, 11, m_in, c_d, k_s);
+
+	//ds->addTVMD(3, 1, 2, m_in, c_d, k_s);
+
+	ds0->assembleMatrix();
+	ds->assembleMatrix();
+
+	ds->solveEigen();
+	ds->P.print("Natural Periods:");
+
+	char eq[] = "data/EQ-S-1.txt";
+	double dt = 0.005;
+	ds0->addWave(1, dt, eq);
+	ds0->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
+	ds0->activeGroundMotion(RODS::Direction::X, 1, 4000.0);
+
+	ds->addWave(1, dt, eq);
+	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
+	ds->activeGroundMotion(RODS::Direction::X, 1, 4000.0);
+
+	int nrd = 1;
+	int *dofIds = new int[nrd] { 2 };
+	char dispOutput0[] = "data/disp0_nl.dat";
+	//char dispOutput[] = "data/disp_nl.dat";
+	char dispOutput[] = "data/disp_nl_nl.dat";
+	ds0->addDOFRecorder(1, dofIds, nrd, RODS::Response::DISP, dispOutput0);
+	ds->addDOFRecorder(1, dofIds, nrd, RODS::Response::DISP, dispOutput);
+
+	int nre = 2;
+	int *eleIds = new int[nre] { 1, 13 };
+	char eleOutput[] = "data/def_force_nl.dat";
+	ds->addElementRecorder(1, eleIds, nre, RODS::Response::ALL, eleOutput);
+
+	ds0->solveSeismicResponse(30);
+	ds->solveSeismicResponse(30);
 }
 
 void example_sdof_bl()
@@ -519,6 +601,224 @@ void example_frame()
 	ds->solveSeismicResponse(30);
 }
 
+void example_frame3D()
+{
+	DynamicSystem *ds = new DynamicSystem(0.05);
+
+	double mass = 0.005;
+	double E = 32.5, G = 13.5416666666667;
+	double A_b = 80000.0, A_c = 160000.0;
+	double I_by = 266666666.666667, I_cy = 2133333333.33333;
+	double I_bz = 1066666666.66667, I_cz = 2133333333.33333;
+	double Ip_b = 732416666.666667, Ip_c = 3605333333.33333;
+	double EA_b = E * A_b, EA_c = E * A_c;
+	double EI_by = E * I_by, EI_cy = E * I_cy;
+	double EI_bz = E * I_bz, EI_cz = E * I_cz;
+	double GIp_c = G*Ip_c, GIp_b = G*Ip_b;
+
+	int nnd = 36;
+	int ne = 63;
+
+	double nodeCoord[36][3]{
+		{-6000,0,0},
+		{0,0,0},
+		{6000,0,0},
+		{-6000,0,3000},
+		{0,0,3000},
+		{6000,0,3000},
+		{-6000,0,6000},
+		{0,0,6000},
+		{6000,0,6000},
+		{-6000,0,9000},
+		{0,0,9000},
+		{6000,0,9000},
+		{-6000,6000,0},
+		{0,6000,0},
+		{6000,6000,0},
+		{-6000,6000,3000},
+		{0,6000,3000},
+		{6000,6000,3000},
+		{-6000,6000,6000},
+		{0,6000,6000},
+		{6000,6000,6000},
+		{-6000,6000,9000},
+		{0,6000,9000},
+		{6000,6000,9000},
+		{-6000,12000,0},
+		{0,12000,0},
+		{6000,12000,0},
+		{-6000,12000,3000},
+		{0,12000,3000},
+		{6000,12000,3000},
+		{-6000,12000,6000},
+		{0,12000,6000},
+		{6000,12000,6000},
+		{-6000,12000,9000},
+		{0,12000,9000},
+		{6000,12000,9000}
+	};
+
+	double x = 0, y = 0, z = 0;
+	for (int i = 0; i < nnd; i++)
+	{
+		ds->addDOF(6*i + 1, RODS::Direction::X, mass);
+		ds->addDOF(6*i + 2, RODS::Direction::Y, mass);
+		ds->addDOF(6*i + 3, RODS::Direction::Z, mass);
+		ds->addDOF(6*i + 4, RODS::Direction::RX, mass);
+		ds->addDOF(6*i + 5, RODS::Direction::RY, mass);
+		ds->addDOF(6*i + 6, RODS::Direction::RZ, mass);
+
+		x = nodeCoord[i][0];
+		y = nodeCoord[i][1];
+		z = nodeCoord[i][2];
+		ds->addNode(i + 1, x, y, z, 6*i+1, 6*i+2, 6*i+3, 6*i+4, 6*i+5, 6*i+6);
+	}
+
+	ds->fixNode(1 );
+	ds->fixNode(2 );
+	ds->fixNode(3 );
+	ds->fixNode(13);
+	ds->fixNode(14);
+	ds->fixNode(15);
+	ds->fixNode(25);
+	ds->fixNode(26);
+	ds->fixNode(27);
+
+	int elementConnect[63][3]{
+			{1, 4, 1},
+			{2, 5, 1},
+			{3, 6, 1},
+			{4, 5, 2},
+			{5, 6, 2},
+			{4, 7, 1},
+			{5, 8, 1},
+			{6, 9, 1},
+			{7, 8, 2},
+			{8, 9, 2},
+			{7, 10, 1},
+			{8, 11, 1},
+			{9, 12, 1},
+			{10, 11, 2},
+			{11, 12, 2},
+			{4, 16, 2},
+			{5, 17, 2},
+			{6, 18, 2},
+			{7, 19, 2},
+			{8, 20, 2},
+			{9, 21, 2},
+			{10, 22, 2},
+			{11, 23, 2},
+			{12, 24, 2},
+			{13, 16, 1},
+			{14, 17, 1},
+			{15, 18, 1},
+			{16, 17, 2},
+			{17, 18, 2},
+			{16, 19, 1},
+			{17, 20, 1},
+			{18, 21, 1},
+			{19, 20, 2},
+			{20, 21, 2},
+			{19, 22, 1},
+			{20, 23, 1},
+			{21, 24, 1},
+			{22, 23, 2},
+			{23, 24, 2},
+			{16, 28, 2},
+			{17, 29, 2},
+			{18, 30, 2},
+			{19, 31, 2},
+			{20, 32, 2},
+			{21, 33, 2},
+			{22, 34, 2},
+			{23, 35, 2},
+			{24, 36, 2},
+			{25, 28, 1},
+			{26, 29, 1},
+			{27, 30, 1},
+			{28, 29, 2},
+			{29, 30, 2},
+			{28, 31, 1},
+			{29, 32, 1},
+			{30, 33, 1},
+			{31, 32, 2},
+			{32, 33, 2},
+			{31, 34, 1},
+			{32, 35, 1},
+			{33, 36, 1},
+			{34, 35, 2},
+			{35, 36, 2}
+	};
+
+	int ni = 0, nj = 0, st = 0;
+	for (int i = 0; i < ne; i++)
+	{
+		ni = elementConnect[i][0];
+		nj = elementConnect[i][1];
+		st = elementConnect[i][2];
+		if (st == 1)
+		{
+			ds->addFrameElastic3D(i + 1, ni, nj, EA_c, EI_cy, EI_cz, GIp_c);
+		}
+		else
+		{
+			ds->addFrameElastic3D(i + 1, ni, nj, EA_b, EI_by, EI_bz, GIp_b);
+		}
+	}
+
+	//double c = 5.0;
+	//double k = 100.0;
+	//double alpha = 0.15;
+
+	//ds->addDashpot2D(101, 6, 11, c);
+	//ds->addDashpot2D(102, 6, 11, c);
+	//ds->addDashpot2D(103, 8, 11, c);
+
+	//ds->addDashpotExp2D(101, 6, 9, c, alpha);
+	//ds->addDashpotExp2D(102, 6, 11, c, alpha);
+	//ds->addDashpotExp2D(103, 8, 11, c, alpha);
+
+	//ds->addDashpotMaxwell2D(101, 6, 9, k, c, alpha);
+	//ds->addDashpotMaxwell2D(102, 6, 11, k, c, alpha);
+	//ds->addDashpotMaxwell2D(103, 8, 11, k, c, alpha);
+
+	//double k0 = 16.0, uy = 0.5, alfa = 0.02;
+	//ds->addSpringBoucWen2D(101, 6, 9, k0, uy, alfa);
+	//ds->addSpringBoucWen2D(102, 6, 11, k0, uy, alfa);
+	//ds->addSpringBoucWen2D(103, 8, 11, k0, uy, alfa);
+
+	ds->setRayleighDamping(2.0*PI / 0.36, 2.0*PI / 0.1);
+
+	ds->assembleMatrix();
+	ds->solveEigen();
+
+	ds->printInfo();
+
+	//char gmshFile[] = "data/frame.msh";
+	//ds->exportGmsh(gmshFile);
+
+	//int nrd = 1;
+	//int *dofIds = new int[nrd] {
+	//	ds->Nodes.at(4)->dofX->id
+	//};
+	//char dispOutput[] = "data/disp_frame_damped.dat";
+	//ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
+
+	//int nre = 1;
+	//int *eleIds = new int[nre] { 102 };
+	//char eleOutput[] = "data/damper.dat";
+	//ds->addElementRecorder(0, eleIds, nre, RODS::Response::ALL, eleOutput);
+
+	//int eqId = 1;
+	//double dt = 0.005;
+	//char eqFile[] = "data/EQ-S-1.txt";
+	//ds->addWave(eqId, dt, eqFile);
+
+	//ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
+	//ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
+	//ds->solveSeismicResponse(30);
+}
+
 void example_cantilever()
 {
 	DynamicSystem *ds = new DynamicSystem();
@@ -886,12 +1186,14 @@ int main()
 {
 	//example_sdof();
 	//example_sdof_inerter_system();
+	//example_sdof_inerter_system_nl();
 	//example_sdof_bl();
 	//example_shear_building();
 	//example_shear_building_spis2();
-	test_material();
+	//test_material();
 	//example_truss();
 	//example_frame();
+	example_frame3D();
 	//example_cantilever();
 	//example_wall();
 	//example_nonlinear_spring();

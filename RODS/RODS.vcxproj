@@ -317,6 +317,7 @@
     <ClCompile Include="element\Element3D.cpp" />
     <ClCompile Include="element\Frame2D.cpp" />
     <ClCompile Include="element\FrameElastic2D.cpp" />
+    <ClCompile Include="element\FrameElastic3D.cpp" />
     <ClCompile Include="element\FramePDelta2D.cpp" />
     <ClCompile Include="element\Inerter.cpp" />
     <ClCompile Include="element\Inerter2D.cpp" />
@@ -375,6 +376,7 @@
     <ClInclude Include="element\Element3D.h" />
     <ClInclude Include="element\Frame2D.h" />
     <ClInclude Include="element\FrameElastic2D.h" />
+    <ClInclude Include="element\FrameElastic3D.h" />
     <ClInclude Include="element\FramePDelta2D.h" />
     <ClInclude Include="element\Inerter.h" />
     <ClInclude Include="element\Inerter2D.h" />

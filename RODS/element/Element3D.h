@@ -3,7 +3,7 @@
 #include "Node.h"
 
 /**
- * @brief      The base class of element in X-Z direction.
+ * @brief      The base class of 3D element.
  */
 class Element3D :
 	public Element

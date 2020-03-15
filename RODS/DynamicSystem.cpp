@@ -633,8 +633,20 @@ void DynamicSystem::addFrameElastic2D(const int id, const int ni, const int nj, 
 	linearElasticElements[id] = frame;
 }
 
+void DynamicSystem::addFrameElastic3D(const int id, const int ni, const int nj, const double EA, const double EIy,
+	const double EIz, const double GIp)
+{
+	if (!checkDuplicateElement(id)) return;
+
+	FrameElastic3D *frame = new FrameElastic3D(id, Nodes.at(ni), Nodes.at(nj), EA, EIy, EIz, GIp);
+	Elements[id] = frame;
+	Element3Ds[id] = frame;
+	FrameElastic3Ds[id] = frame;
+	linearElasticElements[id] = frame;
+}
+
 void DynamicSystem::addQuad4Elastic(const int id, const int nodeI, const int nodeJ, const int nodeP, const int nodeQ,
-	const double E, const double nu, const double t)
+                                    const double E, const double nu, const double t)
 {
 	if (!checkDuplicateElement(id)) return;
 
@@ -738,6 +750,16 @@ void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, 
 
 	ElementRecorder *er = new ElementRecorder(id, reles, rType, fileName);
 	ElementRecorders[er->id] = er;
+}
+
+void DynamicSystem::setDofRecorderFileName(const int id, char* fileName)
+{
+	DOFRecorders.at(id)->setFileName(fileName);
+}
+
+void DynamicSystem::setElementRecorderFileName(const int id, char* fileName)
+{
+	ElementRecorders.at(id)->setFileName(fileName);
 }
 
 void DynamicSystem::setRayleighDamping(const double omg1, const double omg2)

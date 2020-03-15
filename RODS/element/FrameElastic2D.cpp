@@ -12,9 +12,9 @@ FrameElastic2D::FrameElastic2D(const int id, Node * nodeI, Node * nodeJ, const d
 			});
 
 	T = mat({
-				{-lxx,  -lxz,   0.0,  lxx,   lxz,   0.0},
-				{lzx/L, lzz/L, 1.0, -lzx/L, -lzz/L, 0.0},
-				{lzx/L, lzz/L, 0.0, -lzx/L, -lzz/L, 1.0}
+				{-lxx,   -lxz,   0.0,  lxx,   lxz,   0.0},
+				{-lzx/L, -lzz/L, 1.0, lzx/L,  lzz/L, 0.0},
+				{-lzx/L, -lzz/L, 0.0, lzx/L,  lzz/L, 1.0}
 			});
 
 	buildMatrix();

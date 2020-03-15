@@ -26,6 +26,7 @@
 #include "element/TrussElastic2D.h"
 #include "element/BeamElastic2D.h"
 #include "element/FrameElastic2D.h"
+#include "element/FrameElastic3D.h"
 #include "element/Quad4Elastic.h"
 #include "element/Truss2D.h"
 #include "element/Frame2D.h"
@@ -481,6 +482,20 @@ public:
 	 */
 	void addFrameElastic2D(const int id, const int ni, const int nj, const double EA, const double EI);
 
+	/**
+	* @brief      Adds a FrameElastic3D element.
+	*
+	* @param[in]  id    The identifier
+	* @param[in]  ni    The identifier of Node i
+	* @param[in]  nj    The identifier of Node j
+	* @param[in]  EA    E*A of the frame section
+	* @param[in]  EIy    E*Iy of the frame section
+	* @param[in]  EIz    E*Iz of the frame section
+	* @param[in]  GIp    G*Ip of the frame section
+	*/
+	void addFrameElastic3D(const int id, const int ni, const int nj, const double EA,
+						const double EIy, const double EIz, const double GIp);
+
 
 	/**
 	 * @brief      Adds a Quad4Elastic element.
@@ -570,6 +585,9 @@ public:
 	 */
 	void addElementRecorder(const int id, int *eleIds, const int n, RODS::Response rType, char * fileName);
 
+	void setDofRecorderFileName(const int id, char * fileName);
+	void setElementRecorderFileName(const int id, char * fileName);
+	
 	/**
 	 * @brief      Sets the frequencies of Rayleigh damping.
 	 *
@@ -763,6 +781,8 @@ public:
 	std::map<int, Element2D *> Element2Ds; 	///< Element2Ds
 	std::map<int, Plane2D *> Plane2Ds; 		///< Plane2Ds
 
+	std::map<int, Element3D *> Element3Ds; 	///< Element3Ds
+
 	/// The elements for assembling #Mp
 	std::map<int, Element *> physicalMassElements;
 	/// The elements for assembling #M other than #Mp
@@ -805,6 +825,7 @@ public:
 	std::map<int, FramePDelta2D *> FramePDelta2Ds; ///< FramePDelta2Ds in the system
 	std::map<int, BeamElastic2D *> BeamElastic2Ds; ///< BeamElastic2Ds in the system
 	std::map<int, FrameElastic2D *> FrameElastic2Ds; ///< FrameElastic2Ds in the system
+	std::map<int, FrameElastic3D *> FrameElastic3Ds; ///< FrameElastic3Ds in the system
 	std::map<int, Quad4Elastic *> Quad4Elastics; ///< Quad4Elastics in the system
 
 	std::map<int, Material1D *> Material1Ds; ///< Material1Ds in the system
