@@ -1,6 +1,6 @@
-#include "Element2D.h"
+#include "ROD2D.h"
 
-Element2D::Element2D(const int id, Node * nodeI, Node * nodeJ):
+ROD2D::ROD2D(const int id, Node * nodeI, Node * nodeJ):
 	Element(id), nodeI(nodeI), nodeJ(nodeJ)
 {
 	double dx = nodeJ->x0 - nodeI->x0;
@@ -13,6 +13,6 @@ Element2D::Element2D(const int id, Node * nodeI, Node * nodeJ):
 	lzz = lxx;
 }
 
-Element2D::~Element2D()
+ROD2D::~ROD2D()
 {
 }

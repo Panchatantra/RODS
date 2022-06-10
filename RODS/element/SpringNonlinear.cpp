@@ -2,7 +2,7 @@
 
 
 SpringNonlinear::SpringNonlinear(const int id, DOF *i, DOF *j, Material1D *smat) :
-	Element1D(id,i,j), smat(smat->copy()), k(smat->E), u(0.0), f(0.0)
+	ROD1D(id,i,j), smat(smat->copy()), k(smat->E), u(0.0), f(0.0)
 {
 	buildMatrix();
 }

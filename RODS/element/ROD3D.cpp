@@ -1,6 +1,6 @@
-#include "Element3D.h"
+#include "ROD3D.h"
 
-Element3D::Element3D(const int id, Node * nodeI, Node * nodeJ):
+ROD3D::ROD3D(const int id, Node * nodeI, Node * nodeJ):
 	Element(id), nodeI(nodeI), nodeJ(nodeJ)
 {
 	double dx = nodeJ->x0 - nodeI->x0;
@@ -35,6 +35,6 @@ Element3D::Element3D(const int id, Node * nodeI, Node * nodeJ):
 	}
 }
 
-Element3D::~Element3D()
+ROD3D::~ROD3D()
 {
 }

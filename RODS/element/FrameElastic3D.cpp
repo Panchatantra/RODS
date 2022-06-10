@@ -2,7 +2,7 @@
 
 FrameElastic3D::FrameElastic3D(const int id, Node * nodeI, Node * nodeJ, const double EA,
 					const double EIy, const double EIz, const double GIp):
-	Element3D(id, nodeI, nodeJ), EA(EA), EIy(EIy), EIz(EIz), GIp(GIp)
+	ROD3D(id, nodeI, nodeJ), EA(EA), EIy(EIy), EIz(EIz), GIp(GIp)
 {
 	k = mat({
 				{EA/L,  0.0,     0.0,     0.0,     0.0,     0.0  },

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Element2D.h"
+#include "ROD2D.h"
 #include "material/Material1D.h"
 #include <armadillo>
 
@@ -9,7 +9,7 @@ using namespace arma;
 /**
  * @brief      The nonlinear spring related to a nonlinear Material1D in X-Z plane.
  */
-class SpringNonlinear2D : public Element2D
+class SpringNonlinear2D : public ROD2D
 {
 public:
 	SpringNonlinear2D(const int id, Node * nodeI, Node * nodeJ, Material1D *smat, RODS::LocalAxis axis);

@@ -77,9 +77,6 @@
     <ClCompile Include="DynamicSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="element\Plane2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="element\Quad4Elastic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -114,12 +111,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="element\Element.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="element\Element1D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="element\Element2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="material\Material.cpp">
@@ -176,10 +167,64 @@
     <ClCompile Include="material\CyclicHardenTrilinear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="element\Element3D.cpp">
+    <ClCompile Include="element\FrameElastic3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="element\FrameElastic3D.cpp">
+    <ClCompile Include="element\Quad2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Plane2D.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Tri2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Tri3Elastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Rect4Elastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Plate4Elastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Shell3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\RectShell4Elastic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Spring3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\SpringBilinear3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\TrussElastic3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Dashpot3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\Inerter3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\TVMD2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\TVMD3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\ROD1D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\ROD2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\ROD3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="element\DashpotMaxwell3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -256,9 +301,6 @@
     <ClInclude Include="DynamicSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="element\Plane2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="element\Quad4Elastic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -293,12 +335,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\Element.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="element\Element1D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="element\Element2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="material\Material.h">
@@ -352,10 +388,64 @@
     <ClInclude Include="material\CyclicHardenTrilinear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="element\Element3D.h">
+    <ClInclude Include="element\FrameElastic3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="element\FrameElastic3D.h">
+    <ClInclude Include="element\Quad2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Plane2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Tri2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Tri3Elastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Rect4Elastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Plate4Elastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Shell3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\RectShell4Elastic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Spring3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\SpringBilinear3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\TrussElastic3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Dashpot3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Inerter3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\TVMD2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\TVMD3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\ROD1D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\ROD2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\ROD3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="element\DashpotMaxwell3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

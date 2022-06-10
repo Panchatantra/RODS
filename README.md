@@ -46,6 +46,7 @@
 
 ### 3D elements
 
+* Frame3D
 * ...
 
 
@@ -56,6 +57,7 @@
 * ConcreteTrilinear
 * SteelBilinear
 * CyclicHardenTrilinear
+* SMABilinear
 * ...
 
 ### Section

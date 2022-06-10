@@ -1,26 +1,23 @@
 #pragma once
 #include "Element.h"
-#include "Node.h"
+
 
 /**
- * @brief      The basic class of plane element.
+ * @brief      The base class of plane element.
  */
 class Plane2D :
 	public Element
 {
 public:
-	Plane2D(const int id, Node * nodeI, Node * nodeJ, Node *nodeP, Node *nodeQ);
+	Plane2D(const int id);
 	~Plane2D();
 
-	virtual void buildMatrix() {}
-	virtual void getResponse(const bool update = false) {}
-	virtual void assembleInitialStiffnessMatrix(mat &K0) {}
-	virtual void assembleStiffnessMatrix(mat &K) {}
-	virtual void assembleDampingMatrix(mat &C) {}
-	virtual void assembleMassMatrix(mat &M) {}
-	virtual void assembleNonlinearForceVector(vec &q) {}
+	virtual void buildMatrix() = 0;
+	virtual void getResponse(const bool update = false) = 0;
+	virtual void assembleInitialStiffnessMatrix(mat &K0) = 0;
+	virtual void assembleStiffnessMatrix(mat &K) = 0;
+	virtual void assembleDampingMatrix(mat &C) = 0;
+	virtual void assembleMassMatrix(mat &M) = 0;
+	virtual void assembleNonlinearForceVector(vec &q) = 0;
 
-	Node *nodeI, *nodeJ, *nodeP, *nodeQ;
-	mat::fixed<2, 2> J;
-	mat::fixed<3, 3> D;
 };

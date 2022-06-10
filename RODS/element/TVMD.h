@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DOF.h"
-#include "Element1D.h"
+#include "ROD1D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -9,7 +9,7 @@ using namespace arma;
 /**
  * @brief      The tuned viscous mass damper in X direction.
  */
-class TVMD : public Element1D
+class TVMD : public ROD1D
 {
 public:
 	TVMD(const int id, DOF *i, DOF *j, const double m, const double c, const double k);
@@ -26,4 +26,3 @@ public:
 
 	vec::fixed<2> q;
 };
-

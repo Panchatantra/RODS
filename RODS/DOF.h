@@ -91,6 +91,11 @@ public:
 	 */
 	double getLoad(const double time, const bool withConst=true);
 
+	void printResponse();
+
+	void setNodeId(const int id) {nodeId = id;}
+
+	int nodeId; ///< The identifier of the associated node
     int eqnId; ///< The identifier of the DOF in system equations
 	double mass; ///< mass
 	RODS::Direction dir; ///< Direction

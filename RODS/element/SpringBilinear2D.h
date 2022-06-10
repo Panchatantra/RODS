@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DOF.h"
-#include "Element2D.h"
+#include "ROD2D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -9,10 +9,10 @@ using namespace arma;
 /**
  * @brief      The bilinear spring in X-Z plane.
  */
-class SpringBilinear2D : public Element2D
+class SpringBilinear2D : public ROD2D
 {
 public:
-	SpringBilinear2D(const int id, DOF *i, DOF *j, const double k0, const double uy,
+	SpringBilinear2D(const int id, Node *nodeI, Node *nodeJ, const double k0, const double uy,
 					const double alpha, RODS::LocalAxis axis);
 	~SpringBilinear2D();
 

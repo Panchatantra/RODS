@@ -1,7 +1,7 @@
 #include "DashpotExp.h"
 
 DashpotExp::DashpotExp(const int id, DOF * i, DOF * j, const double c, const double alpha) :
-	Element1D(id, i, j), c(c), alpha(alpha),
+	ROD1D(id, i, j), c(c), alpha(alpha),
 	u(0.0), f(0.0)
 {
     buildMatrix();

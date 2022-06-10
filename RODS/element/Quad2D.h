@@ -1,18 +1,16 @@
 #pragma once
-
-#include "Element.h"
-#include "DOF.h"
+#include "Plane2D.h"
+#include "Node.h"
 
 /**
- * @brief      The base class of element in X direction.
+ * @brief      The basic class of plane element.
  */
-class Element1D :
-	public Element
+class Quad2D :
+	public Plane2D
 {
 public:
-	Element1D();
-	Element1D(const int id, DOF *i, DOF *j);
-	~Element1D();
+	Quad2D(const int id, Node * nodeI, Node * nodeJ, Node *nodeP, Node *nodeQ);
+	~Quad2D();
 
 	virtual void buildMatrix() {}
 	virtual void getResponse(const bool update = false) {}
@@ -22,5 +20,7 @@ public:
 	virtual void assembleMassMatrix(mat &M) {}
 	virtual void assembleNonlinearForceVector(vec &q) {}
 
-	DOF *dofI, *dofJ;
+	Node *nodeI, *nodeJ, *nodeP, *nodeQ;
+	mat::fixed<2, 2> J;
+	mat::fixed<3, 3> D;
 };

@@ -39,65 +39,68 @@
     <ProjectGuid>{83EC6A93-9284-4755-A5C0-2EF681B1432C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>RODS</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>RODS</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLLDebug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLLRelease|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseIntelMKL>Parallel</UseIntelMKL>
+    <UseInteloneMKL>Parallel</UseInteloneMKL>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLLDebug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseIntelMKL>Parallel</UseIntelMKL>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseIntelMKL>Parallel</UseIntelMKL>
+    <UseInteloneMKL>Parallel</UseInteloneMKL>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLLRelease|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseIntelMKL>Parallel</UseIntelMKL>
+    <UseInteloneMKL>Parallel</UseInteloneMKL>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -307,36 +310,51 @@
     <ClCompile Include="element\BeamElastic2D.cpp" />
     <ClCompile Include="element\Dashpot.cpp" />
     <ClCompile Include="element\Dashpot2D.cpp" />
+    <ClCompile Include="element\Dashpot3D.cpp" />
     <ClCompile Include="element\DashpotExp.cpp" />
     <ClCompile Include="element\DashpotExp2D.cpp" />
     <ClCompile Include="element\DashpotMaxwell.cpp" />
     <ClCompile Include="element\DashpotMaxwell2D.cpp" />
+    <ClCompile Include="element\DashpotMaxwell3D.cpp" />
     <ClCompile Include="element\Element.cpp" />
-    <ClCompile Include="element\Element1D.cpp" />
-    <ClCompile Include="element\Element2D.cpp" />
-    <ClCompile Include="element\Element3D.cpp" />
+    <ClCompile Include="element\ROD1D.cpp" />
+    <ClCompile Include="element\ROD2D.cpp" />
+    <ClCompile Include="element\ROD3D.cpp" />
     <ClCompile Include="element\Frame2D.cpp" />
     <ClCompile Include="element\FrameElastic2D.cpp" />
     <ClCompile Include="element\FrameElastic3D.cpp" />
     <ClCompile Include="element\FramePDelta2D.cpp" />
     <ClCompile Include="element\Inerter.cpp" />
     <ClCompile Include="element\Inerter2D.cpp" />
+    <ClCompile Include="element\Inerter3D.cpp" />
     <ClCompile Include="element\Plane2D.cpp" />
+    <ClCompile Include="element\Plate4Elastic.cpp" />
+    <ClCompile Include="element\Quad2D.cpp" />
     <ClCompile Include="element\Quad4Elastic.cpp" />
+    <ClCompile Include="element\Rect4Elastic.cpp" />
+    <ClCompile Include="element\RectShell4Elastic.cpp" />
+    <ClCompile Include="element\Shell3D.cpp" />
     <ClCompile Include="element\Slider.cpp" />
     <ClCompile Include="element\Slider2D.cpp" />
     <ClCompile Include="element\SPIS2.cpp" />
     <ClCompile Include="element\Spring.cpp" />
     <ClCompile Include="element\Spring2D.cpp" />
+    <ClCompile Include="element\Spring3D.cpp" />
     <ClCompile Include="element\SpringBilinear.cpp" />
     <ClCompile Include="element\SpringBilinear2D.cpp" />
+    <ClCompile Include="element\SpringBilinear3D.cpp" />
     <ClCompile Include="element\SpringBoucWen.cpp" />
     <ClCompile Include="element\SpringBoucWen2D.cpp" />
     <ClCompile Include="element\SpringNonlinear.cpp" />
     <ClCompile Include="element\SpringNonlinear2D.cpp" />
+    <ClCompile Include="element\Tri2D.cpp" />
+    <ClCompile Include="element\Tri3Elastic.cpp" />
     <ClCompile Include="element\Truss2D.cpp" />
     <ClCompile Include="element\TrussElastic2D.cpp" />
+    <ClCompile Include="element\TrussElastic3D.cpp" />
     <ClCompile Include="element\TVMD.cpp" />
+    <ClCompile Include="element\TVMD2D.cpp" />
+    <ClCompile Include="element\TVMD3D.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Load.cpp" />
     <ClCompile Include="main.cpp" />
@@ -366,36 +384,51 @@
     <ClInclude Include="element\BeamElastic2D.h" />
     <ClInclude Include="element\Dashpot.h" />
     <ClInclude Include="element\Dashpot2D.h" />
+    <ClInclude Include="element\Dashpot3D.h" />
     <ClInclude Include="element\DashpotExp.h" />
     <ClInclude Include="element\DashpotExp2D.h" />
     <ClInclude Include="element\DashpotMaxwell.h" />
     <ClInclude Include="element\DashpotMaxwell2D.h" />
+    <ClInclude Include="element\DashpotMaxwell3D.h" />
     <ClInclude Include="element\Element.h" />
-    <ClInclude Include="element\Element1D.h" />
-    <ClInclude Include="element\Element2D.h" />
-    <ClInclude Include="element\Element3D.h" />
+    <ClInclude Include="element\ROD1D.h" />
+    <ClInclude Include="element\ROD2D.h" />
+    <ClInclude Include="element\ROD3D.h" />
     <ClInclude Include="element\Frame2D.h" />
     <ClInclude Include="element\FrameElastic2D.h" />
     <ClInclude Include="element\FrameElastic3D.h" />
     <ClInclude Include="element\FramePDelta2D.h" />
     <ClInclude Include="element\Inerter.h" />
     <ClInclude Include="element\Inerter2D.h" />
+    <ClInclude Include="element\Inerter3D.h" />
     <ClInclude Include="element\Plane2D.h" />
+    <ClInclude Include="element\Plate4Elastic.h" />
+    <ClInclude Include="element\Quad2D.h" />
     <ClInclude Include="element\Quad4Elastic.h" />
+    <ClInclude Include="element\Rect4Elastic.h" />
+    <ClInclude Include="element\RectShell4Elastic.h" />
+    <ClInclude Include="element\Shell3D.h" />
     <ClInclude Include="element\Slider.h" />
     <ClInclude Include="element\Slider2D.h" />
     <ClInclude Include="element\SPIS2.h" />
     <ClInclude Include="element\Spring.h" />
     <ClInclude Include="element\Spring2D.h" />
+    <ClInclude Include="element\Spring3D.h" />
     <ClInclude Include="element\SpringBilinear.h" />
     <ClInclude Include="element\SpringBilinear2D.h" />
+    <ClInclude Include="element\SpringBilinear3D.h" />
     <ClInclude Include="element\SpringBoucWen.h" />
     <ClInclude Include="element\SpringBoucWen2D.h" />
     <ClInclude Include="element\SpringNonlinear.h" />
     <ClInclude Include="element\SpringNonlinear2D.h" />
+    <ClInclude Include="element\Tri2D.h" />
+    <ClInclude Include="element\Tri3Elastic.h" />
     <ClInclude Include="element\Truss2D.h" />
     <ClInclude Include="element\TrussElastic2D.h" />
+    <ClInclude Include="element\TrussElastic3D.h" />
     <ClInclude Include="element\TVMD.h" />
+    <ClInclude Include="element\TVMD2D.h" />
+    <ClInclude Include="element\TVMD3D.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Load.h" />
     <ClInclude Include="material\ConcreteTrilinear.h" />

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Plane2D.h"
+#include "Quad2D.h"
 
 /**
  * @brief      The 4-node elastic plane element.
  */
 class Quad4Elastic :
-	public Plane2D
+	public Quad2D
 {
 public:
 	Quad4Elastic(const int id, Node *nodeI, Node *nodeJ, Node *nodeP, Node *nodeQ,

@@ -1,7 +1,8 @@
 #include "DOF.h"
+#include <iostream>
 
 DOF::DOF(const int id, RODS::Direction dir) :
-    Basis(id), eqnId(0), mass(0.0), dir(dir), isFixed(false),
+    Basis(id), eqnId(0), mass(0.0), dir(dir), isFixed(false), nodeId(-1),
     dsp(0.0), vel(0.0), acc(0.0)
 {
 	loads.clear();
@@ -61,6 +62,12 @@ double DOF::getLoad(const double time, const bool withConst)
 		}
 	}
 	return v;
+}
+
+void DOF::printResponse()
+{
+	std::cout << "Response of DOF (ID: " << id << "): "<< std::endl;
+	std::cout << "Deformation: " << dsp << std::endl;
 }
 
 double DOF::g = 9800.0;

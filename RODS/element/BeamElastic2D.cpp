@@ -1,7 +1,7 @@
 #include "BeamElastic2D.h"
 
 BeamElastic2D::BeamElastic2D(const int id, Node * nodeI, Node * nodeJ, const double EI):
-	Element2D(id, nodeI, nodeJ), EI(EI), ue(new double[2]{ 0.0, 0.0 }), f(new double[2]{ 0.0, 0.0 })
+	ROD2D(id, nodeI, nodeJ), EI(EI), ue(new double[2]{ 0.0, 0.0 }), f(new double[2]{ 0.0, 0.0 })
 {
 	k = mat({	{4*EI/L, 2*EI/L},
 				{2*EI/L, 4*EI/L} });

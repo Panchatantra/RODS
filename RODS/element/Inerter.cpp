@@ -2,7 +2,7 @@
 
 
 Inerter::Inerter(const int id, DOF *i, DOF *j, const double m) :
-	Element1D(id, i, j), m(m),
+	ROD1D(id, i, j), m(m),
 	u(0.0), f(0.0)
 {
 	buildMatrix();

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DOF.h"
-#include "Element1D.h"
+#include "ROD1D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -9,7 +9,7 @@ using namespace arma;
 /**
  * @brief      The serial-parallel inerter system in the X direction.
  */
-class SPIS2 : public Element1D
+class SPIS2 : public ROD1D
 {
 public:
 	SPIS2(const int id, DOF *i, DOF *j, DOF *in, const double m, const double c, const double k);

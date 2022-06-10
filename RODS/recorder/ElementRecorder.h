@@ -10,9 +10,10 @@ class ElementRecorder :
 {
 public:
 	ElementRecorder(const int id, std::vector<Element *> eles, RODS::Response rType, char * fileName);
+	ElementRecorder(const int id, RODS::Response rType, char * fileName);
 	~ElementRecorder();
 
 	void record(const int cstep, const double ctime) override;
-
+	void add_ele(Element *ele);
 	std::vector<Element *> eles;
 };

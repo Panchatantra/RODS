@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Element2D.h"
+#include "ROD2D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -8,7 +8,7 @@ using namespace arma;
 /**
  * @brief      The Bouc-Wen spring in X-Z plane.
  */
-class SpringBoucWen2D : public Element2D
+class SpringBoucWen2D : public ROD2D
 {
 public:
 	SpringBoucWen2D(const int id, Node * nodeI, Node * nodeJ, const double k0, const double uy,

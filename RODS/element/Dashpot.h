@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DOF.h"
-#include "Element1D.h"
+#include "ROD1D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -9,7 +9,7 @@ using namespace arma;
 /**
  * @brief      The linear dashpot in X direction.
  */
-class Dashpot : public Element1D
+class Dashpot : public ROD1D
 {
 public:
 	Dashpot(const int id, DOF *i, DOF *j, const double c);

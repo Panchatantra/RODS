@@ -1,7 +1,7 @@
 #include "SpringBoucWen.h"
 
 SpringBoucWen::SpringBoucWen(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha, const double beta, const double n) :
-	Element1D(id, i, j),
+	ROD1D(id, i, j),
 	k0(k0), uy(uy),k1(alpha*k0), fy(k0*uy),
 	alpha(alpha), beta(beta), n(n),
 	k(k0), u(0), f(0), v(0), z(0), zp(0)

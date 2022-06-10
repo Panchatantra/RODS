@@ -2,7 +2,7 @@
 
 SpringBoucWen2D::SpringBoucWen2D(const int id, Node * nodeI, Node * nodeJ, const double k0, const double uy,
 		const double alpha, const double beta, const double n, RODS::LocalAxis axis) :
-	Element2D(id, nodeI, nodeJ),
+	ROD2D(id, nodeI, nodeJ),
 	k0(k0), uy(uy), fy(k0*uy),
 	alpha(alpha), beta(beta), n(n),
 	k(k0), ue(0.0), f(0.0),

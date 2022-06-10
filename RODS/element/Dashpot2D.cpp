@@ -1,7 +1,7 @@
 #include "Dashpot2D.h"
 
 Dashpot2D::Dashpot2D(const int id, Node * nodeI, Node * nodeJ, double c, RODS::LocalAxis axis) :
-	Element2D(id, nodeI, nodeJ), c(c), ue(0.0), f(0.0)
+	ROD2D(id, nodeI, nodeJ), c(c), ue(0.0), f(0.0)
 {
 	if (axis == RODS::LocalAxis::U1)
 	{

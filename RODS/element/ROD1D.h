@@ -1,16 +1,18 @@
 #pragma once
+
 #include "Element.h"
-#include "Node.h"
+#include "DOF.h"
 
 /**
- * @brief      The base class of 3D element.
+ * @brief      The base class of element in X direction.
  */
-class Element3D :
+class ROD1D :
 	public Element
 {
 public:
-	Element3D(const int id, Node * nodeI, Node * nodeJ);
-	~Element3D();
+	ROD1D();
+	ROD1D(const int id, DOF *i, DOF *j);
+	~ROD1D();
 
 	virtual void buildMatrix() {}
 	virtual void getResponse(const bool update = false) {}
@@ -20,16 +22,5 @@ public:
 	virtual void assembleMassMatrix(mat &M) {}
 	virtual void assembleNonlinearForceVector(vec &q) {}
 
-	Node *nodeI, *nodeJ;
-
-	double L;
-	double lxx;
-	double lxy;
-	double lxz;
-	double lyx;
-	double lyy;
-	double lyz;
-	double lzx;
-	double lzy;
-	double lzz;
+	DOF *dofI, *dofJ;
 };

@@ -1,7 +1,7 @@
 #include "Inerter2D.h"
 
 Inerter2D::Inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, RODS::LocalAxis axis) :
-	Element2D(id, nodeI, nodeJ), m(m),
+	ROD2D(id, nodeI, nodeJ), m(m),
 	ue(0.0), f(0.0)
 {
 	if (axis == RODS::LocalAxis::U1)

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Element3D.h"
+#include "ROD3D.h"
 
 /**
  * @brief      The elastic 3D frame element.
  */
 class FrameElastic3D :
-	public Element3D
+	public ROD3D
 {
 public:
 	FrameElastic3D(const int id, Node * nodeI, Node * nodeJ, const double EA,

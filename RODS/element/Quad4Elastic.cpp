@@ -2,7 +2,7 @@
 
 Quad4Elastic::Quad4Elastic(const int id, Node *nodeI, Node *nodeJ, Node *nodeP, Node *nodeQ,
 		const double E, const double nu, const double t):
-	Plane2D(id, nodeI, nodeJ, nodeP, nodeQ),
+	Quad2D(id, nodeI, nodeJ, nodeP, nodeQ),
 	E(E), nu(nu), t(t)
 {
 	N.fill(0.0);

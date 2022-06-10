@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Element2D.h"
+#include "ROD2D.h"
 #include "section/SectionTruss.h"
 
 /**
  * @brief      The nonlinear truss element in X-Z plane.
  */
 class Truss2D :
-	public Element2D
+	public ROD2D
 {
 public:
 	Truss2D(const int id, Node *nodeI, Node *nodeJ, SectionTruss *sec);

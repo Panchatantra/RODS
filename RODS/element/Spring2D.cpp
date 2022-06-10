@@ -1,7 +1,7 @@
 #include "Spring2D.h"
 
 Spring2D::Spring2D(const int id, Node * nodeI, Node * nodeJ, double k, RODS::LocalAxis axis) :
-	Element2D(id, nodeI, nodeJ), k(k), ue(0.0), f(0.0)
+	ROD2D(id, nodeI, nodeJ), k(k), ue(0.0), f(0.0)
 {
 	if (axis == RODS::LocalAxis::U1)
 	{

@@ -4,7 +4,12 @@ DOFRecorder::DOFRecorder(const int id, std::vector<DOF *> dofs, RODS::Response r
 	Recorder(id, rType, fileName), dofs(dofs)
 
 {
-	n = dofs.size();
+	n = static_cast<int>(dofs.size());
+}
+
+DOFRecorder::DOFRecorder(const int id, RODS::Response rType, char* fileName):
+	Recorder(id, rType, fileName)
+{
 }
 
 DOFRecorder::~DOFRecorder()
@@ -36,4 +41,10 @@ void DOFRecorder::record(const int cstep, const double ctime)
 			break;
 		}
 	}
+}
+
+void DOFRecorder::add_dof(DOF* dof)
+{
+	dofs.push_back(dof);
+	n = static_cast<int>(dofs.size());
 }

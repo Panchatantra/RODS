@@ -1,7 +1,7 @@
 #include "Slider2D.h"
 
 Slider2D::Slider2D(const int id, Node * nodeI, Node * nodeJ, const double mu, const double ka) :
-	Element2D(id, nodeI, nodeJ), mu(mu), ka(ka)
+	ROD2D(id, nodeI, nodeJ), mu(mu), ka(ka)
 {
 	T = mat({
 		{ -lxx , -lxz , lxx , lxz },

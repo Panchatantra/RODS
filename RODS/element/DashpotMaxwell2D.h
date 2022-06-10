@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DOF.h"
-#include "Element2D.h"
+#include "ROD2D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -9,7 +9,7 @@ using namespace arma;
 /**
  * @brief      The Maxwell dashpot in X-Z plane.
  */
-class DashpotMaxwell2D : public Element2D
+class DashpotMaxwell2D : public ROD2D
 {
 public:
 	DashpotMaxwell2D(const int id, Node * nodeI, Node * nodeJ, const double k, const double c, const double alpha,
@@ -21,6 +21,8 @@ public:
 
 	double k, c, alpha;
 	double ue, f, ud, udp;
+
+	const size_t nv = 4;
 
 	rowvec::fixed<4> T;
 	vec::fixed<4> q;

@@ -1,7 +1,7 @@
 #include "SpringNonlinear2D.h"
 
 SpringNonlinear2D::SpringNonlinear2D(const int id, Node * nodeI, Node * nodeJ, Material1D *smat, RODS::LocalAxis axis) :
-	Element2D(id, nodeI, nodeJ), smat(smat->copy()), k(smat->E), ue(0.0), f(0.0), axis(axis)
+	ROD2D(id, nodeI, nodeJ), smat(smat->copy()), k(smat->E), ue(0.0), f(0.0), axis(axis)
 {
 	if (axis == RODS::LocalAxis::U1)
 	{

@@ -1,7 +1,7 @@
 #include "FrameElastic2D.h"
 
 FrameElastic2D::FrameElastic2D(const int id, Node * nodeI, Node * nodeJ, const double EA, const double EI):
-	Element2D(id, nodeI, nodeJ), EA(EA), EI(EI),
+	ROD2D(id, nodeI, nodeJ), EA(EA), EI(EI),
 	ue(new double[3]{ 0.0, 0.0, 0.0 }),
 	f(new double[3]{ 0.0, 0.0, 0.0 })
 {

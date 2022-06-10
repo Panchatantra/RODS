@@ -2,7 +2,7 @@
 
 DashpotExp2D::DashpotExp2D(const int id, Node * nodeI, Node * nodeJ, const double c, const double alpha,
 	RODS::LocalAxis axis) :
-	Element2D(id, nodeI, nodeJ), c(c), alpha(alpha), ue(0.0), f(0.0)
+	ROD2D(id, nodeI, nodeJ), c(c), alpha(alpha), ue(0.0), f(0.0)
 {
 	if (axis == RODS::LocalAxis::U1)
 	{

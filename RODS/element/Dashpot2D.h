@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Element2D.h"
+#include "ROD2D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -8,7 +8,7 @@ using namespace arma;
 /**
  * @brief      The linear dashpot in X-Z plane.
  */
-class Dashpot2D : public Element2D
+class Dashpot2D : public ROD2D
 {
 public:
 	Dashpot2D(const int id, Node * nodeI, Node * nodeJ, double c, RODS::LocalAxis axis);

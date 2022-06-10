@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Element2D.h"
+#include "ROD2D.h"
 
 /**
  * @brief      The elastic truss element in X-Z plane.
  */
 class TrussElastic2D :
-	public Element2D
+	public ROD2D
 {
 public:
 	TrussElastic2D(const int id, Node * nodeI, Node * nodeJ, const double EA);

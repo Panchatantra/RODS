@@ -11,6 +11,7 @@
 #include "material/SMABilinear.h"
 #include "material/CyclicHardenTrilinear.h"
 
+
 DynamicSystem::DynamicSystem(const double z) :
 	zeta(z), eqnCount(0), fixedDofCount(0), eigenVectorNormed(false),
 	dynamicSolver(RODS::DynamicSolver::StateSpace), dt(0.02), ctime(0.0), nsteps(0), cstep(0),
@@ -18,6 +19,7 @@ DynamicSystem::DynamicSystem(const double z) :
 	NumModesInherentDamping(-1),
 	XSeismicWaveId(-1), YSeismicWaveId(-1), ZSeismicWaveId(-1),
 	XSeismicWaveScale(0.0), YSeismicWaveScale(0.0), ZSeismicWaveScale(0.0),
+	dispControlDOFId(-1), dispControlLoadId(-1), dispControlEqn(-1),
 	NumDynamicSubSteps(1), tol(1e-6), maxIter(20)
 {
 }
@@ -40,6 +42,7 @@ void DynamicSystem::addNode(const int nodeId, const double x, const int dofId)
 	DOF *d = DOFs.at(dofId);
 	Node *nd = new Node(nodeId, x);
 	nd->setDof(d);
+	d->setNodeId(nodeId);
 	addNode(nd);
 }
 
@@ -48,6 +51,9 @@ void DynamicSystem::addNode(const int nodeId, const double x, const double z, co
 	DOF *dx = DOFs.at(dofXId);
 	DOF *dz = DOFs.at(dofZId);
 
+	dx->setNodeId(nodeId);
+	dz->setNodeId(nodeId);
+	
 	Node *nd = new Node(nodeId, x, 0.0, z);
 	nd->setDof(dx);
 	nd->setDof(dz);
@@ -70,9 +76,25 @@ void DynamicSystem::addNode(const int nodeId, const double x, const double y, co
 	nd->setDof(DOFs.at(dofYId));
 	nd->setDof(DOFs.at(dofZId));
 
-	if (dofRXId >= 0) nd->setDof(DOFs.at(dofRXId));
-	if (dofRYId >= 0) nd->setDof(DOFs.at(dofRYId));
-	if (dofRZId >= 0) nd->setDof(DOFs.at(dofRZId));
+	DOFs.at(dofXId)->setNodeId(nodeId);
+	DOFs.at(dofYId)->setNodeId(nodeId);
+	DOFs.at(dofZId)->setNodeId(nodeId);
+	
+	if (dofRXId >= 0) {
+		auto d = DOFs.at(dofRXId);
+		nd->setDof(d);
+		d->setNodeId(nodeId);
+	}
+	if (dofRYId >= 0) {
+		auto d = DOFs.at(dofRYId);
+		nd->setDof(d);
+		d->setNodeId(nodeId);
+	}
+	if (dofRZId >= 0) {
+		auto d = DOFs.at(dofRZId);
+		nd->setDof(d);
+		d->setNodeId(nodeId);
+	}
 
 	addNode(nd);
 }
@@ -82,8 +104,21 @@ void DynamicSystem::addNodeWithDof(const int id, const double x, const int dofId
 	DOF *d = new DOF(dofId, RODS::Direction::X);
 	Node *nd = new Node(id, x, 0.0, 0.0);
 	nd->setDof(d);
-
+	d->setNodeId(id);
+	
 	addDOF(d);
+	addNode(nd);
+}
+
+void DynamicSystem::addNodePlate2D(const int nodeId, const double x, const double y, const int dofZId,
+	const int dofRXId, const int dofRYId)
+{
+	Node *nd = new Node(nodeId, x, y, 0.0);
+
+	nd->setDof(DOFs.at(dofZId));
+	nd->setDof(DOFs.at(dofRXId));
+	nd->setDof(DOFs.at(dofRYId));
+
 	addNode(nd);
 }
 
@@ -102,19 +137,19 @@ void DynamicSystem::addLine(const int id, const int ni, const int nj)
 	addLine(l);
 }
 
-void DynamicSystem::fixDOF(const int id)
+void DynamicSystem::fixDOF(const int dofId)
 {
-	DOFs.at(id)->setFixed();
+	DOFs.at(dofId)->setFixed();
 }
 
-void DynamicSystem::fixNode(const int id)
+void DynamicSystem::fixNode(const int nodeId)
 {
-	Nodes.at(id)->fixDOF();
+	Nodes.at(nodeId)->fixDOF();
 }
 
 void DynamicSystem::fixNode(const int nodeId, RODS::Direction dir)
 {
-	Nodes.at(id)->fixDOF(dir);
+	Nodes.at(nodeId)->fixDOF(dir);
 }
 
 void DynamicSystem::addLoad(const int id, double* t, double* p, const int nP, const double arriveTime,
@@ -151,11 +186,11 @@ void DynamicSystem::exportGmsh(char * fileName)
 	}
 	outFile << "$EndNodes" << std::endl;
 
-	if (Element2Ds.size() > 1)
+	if (ROD2Ds.size() > 1)
 	{
 		outFile << "$Elements" << std::endl;
-		outFile << Element2Ds.size() << std::endl;
-		for (auto it = Element2Ds.begin(); it != Element2Ds.end(); ++it)
+		outFile << ROD2Ds.size() << std::endl;
+		for (auto it = ROD2Ds.begin(); it != ROD2Ds.end(); ++it)
 		{
 			auto ele = it->second;
 			outFile << it->first << " 1 1 1 " << ele->nodeI->id << " " << ele->nodeJ->id << std::endl;
@@ -163,11 +198,11 @@ void DynamicSystem::exportGmsh(char * fileName)
 		outFile << "$EndElements" << std::endl;
 	}
 
-	if (Plane2Ds.size() > 1)
+	if (Quad2Ds.size() > 1)
 	{
 		outFile << "$Elements" << std::endl;
-		outFile << Plane2Ds.size() << std::endl;
-		for (auto it = Plane2Ds.begin(); it != Plane2Ds.end(); it++)
+		outFile << Quad2Ds.size() << std::endl;
+		for (auto it = Quad2Ds.begin(); it != Quad2Ds.end(); it++)
 		{
 			auto ele = it->second;
 			outFile << it->first << " 3 1 1 " << ele->nodeI->id << " " << ele->nodeJ->id << " "
@@ -175,6 +210,38 @@ void DynamicSystem::exportGmsh(char * fileName)
 		}
 		outFile << "$EndElements" << std::endl;
 	}
+
+	if (Tri2Ds.size() > 1)
+	{
+		outFile << "$Elements" << std::endl;
+		outFile << Tri2Ds.size() << std::endl;
+		for (auto it = Tri2Ds.begin(); it != Tri2Ds.end(); it++)
+		{
+			auto ele = it->second;
+			outFile << it->first << " 2 1 1 " << ele->nodeI->id << " " << ele->nodeJ->id << " "
+				<< ele->nodeP->id << std::endl;
+		}
+		outFile << "$EndElements" << std::endl;
+	}
+
+	if (RectShell4Elastics.size() > 1)
+	{
+		outFile << "$Elements" << std::endl;
+		outFile << RectShell4Elastics.size() << std::endl;
+		for (auto it = RectShell4Elastics.begin(); it != RectShell4Elastics.end(); it++)
+		{
+			auto ele = it->second;
+			outFile << it->first << " 3 1 1 " << ele->nodeI->id << " " << ele->nodeJ->id << " "
+				<< ele->nodeP->id << " " << ele->nodeQ->id << std::endl;
+		}
+		outFile << "$EndElements" << std::endl;
+	}
+}
+
+void DynamicSystem::exportModalGmsh(char* fileName)
+{
+	std::ofstream outFile;
+	outFile.open(fileName, ios::out, ios::app);
 
 	outFile << "$NodeData" << std::endl;
 
@@ -211,6 +278,41 @@ void DynamicSystem::exportGmsh(char * fileName)
 		d->dsp = 0.0;
 	}
 }
+
+void DynamicSystem::exportResponseGmsh(char* fileName)
+{
+	std::ofstream outFile;
+	outFile.open(fileName, ios::out|ios::app);
+
+	outFile << "$NodeData" << std::endl;
+
+	outFile << "1" << std::endl;
+	outFile << "\"Step time: t = " << ctime << "s\"" << std::endl;
+	outFile << "1" << std::endl;
+	outFile << ctime << std::endl;
+	outFile << "3" << std::endl;
+	outFile << "0" << std::endl;
+	outFile << "3" << std::endl;
+	outFile << Nodes.size() << std::endl;
+
+	for (auto it = Nodes.begin(); it != Nodes.end(); it++)
+	{
+		auto nd = it->second;
+		if (nd->isActivated(RODS::Direction::Y))
+		{
+			outFile << it->first << " " << nd->dofX->dsp << " " << nd->dofY->dsp << " " << nd->dofZ->dsp << std::endl;
+		}
+		else
+		{
+			outFile << it->first << " " << nd->dofX->dsp << " " << 0.0 << " " << nd->dofZ->dsp << std::endl;
+		}
+	}
+	
+	outFile << "$EndNodeData" << std::endl;
+
+	outFile.close();
+}
+
 
 void DynamicSystem::addDOF(DOF * d)
 {
@@ -494,30 +596,30 @@ void DynamicSystem::addDashpotMaxwell(const int id, const int ni, const int nj, 
 	nonlinearElements[id] = d;
 }
 
-void DynamicSystem::addInerter(const int id, const int ni, const int nj, const double m)
+void DynamicSystem::addInerter(const int id, const int i, const int j, const double m)
 {
 	if ( !checkDuplicateElement(id) ) return;
-	Inerter *in = new Inerter(id, DOFs.at(ni), DOFs.at(nj), m);
+	Inerter *in = new Inerter(id, DOFs.at(i), DOFs.at(j), m);
 	Elements[id] = in;
 	Inerters[id] = in;
 	inertialMassElements[id] = in;
 }
 
-void DynamicSystem::addSlider(const int id, const int ni, const int nj, const double muN)
+void DynamicSystem::addSlider(const int id, const int i, const int j, const double muN)
 {
 	if ( !checkDuplicateElement(id) ) return;
 
-	Slider *s = new Slider(id, DOFs.at(ni), DOFs.at(nj), muN);
+	Slider *s = new Slider(id, DOFs.at(i), DOFs.at(j), muN);
 	Elements[id] = s;
 	Sliders[id] = s;
 	nonlinearElements[id] = s;
 }
 
-void DynamicSystem::addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k)
+void DynamicSystem::addSPIS2(const int id, const int i, const int j, const int in, const double m, const double c, const double k)
 {
 	if ( !checkDuplicateElement(id) ) return;
 
-	SPIS2 *s = new SPIS2(id, DOFs.at(ni), DOFs.at(nj), DOFs.at(nin), m, c, k);
+	SPIS2 *s = new SPIS2(id, DOFs.at(i), DOFs.at(j), DOFs.at(in), m, c, k);
 	Elements[id] = s;
 	SPIS2s[id] = s;
 	linearElasticElements[id] = s;
@@ -535,14 +637,48 @@ void DynamicSystem::addTVMD(const int id, const int ni, const int nj, const doub
 	nonlinearElements[id] = d;
 }
 
+void DynamicSystem::addTVMD2D(const int id, const int ni, const int nj, const double m, const double c, const double k, RODS::LocalAxis U)
+{
+	if (!checkDuplicateElement(id)) return;
+
+	TVMD2D *d = new TVMD2D(id, Nodes.at(ni), Nodes.at(nj), m, c, k, U);
+	Elements[id] = d;
+	ROD2Ds[id] = d;
+	TVMD2Ds[id] = d;
+	nonlinearElements[id] = d;
+}
+
+void DynamicSystem::addTVMD3D(const int id, const int ni, const int nj, const double m, const double c, const double k,
+	RODS::LocalAxis U)
+{
+	if (!checkDuplicateElement(id)) return;
+
+	TVMD3D *d = new TVMD3D(id, Nodes.at(ni), Nodes.at(nj), m, c, k, U);
+	Elements[id] = d;
+	ROD3Ds[id] = d;
+	TVMD3Ds[id] = d;
+	nonlinearElements[id] = d;
+}
+
 void DynamicSystem::addSpring2D(const int id, const int ni, const int nj, const double k, RODS::LocalAxis U)
 {
 	if (!checkDuplicateElement(id)) return;
 
 	Spring2D *s = new Spring2D(id, Nodes.at(ni), Nodes.at(nj), k, U);
 	Elements[id] = s;
-	Element2Ds[id] = s;
+	ROD2Ds[id] = s;
 	Spring2Ds[id] = s;
+	linearElasticElements[id] = s;
+}
+
+void DynamicSystem::addSpring3D(const int id, const int ni, const int nj, const double k, RODS::LocalAxis U)
+{
+	if (!checkDuplicateElement(id)) return;
+
+	Spring3D *s = new Spring3D(id, Nodes.at(ni), Nodes.at(nj), k, U);
+	Elements[id] = s;
+	ROD3Ds[id] = s;
+	Spring3Ds[id] = s;
 	linearElasticElements[id] = s;
 }
 
@@ -552,7 +688,7 @@ void DynamicSystem::addSpringBoucWen2D(const int id, const int ni, const int nj,
 
 	SpringBoucWen2D *s = new SpringBoucWen2D(id, Nodes.at(ni), Nodes.at(nj), k0, uy, alpha, beta, n, U);
 	Elements[id] = s;
-	Element2Ds[id] = s;
+	ROD2Ds[id] = s;
 	SpringBoucWen2Ds[id] = s;
 	nonlinearTangentElements[id] = s;
 }
@@ -563,7 +699,7 @@ void DynamicSystem::addDashpot2D(const int id, const int ni, const int nj, const
 
 	Dashpot2D *d = new Dashpot2D(id, Nodes.at(ni), Nodes.at(nj), c, U);
 	Elements[id] = d;
-	Element2Ds[id] = d;
+	ROD2Ds[id] = d;
 	Dashpot2Ds[id] = d;
 	linearDampingElements[id] = d;
 }
@@ -574,8 +710,52 @@ void DynamicSystem::addInerter2D(const int id, const int ni, const int nj, const
 
 	Inerter2D *in = new Inerter2D(id, Nodes.at(ni), Nodes.at(nj), m, U);
 	Elements[id] = in;
-	Element2Ds[id] = in;
+	ROD2Ds[id] = in;
 	Inerter2Ds[id] = in;
+	inertialMassElements[id] = in;
+}
+
+void DynamicSystem::addSpringBilinear2D(const int id, const int ni, const int nj, const double k0, const double uy,
+	const double alpha, RODS::LocalAxis U)
+{
+	if ( !checkDuplicateElement(id) ) return;
+
+	SpringBilinear2D *s = new SpringBilinear2D(id, Nodes.at(ni), Nodes.at(nj), k0, uy, alpha, U);
+	Elements[id] = s;
+	ROD2Ds[id] = s;
+	SpringBilinear2Ds[id] = s;
+	nonlinearTangentElements[id] = s;
+}
+
+void DynamicSystem::addSpringBilinear3D(const int id, const int ni, const int nj, const double k0, const double uy,
+	const double alpha, RODS::LocalAxis U)
+{
+	if ( !checkDuplicateElement(id) ) return;
+
+	SpringBilinear3D *s = new SpringBilinear3D(id, Nodes.at(ni), Nodes.at(nj), k0, uy, alpha, U);
+	Elements[id] = s;
+	ROD3Ds[id] = s;
+	SpringBilinear3Ds[id] = s;
+	nonlinearTangentElements[id] = s;
+}
+
+void DynamicSystem::addDashpot3D(const int id, const int ni, const int nj, const double c, RODS::LocalAxis U)
+{
+	if (!checkDuplicateElement(id)) return;
+
+	Dashpot3D *d = new Dashpot3D(id, Nodes.at(ni), Nodes.at(nj), c, U);
+	Elements[id] = d;
+	ROD3Ds[id] = d;
+	Dashpot3Ds[id] = d;
+	linearDampingElements[id] = d;
+}
+
+void DynamicSystem::addInerter3D(const int id, const int ni, const int nj, const double m, RODS::LocalAxis U)
+{
+	Inerter3D *in = new Inerter3D(id, Nodes.at(ni), Nodes.at(nj), m, U);
+	Elements[id] = in;
+	ROD3Ds[id] = in;
+	Inerter3Ds[id] = in;
 	inertialMassElements[id] = in;
 }
 
@@ -585,7 +765,7 @@ void DynamicSystem::addDashpotExp2D(const int id, const int ni, const int nj, co
 
 	DashpotExp2D *d = new DashpotExp2D(id, Nodes.at(ni), Nodes.at(nj), c, alpha, U);
 	Elements[id] = d;
-	Element2Ds[id] = d;
+	ROD2Ds[id] = d;
 	DashpotExp2Ds[id] = d;
 	nonlinearElements[id] = d;
 }
@@ -595,8 +775,19 @@ void DynamicSystem::addDashpotMaxwell2D(const int id, const int ni, const int nj
 	if (!checkDuplicateElement(id)) return;
 	DashpotMaxwell2D *d = new DashpotMaxwell2D(id, Nodes.at(ni), Nodes.at(nj), k, c, alpha, U);
 	Elements[id] = d;
-	Element2Ds[id] = d;
+	ROD2Ds[id] = d;
 	DashpotMaxwell2Ds[id] = d;
+	nonlinearElements[id] = d;
+}
+
+void DynamicSystem::addDashpotMaxwell3D(const int id, const int ni, const int nj, const double k, const double c,
+	const double alpha, RODS::LocalAxis U)
+{
+	if (!checkDuplicateElement(id)) return;
+	DashpotMaxwell3D *d = new DashpotMaxwell3D(id, Nodes.at(ni), Nodes.at(nj), k, c, alpha, U);
+	Elements[id] = d;
+	ROD3Ds[id] = d;
+	DashpotMaxwell3Ds[id] = d;
 	nonlinearElements[id] = d;
 }
 
@@ -606,8 +797,19 @@ void DynamicSystem::addTrussElastic2D(const int id, const int ni, const int nj, 
 
 	TrussElastic2D *truss = new TrussElastic2D(id, Nodes.at(ni), Nodes.at(nj), EA);
 	Elements[id] = truss;
-	Element2Ds[id] = truss;
+	ROD2Ds[id] = truss;
 	TrussElastic2Ds[id] = truss;
+	linearElasticElements[id] = truss;
+}
+
+void DynamicSystem::addTrussElastic3D(const int id, const int ni, const int nj, const double EA)
+{
+	if (!checkDuplicateElement(id)) return;
+
+	TrussElastic3D *truss = new TrussElastic3D(id, Nodes.at(ni), Nodes.at(nj), EA);
+	Elements[id] = truss;
+	ROD3Ds[id] = truss;
+	TrussElastic3Ds[id] = truss;
 	linearElasticElements[id] = truss;
 }
 
@@ -617,7 +819,7 @@ void DynamicSystem::addBeamElastic2D(const int id, const int ni, const int nj, c
 
 	BeamElastic2D *beam = new BeamElastic2D(id, Nodes.at(ni), Nodes.at(nj), EI);
 	Elements[id] = beam;
-	Element2Ds[id] = beam;
+	ROD2Ds[id] = beam;
 	BeamElastic2Ds[id] = beam;
 	linearElasticElements[id] = beam;
 }
@@ -628,7 +830,7 @@ void DynamicSystem::addFrameElastic2D(const int id, const int ni, const int nj, 
 
 	FrameElastic2D *frame = new FrameElastic2D(id, Nodes.at(ni), Nodes.at(nj), EA, EI);
 	Elements[id] = frame;
-	Element2Ds[id] = frame;
+	ROD2Ds[id] = frame;
 	FrameElastic2Ds[id] = frame;
 	linearElasticElements[id] = frame;
 }
@@ -640,9 +842,43 @@ void DynamicSystem::addFrameElastic3D(const int id, const int ni, const int nj, 
 
 	FrameElastic3D *frame = new FrameElastic3D(id, Nodes.at(ni), Nodes.at(nj), EA, EIy, EIz, GIp);
 	Elements[id] = frame;
-	Element3Ds[id] = frame;
+	ROD3Ds[id] = frame;
 	FrameElastic3Ds[id] = frame;
 	linearElasticElements[id] = frame;
+}
+
+void DynamicSystem::addTri3Elastic(const int id, const int nodeI, const int nodeJ, const int nodeP, const double E,
+	const double nu, const double t)
+{
+	if (!checkDuplicateElement(id)) return;
+
+	Tri3Elastic *tri = new Tri3Elastic(id, Nodes.at(nodeI), Nodes.at(nodeJ), Nodes.at(nodeP), E, nu, t);
+	Elements[id] = tri;
+	Tri3Elastics[id] = tri;
+	Tri2Ds[id] = tri;
+	linearElasticElements[id] = tri;
+}
+
+void DynamicSystem::addRect4Elastic(const int id, const int nodeI, const int nodeJ, const int nodeP, const int nodeQ,
+	const double E, const double nu, const double t)
+{
+	if (!checkDuplicateElement(id)) return;
+	Rect4Elastic *rect = new Rect4Elastic(id, Nodes.at(nodeI), Nodes.at(nodeJ), Nodes.at(nodeP), Nodes.at(nodeQ), E, nu, t);
+	Elements[id] = rect;
+	Rect4Elastics[id] = rect;
+	Quad2Ds[id] = rect;
+	linearElasticElements[id] = rect;
+}
+
+void DynamicSystem::addPlate4Elastic(const int id, const int nodeI, const int nodeJ, const int nodeP, const int nodeQ,
+	const double E, const double nu, const double t)
+{
+	if (!checkDuplicateElement(id)) return;
+	Plate4Elastic *plate = new Plate4Elastic(id, Nodes.at(nodeI), Nodes.at(nodeJ), Nodes.at(nodeP), Nodes.at(nodeQ), E, nu, t);
+	Elements[id] = plate;
+	Plate4Elastics[id] = plate;
+	Quad2Ds[id] = plate;
+	linearElasticElements[id] = plate;
 }
 
 void DynamicSystem::addQuad4Elastic(const int id, const int nodeI, const int nodeJ, const int nodeP, const int nodeQ,
@@ -653,8 +889,18 @@ void DynamicSystem::addQuad4Elastic(const int id, const int nodeI, const int nod
 	Quad4Elastic *quad = new Quad4Elastic(id, Nodes.at(nodeI), Nodes.at(nodeJ), Nodes.at(nodeP), Nodes.at(nodeQ), E, nu, t);
 	Elements[id] = quad;
 	Quad4Elastics[id] = quad;
-	Plane2Ds[id] = quad;
+	Quad2Ds[id] = quad;
 	linearElasticElements[id] = quad;
+}
+
+void DynamicSystem::addRectShell4Elastic(const int id, const int nodeI, const int nodeJ, const int nodeP,
+	const int nodeQ, const double E, const double nu, const double t)
+{
+	if (!checkDuplicateElement(id)) return;
+	RectShell4Elastic *rect = new RectShell4Elastic(id, Nodes.at(nodeI), Nodes.at(nodeJ), Nodes.at(nodeP), Nodes.at(nodeQ), E, nu, t);
+	Elements[id] = rect;
+	RectShell4Elastics[id] = rect;
+	linearElasticElements[id] = rect;
 }
 
 void DynamicSystem::addTruss2D(const int id, const int ni, const int nj, const int secId)
@@ -663,7 +909,7 @@ void DynamicSystem::addTruss2D(const int id, const int ni, const int nj, const i
 
 	Truss2D *truss = new Truss2D(id, Nodes.at(ni), Nodes.at(nj), SectionTrusss.at(secId));
 	Elements[id] = truss;
-	Element2Ds[id] = truss;
+	ROD2Ds[id] = truss;
 	Truss2Ds[id] = truss;
 	nonlinearInitialTangentElements[id] = truss;
 }
@@ -674,7 +920,7 @@ void DynamicSystem::addFrame2D(const int id, const int ni, const int nj, const i
 
 	Frame2D *frame = new Frame2D(id, Nodes.at(ni), Nodes.at(nj), SectionFrame2Ds.at(secId), nIntP);
 	Elements[id] = frame;
-	Element2Ds[id] = frame;
+	ROD2Ds[id] = frame;
 	Frame2Ds[id] = frame;
 	nonlinearInitialTangentElements[id] = frame;
 }
@@ -685,7 +931,7 @@ void DynamicSystem::addFramePDelta2D(const int id, const int ni, const int nj, c
 
 	FramePDelta2D *frame = new FramePDelta2D(id, Nodes.at(ni), Nodes.at(nj), SectionFrame2Ds.at(secId), nIntP);
 	Elements[id] = frame;
-	Element2Ds[id] = frame;
+	ROD2Ds[id] = frame;
 	FramePDelta2Ds[id] = frame;
 	nonlinearInitialTangentElements[id] = frame;
 }
@@ -733,6 +979,24 @@ void DynamicSystem::addDOFRecorder(const int id, int *dofIds, const int n, RODS:
 	DOFRecorders[dr->id] = dr;
 }
 
+void DynamicSystem::addDOFRecorder(const int id, RODS::Response rType, char* fileName)
+{
+	if (DOFRecorders.count(id) > 0)
+	{
+		cout << "DOFRecorder ID: " << id << " already exists! The recorder will not be added." << endl;
+		return;
+	}
+
+	DOFRecorder *dr = new DOFRecorder(id, rType, fileName);
+	DOFRecorders[dr->id] = dr;
+}
+
+void DynamicSystem::addDOFToRecorder(const int dofId, const int rId)
+{
+	DOFRecorder *dr = DOFRecorders.at(rId);
+	dr->add_dof(DOFs.at(dofId));
+}
+
 void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, RODS::Response rType, char * fileName)
 {
 	if (ElementRecorders.count(id) > 0)
@@ -750,6 +1014,24 @@ void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, 
 
 	ElementRecorder *er = new ElementRecorder(id, reles, rType, fileName);
 	ElementRecorders[er->id] = er;
+}
+
+void DynamicSystem::addElementRecorder(const int id, RODS::Response rType, char* fileName)
+{
+	if (ElementRecorders.count(id) > 0)
+	{
+		cout << "ElementRecorder ID: " << id << " already exists! The recorder will not be added." << endl;
+		return;
+	}
+
+	ElementRecorder *er = new ElementRecorder(id, rType, fileName);
+	ElementRecorders[er->id] = er;
+}
+
+void DynamicSystem::addElementToRecorder(const int eleId, const int rId)
+{
+	ElementRecorder *er = ElementRecorders.at(rId);
+	er->add_ele(Elements.at(eleId));
 }
 
 void DynamicSystem::setDofRecorderFileName(const int id, char* fileName)
@@ -845,6 +1127,9 @@ void DynamicSystem::assembleMatrix()
 {
 	assembleMassMatrix();
 	assembleStiffnessMatrix();
+	assembleDampingMatrix();
+	applyRestraint();
+	
 	if (useRayleighDamping)
 	{
 		buildRayleighDampingMatrix(RayleighOmg1, RayleighOmg2);
@@ -853,8 +1138,7 @@ void DynamicSystem::assembleMatrix()
 	{
 		buildInherentDampingMatrix();
 	}
-	assembleDampingMatrix();
-	applyRestraint();
+	
 	applyLoad();
 
 	dsp = zeros<vec>(eqnCount);
@@ -1079,7 +1363,7 @@ void DynamicSystem::buildInherentDampingMatrix()
 	int eigenNum = NumModesInherentDamping > 0 ? NumModesInherentDamping : eqnCount;
 	if (zeta == 0.0)
 	{
-		C = zeros<mat>(eqnCount, eqnCount);
+		return;
 	}
 	else
 	{
@@ -1089,15 +1373,16 @@ void DynamicSystem::buildInherentDampingMatrix()
 		}
 		mat Phi_ = Phi.head_cols(eigenNum);
 		mat MPhi = Mp * Phi_;
+		mat C_;
 		if (eigenVectorNormed)
 		{
-			C = diagmat(2.0*zeta*omg);
-			C = MPhi * C*MPhi.t();
+			C_ = diagmat(2.0*zeta*omg);
+			C += MPhi * C_ * MPhi.t();
 		}
 		else
 		{
-			C = diagmat(2.0*zeta*omg / diagvec(Phi.t()*MPhi));
-			C = MPhi * C*MPhi.t();
+			C_ = diagmat(2.0*zeta*omg / diagvec(Phi.t()*MPhi));
+			C += MPhi * C_ * MPhi.t();
 		}
 	}
 }
@@ -1106,13 +1391,13 @@ void DynamicSystem::buildRayleighDampingMatrix(const double omg1, const double o
 {
 	if (zeta == 0.0)
 	{
-		C = zeros<mat>(eqnCount, eqnCount);
+		return;
 	}
 	else
 	{
 		double a0 = zeta * 2.0*omg1*omg2 / (omg1 + omg2);
 		double a1 = zeta * 2.0 / (omg1 + omg2);
-		C = a0 * Mp + a1 * K;
+		C += a0 * Mp + a1 * K;
 	}
 }
 
@@ -1120,7 +1405,7 @@ void DynamicSystem::buildRayleighDampingMatrix(const int md1, const int md2)
 {
 	if (zeta == 0.0)
 	{
-		C = zeros<mat>(eqnCount, eqnCount);
+		return;
 	}
 	else
 	{
@@ -1132,6 +1417,7 @@ void DynamicSystem::buildRayleighDampingMatrix(const int md1, const int md2)
 
 void DynamicSystem::assembleDampingMatrix()
 {
+	C = zeros<mat>(eqnCount, eqnCount);
 	if (!(linearDampingElements.empty()))
 	{
 		for (auto it = linearDampingElements.begin(); it != linearDampingElements.end(); it++)
@@ -1236,8 +1522,8 @@ void DynamicSystem::solveLinearStaticResponse()
 	dsp = solve(K, Q);
 	dsp0 = dsp;
 	nsteps = 1;
-	cstep = 0;
-	ctime = 0;
+	cstep = 1;
+	//ctime = 0;
 	initRecorders();
 	setDofResponse();
 	getElementResponse();
@@ -1616,6 +1902,7 @@ void DynamicSystem::solveNonlinearStaticResponseDispControlDelta(const double lo
 void DynamicSystem::solveSeismicResponse(const int nsub)
 {
 	bool isMultiDirectionExcitation = false;
+
 	if (XSeismicWaveId < 0)
 	{
 		cout << "Ground Motion in the X Direction is not activated!" << endl;
@@ -1651,6 +1938,7 @@ void DynamicSystem::solveSeismicResponse(const int nsub)
 	default:
 		break;
 	}
+
 }
 
 void DynamicSystem::solveSeismicResponseNewmark(const int nsub)
@@ -1658,7 +1946,7 @@ void DynamicSystem::solveSeismicResponseNewmark(const int nsub)
 	nsteps = Waves.at(XSeismicWaveId)->nsteps;
 	dt = Waves.at(XSeismicWaveId)->dt;
 	vec agX = XSeismicWaveScale*Waves.at(XSeismicWaveId)->series;
-
+	
 	vec u0(dsp);
 	vec v0(vel);
 	vec a0(acc);
@@ -1684,7 +1972,6 @@ void DynamicSystem::solveSeismicResponseNewmark(const int nsub)
 	mat c9 = c6*M - dt*c5*C;
 
 	mat K_h = c1*M + c3*C + K0;
-
 	a0 = solve(M, -Mp*EX*agX(0) - C*v0);
 
 	dsp = u0;
@@ -1936,14 +2223,14 @@ void DynamicSystem::solveSeismicResponseStateSpaceNL(const int nsub)
 	assembleNonlinearForceVector(true);
 	recordResponse();
 
-	double agd, agi, agj;
-	for (int i = 0; i < nsteps - 1; i++)
+	double agd = 0.0, agi = 0.0, agj = 0.0;
+	for (auto i = 0; i < nsteps - 1; i++)
 	{
 		cstep += 1;
 		ctime += dt*nsub;
 		agd = (agX(i + 1) - agX(i)) / nsub;
 		agi = agX(i);
-		for (int j = 0; j < nsub; j++)
+		for (auto j = 0; j < nsub; j++)
 		{
 			agj = agi + agd*j;
 			F.tail_rows(eqnCount) = solve(M, -Mp*EX*agj - q + Q0);
@@ -2442,20 +2729,21 @@ void DynamicSystem::initRecorders()
 {
 	if (!(DOFRecorders.empty()))
 	{
-		std::map<int, Recorder *>::iterator it;
+		std::map<int, DOFRecorder *>::iterator it;
 		for (it = DOFRecorders.begin(); it != DOFRecorders.end(); it++)
 		{
-			Recorder *dr = it->second;
+			auto *dr = it->second;
 			dr->init(nsteps);
 		}
 	}
+	
 
 	if (!(ElementRecorders.empty()))
 	{
-		std::map<int, Recorder *>::iterator it;
+		std::map<int, ElementRecorder *>::iterator it;
 		for (it = ElementRecorders.begin(); it != ElementRecorders.end(); it++)
 		{
-			Recorder *er = it->second;
+			auto *er = it->second;
 			er->init(nsteps);
 		}
 	}
@@ -2465,20 +2753,20 @@ void DynamicSystem::recordResponse()
 {
 	if (!(DOFRecorders.empty()))
 	{
-		std::map<int, Recorder *>::iterator it;
+		std::map<int, DOFRecorder *>::iterator it;
 		for (it = DOFRecorders.begin(); it != DOFRecorders.end(); it++)
 		{
-			Recorder *dr = it->second;
+			auto *dr = it->second;
 			dr->record(cstep, ctime);
 		}
 	}
 
 	if (!(ElementRecorders.empty()))
 	{
-		std::map<int, Recorder *>::iterator it;
+		std::map<int, ElementRecorder *>::iterator it;
 		for (it = ElementRecorders.begin(); it != ElementRecorders.end(); it++)
 		{
-			Recorder *er = it->second;
+			auto *er = it->second;
 			er->record(cstep, ctime);
 		}
 	}
@@ -2488,20 +2776,20 @@ void DynamicSystem::saveResponse()
 {
 	if (!(DOFRecorders.empty()))
 	{
-		std::map<int, Recorder *>::iterator it;
+		std::map<int, DOFRecorder *>::iterator it;
 		for (it = DOFRecorders.begin(); it != DOFRecorders.end(); it++)
 		{
-			Recorder *dr = it->second;
+			auto *dr = it->second;
 			dr->save();
 		}
 	}
 
 	if (!(ElementRecorders.empty()))
 	{
-		std::map<int, Recorder *>::iterator it;
+		std::map<int, ElementRecorder *>::iterator it;
 		for (it = ElementRecorders.begin(); it != ElementRecorders.end(); it++)
 		{
-			Recorder *er = it->second;
+			auto *er = it->second;
 			er->save();
 		}
 	}
@@ -2532,4 +2820,9 @@ void DynamicSystem::printInfo()
 			cout << "Mode " << i + 1 << ", T = " << P(i) << endl;
 		}
 	}
+}
+
+void DynamicSystem::setCurrentTime(double ctime)
+{
+	this->ctime = ctime;
 }

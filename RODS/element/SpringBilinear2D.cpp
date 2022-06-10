@@ -1,8 +1,8 @@
 #include "SpringBilinear2D.h"
 
-SpringBilinear2D::SpringBilinear2D(const int id, DOF *i, DOF *j, const double k0, const double uy,
+SpringBilinear2D::SpringBilinear2D(const int id, Node *nodeI, Node *nodeJ, const double k0, const double uy,
 									const double alpha, RODS::LocalAxis axis) :
-	Element2D(id, nodeI, nodeJ), k0(k0), uy(uy),
+	ROD2D(id, nodeI, nodeJ), k0(k0), uy(uy),
 	k1(alpha*k0), fy(k0*uy), alpha(alpha),
 	k(k0), ue(0), f(0),
 	kp(k0), up(0), dup(0), fp(0),

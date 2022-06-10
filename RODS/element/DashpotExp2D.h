@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DOF.h"
-#include "Element2D.h"
+#include "ROD2D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -9,7 +9,7 @@ using namespace arma;
 /**
  * @brief      The exponential nonlinear dashpot in X-Z plane.
  */
-class DashpotExp2D : public Element2D
+class DashpotExp2D : public ROD2D
 {
 public:
 	DashpotExp2D(const int id, Node * nodeI, Node * nodeJ, const double c, const double alpha,

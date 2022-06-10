@@ -3,14 +3,14 @@
 #include "Node.h"
 
 /**
- * @brief      The base class of element in X-Z plane.
+ * @brief      The base class of 3D element.
  */
-class Element2D :
+class ROD3D :
 	public Element
 {
 public:
-	Element2D(const int id, Node * nodeI, Node * nodeJ);
-	~Element2D();
+	ROD3D(const int id, Node * nodeI, Node * nodeJ);
+	~ROD3D();
 
 	virtual void buildMatrix() {}
 	virtual void getResponse(const bool update = false) {}
@@ -23,5 +23,13 @@ public:
 	Node *nodeI, *nodeJ;
 
 	double L;
-	double lxx, lxz, lzx, lzz;
+	double lxx;
+	double lxy;
+	double lxz;
+	double lyx;
+	double lyy;
+	double lyz;
+	double lzx;
+	double lzy;
+	double lzz;
 };

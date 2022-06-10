@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Element2D.h"
+#include "ROD2D.h"
 
 /**
  * @brief      The elastic beam element in X-Z plane.
  * @note       This element does not have an axial deformation, and thus can not be used in practice.
  */
 class BeamElastic2D :
-	public Element2D
+	public ROD2D
 {
 public:
 	BeamElastic2D(const int id, Node * nodeI, Node * nodeJ, const double EI);

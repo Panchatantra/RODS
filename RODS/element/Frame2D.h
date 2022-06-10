@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "Element2D.h"
+#include "ROD2D.h"
 #include "section/SectionFrame2D.h"
 
 using namespace std;
@@ -10,7 +10,7 @@ using namespace std;
  * @brief      The nonlinear frame element in X-Z plane.
  */
 class Frame2D :
-	public Element2D
+	public ROD2D
 {
 public:
 	Frame2D(const int id, Node *nodeI, Node *nodeJ, SectionFrame2D *sec, const int nIntPoints=5);

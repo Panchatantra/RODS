@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Element2D.h"
+#include "ROD2D.h"
 #include "Node.h"
 
 /**
  * @brief      The spring in X-Z plane.
  */
 class Spring2D :
-	public Element2D
+	public ROD2D
 {
 public:
 	Spring2D(const int id, Node * nodeI, Node * nodeJ, const double k, RODS::LocalAxis axis);

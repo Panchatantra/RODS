@@ -2,7 +2,7 @@
 
 
 Slider::Slider(const int id, DOF *i, DOF *j, const double muN) :
-	Element1D(id, i, j), muN(muN),
+	ROD1D(id, i, j), muN(muN),
 	u(0.0), f(0.0), v(0.0)
 {
 }

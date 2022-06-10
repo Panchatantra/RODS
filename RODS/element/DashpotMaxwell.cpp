@@ -2,7 +2,7 @@
 
 
 DashpotMaxwell::DashpotMaxwell(const int id, DOF *i, DOF *j, const double ks, const double c, const double alpha) :
-	Element1D(id, i, j), ks(ks), c(c), alpha(alpha),
+	ROD1D(id, i, j), ks(ks), c(c), alpha(alpha),
 	u(0.0), f(0.0), ud(0.0), udp(0.0)
 {
 }

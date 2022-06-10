@@ -1,7 +1,7 @@
 #include "SPIS2.h"
 
 SPIS2::SPIS2(const int id, DOF * i, DOF * j, DOF *in, const double m, const double c, const double k) :
-	Element1D(id, i, j), dofIN(in), m(m), c(c), k(k),
+	ROD1D(id, i, j), dofIN(in), m(m), c(c), k(k),
 	u(new double[2] {0.0,0.0}), f(new double[2] {0.0,0.0})
 {
 	buildMatrix();

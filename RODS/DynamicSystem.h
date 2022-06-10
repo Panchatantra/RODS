@@ -28,6 +28,10 @@
 #include "element/FrameElastic2D.h"
 #include "element/FrameElastic3D.h"
 #include "element/Quad4Elastic.h"
+#include "element/Tri3Elastic.h"
+#include "element/Rect4Elastic.h"
+#include "element/Plate4Elastic.h"
+#include "element/RectShell4Elastic.h"
 #include "element/Truss2D.h"
 #include "element/Frame2D.h"
 #include "element/FramePDelta2D.h"
@@ -40,6 +44,15 @@
 #include "section/Fiber.h"
 #include "section/SectionTruss.h"
 #include "section/SectionFrame2D.h"
+#include "element/TrussElastic3D.h"
+#include "element/Spring3D.h"
+#include "element/Dashpot3D.h"
+#include "element/Inerter3D.h"
+#include "element/TVMD2D.h"
+#include "element/TVMD3D.h"
+#include "element/SpringBilinear2D.h"
+#include "element/SpringBilinear3D.h"
+#include <element\DashpotMaxwell3D.h>
 
 using namespace arma;
 
@@ -51,8 +64,8 @@ namespace RODS {
 	enum class DynamicSolver
 	{
 		Newmark, ///< Linear Newmark-β solver
-		Newmark_NL, ///< Linear state space solver
-		StateSpace, ///< Nonlinear Newmark-β solver with Newton Iteration
+		Newmark_NL, ///< Nonlinear Newmark-β solver with Newton Iteration
+		StateSpace, ///< Linear state space solver
 		StateSpace_NL ///< Nonlinear state space solver
 	};
 }
@@ -68,7 +81,7 @@ public:
 	 *
 	 * @param[in]  z     The inherent damping ratio
 	 */
-	DynamicSystem(const double z=0.0);
+	DynamicSystem(const double z=0.05);
 	~DynamicSystem();
 
 	void addNode(Node *nd);
@@ -93,7 +106,7 @@ public:
 	 * @param[in]  dofRYId  The DOF RY identifier, set a negative integer to deactive the rotational DOF
 	 */
 	void addNode(const int nodeId, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId);
-
+	
 	/**
 	 * @brief      Adds a 3D Node into the system.
 	 *
@@ -114,22 +127,35 @@ public:
 
 	void addNodeWithDof(const int id, const double x, const int dofId);
 
+	/**
+	* @brief      Adds a 2D Node (for 2D plate elements) into the system.
+	*
+	* @param[in]  nodeId       The identifier
+	* @param[in]  x        The X coordinate
+	* @param[in]  y        The Y coordinate
+	* @param[in]  dofZId   The DOF Z identifier
+	* @param[in]  dofRXId  The DOF RX identifier
+	* @param[in]  dofRYId  The DOF RY identifier
+	*/
+	void addNodePlate2D(const int nodeId, const double x, const double y, const int dofZId, const int dofRXId, const int dofRYId);
+
+	
 	void addLine(Line *l);
 	void addLine(const int id, const int ni, const int nj);
 
 	/**
 	 * @brief      Fix a DOF.
 	 *
-	 * @param[in]  id    The DOF identifier
+	 * @param[in]  dofId    The DOF identifier
 	 */
-	void fixDOF(const int id);
+	void fixDOF(const int dofId);
 
 	/**
 	 * @brief      Fix all the DOFs of a Node.
 	 *
-	 * @param[in]  id    The Node identifier
+	 * @param[in]  nodeId    The Node identifier
 	 */
-	void fixNode(const int id);
+	void fixNode(const int nodeId);
 
 	/**
 	 * @brief      Fix a DOF of a Node.
@@ -165,6 +191,11 @@ public:
 	 * @param      fileName  The exported file name
 	 */
 	void exportGmsh(char * fileName);
+
+	void exportModalGmsh(char * fileName);
+
+	void exportResponseGmsh(char * fileName);
+
 
     void addDOF(DOF *d);
 
@@ -370,13 +401,16 @@ public:
 
 	void addDashpotMaxwell(const int id, const int ni, const int nj, const double k, const double c, const double alpha = 1.0);
 
-	void addInerter(const int id, const int ni, const int nj, const double m);
+	void addInerter(const int id, const int i, const int j, const double m);
 
-	void addSlider(const int id, const int ni, const int nj, const double muN);
+	void addSlider(const int id, const int i, const int j, const double muN);
 
-	void addSPIS2(const int id, const int ni, const int nj, const int nin, const double m, const double c, const double k);
+	void addSPIS2(const int id, const int i, const int j, const int in, const double m, const double c, const double k);
 
 	void addTVMD(const int id, const int ni, const int nj, const double m, const double c, const double k);
+
+	void addTVMD2D(const int id, const int ni, const int nj, const double m, const double c, const double k, RODS::LocalAxis U=RODS::LocalAxis::U1);
+	void addTVMD3D(const int id, const int ni, const int nj, const double m, const double c, const double k, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
 	/**
 	 * @brief      Adds a Spring2D.
@@ -388,6 +422,17 @@ public:
 	 * @param[in]  U     The RODS::LocalAxis
 	 */
 	void addSpring2D(const int id, const int ni, const int nj, const double k, RODS::LocalAxis U=RODS::LocalAxis::U1);
+
+	/**
+	* @brief      Adds a Spring3D.
+	*
+	* @param[in]  id    The identifier
+	* @param[in]  ni    The identifier of Node i
+	* @param[in]  nj    The identifier of Node j
+	* @param[in]  k     The stiffness
+	* @param[in]  U     The RODS::LocalAxis
+	*/
+	void addSpring3D(const int id, const int ni, const int nj, const double k, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
 	/**
 	 * @brief      Adds a SpringBoucWen2D.
@@ -426,6 +471,33 @@ public:
 	 */
 	void addInerter2D(const int id, const int ni, const int nj, const double m, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
+	void addSpringBilinear2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, RODS::LocalAxis U=RODS::LocalAxis::U1);
+
+	void addSpringBilinear3D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, RODS::LocalAxis U=RODS::LocalAxis::U1);
+
+	/**
+	* @brief      Adds a Dashpot3D.
+	*
+	* @param[in]  id    The identifier
+	* @param[in]  ni    The identifier of Node i
+	* @param[in]  nj    The identifier of Node j
+	* @param[in]  c     The damping coefficient
+	* @param[in]  U     The RODS::LocalAxis
+	*/
+	void addDashpot3D(const int id, const int ni, const int nj, const double c, RODS::LocalAxis U=RODS::LocalAxis::U1);
+
+	/**
+	* @brief      Adds a Inerter3D.
+	*
+	* @param[in]  id    The identifier
+	* @param[in]  ni    The identifier of Node i
+	* @param[in]  nj    The identifier of Node j
+	* @param[in]  m     The inertance
+	* @param[in]  U     The RODS::LocalAxis
+	*/
+	void addInerter3D(const int id, const int ni, const int nj, const double m, RODS::LocalAxis U=RODS::LocalAxis::U1);
+
+	
 	/**
 	 * @brief      Adds a DashpotExp2D.
 	 *
@@ -450,6 +522,7 @@ public:
 	 * @param[in]  U      The RODS::LocalAxis
 	 */
 	void addDashpotMaxwell2D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, RODS::LocalAxis U = RODS::LocalAxis::U1);
+	void addDashpotMaxwell3D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, RODS::LocalAxis U = RODS::LocalAxis::U1);
 
 	/**
 	 * @brief      Adds a TrussElastic2D element.
@@ -460,6 +533,16 @@ public:
 	 * @param[in]  EA    E*A of the truss section
 	 */
 	void addTrussElastic2D(const int id, const int ni, const int nj, const double EA);
+
+	/**
+	* @brief      Adds a TrussElastic3D element.
+	*
+	* @param[in]  id    The identifier
+	* @param[in]  ni    The identifier of Node i
+	* @param[in]  nj    The identifier of Node j
+	* @param[in]  EA    E*A of the truss section
+	*/
+	void addTrussElastic3D(const int id, const int ni, const int nj, const double EA);
 
 	/**
 	 * @brief      Adds a BeamElastic2D element.
@@ -496,6 +579,52 @@ public:
 	void addFrameElastic3D(const int id, const int ni, const int nj, const double EA,
 						const double EIy, const double EIz, const double GIp);
 
+	/**
+	 * @brief      Adds a Tri3Elastic element.
+	 *
+	 * @param[in]  id     The identifier
+	 * @param[in]  nodeI  The identifier of node I
+	 * @param[in]  nodeJ  The identifier of node J
+	 * @param[in]  nodeP  The identifier of node P
+	 * @param[in]  E      The elastic module
+	 * @param[in]  nu     The Poisson ratio
+	 * @param[in]  t      The thickness
+	 */
+	void addTri3Elastic(const int id, const int nodeI, const int nodeJ,
+						const int nodeP,
+						const double E, const double nu, const double t);
+
+	/**
+	* @brief      Adds a Rect4Elastic element.
+	*
+	* @param[in]  id     The identifier
+	* @param[in]  nodeI  The identifier of node I
+	* @param[in]  nodeJ  The identifier of node J
+	* @param[in]  nodeP  The identifier of node P
+	* @param[in]  nodeQ  The identifier of node Q
+	* @param[in]  E      The elastic module
+	* @param[in]  nu     The Poisson ratio
+	* @param[in]  t      The thickness
+	*/
+	void addRect4Elastic(const int id, const int nodeI, const int nodeJ,
+		const int nodeP, const int nodeQ,
+		const double E, const double nu, const double t);
+
+	/**
+	* @brief      Adds a Plate4Elastic element.
+	*
+	* @param[in]  id     The identifier
+	* @param[in]  nodeI  The identifier of node I
+	* @param[in]  nodeJ  The identifier of node J
+	* @param[in]  nodeP  The identifier of node P
+	* @param[in]  nodeQ  The identifier of node Q
+	* @param[in]  E      The elastic module
+	* @param[in]  nu     The Poisson ratio
+	* @param[in]  t      The thickness
+	*/
+	void addPlate4Elastic(const int id, const int nodeI, const int nodeJ,
+		const int nodeP, const int nodeQ,
+		const double E, const double nu, const double t);
 
 	/**
 	 * @brief      Adds a Quad4Elastic element.
@@ -512,6 +641,22 @@ public:
 	void addQuad4Elastic(const int id, const int nodeI, const int nodeJ,
 						const int nodeP, const int nodeQ,
 						const double E, const double nu, const double t);
+
+	/**
+	* @brief      Adds a RectShell4Elastic element.
+	*
+	* @param[in]  id     The identifier
+	* @param[in]  nodeI  The identifier of node I
+	* @param[in]  nodeJ  The identifier of node J
+	* @param[in]  nodeP  The identifier of node P
+	* @param[in]  nodeQ  The identifier of node Q
+	* @param[in]  E      The elastic module
+	* @param[in]  nu     The Poisson ratio
+	* @param[in]  t      The thickness
+	*/
+	void addRectShell4Elastic(const int id, const int nodeI, const int nodeJ,
+		const int nodeP, const int nodeQ,
+		const double E, const double nu, const double t);
 
 	/**
 	 * @brief      Adds a nonlinear Truss2D element.
@@ -575,6 +720,19 @@ public:
 	void addDOFRecorder(const int id, int *dofIds, const int n, RODS::Response rType, char * fileName);
 
 	/**
+	* @brief      Adds a DOF Recorder.
+	*
+	* @param[in]  id        The identifier
+	* @param      dofIds    The DOF identifiers
+	* @param[in]  n         The number of DOFs
+	* @param[in]  rType     The Response type
+	* @param      fileName  The record file name
+	*/
+	void addDOFRecorder(const int id, RODS::Response rType, char * fileName);
+
+	void addDOFToRecorder(const int dofId, const int rId);
+
+	/**
 	 * @brief      Adds a Element Recorder.
 	 *
 	 * @param[in]  id        The identifier
@@ -584,6 +742,10 @@ public:
 	 * @param      fileName  The record file name
 	 */
 	void addElementRecorder(const int id, int *eleIds, const int n, RODS::Response rType, char * fileName);
+
+	void addElementRecorder(const int id, RODS::Response rType, char * fileName);
+
+	void addElementToRecorder(const int eleId, const int rId);
 
 	void setDofRecorderFileName(const int id, char * fileName);
 	void setElementRecorderFileName(const int id, char * fileName);
@@ -767,6 +929,9 @@ public:
 	 */
 	void printInfo();
 
+	void setCurrentTime(double ctime);
+
+	
 	/// The map from a DOF identifier to its equation number
 	std::map<int, int> dofMapEqn;
 	/// The map from a equation number to its DOF identifier
@@ -778,10 +943,11 @@ public:
 	std::map<int, Line *> Lines; 			///< Lines
 	std::map<int, DOF *> DOFs; 				///< DOFs
 	std::map<int, Element *> Elements; 		///< Elements
-	std::map<int, Element2D *> Element2Ds; 	///< Element2Ds
-	std::map<int, Plane2D *> Plane2Ds; 		///< Plane2Ds
+	std::map<int, ROD2D *> ROD2Ds; 	///< ROD2Ds
+	std::map<int, Quad2D *> Quad2Ds; 		///< Quad2Ds
+	std::map<int, Tri2D *> Tri2Ds;    	///< Tri2Ds
 
-	std::map<int, Element3D *> Element3Ds; 	///< Element3Ds
+	std::map<int, ROD3D *> ROD3Ds; 	///< ROD3Ds
 
 	/// The elements for assembling #Mp
 	std::map<int, Element *> physicalMassElements;
@@ -813,11 +979,20 @@ public:
 	std::map<int, Slider *> Sliders; ///< Sliders in the system
 
 	std::map<int, Spring2D *> Spring2Ds; ///< Spring2Ds in the system
+	std::map<int, SpringBilinear2D *> SpringBilinear2Ds; ///< SpringBilinears in the system
 	std::map<int, SpringBoucWen2D *> SpringBoucWen2Ds; ///< SpringBoucWen2Ds in the system
 	std::map<int, Dashpot2D *> Dashpot2Ds; ///< Dashpot2Ds in the system
 	std::map<int, DashpotMaxwell2D *> DashpotMaxwell2Ds; ///< DashpotMaxwell2Ds in the system
 	std::map<int, DashpotExp2D *> DashpotExp2Ds; ///< DashpotExp2Ds in the system
 	std::map<int, Inerter2D *> Inerter2Ds; ///< Inerter2Ds in the system
+	std::map<int, TVMD2D *> TVMD2Ds; ///< TVMD2Ds in the system
+
+	std::map<int, Spring3D *> Spring3Ds; ///< Spring3Ds in the system
+	std::map<int, Dashpot3D *> Dashpot3Ds; ///< Dashpot3Ds in the system
+	std::map<int, Inerter3D *> Inerter3Ds; ///< Inerter3Ds in the system
+	std::map<int, TVMD3D *> TVMD3Ds; ///< TVMD3Ds in the system
+	std::map<int, DashpotMaxwell3D *> DashpotMaxwell3Ds; ///< DashpotMaxwell3Ds in the system
+	std::map<int, SpringBilinear3D *> SpringBilinear3Ds; ///< SpringBilinears in the system
 
 	std::map<int, TrussElastic2D *> TrussElastic2Ds; ///< TrussElastic2Ds in the system
 	std::map<int, Truss2D *> Truss2Ds; ///< Truss2Ds in the system
@@ -826,7 +1001,12 @@ public:
 	std::map<int, BeamElastic2D *> BeamElastic2Ds; ///< BeamElastic2Ds in the system
 	std::map<int, FrameElastic2D *> FrameElastic2Ds; ///< FrameElastic2Ds in the system
 	std::map<int, FrameElastic3D *> FrameElastic3Ds; ///< FrameElastic3Ds in the system
+	std::map<int, TrussElastic3D *> TrussElastic3Ds; ///< FrameElastic3Ds in the system
 	std::map<int, Quad4Elastic *> Quad4Elastics; ///< Quad4Elastics in the system
+	std::map<int, Tri3Elastic *> Tri3Elastics; ///< Tri3Elastics in the system
+	std::map<int, Rect4Elastic *> Rect4Elastics; ///< Rect4Elastics in the system
+	std::map<int, Plate4Elastic *> Plate4Elastics; ///< Plate4Elastics in the system
+	std::map<int, RectShell4Elastic *> RectShell4Elastics; ///< RectShell4Elastics in the system
 
 	std::map<int, Material1D *> Material1Ds; ///< Material1Ds in the system
 	std::map<int, Fiber *> Fibers; ///< Fibers in the system
@@ -836,8 +1016,8 @@ public:
 
 	std::map<int, Wave *> Waves; ///< Waves in the system
 	std::map<int, Load *> Loads; ///< Loads in the system
-	std::map<int, Recorder *> DOFRecorders; ///< DOFRecorders in the system
-	std::map<int, Recorder *> ElementRecorders; ///< ElementRecorders in the system
+	std::map<int, DOFRecorder *> DOFRecorders; ///< DOFRecorders in the system
+	std::map<int, ElementRecorder *> ElementRecorders; ///< ElementRecorders in the system
 
 	mat Mp; 		///< The physical mass matrix
 	mat K0; 		///< The initial stiffness matrix
@@ -858,6 +1038,7 @@ public:
 	vec q;			///< The nonlinear force vector
 	uvec fixedIds;	///< The identifiers of fixed DOFs
 	vec dsp0;		///< The backup of displacement vector
+	vec p;			///< The dynamic load vector
 
     double zeta;				///< The inherent damping ratio
     int eqnCount;				///< The number of equations

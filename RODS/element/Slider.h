@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DOF.h"
-#include "Element1D.h"
+#include "ROD1D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -9,7 +9,7 @@ using namespace arma;
 /**
  * @brief      The slider in X direction.
  */
-class Slider : public Element1D
+class Slider : public ROD1D
 {
 public:
 	/**

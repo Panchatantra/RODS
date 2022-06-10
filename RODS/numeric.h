@@ -3,11 +3,10 @@
 #ifdef __GNUC__
 #include <lapacke.h>
 #else
-#include <mkl.h>
+#include <mkl_lapacke.h>
 #endif
 
 #include <armadillo>
-
 using namespace arma;
 
 static inline lapack_int eig_sym(const mat &K, const mat &M, vec &omg, mat &Phi)

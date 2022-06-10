@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DOF.h"
-#include "Element2D.h"
+#include "ROD2D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -9,7 +9,7 @@ using namespace arma;
 /**
  * @brief      The inerter in X-Z plane.
  */
-class Inerter2D : public Element2D
+class Inerter2D : public ROD2D
 {
 public:
 	Inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, RODS::LocalAxis axis);

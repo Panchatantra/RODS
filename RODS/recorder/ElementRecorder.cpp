@@ -13,6 +13,10 @@ ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, RODS
 	}
 }
 
+ElementRecorder::ElementRecorder(const int id, RODS::Response rType, char* fileName): Recorder(id, rType, fileName)
+{
+}
+
 ElementRecorder::~ElementRecorder()
 {
 }
@@ -57,4 +61,10 @@ void ElementRecorder::record(const int cstep, const double ctime)
 			break;
 		}
 	}
+}
+
+void ElementRecorder::add_ele(Element* ele)
+{
+	eles.push_back(ele);
+	n = eles.size();
 }

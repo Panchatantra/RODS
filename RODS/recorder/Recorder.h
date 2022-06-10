@@ -47,8 +47,8 @@ public:
 	void setFileName(char *fileName);
 
 	int n; 				///< The number of instances to record
-	int nsteps;			///< The number of analysis steps
+	int nsteps{};			///< The number of analysis steps
 	RODS::Response rtype;		///< The RODS::Response Type
-	char * fileName;	///< The record file name
+	std::string fileName;	///< The record file name
 	mat Res;			///< The matrix to record results
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DOF.h"
-#include "Element1D.h"
+#include "ROD1D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -9,7 +9,7 @@ using namespace arma;
 /**
  * @brief      The exponential nonlinear dashpot in X direction.
  */
-class DashpotExp : public Element1D
+class DashpotExp : public ROD1D
 {
 public:
 	DashpotExp(const int id, DOF *i, DOF *j, const double c, const double alpha);

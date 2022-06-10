@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DOF.h"
-#include "Element1D.h"
+#include "ROD1D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -9,7 +9,7 @@ using namespace arma;
 /**
  * @brief      The bilinear spring in X direction.
  */
-class SpringBilinear : public Element1D
+class SpringBilinear : public ROD1D
 {
 public:
 	SpringBilinear(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha);

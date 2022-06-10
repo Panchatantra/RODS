@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DOF.h"
-#include "Element1D.h"
+#include "ROD1D.h"
 #include <armadillo>
 
 using namespace arma;
@@ -9,7 +9,7 @@ using namespace arma;
 /**
  * @brief      The inerter in X direction.
  */
-class Inerter : public Element1D
+class Inerter : public ROD1D
 {
 public:
 	Inerter(const int id, DOF *i, DOF *j, const double m);
