@@ -359,3 +359,5 @@ Thumbs.db
 *.dll
 *.exe
 
+# docs
+RODS/html/
