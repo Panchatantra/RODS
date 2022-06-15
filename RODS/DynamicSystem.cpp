@@ -20,7 +20,8 @@ DynamicSystem::DynamicSystem(const double z) :
 	XSeismicWaveId(-1), YSeismicWaveId(-1), ZSeismicWaveId(-1),
 	XSeismicWaveScale(0.0), YSeismicWaveScale(0.0), ZSeismicWaveScale(0.0),
 	dispControlDOFId(-1), dispControlLoadId(-1), dispControlEqn(-1),
-	NumDynamicSubSteps(1), tol(1e-6), maxIter(20)
+	NumDynamicSubSteps(1), tol(1e-6), maxIter(20),
+	exportGmshInterval(-1)
 {
 }
 
@@ -238,14 +239,17 @@ void DynamicSystem::exportGmsh(char * fileName)
 	}
 }
 
-void DynamicSystem::exportModalGmsh(char* fileName)
+void DynamicSystem::exportModalGmsh(char* fileName, const int order)
 {
 	std::ofstream outFile;
-	outFile.open(fileName, ios::out, ios::app);
+	outFile.open(fileName, ios::out|ios::app);
 
 	outFile << "$NodeData" << std::endl;
 
-	vec modeshape = Phi.col(0);
+	int od = order-1;
+	if (order > eqnCount) od = eqnCount-1;
+	
+	vec modeshape = Phi.col(od);
 	for (int i = 0; i < eqnCount; i++)
 	{
 		DOF *d = DOFs.at(eqnMapDof.at(i));
@@ -253,7 +257,7 @@ void DynamicSystem::exportModalGmsh(char* fileName)
 	}
 
 	outFile << "1" << std::endl;
-	outFile << "\"First Mode: T = " << P(0) << "s\"" << std::endl;
+	outFile << "\"Mode: " << od+1 << ", T = " << P(od) << "s\"" << std::endl;
 	outFile << "1" << std::endl;
 	outFile << "0.0" << std::endl;
 	outFile << "3" << std::endl;
@@ -311,6 +315,43 @@ void DynamicSystem::exportResponseGmsh(char* fileName)
 	outFile << "$EndNodeData" << std::endl;
 
 	outFile.close();
+}
+
+void DynamicSystem::exportResponseGmsh()
+{
+	gmshFile << "$NodeData" << std::endl;
+
+	gmshFile << "1" << std::endl;
+	//gmshFile << "\"Step time: t = " << ctime << "s\"" << std::endl;
+	gmshFile << "\"Response\"" << std::endl;
+	gmshFile << "1" << std::endl;
+	gmshFile << ctime << std::endl;
+	gmshFile << "3" << std::endl;
+	//gmshFile << "0" << std::endl;
+	gmshFile << cstep << std::endl;
+	gmshFile << "3" << std::endl;
+	gmshFile << Nodes.size() << std::endl;
+
+	for (auto it = Nodes.begin(); it != Nodes.end(); it++)
+	{
+		auto nd = it->second;
+		if (nd->isActivated(RODS::Direction::Y))
+		{
+			gmshFile << it->first << " " << nd->dofX->dsp << " " << nd->dofY->dsp << " " << nd->dofZ->dsp << std::endl;
+		}
+		else
+		{
+			gmshFile << it->first << " " << nd->dofX->dsp << " " << 0.0 << " " << nd->dofZ->dsp << std::endl;
+		}
+	}
+
+	gmshFile << "$EndNodeData" << std::endl;
+}
+
+void DynamicSystem::setResponseGmsh(char* fileName, const int interval)
+{
+	gmshFileName = fileName;
+	exportGmshInterval = interval;
 }
 
 
@@ -955,7 +996,7 @@ void DynamicSystem::addWave(const int id, const double dt, char* fileName)
 		cout << "Wave ID: " << id << " already exists! The wave will not be added." << endl;
 		return;
 	}
-
+	
 	Wave *ts = new Wave(id, dt, fileName);
 	Waves[ts->id] = ts;
 }
@@ -2046,7 +2087,7 @@ void DynamicSystem::solveSeismicResponseNewmarkNL(const int nsub)
 	mat K_h = K_h_ + K0;
 
 	a0 = solve(M, -Mp*EX*agX(0) - C*v0);
-
+	
 	dsp = u0;
 	vel = v0;
 	acc = a0;
@@ -2055,7 +2096,7 @@ void DynamicSystem::solveSeismicResponseNewmarkNL(const int nsub)
 	getElementResponse();
 	assembleNonlinearForceVector(true);
 	recordResponse();
-
+	
 	vec p_h;
 	vec u_p, v_p, a_p;
 	vec du;
@@ -2747,6 +2788,11 @@ void DynamicSystem::initRecorders()
 			er->init(nsteps);
 		}
 	}
+
+	if (exportGmshInterval > 0)
+	{
+		gmshFile.open(gmshFileName, ios::out|ios::app);
+	}
 }
 
 void DynamicSystem::recordResponse()
@@ -2768,6 +2814,14 @@ void DynamicSystem::recordResponse()
 		{
 			auto *er = it->second;
 			er->record(cstep, ctime);
+		}
+	}
+
+	if (exportGmshInterval > 0)
+	{
+		if (cstep % exportGmshInterval == 0)
+		{
+			exportResponseGmsh();
 		}
 	}
 }
@@ -2792,6 +2846,10 @@ void DynamicSystem::saveResponse()
 			auto *er = it->second;
 			er->save();
 		}
+	}
+	if (exportGmshInterval > 0)
+	{
+		gmshFile.close();
 	}
 }
 

@@ -306,3 +306,20 @@ void set_num_modes_inherent_damping(const int n)
 {
 	ds->setNumModesInherentDamping(n);
 }
+
+void export_modal_gmsh(char* fileName, const int order)
+{
+	ds->exportModalGmsh(fileName, order);
+}
+
+void set_response_gmsh(char* fileName, const int interval)
+{
+	ds->setResponseGmsh(fileName, interval);
+}
+
+size_t add_mat_sma_bilinear(const int id, const double E0, const double fy, const double alpha,
+	const double sigma_shift)
+{
+	ds->addMaterialSMABilinear(id, E0, fy, alpha, sigma_shift);
+	return ds->Material1Ds.size();
+}

@@ -63,6 +63,19 @@ void ElementRecorder::record(const int cstep, const double ctime)
 	}
 }
 
+void ElementRecorder::init(const int nsteps)
+{
+	if (rtype == RODS::Response::ALL)
+	{
+		n = 2*eles.size()*eles[0]->nv;
+	}
+	else
+	{
+		n = eles.size()*eles[0]->nv;
+	}
+	Recorder::init(nsteps);
+}
+
 void ElementRecorder::add_ele(Element* ele)
 {
 	eles.push_back(ele);

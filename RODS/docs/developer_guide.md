@@ -6,11 +6,16 @@
 
 二选一
 
-* Visual Studio 2017/2019 C++开发套装
+* Visual Studio 2019 C++开发套装
     * Reshaper C++插件（建议）
 
 * Mingw-w64-GCC
     * MSYS2 环境（建议）
+      * 需要安装的程序：
+> base-devel
+> mingw-w64-x86_64-toolchain
+> mingw-w64-x86_64-openblas
+> mingw-w64-x86_64-armadillo
 
 ### Linux
 
@@ -42,7 +47,7 @@
 * C++ 矩阵运算库 armadillo
 * 高性能矩阵运算库（二选一）
     * Intel MKL
-        * 需要安装 Intel Parallel Studio
+        * 需要安装 Intel oneAPI Base Toolkit
     * OpenBLAS
 
 # 编译过程
@@ -55,4 +60,4 @@
 4. 编译
     * 若使用 Visual Studio：打开RODS.sln，点击生成解决方案即可。
     * 若使用 GCC（Linux 或 MSYS2 环境）：
-        > cd RODS && make -j n (n is your CPU number)
+> cd RODS && make -j n (n is your CPU number)

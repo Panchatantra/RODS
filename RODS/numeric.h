@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef __GNUC__
-#include <lapacke.h>
+#include <openblas/lapacke.h>
 #else
 #include <mkl_lapacke.h>
 #endif

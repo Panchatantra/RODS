@@ -1,9 +1,9 @@
 CXX = g++
 Linker = g++
-# OutputFile = RODS.exe
-# DynamicLib = RODS.dll
-OutputFile = RODS
-DynamicLib = RODS.so
+OutputFile = RODS.exe
+DynamicLib = RODS.dll
+# OutputFile = RODS
+# DynamicLib = RODS.so
 
 SourceFiles = $(wildcard *.cpp) $(wildcard material/*.cpp) $(wildcard element/*.cpp) $(wildcard section/*.cpp)  $(wildcard recorder/*.cpp)
 HeaderFiles = $(wildcard *.h) $(wildcard material/*.h) $(wildcard element/*.h) $(wildcard section/*.h)  $(wildcard recorder/*.h)

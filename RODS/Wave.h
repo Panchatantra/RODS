@@ -23,8 +23,7 @@ public:
 	 */
 	void load(char *fileName);
 
-	double dt;
 	int nsteps;
+	double dt;
 	vec series;
 };
-

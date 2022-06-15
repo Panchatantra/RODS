@@ -192,10 +192,13 @@ public:
 	 */
 	void exportGmsh(char * fileName);
 
-	void exportModalGmsh(char * fileName);
+	void exportModalGmsh(char * fileName, const int order=1);
 
 	void exportResponseGmsh(char * fileName);
 
+	void exportResponseGmsh();
+
+	void setResponseGmsh(char * fileName, const int interval);
 
     void addDOF(DOF *d);
 
@@ -1071,4 +1074,9 @@ public:
 	int NumDynamicSubSteps;
 	double tol;  ///< The tolerance for convergence check
 	int maxIter; ///< The maximum iterations before converged
+
+	string gmshFileName;
+	std::ofstream gmshFile;
+	int exportGmshInterval;
+	string name;
 };

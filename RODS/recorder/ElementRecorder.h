@@ -14,6 +14,7 @@ public:
 	~ElementRecorder();
 
 	void record(const int cstep, const double ctime) override;
+	void init(const int nsteps);
 	void add_ele(Element *ele);
 	std::vector<Element *> eles;
 };

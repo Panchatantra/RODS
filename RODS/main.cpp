@@ -654,8 +654,9 @@ void example_frame()
 
 	ds->printInfo();
 
-	//char gmshFile[] = "data/frame.msh";
-	//ds->exportGmsh(gmshFile);
+	char gmshFile[] = "data/frame.msh";
+	ds->setResponseGmsh(gmshFile, 1);
+	ds->exportGmsh(gmshFile);
 
 	int nrd = 1;
 	int *dofIds = new int[nrd] {
@@ -664,10 +665,10 @@ void example_frame()
 	char dispOutput[] = "data/disp_frame_4d.dat";
 	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
 
-	//int nre = 1;
-	//int *eleIds = new int[nre] { 102 };
-	//char eleOutput[] = "data/damper.dat";
-	//ds->addElementRecorder(0, eleIds, nre, RODS::Response::ALL, eleOutput);
+	int nre = 1;
+	int *eleIds = new int[nre] { 102 };
+	char eleOutput[] = "data/damper.dat";
+	ds->addElementRecorder(0, eleIds, nre, RODS::Response::ALL, eleOutput);
 
 	int eqId = 1;
 	double dt = 0.005;
@@ -2096,7 +2097,7 @@ void example_shell_rectshell4elastic()
 
 int main()
 {
-	example_sdof();
+	//example_sdof();
 	//example_sdof_inerter_system();
 	//example_sdof_inerter_system_nl();
 	//example_sdof_bl();
@@ -2105,7 +2106,7 @@ int main()
 	//test_material();
 	//example_truss();
 	//example_truss_RODS();
-	//example_frame();
+	example_frame();
 	//example_frame3D();
 	//example_cantilever();
 	//example_wall();

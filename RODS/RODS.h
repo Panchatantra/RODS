@@ -76,5 +76,9 @@ extern "C" {
 	DLL_API size_t solve_seismic_response(const int nsub = 1);
 	DLL_API void print_info();
 	DLL_API void export_gmsh(char * fileName);
+	DLL_API void export_modal_gmsh(char * fileName, const int order);
+	DLL_API void set_response_gmsh(char * fileName, const int interval);
+
+	DLL_API size_t add_mat_sma_bilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift);
 
 }
