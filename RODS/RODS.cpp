@@ -323,3 +323,21 @@ size_t add_mat_sma_bilinear(const int id, const double E0, const double fy, cons
 	ds->addMaterialSMABilinear(id, E0, fy, alpha, sigma_shift);
 	return ds->Material1Ds.size();
 }
+
+size_t add_spring_nonlinear_2d(const int id, const int ni, const int nj, const int matId, const int localAxis)
+{
+	ds->addSpringNonlinear2D(id, ni, nj, matId, RODS::LocalAxis(localAxis));
+	return ds->SpringNonlinear2Ds.size();
+}
+
+size_t add_spring_nonlinear_3d(const int id, const int ni, const int nj, const int matId, const int localAxis)
+{
+	ds->addSpringNonlinear3D(id, ni, nj, matId, RODS::LocalAxis(localAxis));
+	return ds->SpringNonlinear3Ds.size();
+}
+
+size_t add_spring_nonlinear(const int id, const int ni, const int nj, const int matId)
+{
+	ds->addSpringNonlinear(id, ni, nj, matId);
+	return ds->SpringNonlinears.size();
+}

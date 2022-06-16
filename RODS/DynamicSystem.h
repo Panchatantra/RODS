@@ -52,7 +52,9 @@
 #include "element/TVMD3D.h"
 #include "element/SpringBilinear2D.h"
 #include "element/SpringBilinear3D.h"
-#include <element\DashpotMaxwell3D.h>
+#include "element/SpringNonlinear2D.h"
+#include "element/SpringNonlinear3D.h"
+#include "element/DashpotMaxwell3D.h"
 
 using namespace arma;
 
@@ -366,7 +368,10 @@ public:
 	 * @param[in]  matId  The Material1D identifier
 	 */
 	void addSpringNonlinear(const int id, const int ni, const int nj, const int matId);
+	void addSpringNonlinear2D(const int id, const int ni, const int nj, const int matId, RODS::LocalAxis U=RODS::LocalAxis::U1);
+	void addSpringNonlinear3D(const int id, const int ni, const int nj, const int matId, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
+	
 	/**
 	 * @brief      Adds a Bouc-Wen spring.
 	 *
@@ -411,7 +416,6 @@ public:
 	void addSPIS2(const int id, const int i, const int j, const int in, const double m, const double c, const double k);
 
 	void addTVMD(const int id, const int ni, const int nj, const double m, const double c, const double k);
-
 	void addTVMD2D(const int id, const int ni, const int nj, const double m, const double c, const double k, RODS::LocalAxis U=RODS::LocalAxis::U1);
 	void addTVMD3D(const int id, const int ni, const int nj, const double m, const double c, const double k, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
@@ -989,13 +993,16 @@ public:
 	std::map<int, DashpotExp2D *> DashpotExp2Ds; ///< DashpotExp2Ds in the system
 	std::map<int, Inerter2D *> Inerter2Ds; ///< Inerter2Ds in the system
 	std::map<int, TVMD2D *> TVMD2Ds; ///< TVMD2Ds in the system
+	std::map<int, SpringNonlinear2D *> SpringNonlinear2Ds; ///< SpringNonlinear2Ds in the system
 
+	
 	std::map<int, Spring3D *> Spring3Ds; ///< Spring3Ds in the system
 	std::map<int, Dashpot3D *> Dashpot3Ds; ///< Dashpot3Ds in the system
 	std::map<int, Inerter3D *> Inerter3Ds; ///< Inerter3Ds in the system
 	std::map<int, TVMD3D *> TVMD3Ds; ///< TVMD3Ds in the system
 	std::map<int, DashpotMaxwell3D *> DashpotMaxwell3Ds; ///< DashpotMaxwell3Ds in the system
-	std::map<int, SpringBilinear3D *> SpringBilinear3Ds; ///< SpringBilinears in the system
+	std::map<int, SpringBilinear3D *> SpringBilinear3Ds; ///< SpringBilinear3Ds in the system
+	std::map<int, SpringNonlinear3D *> SpringNonlinear3Ds; ///< SpringNonlinear3Ds in the system
 
 	std::map<int, TrussElastic2D *> TrussElastic2Ds; ///< TrussElastic2Ds in the system
 	std::map<int, Truss2D *> Truss2Ds; ///< Truss2Ds in the system

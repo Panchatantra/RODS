@@ -57,7 +57,10 @@
 2. 下载 armadillo，解压至开发文件夹
 3. 用 git 获取 RODS 最新代码
 > git clone https://e.coding.net/dynamics/RODS.git
-4. 编译
+1. 编译
     * 若使用 Visual Studio：打开RODS.sln，点击生成解决方案即可。
     * 若使用 GCC（Linux 或 MSYS2 环境）：
 > cd RODS && make -j n (n is your CPU number)
+
+5. 生成帮助文档
+> doxygen

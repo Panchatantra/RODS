@@ -25,7 +25,7 @@
 * DashpotMaxwell
 * Slider
 * ...
-  
+
 ### 2D elements
 
 * Inerter2D
@@ -47,6 +47,7 @@
 ### 3D elements
 
 * Frame3D
+* RectShell4Elastic
 * ...
 
 
@@ -95,7 +96,3 @@
 ## Visualization
 
 * Gmsh
-
-## API Documentation
-
-[Link](RODS/html/index.html)

@@ -33,6 +33,7 @@ extern "C" {
 	DLL_API size_t add_dashpot_exp(const int id, const int i, const int j, const double c, const double alpha);
 	DLL_API size_t add_dashpot_maxwell(const int id, const int i, const int j, const double k, const double c, const double alpha);
 	DLL_API size_t add_spring_bilinear(const int id, const int i, const int j, const double k0, const double uy, const double alpha);
+	DLL_API size_t add_spring_nonlinear(const int id, const int ni, const int nj, const int matId);
 	DLL_API size_t add_inerter(const int id, const int i, const int j, const double m);
 	DLL_API size_t add_tvmd(const int id, const int i, const int j, const double m, const double c, const double k);
 	DLL_API size_t add_truss_elastic_2d(const int id, const int ni, const int nj, const double EA);
@@ -41,7 +42,7 @@ extern "C" {
 	DLL_API size_t add_frame_elastic_3d(const int id, const int ni, const int nj, const double EA, const double EIy, const double EIz, const double GIp);
 	DLL_API size_t add_quad4_elastic(const int id, const int nodeI, const int nodeJ,
 										const int nodeP, const int nodeQ,
-										const double E, const double nu, const double t);
+										 const double E, const double nu, const double t);
 	DLL_API size_t add_rect_shell4_elastic(const int id, const int nodeI, const int nodeJ,
 											const int nodeP, const int nodeQ,
 											const double E, const double nu, const double t);
@@ -50,6 +51,7 @@ extern "C" {
 	DLL_API size_t add_dashpot_2d(const int id, const int ni, const int nj, const double c, const int localAxis);
 	DLL_API size_t add_dashpot_maxwell_2d(const int id, const int ni, const int nj, const double k, const double c, const double alpha, const int localAxis);
 	DLL_API size_t add_spring_bilinear_2d(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const int localAxis);
+	DLL_API size_t add_spring_nonlinear_2d(const int id, const int ni, const int nj, const int matId, const int localAxis);
 	DLL_API size_t add_inerter_2d(const int id, const int ni, const int nj, const double m, const int localAxis);
 	DLL_API size_t add_tvmd_2d(const int id, const int ni, const int nj, const double m, const double c, const double k, const int localAxis);
 
@@ -57,6 +59,7 @@ extern "C" {
 	DLL_API size_t add_dashpot_3d(const int id, const int ni, const int nj, const double c, const int localAxis);
 	DLL_API size_t add_dashpot_maxwell_3d(const int id, const int ni, const int nj, const double k, const double c, const double alpha, const int localAxis);
 	DLL_API size_t add_spring_bilinear_3d(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const int localAxis);
+	DLL_API size_t add_spring_nonlinear_3d(const int id, const int ni, const int nj, const int matId, const int localAxis);
 	DLL_API size_t add_inerter_3d(const int id, const int ni, const int nj, const double m, const int localAxis);
 	DLL_API size_t add_tvmd_3d(const int id, const int ni, const int nj, const double m, const double c, const double k, const int localAxis);
 

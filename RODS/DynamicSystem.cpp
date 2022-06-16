@@ -596,6 +596,26 @@ void DynamicSystem::addSpringNonlinear(const int id, const int ni, const int nj,
 	nonlinearTangentElements[id] = s;
 }
 
+void DynamicSystem::addSpringNonlinear2D(const int id, const int ni, const int nj, const int matId, RODS::LocalAxis U)
+{
+	if ( !checkDuplicateElement(id) ) return;
+
+	SpringNonlinear2D *s = new SpringNonlinear2D(id, Nodes.at(ni), Nodes.at(nj), Material1Ds.at(matId), U);
+	Elements[id] = s;
+	SpringNonlinear2Ds[id] = s;
+	nonlinearTangentElements[id] = s;
+}
+
+void DynamicSystem::addSpringNonlinear3D(const int id, const int ni, const int nj, const int matId, RODS::LocalAxis U)
+{
+	if ( !checkDuplicateElement(id) ) return;
+
+	SpringNonlinear3D *s = new SpringNonlinear3D(id, Nodes.at(ni), Nodes.at(nj), Material1Ds.at(matId), U);
+	Elements[id] = s;
+	SpringNonlinear3Ds[id] = s;
+	nonlinearTangentElements[id] = s;
+}
+
 void DynamicSystem::addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha, const double beta, const double n)
 {
 	if ( !checkDuplicateElement(id) ) return;

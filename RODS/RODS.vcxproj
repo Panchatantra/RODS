@@ -426,6 +426,7 @@
     <ClCompile Include="element\SpringBoucWen2D.cpp" />
     <ClCompile Include="element\SpringNonlinear.cpp" />
     <ClCompile Include="element\SpringNonlinear2D.cpp" />
+    <ClCompile Include="element\SpringNonlinear3D.cpp" />
     <ClCompile Include="element\Tri2D.cpp" />
     <ClCompile Include="element\Tri3Elastic.cpp" />
     <ClCompile Include="element\Truss2D.cpp" />
@@ -500,6 +501,7 @@
     <ClInclude Include="element\SpringBoucWen2D.h" />
     <ClInclude Include="element\SpringNonlinear.h" />
     <ClInclude Include="element\SpringNonlinear2D.h" />
+    <ClInclude Include="element\SpringNonlinear3D.h" />
     <ClInclude Include="element\Tri2D.h" />
     <ClInclude Include="element\Tri3Elastic.h" />
     <ClInclude Include="element\Truss2D.h" />

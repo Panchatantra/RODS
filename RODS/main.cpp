@@ -15,59 +15,58 @@
 
 using namespace std;
 
-void example_sdof()
-{
-	double m = 800.0;
-	double k = m*400.0;
-	double zeta = 0.02;
-	double c = 2.0*zeta*sqrt(m*k);
-
-	DynamicSystem *ds = new DynamicSystem(0.02);
-
-	ds->setRayleighDamping(2.0*PI/0.3142, 2.0*PI/0.1);
-	//ds->setNumModesInherentDamping(1);
-
-	ds->addDOF(0, m, FIXED);
-	ds->addDOF(1, m);
-
-	ds->addSpring(0, 0, 1, k);
-	ds->addDashpot(1, 0, 1, c);
-
-	ds->assembleMatrix();
-
-	ds->solveEigen();
-	ds->P.print("Natural Periods:");
-
-	//ds->solveStochasticSeismicResponse();
-	//ds->dsp.print("StochasticSeismicResponse:");
-	//cout << "AnalyticalSolution: " << sqrt(PI / 4 / ds->omg(0) / zeta) / ds->omg(0) << endl;
-
-	double dt = 0.01;
-	int nsteps = 1000;
-	vec t = linspace(0.0, dt*(nsteps - 1), nsteps);
-	double Omg = 1 * ds->omg(0);
-	vec ag = arma::sin(Omg*t);
-	ds->addWave(1, dt, ag);
-
-	char eq[] = "data/EQ-S-1.txt";
-	ds->addWave(2, 0.005, eq);
-
-	int nrd = 2;
-	int *dofIds = new int[nrd] { 0, 1 };
-	char dispOutput[] = "data/disp0.dat";
-	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
-
-	int nre = 2;
-	int *eleIds = new int[nre] { 0, 1 };
-	char eleOutput[] = "data/force0.dat";
-	ds->addElementRecorder(0, eleIds, nre, RODS::Response::FORCE, eleOutput);
-
-	int ts = 2;
-	ds->setDynamicSolver(RODS::DynamicSolver::Newmark);
-	ds->activeGroundMotion(RODS::Direction::X, ts, 4000.0);
-	ds->solveSeismicResponse(1);
-	//system("python post.py");
-}
+//void example_sdof()
+//{
+//	double m = 800.0;
+//	double k = m*400.0;
+//	double zeta = 0.02;
+//	double c = 2.0*zeta*sqrt(m*k);
+//
+//	DynamicSystem *ds = new DynamicSystem(0.02);
+//
+//	ds->setRayleighDamping(2.0*PI/0.3142, 2.0*PI/0.1);
+//	//ds->setNumModesInherentDamping(1);
+//
+//	ds->addDOF(0, m, FIXED);
+//	ds->addDOF(1, m);
+//
+//	ds->addSpring(0, 0, 1, k);
+//	ds->addDashpot(1, 0, 1, c);
+//
+//	ds->assembleMatrix();
+//
+//	ds->solveEigen();
+//	ds->P.print("Natural Periods:");
+//
+//	//ds->solveStochasticSeismicResponse();
+//	//ds->dsp.print("StochasticSeismicResponse:");
+//	//cout << "AnalyticalSolution: " << sqrt(PI / 4 / ds->omg(0) / zeta) / ds->omg(0) << endl;
+//
+//	double dt = 0.01;
+//	int nsteps = 1000;
+//	vec t = linspace(0.0, dt*(nsteps - 1), nsteps);
+//	double Omg = 1 * ds->omg(0);
+//	vec ag = arma::sin(Omg*t);
+//	ds->addWave(1, dt, ag);
+//
+//	char eq[] = "data/EQ-S-1.txt";
+//	ds->addWave(2, 0.005, eq);
+//
+//	int nrd = 2;
+//	int *dofIds = new int[nrd] { 0, 1 };
+//	char dispOutput[] = "data/disp0.dat";
+//	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
+//
+//	int nre = 2;
+//	int *eleIds = new int[nre] { 0, 1 };
+//	char eleOutput[] = "data/force0.dat";
+//	ds->addElementRecorder(0, eleIds, nre, RODS::Response::FORCE, eleOutput);
+//
+//	int ts = 2;
+//	ds->setDynamicSolver(RODS::DynamicSolver::Newmark);
+//	ds->activeGroundMotion(RODS::Direction::X, ts, 4000.0);
+//	ds->solveSeismicResponse(1);
+//}
 
 //void example_sdof_inerter_system()
 //{
@@ -409,280 +408,213 @@ void example_sdof()
 //	system(R"(gnuplot -e "set term pdf; set output 'data/mat.pdf'; plot 'data/mat.txt' using 1:2 with line")");
 //}
 //
-void example_truss()
-{
-	DynamicSystem *ds = new DynamicSystem();
+//void example_truss()
+//{
+//	DynamicSystem *ds = new DynamicSystem();
+//
+//	double mass = 0.01;
+//	double E = 206.0;
+//	double A = 2148.84937505542;
+//	double EA = E*A;
+//
+//	const int nnd = 7;
+//	const int ne = 11;
+//
+//	double nodeCoord[nnd][2]{
+//		{-4500 , 0},
+//		{-1500 , 0},
+//		{1500  , 0},
+//		{4500  , 0},
+//		{-3000 , 3000},
+//		{0     , 3000},
+//		{3000  , 3000}
+//	};
+//
+//	double x = 0, z = 0;
+//
+//	for (int i = 0; i < nnd; i++)
+//	{
+//		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
+//		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
+//
+//		x = nodeCoord[i][0];
+//		z = nodeCoord[i][1];
+//		ds->addNode(i + 1, x, z, 2 * i + 1, 2 * i + 2, -1);
+//	}
+//
+//	ds->fixNode(1);
+//	ds->fixNode(4);
+//
+//	int elementConnect[ne][2]{
+//		{1, 2},
+//		{2, 3},
+//		{3, 4},
+//		{5, 6},
+//		{6, 7},
+//		{1, 5},
+//		{2, 6},
+//		{3, 7},
+//		{2, 5},
+//		{3, 6},
+//		{4, 7}
+//	};
+//
+//	int ni = 0, nj = 0;
+//	for (int i = 0; i < ne; i++)
+//	{
+//		ni = elementConnect[i][0];
+//		nj = elementConnect[i][1];
+//		ds->addTrussElastic2D(i + 1, ni, nj, EA);
+//	}
+//
+//	ds->assembleMatrix();
+//	ds->solveEigen();
+//
+//	char gmshFile[] = "truss.msh";
+//	ds->exportGmsh(gmshFile);
+//
+//	ds->printInfo();
+//}
 
-	double mass = 0.01;
-	double E = 206.0;
-	double A = 2148.84937505542;
-	double EA = E*A;
-
-	const int nnd = 7;
-	const int ne = 11;
-
-	double nodeCoord[nnd][2]{
-		{-4500 , 0},
-		{-1500 , 0},
-		{1500  , 0},
-		{4500  , 0},
-		{-3000 , 3000},
-		{0     , 3000},
-		{3000  , 3000}
-	};
-
-	double x = 0, z = 0;
-
-	for (int i = 0; i < nnd; i++)
-	{
-		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
-		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
-
-		x = nodeCoord[i][0];
-		z = nodeCoord[i][1];
-		ds->addNode(i + 1, x, z, 2 * i + 1, 2 * i + 2, -1);
-	}
-
-	ds->fixNode(1);
-	ds->fixNode(4);
-
-	int elementConnect[ne][2]{
-		{1, 2},
-		{2, 3},
-		{3, 4},
-		{5, 6},
-		{6, 7},
-		{1, 5},
-		{2, 6},
-		{3, 7},
-		{2, 5},
-		{3, 6},
-		{4, 7}
-	};
-
-	int ni = 0, nj = 0;
-	for (int i = 0; i < ne; i++)
-	{
-		ni = elementConnect[i][0];
-		nj = elementConnect[i][1];
-		ds->addTrussElastic2D(i + 1, ni, nj, EA);
-	}
-
-	ds->assembleMatrix();
-	ds->solveEigen();
-
-	char gmshFile[] = "truss.msh";
-	ds->exportGmsh(gmshFile);
-
-	ds->printInfo();
-}
-
-void example_truss_RODS()
-{
-	double mass = 0.01;
-	double E = 206.0;
-	double A = 2148.84937505542;
-	double EA = E*A;
-
-	const int nnd = 7;
-	const int ne = 11;
-
-	double nodeCoord[nnd][2]{
-		{-4500 , 0},
-	{-1500 , 0},
-	{1500  , 0},
-	{4500  , 0},
-	{-3000 , 3000},
-	{0     , 3000},
-	{3000  , 3000}
-	};
-
-	double x = 0, z = 0;
-
-	for (int i = 0; i < nnd; i++)
-	{
-		add_dof(2 * i + 1, (int)RODS::Direction::X, mass);
-		add_dof(2 * i + 2, (int)RODS::Direction::Z, mass);
-
-		x = nodeCoord[i][0];
-		z = nodeCoord[i][1];
-		add_node_2d(i + 1, x, z, 2 * i + 1, 2 * i + 2, -1);
-	}
-
-	fix_node(1);
-	fix_node(4);
-
-	int elementConnect[ne][2]{
-		{1, 2},
-	{2, 3},
-	{3, 4},
-	{5, 6},
-	{6, 7},
-	{1, 5},
-	{2, 6},
-	{3, 7},
-	{2, 5},
-	{3, 6},
-	{4, 7}
-	};
-
-	int ni = 0, nj = 0;
-	for (int i = 0; i < ne; i++)
-	{
-		ni = elementConnect[i][0];
-		nj = elementConnect[i][1];
-		add_truss_elastic_2d(i + 1, ni, nj, EA);
-	}
-
-	assemble_matrix();
-	solve_eigen();
-
-	char gmshFile[] = "truss.msh";
-	export_gmsh(gmshFile);
-
-	print_info();
-}
-
-
-void example_frame()
-{
-	DynamicSystem *ds = new DynamicSystem(0.05);
-
-	double mass = 0.005;
-	double E = 32.5;
-	double A_b = 80000.0, A_c = 160000.0;
-	double I_b = 1066666666.66667, I_c = 2133333333.33333;
-	double EA_b = E * A_b, EA_c = E * A_c;
-	double EI_b = E * I_b, EI_c = E * I_c;
-
-	int nnd = 12;
-	int ne = 15;
-
-	double nodeCoord[12][2]{
-	{-6000, 0},
-	{-6000, 3000},
-	{-6000, 6000},
-	{-6000, 9000},
-	{0    , 0},
-	{0    , 3000},
-	{0    , 6000},
-	{0    , 9000},
-	{6000 , 0},
-	{6000 , 3000},
-	{6000 , 6000},
-	{6000 , 9000} };
-
-	double x = 0, z = 0;
-	for (int i = 0; i < nnd; i++)
-	{
-		ds->addDOF(3 * i + 1, RODS::Direction::X, mass);
-		ds->addDOF(3 * i + 2, RODS::Direction::Z, mass);
-		ds->addDOF(3 * i + 3, RODS::Direction::RY, mass);
-
-		x = nodeCoord[i][0];
-		z = nodeCoord[i][1];
-		ds->addNode(i + 1, x, z, 3 * i + 1, 3 * i + 2, 3 * i + 3);
-	}
-
-	ds->fixNode(1);
-	ds->fixNode(5);
-	ds->fixNode(9);
-
-	int elementConnect[15][3]{
-	{1, 2, 1},
-	{2, 3, 1},
-	{3, 4, 1},
-	{5, 6, 1},
-	{6, 7, 1},
-	{7, 8, 1},
-	{9, 10, 1},
-	{10, 11, 1},
-	{11, 12, 1},
-	{2, 6, 2},
-	{3, 7, 2},
-	{4, 8, 2},
-	{6, 10, 2},
-	{7, 11, 2},
-	{8, 12, 2} };
-
-	int ni = 0, nj = 0, st = 0;
-	for (int i = 0; i < ne; i++)
-	{
-		ni = elementConnect[i][0];
-		nj = elementConnect[i][1];
-		st = elementConnect[i][2];
-		if (st == 1)
-		{
-			ds->addFrameElastic2D(i + 1, ni, nj, EA_c, EI_c);
-		}
-		else
-		{
-			ds->addFrameElastic2D(i + 1, ni, nj, EA_b, EI_b);
-		}
-	}
-
-	double c = 1.0;
-	
-	ds->addDashpot2D(101, 6, 9, c);
-	ds->addDashpot2D(102, 6, 11, c);
-	ds->addDashpot2D(103, 8, 11, c);
-
-	c = 5.0;
-	double k = 100.0;
-	double alpha = 0.15;
-	//ds->addDashpotExp2D(101, 6, 9, c, alpha);
-	//ds->addDashpotExp2D(102, 6, 11, c, alpha);
-	//ds->addDashpotExp2D(103, 8, 11, c, alpha);
-
-	//ds->addDashpotMaxwell2D(101, 6, 9, k, c, alpha);
-	//ds->addDashpotMaxwell2D(102, 6, 11, k, c, alpha);
-	//ds->addDashpotMaxwell2D(103, 8, 11, k, c, alpha);
-
-	//double k0 = 16.0, uy = 0.5, alfa = 0.02;
-	//ds->addSpringBoucWen(101, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(9)->dofX->id, k0, uy, alfa);
-	//ds->addSpringBoucWen(102, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(11)->dofX->id, k0, uy, alfa);
-	//ds->addSpringBoucWen(103, ds->Nodes.at(8)->dofX->id, ds->Nodes.at(11)->dofX->id, k0, uy, alfa);
-
-	//ds->addSpringBoucWen2D(101, 6, 9, k0, uy, alfa);
-	//ds->addSpringBoucWen2D(102, 6, 11, k0, uy, alfa);
-	//ds->addSpringBoucWen2D(103, 8, 11, k0, uy, alfa);
-
-	ds->setRayleighDamping(2.0*PI / 0.36, 2.0*PI / 0.1);
-
-	ds->assembleMatrix();
-	ds->solveEigen();
-
-	ds->printInfo();
-
-	char gmshFile[] = "data/frame.msh";
-	ds->setResponseGmsh(gmshFile, 1);
-	ds->exportGmsh(gmshFile);
-
-	int nrd = 1;
-	int *dofIds = new int[nrd] {
-		ds->Nodes.at(4)->dofX->id
-	};
-	char dispOutput[] = "data/disp_frame_4d.dat";
-	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
-
-	int nre = 1;
-	int *eleIds = new int[nre] { 102 };
-	char eleOutput[] = "data/damper.dat";
-	ds->addElementRecorder(0, eleIds, nre, RODS::Response::ALL, eleOutput);
-
-	int eqId = 1;
-	double dt = 0.005;
-	char eqFile[] = "data/EQ-S-1.txt";
-	ds->addWave(eqId, dt, eqFile);
-
-	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace);
-	ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
-	ds->solveSeismicResponse(1);
-
-	//ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
-	//ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
-	//ds->solveSeismicResponse(30);
-}
+//void example_frame()
+//{
+//	DynamicSystem *ds = new DynamicSystem(0.05);
+//
+//	double mass = 0.005;
+//	double E = 32.5;
+//	double A_b = 80000.0, A_c = 160000.0;
+//	double I_b = 1066666666.66667, I_c = 2133333333.33333;
+//	double EA_b = E * A_b, EA_c = E * A_c;
+//	double EI_b = E * I_b, EI_c = E * I_c;
+//
+//	int nnd = 12;
+//	int ne = 15;
+//
+//	double nodeCoord[12][2]{
+//	{-6000, 0},
+//	{-6000, 3000},
+//	{-6000, 6000},
+//	{-6000, 9000},
+//	{0    , 0},
+//	{0    , 3000},
+//	{0    , 6000},
+//	{0    , 9000},
+//	{6000 , 0},
+//	{6000 , 3000},
+//	{6000 , 6000},
+//	{6000 , 9000} };
+//
+//	double x = 0, z = 0;
+//	for (int i = 0; i < nnd; i++)
+//	{
+//		ds->addDOF(3 * i + 1, RODS::Direction::X, mass);
+//		ds->addDOF(3 * i + 2, RODS::Direction::Z, mass);
+//		ds->addDOF(3 * i + 3, RODS::Direction::RY, mass);
+//
+//		x = nodeCoord[i][0];
+//		z = nodeCoord[i][1];
+//		ds->addNode(i + 1, x, z, 3 * i + 1, 3 * i + 2, 3 * i + 3);
+//	}
+//
+//	ds->fixNode(1);
+//	ds->fixNode(5);
+//	ds->fixNode(9);
+//
+//	int elementConnect[15][3]{
+//	{1, 2, 1},
+//	{2, 3, 1},
+//	{3, 4, 1},
+//	{5, 6, 1},
+//	{6, 7, 1},
+//	{7, 8, 1},
+//	{9, 10, 1},
+//	{10, 11, 1},
+//	{11, 12, 1},
+//	{2, 6, 2},
+//	{3, 7, 2},
+//	{4, 8, 2},
+//	{6, 10, 2},
+//	{7, 11, 2},
+//	{8, 12, 2} };
+//
+//	int ni = 0, nj = 0, st = 0;
+//	for (int i = 0; i < ne; i++)
+//	{
+//		ni = elementConnect[i][0];
+//		nj = elementConnect[i][1];
+//		st = elementConnect[i][2];
+//		if (st == 1)
+//		{
+//			ds->addFrameElastic2D(i + 1, ni, nj, EA_c, EI_c);
+//		}
+//		else
+//		{
+//			ds->addFrameElastic2D(i + 1, ni, nj, EA_b, EI_b);
+//		}
+//	}
+//
+//	double c = 1.0;
+//	
+//	ds->addDashpot2D(101, 6, 9, c);
+//	ds->addDashpot2D(102, 6, 11, c);
+//	ds->addDashpot2D(103, 8, 11, c);
+//
+//	c = 5.0;
+//	double k = 100.0;
+//	double alpha = 0.15;
+//	//ds->addDashpotExp2D(101, 6, 9, c, alpha);
+//	//ds->addDashpotExp2D(102, 6, 11, c, alpha);
+//	//ds->addDashpotExp2D(103, 8, 11, c, alpha);
+//
+//	//ds->addDashpotMaxwell2D(101, 6, 9, k, c, alpha);
+//	//ds->addDashpotMaxwell2D(102, 6, 11, k, c, alpha);
+//	//ds->addDashpotMaxwell2D(103, 8, 11, k, c, alpha);
+//
+//	//double k0 = 16.0, uy = 0.5, alfa = 0.02;
+//	//ds->addSpringBoucWen(101, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(9)->dofX->id, k0, uy, alfa);
+//	//ds->addSpringBoucWen(102, ds->Nodes.at(6)->dofX->id, ds->Nodes.at(11)->dofX->id, k0, uy, alfa);
+//	//ds->addSpringBoucWen(103, ds->Nodes.at(8)->dofX->id, ds->Nodes.at(11)->dofX->id, k0, uy, alfa);
+//
+//	//ds->addSpringBoucWen2D(101, 6, 9, k0, uy, alfa);
+//	//ds->addSpringBoucWen2D(102, 6, 11, k0, uy, alfa);
+//	//ds->addSpringBoucWen2D(103, 8, 11, k0, uy, alfa);
+//
+//	ds->setRayleighDamping(2.0*PI / 0.36, 2.0*PI / 0.1);
+//
+//	ds->assembleMatrix();
+//	ds->solveEigen();
+//
+//	ds->printInfo();
+//
+//	char gmshFile[] = "data/frame.msh";
+//	ds->setResponseGmsh(gmshFile, 1);
+//	ds->exportGmsh(gmshFile);
+//
+//	int nrd = 1;
+//	int *dofIds = new int[nrd] {
+//		ds->Nodes.at(4)->dofX->id
+//	};
+//	char dispOutput[] = "data/disp_frame_4d.dat";
+//	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
+//
+//	int nre = 1;
+//	int *eleIds = new int[nre] { 102 };
+//	char eleOutput[] = "data/damper.dat";
+//	ds->addElementRecorder(0, eleIds, nre, RODS::Response::ALL, eleOutput);
+//
+//	int eqId = 1;
+//	double dt = 0.005;
+//	char eqFile[] = "data/EQ-S-1.txt";
+//	ds->addWave(eqId, dt, eqFile);
+//
+//	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace);
+//	ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
+//	ds->solveSeismicResponse(1);
+//
+//	//ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
+//	//ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
+//	//ds->solveSeismicResponse(30);
+//}
 //
 //void example_frame3D()
 //{
@@ -968,100 +900,227 @@ void example_frame()
 //	//ds->exportGmsh(gmshFile);
 //}
 //
-//void example_wall()
-//{
-//	DynamicSystem *ds = new DynamicSystem(0.05);
-//
-//	double mass = 0.05;
-//	double E = 32.5;
-//	double nu = 0.2;
-//	double t = 250.0;
-//
-//	int nnd = 28;
-//	int ne = 18;
-//
-//	double crds[28][2] {{-1500, 0},
-//	{-500, 0},
-//	{-500, 1000},
-//	{-1500, 1000},
-//	{-500, 2000},
-//	{-1500, 2000},
-//	{-500, 3000},
-//	{-1500, 3000},
-//	{-500, 4000},
-//	{-1500, 4000},
-//	{-500, 5000},
-//	{-1500, 5000},
-//	{-500, 6000},
-//	{-1500, 6000},
-//	{500, 0},
-//	{500, 1000},
-//	{500, 2000},
-//	{500, 3000},
-//	{500, 4000},
-//	{500, 5000},
-//	{500, 6000},
-//	{1500, 0},
-//	{1500, 1000},
-//	{1500, 2000},
-//	{1500, 3000},
-//	{1500, 4000},
-//	{1500, 5000},
-//	{1500, 6000}};
-//
-//	double x = 0.0, z = 0.0;
-//	for (auto i = 0; i < nnd; i++)
-//	{
-//		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
-//		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
-//
-//		x = crds[i][0];
-//		z = crds[i][1];
-//		ds->addNode(i + 1, x, z, 2*i+1, 2*i+2, -1);
-//	}
-//
-//	ds->fixNode(1 );
-//	ds->fixNode(2 );
-//	ds->fixNode(15);
-//	ds->fixNode(22);
-//
-//	int cn[18][4] {{1, 2, 3, 4},
-//	{4, 3, 5, 6},
-//	{6, 5, 7, 8},
-//	{8, 7, 9, 10},
-//	{10, 9, 11, 12},
-//	{12, 11, 13, 14},
-//	{2, 15, 16, 3},
-//	{3, 16, 17, 5},
-//	{5, 17, 18, 7},
-//	{7, 18, 19, 9},
-//	{9, 19, 20, 11},
-//	{11, 20, 21, 13},
-//	{15, 22, 23, 16},
-//	{16, 23, 24, 17},
-//	{17, 24, 25, 18},
-//	{18, 25, 26, 19},
-//	{19, 26, 27, 20},
-//	{20, 27, 28, 21}};
-//
-//	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
-//	for (int i = 0; i < ne; i++)
-//	{
-//		nodeI = cn[i][0];
-//		nodeJ = cn[i][1];
-//		nodeP = cn[i][2];
-//		nodeQ = cn[i][3];
-//		ds->addQuad4Elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
-//	}
-//
-//	ds->assembleMatrix();
-//
-//	ds->solveEigen();
-//	ds->printInfo();
-//
-//	char gmshFile[] = "data/wall.msh";
-//	ds->exportGmsh(gmshFile);
-//}
+void example_wall()
+{
+	DynamicSystem *ds = new DynamicSystem(0.05);
+	ds->setRayleighDamping(2.0*PI/0.28, 2.0*PI/0.07);
+
+	double mass = 0.05;
+	double E = 32.5;
+	double nu = 0.2;
+	double t = 250.0;
+
+	int nnd = 28;
+	int ne = 18;
+
+	double crds[28][2] {{-1500, 0},
+						{-500, 0},
+						{-500, 1000},
+						{-1500, 1000},
+						{-500, 2000},
+						{-1500, 2000},
+						{-500, 3000},
+						{-1500, 3000},
+						{-500, 4000},
+						{-1500, 4000},
+						{-500, 5000},
+						{-1500, 5000},
+						{-500, 6000},
+						{-1500, 6000},
+						{500, 0},
+						{500, 1000},
+						{500, 2000},
+						{500, 3000},
+						{500, 4000},
+						{500, 5000},
+						{500, 6000},
+						{1500, 0},
+						{1500, 1000},
+						{1500, 2000},
+						{1500, 3000},
+						{1500, 4000},
+						{1500, 5000},
+						{1500, 6000}
+	};
+
+	double x = 0.0, z = 0.0;
+	for (auto i = 0; i < nnd; i++)
+	{
+		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
+		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
+
+		x = crds[i][0];
+		z = crds[i][1];
+		ds->addNode(i + 1, x, z, 2*i+1, 2*i+2, -1);
+	}
+
+	ds->fixNode(1 );
+	ds->fixNode(2 );
+	ds->fixNode(15);
+	ds->fixNode(22);
+
+	int cn[18][4] {{1, 2, 3, 4},
+	{4, 3, 5, 6},
+	{6, 5, 7, 8},
+	{8, 7, 9, 10},
+	{10, 9, 11, 12},
+	{12, 11, 13, 14},
+	{2, 15, 16, 3},
+	{3, 16, 17, 5},
+	{5, 17, 18, 7},
+	{7, 18, 19, 9},
+	{9, 19, 20, 11},
+	{11, 20, 21, 13},
+	{15, 22, 23, 16},
+	{16, 23, 24, 17},
+	{17, 24, 25, 18},
+	{18, 25, 26, 19},
+	{19, 26, 27, 20},
+	{20, 27, 28, 21}};
+
+	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
+	for (int i = 0; i < ne; i++)
+	{
+		nodeI = cn[i][0];
+		nodeJ = cn[i][1];
+		nodeP = cn[i][2];
+		nodeQ = cn[i][3];
+		ds->addQuad4Elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
+	}
+
+	ds->assembleMatrix();
+
+	ds->solveEigen();
+	ds->printInfo();
+
+	char gmshFile[] = "data/wall.msh";
+	ds->exportGmsh(gmshFile);
+	ds->exportModalGmsh(gmshFile, 1);
+	ds->exportModalGmsh(gmshFile, 2);
+	ds->exportModalGmsh(gmshFile, 3);
+
+	ds->setResponseGmsh(gmshFile, 10);
+
+	int eqId = 1;
+	double dt = 0.005;
+	char eqFile[] = "data/EQ-S-1.txt";
+	ds->addWave(eqId, dt, eqFile);
+
+	ds->setDynamicSolver(RODS::DynamicSolver::Newmark);
+	ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
+	ds->solveSeismicResponse(1);
+}
+
+void example_wall_RODS()
+{
+	set_damping_ratio(0.05);
+	set_rayleigh_damping(2.0*PI/0.28, 2.0*PI/0.07);
+
+	double mass = 0.05;
+	double E = 32.5;
+	double nu = 0.2;
+	double t = 250.0;
+
+	int nnd = 28;
+	int ne = 18;
+
+	double crds[28][2] {{-1500, 0},
+	{-500, 0},
+	{-500, 1000},
+	{-1500, 1000},
+	{-500, 2000},
+	{-1500, 2000},
+	{-500, 3000},
+	{-1500, 3000},
+	{-500, 4000},
+	{-1500, 4000},
+	{-500, 5000},
+	{-1500, 5000},
+	{-500, 6000},
+	{-1500, 6000},
+	{500, 0},
+	{500, 1000},
+	{500, 2000},
+	{500, 3000},
+	{500, 4000},
+	{500, 5000},
+	{500, 6000},
+	{1500, 0},
+	{1500, 1000},
+	{1500, 2000},
+	{1500, 3000},
+	{1500, 4000},
+	{1500, 5000},
+	{1500, 6000}
+	};
+
+	double x = 0.0, z = 0.0;
+	for (auto i = 0; i < nnd; i++)
+	{
+		add_dof(2 * i + 1, (int)RODS::Direction::X, mass);
+		add_dof(2 * i + 2, (int)RODS::Direction::Z, mass);
+
+		x = crds[i][0];
+		z = crds[i][1];
+		add_node_2d(i + 1, x, z, 2 * i + 1, 2 * i + 2, -1);
+	}
+
+	fix_node(1 );
+	fix_node(2 );
+	fix_node(15);
+	fix_node(22);
+
+	int cn[18][4] {{1, 2, 3, 4},
+	{4, 3, 5, 6},
+	{6, 5, 7, 8},
+	{8, 7, 9, 10},
+	{10, 9, 11, 12},
+	{12, 11, 13, 14},
+	{2, 15, 16, 3},
+	{3, 16, 17, 5},
+	{5, 17, 18, 7},
+	{7, 18, 19, 9},
+	{9, 19, 20, 11},
+	{11, 20, 21, 13},
+	{15, 22, 23, 16},
+	{16, 23, 24, 17},
+	{17, 24, 25, 18},
+	{18, 25, 26, 19},
+	{19, 26, 27, 20},
+	{20, 27, 28, 21}};
+
+	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
+	for (int i = 0; i < ne; i++)
+	{
+		nodeI = cn[i][0];
+		nodeJ = cn[i][1];
+		nodeP = cn[i][2];
+		nodeQ = cn[i][3];
+		add_quad4_elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
+	}
+
+	assemble_matrix();
+
+	solve_eigen();
+	print_info();
+
+	//char gmshFile[] = "data/wall.msh";
+	//ds->exportGmsh(gmshFile);
+	//ds->exportModalGmsh(gmshFile, 1);
+	//ds->exportModalGmsh(gmshFile, 2);
+	//ds->exportModalGmsh(gmshFile, 3);
+
+	//ds->setResponseGmsh(gmshFile, 10);
+
+	//int eqId = 1;
+	//double dt = 0.005;
+	//char eqFile[] = "data/EQ-S-1.txt";
+	//ds->addWave(eqId, dt, eqFile);
+
+	//ds->setDynamicSolver(RODS::DynamicSolver::Newmark);
+	//ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
+	//ds->solveSeismicResponse(1);
+}
 //
 //void example_plane_stress_tri3elastic()
 //{
@@ -1558,339 +1617,339 @@ void example_plate4elastic()
 	// ds->exportResponseGmsh(gmshFile);
 }
 
-void example_shell_rectshell4elastic()
-{
-	DynamicSystem *ds = new DynamicSystem(0.05);
-
-	double mass = 0.0;
-	double E = 32.5;
-	double nu = 0.2;
-	double t = 200.0;
-
-	const int nnd = 132;
-	const int ne = 120;
-
-	double crds[nnd][4] {
-		{  1,    0.,    0., 9000.},
-		{  2,    0., 3000., 9000.},
-		{  3,    0., 3000.,    0.},
-		{  4,    0.,    0.,    0.},
-		{  5, 3000., 3000., 9000.},
-		{  6, 3000., 3000.,    0.},
-		{  7, 3000.,    0., 9000.},
-		{  8, 3000.,    0.,    0.},
-		{  9,    0., 1000., 9000.},
-		{ 10,    0., 2000., 9000.},
-		{ 11,    0., 3000., 8100.},
-		{ 12,    0., 3000., 7200.},
-		{ 13,    0., 3000., 6300.},
-		{ 14,    0., 3000., 5400.},
-		{ 15,    0., 3000., 4500.},
-		{ 16,    0., 3000., 3600.},
-		{ 17,    0., 3000., 2700.},
-		{ 18,    0., 3000., 1800.},
-		{ 19,    0., 3000.,  900.},
-		{ 20,    0., 2000.,    0.},
-		{ 21,    0., 1000.,    0.},
-		{ 22,    0.,    0.,  900.},
-		{ 23,    0.,    0., 1800.},
-		{ 24,    0.,    0., 2700.},
-		{ 25,    0.,    0., 3600.},
-		{ 26,    0.,    0., 4500.},
-		{ 27,    0.,    0., 5400.},
-		{ 28,    0.,    0., 6300.},
-		{ 29,    0.,    0., 7200.},
-		{ 30,    0.,    0., 8100.},
-		{ 31, 1000., 3000., 9000.},
-		{ 32, 2000., 3000., 9000.},
-		{ 33, 3000., 3000., 8100.},
-		{ 34, 3000., 3000., 7200.},
-		{ 35, 3000., 3000., 6300.},
-		{ 36, 3000., 3000., 5400.},
-		{ 37, 3000., 3000., 4500.},
-		{ 38, 3000., 3000., 3600.},
-		{ 39, 3000., 3000., 2700.},
-		{ 40, 3000., 3000., 1800.},
-		{ 41, 3000., 3000.,  900.},
-		{ 42, 2000., 3000.,    0.},
-		{ 43, 1000., 3000.,    0.},
-		{ 44, 3000., 2000., 9000.},
-		{ 45, 3000., 1000., 9000.},
-		{ 46, 3000.,    0., 8100.},
-		{ 47, 3000.,    0., 7200.},
-		{ 48, 3000.,    0., 6300.},
-		{ 49, 3000.,    0., 5400.},
-		{ 50, 3000.,    0., 4500.},
-		{ 51, 3000.,    0., 3600.},
-		{ 52, 3000.,    0., 2700.},
-		{ 53, 3000.,    0., 1800.},
-		{ 54, 3000.,    0.,  900.},
-		{ 55, 3000., 1000.,    0.},
-		{ 56, 3000., 2000.,    0.},
-		{ 57, 2000.,    0., 9000.},
-		{ 58, 1000.,    0., 9000.},
-		{ 59, 1000.,    0.,    0.},
-		{ 60, 2000.,    0.,    0.},
-		{ 61,    0., 1000., 8100.},
-		{ 62,    0., 2000., 8100.},
-		{ 63,    0., 1000., 7200.},
-		{ 64,    0., 2000., 7200.},
-		{ 65,    0., 1000., 6300.},
-		{ 66,    0., 2000., 6300.},
-		{ 67,    0., 1000., 5400.},
-		{ 68,    0., 2000., 5400.},
-		{ 69,    0., 1000., 4500.},
-		{ 70,    0., 2000., 4500.},
-		{ 71,    0., 1000., 3600.},
-		{ 72,    0., 2000., 3600.},
-		{ 73,    0., 1000., 2700.},
-		{ 74,    0., 2000., 2700.},
-		{ 75,    0., 1000., 1800.},
-		{ 76,    0., 2000., 1800.},
-		{ 77,    0., 1000.,  900.},
-		{ 78,    0., 2000.,  900.},
-		{ 79, 1000., 3000., 8100.},
-		{ 80, 2000., 3000., 8100.},
-		{ 81, 1000., 3000., 7200.},
-		{ 82, 2000., 3000., 7200.},
-		{ 83, 1000., 3000., 6300.},
-		{ 84, 2000., 3000., 6300.},
-		{ 85, 1000., 3000., 5400.},
-		{ 86, 2000., 3000., 5400.},
-		{ 87, 1000., 3000., 4500.},
-		{ 88, 2000., 3000., 4500.},
-		{ 89, 1000., 3000., 3600.},
-		{ 90, 2000., 3000., 3600.},
-		{ 91, 1000., 3000., 2700.},
-		{ 92, 2000., 3000., 2700.},
-		{ 93, 1000., 3000., 1800.},
-		{ 94, 2000., 3000., 1800.},
-		{ 95, 1000., 3000.,  900.},
-		{ 96, 2000., 3000.,  900.},
-		{ 97, 3000., 2000., 8100.},
-		{ 98, 3000., 1000., 8100.},
-		{ 99, 3000., 2000., 7200.},
-		{100, 3000., 1000., 7200.},
-		{101, 3000., 2000., 6300.},
-		{102, 3000., 1000., 6300.},
-		{103, 3000., 2000., 5400.},
-		{104, 3000., 1000., 5400.},
-		{105, 3000., 2000., 4500.},
-		{106, 3000., 1000., 4500.},
-		{107, 3000., 2000., 3600.},
-		{108, 3000., 1000., 3600.},
-		{109, 3000., 2000., 2700.},
-		{110, 3000., 1000., 2700.},
-		{111, 3000., 2000., 1800.},
-		{112, 3000., 1000., 1800.},
-		{113, 3000., 2000.,  900.},
-		{114, 3000., 1000.,  900.},
-		{115, 2000.,    0., 8100.},
-		{116, 1000.,    0., 8100.},
-		{117, 2000.,    0., 7200.},
-		{118, 1000.,    0., 7200.},
-		{119, 2000.,    0., 6300.},
-		{120, 1000.,    0., 6300.},
-		{121, 2000.,    0., 5400.},
-		{122, 1000.,    0., 5400.},
-		{123, 2000.,    0., 4500.},
-		{124, 1000.,    0., 4500.},
-		{125, 2000.,    0., 3600.},
-		{126, 1000.,    0., 3600.},
-		{127, 2000.,    0., 2700.},
-		{128, 1000.,    0., 2700.},
-		{129, 2000.,    0., 1800.},
-		{130, 1000.,    0., 1800.},
-		{131, 2000.,    0.,  900.},
-		{132, 1000.,    0.,  900.},
-	};
-
-	double x = 0.0, y = 0.0, z = 0.0;
-	for (auto i = 0; i < nnd; i++)
-	{
-		ds->addDOF(6*i + 1, RODS::Direction::X, mass);
-		ds->addDOF(6*i + 2, RODS::Direction::Y, mass);
-		ds->addDOF(6*i + 3, RODS::Direction::Z, mass);
-		ds->addDOF(6*i + 4, RODS::Direction::RX, mass);
-		ds->addDOF(6*i + 5, RODS::Direction::RY, mass);
-		ds->addDOF(6*i + 6, RODS::Direction::RZ, mass);
-
-		x = crds[i][1];
-		y = crds[i][2];
-		z = crds[i][3];
-		ds->addNode(i + 1, x, y, z, 6*i+1, 6*i+2, 6*i+3, 6*i+4, 6*i+5, 6*i+6);
-	}
-
-	int fn[12] {3,  4,  6,  8, 20, 21, 42, 43, 55, 56, 59, 60};
-
-	for (auto i : fn)
-	{
-		ds->fixNode(i);
-	}
-
-	int cn[ne][5] {
-		{ 1,  1,  9, 61, 30},
-		{ 2,  9, 10, 62, 61},
-		{ 3, 10,  2, 11, 62},
-		{ 4, 30, 61, 63, 29},
-		{ 5, 61, 62, 64, 63},
-		{ 6, 62, 11, 12, 64},
-		{ 7, 29, 63, 65, 28},
-		{ 8, 63, 64, 66, 65},
-		{ 9, 64, 12, 13, 66},
-		{10, 28, 65, 67, 27},
-		{11, 65, 66, 68, 67},
-		{12, 66, 13, 14, 68},
-		{13, 27, 67, 69, 26},
-		{14, 67, 68, 70, 69},
-		{15, 68, 14, 15, 70},
-		{16, 26, 69, 71, 25},
-		{17, 69, 70, 72, 71},
-		{18, 70, 15, 16, 72},
-		{19, 25, 71, 73, 24},
-		{20, 71, 72, 74, 73},
-		{21, 72, 16, 17, 74},
-		{22, 24, 73, 75, 23},
-		{23, 73, 74, 76, 75},
-		{24, 74, 17, 18, 76},
-		{25, 23, 75, 77, 22},
-		{26, 75, 76, 78, 77},
-		{27, 76, 18, 19, 78},
-		{28, 22, 77, 21,  4},
-		{29, 77, 78, 20, 21},
-		{30, 78, 19,  3, 20},
-		{31,  2, 31, 79, 11},
-		{32, 31, 32, 80, 79},
-		{33, 32,  5, 33, 80},
-		{34, 11, 79, 81, 12},
-		{35, 79, 80, 82, 81},
-		{36, 80, 33, 34, 82},
-		{37, 12, 81, 83, 13},
-		{38, 81, 82, 84, 83},
-		{39, 82, 34, 35, 84},
-		{40, 13, 83, 85, 14},
-		{41, 83, 84, 86, 85},
-		{42, 84, 35, 36, 86},
-		{43, 14, 85, 87, 15},
-		{44, 85, 86, 88, 87},
-		{45, 86, 36, 37, 88},
-		{46, 15, 87, 89, 16},
-		{47, 87, 88, 90, 89},
-		{48, 88, 37, 38, 90},
-		{49, 16, 89, 91, 17},
-		{50, 89, 90, 92, 91},
-		{51, 90, 38, 39, 92},
-		{52, 17, 91, 93, 18},
-		{53, 91, 92, 94, 93},
-		{54, 92, 39, 40, 94},
-		{55, 18, 93, 95, 19},
-		{56, 93, 94, 96, 95},
-		{57, 94, 40, 41, 96},
-		{58, 19, 95, 43,  3},
-		{59, 95, 96, 42, 43},
-		{60, 96, 41,  6, 42},
-		{61,   5,  44,  97,  33},
-		{62,  44,  45,  98,  97},
-		{63,  45,   7,  46,  98},
-		{64,  33,  97,  99,  34},
-		{65,  97,  98, 100,  99},
-		{66,  98,  46,  47, 100},
-		{67,  34,  99, 101,  35},
-		{68,  99, 100, 102, 101},
-		{69, 100,  47,  48, 102},
-		{70,  35, 101, 103,  36},
-		{71, 101, 102, 104, 103},
-		{72, 102,  48,  49, 104},
-		{73,  36, 103, 105,  37},
-		{74, 103, 104, 106, 105},
-		{75, 104,  49,  50, 106},
-		{76,  37, 105, 107,  38},
-		{77, 105, 106, 108, 107},
-		{78, 106,  50,  51, 108},
-		{79,  38, 107, 109,  39},
-		{80, 107, 108, 110, 109},
-		{81, 108,  51,  52, 110},
-		{82,  39, 109, 111,  40},
-		{83, 109, 110, 112, 111},
-		{84, 110,  52,  53, 112},
-		{85,  40, 111, 113,  41},
-		{86, 111, 112, 114, 113},
-		{87, 112,  53,  54, 114},
-		{88,  41, 113,  56,   6},
-		{89, 113, 114,  55,  56},
-		{90, 114,  54,   8,  55},
-		{ 91,   7,  57, 115,  46},
-		{ 92,  57,  58, 116, 115},
-		{ 93,  58,   1,  30, 116},
-		{ 94,  46, 115, 117,  47},
-		{ 95, 115, 116, 118, 117},
-		{ 96, 116,  30,  29, 118},
-		{ 97,  47, 117, 119,  48},
-		{ 98, 117, 118, 120, 119},
-		{ 99, 118,  29,  28, 120},
-		{100,  48, 119, 121,  49},
-		{101, 119, 120, 122, 121},
-		{102, 120,  28,  27, 122},
-		{103,  49, 121, 123,  50},
-		{104, 121, 122, 124, 123},
-		{105, 122,  27,  26, 124},
-		{106,  50, 123, 125,  51},
-		{107, 123, 124, 126, 125},
-		{108, 124,  26,  25, 126},
-		{109,  51, 125, 127,  52},
-		{110, 125, 126, 128, 127},
-		{111, 126,  25,  24, 128},
-		{112,  52, 127, 129,  53},
-		{113, 127, 128, 130, 129},
-		{114, 128,  24,  23, 130},
-		{115,  53, 129, 131,  54},
-		{116, 129, 130, 132, 131},
-		{117, 130,  23,  22, 132},
-		{118,  54, 131,  60,   8},
-		{119, 131, 132,  59,  60},
-		{120, 132,  22,   4,  59},
-	};
-
-	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
-	for (int i = 0; i < ne; i++)
-	{
-		nodeI = cn[i][1];
-		nodeJ = cn[i][2];
-		nodeP = cn[i][3];
-		nodeQ = cn[i][4];
-		ds->addRectShell4Elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
-	}
-
-	int loadId = 1;
-	int nP = 3;
-	double time[3] {0,1,2};
-	double p[3] {0,1,1};
-	double P = 1000.0;
-	ds->addLoad(loadId,time,p,nP,0.0,P);
-
-	int ln[4] {1, 2, 5, 7};
-
-	for (auto i : ln)
-	{
-		ds->addDofLoad(ds->Nodes.at(i)->dofY->id, loadId);
-	}
-
-	ds->assembleMatrix();
-	ds->printInfo();
-
-	ds->solveLinearStaticResponse();
-	
-	ds->Nodes.at(1)->dofX->printResponse();
-	ds->Nodes.at(1)->dofY->printResponse();
-	ds->Nodes.at(1)->dofZ->printResponse();
-	ds->Nodes.at(1)->dofRX->printResponse();
-	ds->Nodes.at(1)->dofRY->printResponse();
-	ds->Nodes.at(1)->dofRZ->printResponse();
-
-	 char gmshFile[] = "data/shell_rectshell4elastic.msh";
-	 ds->exportGmsh(gmshFile);
-	 ds->exportResponseGmsh(gmshFile);
-}
+//void example_shell_rectshell4elastic()
+//{
+//	DynamicSystem *ds = new DynamicSystem(0.05);
+//
+//	double mass = 0.0;
+//	double E = 32.5;
+//	double nu = 0.2;
+//	double t = 200.0;
+//
+//	const int nnd = 132;
+//	const int ne = 120;
+//
+//	double crds[nnd][4] {
+//		{  1,    0.,    0., 9000.},
+//		{  2,    0., 3000., 9000.},
+//		{  3,    0., 3000.,    0.},
+//		{  4,    0.,    0.,    0.},
+//		{  5, 3000., 3000., 9000.},
+//		{  6, 3000., 3000.,    0.},
+//		{  7, 3000.,    0., 9000.},
+//		{  8, 3000.,    0.,    0.},
+//		{  9,    0., 1000., 9000.},
+//		{ 10,    0., 2000., 9000.},
+//		{ 11,    0., 3000., 8100.},
+//		{ 12,    0., 3000., 7200.},
+//		{ 13,    0., 3000., 6300.},
+//		{ 14,    0., 3000., 5400.},
+//		{ 15,    0., 3000., 4500.},
+//		{ 16,    0., 3000., 3600.},
+//		{ 17,    0., 3000., 2700.},
+//		{ 18,    0., 3000., 1800.},
+//		{ 19,    0., 3000.,  900.},
+//		{ 20,    0., 2000.,    0.},
+//		{ 21,    0., 1000.,    0.},
+//		{ 22,    0.,    0.,  900.},
+//		{ 23,    0.,    0., 1800.},
+//		{ 24,    0.,    0., 2700.},
+//		{ 25,    0.,    0., 3600.},
+//		{ 26,    0.,    0., 4500.},
+//		{ 27,    0.,    0., 5400.},
+//		{ 28,    0.,    0., 6300.},
+//		{ 29,    0.,    0., 7200.},
+//		{ 30,    0.,    0., 8100.},
+//		{ 31, 1000., 3000., 9000.},
+//		{ 32, 2000., 3000., 9000.},
+//		{ 33, 3000., 3000., 8100.},
+//		{ 34, 3000., 3000., 7200.},
+//		{ 35, 3000., 3000., 6300.},
+//		{ 36, 3000., 3000., 5400.},
+//		{ 37, 3000., 3000., 4500.},
+//		{ 38, 3000., 3000., 3600.},
+//		{ 39, 3000., 3000., 2700.},
+//		{ 40, 3000., 3000., 1800.},
+//		{ 41, 3000., 3000.,  900.},
+//		{ 42, 2000., 3000.,    0.},
+//		{ 43, 1000., 3000.,    0.},
+//		{ 44, 3000., 2000., 9000.},
+//		{ 45, 3000., 1000., 9000.},
+//		{ 46, 3000.,    0., 8100.},
+//		{ 47, 3000.,    0., 7200.},
+//		{ 48, 3000.,    0., 6300.},
+//		{ 49, 3000.,    0., 5400.},
+//		{ 50, 3000.,    0., 4500.},
+//		{ 51, 3000.,    0., 3600.},
+//		{ 52, 3000.,    0., 2700.},
+//		{ 53, 3000.,    0., 1800.},
+//		{ 54, 3000.,    0.,  900.},
+//		{ 55, 3000., 1000.,    0.},
+//		{ 56, 3000., 2000.,    0.},
+//		{ 57, 2000.,    0., 9000.},
+//		{ 58, 1000.,    0., 9000.},
+//		{ 59, 1000.,    0.,    0.},
+//		{ 60, 2000.,    0.,    0.},
+//		{ 61,    0., 1000., 8100.},
+//		{ 62,    0., 2000., 8100.},
+//		{ 63,    0., 1000., 7200.},
+//		{ 64,    0., 2000., 7200.},
+//		{ 65,    0., 1000., 6300.},
+//		{ 66,    0., 2000., 6300.},
+//		{ 67,    0., 1000., 5400.},
+//		{ 68,    0., 2000., 5400.},
+//		{ 69,    0., 1000., 4500.},
+//		{ 70,    0., 2000., 4500.},
+//		{ 71,    0., 1000., 3600.},
+//		{ 72,    0., 2000., 3600.},
+//		{ 73,    0., 1000., 2700.},
+//		{ 74,    0., 2000., 2700.},
+//		{ 75,    0., 1000., 1800.},
+//		{ 76,    0., 2000., 1800.},
+//		{ 77,    0., 1000.,  900.},
+//		{ 78,    0., 2000.,  900.},
+//		{ 79, 1000., 3000., 8100.},
+//		{ 80, 2000., 3000., 8100.},
+//		{ 81, 1000., 3000., 7200.},
+//		{ 82, 2000., 3000., 7200.},
+//		{ 83, 1000., 3000., 6300.},
+//		{ 84, 2000., 3000., 6300.},
+//		{ 85, 1000., 3000., 5400.},
+//		{ 86, 2000., 3000., 5400.},
+//		{ 87, 1000., 3000., 4500.},
+//		{ 88, 2000., 3000., 4500.},
+//		{ 89, 1000., 3000., 3600.},
+//		{ 90, 2000., 3000., 3600.},
+//		{ 91, 1000., 3000., 2700.},
+//		{ 92, 2000., 3000., 2700.},
+//		{ 93, 1000., 3000., 1800.},
+//		{ 94, 2000., 3000., 1800.},
+//		{ 95, 1000., 3000.,  900.},
+//		{ 96, 2000., 3000.,  900.},
+//		{ 97, 3000., 2000., 8100.},
+//		{ 98, 3000., 1000., 8100.},
+//		{ 99, 3000., 2000., 7200.},
+//		{100, 3000., 1000., 7200.},
+//		{101, 3000., 2000., 6300.},
+//		{102, 3000., 1000., 6300.},
+//		{103, 3000., 2000., 5400.},
+//		{104, 3000., 1000., 5400.},
+//		{105, 3000., 2000., 4500.},
+//		{106, 3000., 1000., 4500.},
+//		{107, 3000., 2000., 3600.},
+//		{108, 3000., 1000., 3600.},
+//		{109, 3000., 2000., 2700.},
+//		{110, 3000., 1000., 2700.},
+//		{111, 3000., 2000., 1800.},
+//		{112, 3000., 1000., 1800.},
+//		{113, 3000., 2000.,  900.},
+//		{114, 3000., 1000.,  900.},
+//		{115, 2000.,    0., 8100.},
+//		{116, 1000.,    0., 8100.},
+//		{117, 2000.,    0., 7200.},
+//		{118, 1000.,    0., 7200.},
+//		{119, 2000.,    0., 6300.},
+//		{120, 1000.,    0., 6300.},
+//		{121, 2000.,    0., 5400.},
+//		{122, 1000.,    0., 5400.},
+//		{123, 2000.,    0., 4500.},
+//		{124, 1000.,    0., 4500.},
+//		{125, 2000.,    0., 3600.},
+//		{126, 1000.,    0., 3600.},
+//		{127, 2000.,    0., 2700.},
+//		{128, 1000.,    0., 2700.},
+//		{129, 2000.,    0., 1800.},
+//		{130, 1000.,    0., 1800.},
+//		{131, 2000.,    0.,  900.},
+//		{132, 1000.,    0.,  900.},
+//	};
+//
+//	double x = 0.0, y = 0.0, z = 0.0;
+//	for (auto i = 0; i < nnd; i++)
+//	{
+//		ds->addDOF(6*i + 1, RODS::Direction::X, mass);
+//		ds->addDOF(6*i + 2, RODS::Direction::Y, mass);
+//		ds->addDOF(6*i + 3, RODS::Direction::Z, mass);
+//		ds->addDOF(6*i + 4, RODS::Direction::RX, mass);
+//		ds->addDOF(6*i + 5, RODS::Direction::RY, mass);
+//		ds->addDOF(6*i + 6, RODS::Direction::RZ, mass);
+//
+//		x = crds[i][1];
+//		y = crds[i][2];
+//		z = crds[i][3];
+//		ds->addNode(i + 1, x, y, z, 6*i+1, 6*i+2, 6*i+3, 6*i+4, 6*i+5, 6*i+6);
+//	}
+//
+//	int fn[12] {3,  4,  6,  8, 20, 21, 42, 43, 55, 56, 59, 60};
+//
+//	for (auto i : fn)
+//	{
+//		ds->fixNode(i);
+//	}
+//
+//	int cn[ne][5] {
+//		{ 1,  1,  9, 61, 30},
+//		{ 2,  9, 10, 62, 61},
+//		{ 3, 10,  2, 11, 62},
+//		{ 4, 30, 61, 63, 29},
+//		{ 5, 61, 62, 64, 63},
+//		{ 6, 62, 11, 12, 64},
+//		{ 7, 29, 63, 65, 28},
+//		{ 8, 63, 64, 66, 65},
+//		{ 9, 64, 12, 13, 66},
+//		{10, 28, 65, 67, 27},
+//		{11, 65, 66, 68, 67},
+//		{12, 66, 13, 14, 68},
+//		{13, 27, 67, 69, 26},
+//		{14, 67, 68, 70, 69},
+//		{15, 68, 14, 15, 70},
+//		{16, 26, 69, 71, 25},
+//		{17, 69, 70, 72, 71},
+//		{18, 70, 15, 16, 72},
+//		{19, 25, 71, 73, 24},
+//		{20, 71, 72, 74, 73},
+//		{21, 72, 16, 17, 74},
+//		{22, 24, 73, 75, 23},
+//		{23, 73, 74, 76, 75},
+//		{24, 74, 17, 18, 76},
+//		{25, 23, 75, 77, 22},
+//		{26, 75, 76, 78, 77},
+//		{27, 76, 18, 19, 78},
+//		{28, 22, 77, 21,  4},
+//		{29, 77, 78, 20, 21},
+//		{30, 78, 19,  3, 20},
+//		{31,  2, 31, 79, 11},
+//		{32, 31, 32, 80, 79},
+//		{33, 32,  5, 33, 80},
+//		{34, 11, 79, 81, 12},
+//		{35, 79, 80, 82, 81},
+//		{36, 80, 33, 34, 82},
+//		{37, 12, 81, 83, 13},
+//		{38, 81, 82, 84, 83},
+//		{39, 82, 34, 35, 84},
+//		{40, 13, 83, 85, 14},
+//		{41, 83, 84, 86, 85},
+//		{42, 84, 35, 36, 86},
+//		{43, 14, 85, 87, 15},
+//		{44, 85, 86, 88, 87},
+//		{45, 86, 36, 37, 88},
+//		{46, 15, 87, 89, 16},
+//		{47, 87, 88, 90, 89},
+//		{48, 88, 37, 38, 90},
+//		{49, 16, 89, 91, 17},
+//		{50, 89, 90, 92, 91},
+//		{51, 90, 38, 39, 92},
+//		{52, 17, 91, 93, 18},
+//		{53, 91, 92, 94, 93},
+//		{54, 92, 39, 40, 94},
+//		{55, 18, 93, 95, 19},
+//		{56, 93, 94, 96, 95},
+//		{57, 94, 40, 41, 96},
+//		{58, 19, 95, 43,  3},
+//		{59, 95, 96, 42, 43},
+//		{60, 96, 41,  6, 42},
+//		{61,   5,  44,  97,  33},
+//		{62,  44,  45,  98,  97},
+//		{63,  45,   7,  46,  98},
+//		{64,  33,  97,  99,  34},
+//		{65,  97,  98, 100,  99},
+//		{66,  98,  46,  47, 100},
+//		{67,  34,  99, 101,  35},
+//		{68,  99, 100, 102, 101},
+//		{69, 100,  47,  48, 102},
+//		{70,  35, 101, 103,  36},
+//		{71, 101, 102, 104, 103},
+//		{72, 102,  48,  49, 104},
+//		{73,  36, 103, 105,  37},
+//		{74, 103, 104, 106, 105},
+//		{75, 104,  49,  50, 106},
+//		{76,  37, 105, 107,  38},
+//		{77, 105, 106, 108, 107},
+//		{78, 106,  50,  51, 108},
+//		{79,  38, 107, 109,  39},
+//		{80, 107, 108, 110, 109},
+//		{81, 108,  51,  52, 110},
+//		{82,  39, 109, 111,  40},
+//		{83, 109, 110, 112, 111},
+//		{84, 110,  52,  53, 112},
+//		{85,  40, 111, 113,  41},
+//		{86, 111, 112, 114, 113},
+//		{87, 112,  53,  54, 114},
+//		{88,  41, 113,  56,   6},
+//		{89, 113, 114,  55,  56},
+//		{90, 114,  54,   8,  55},
+//		{ 91,   7,  57, 115,  46},
+//		{ 92,  57,  58, 116, 115},
+//		{ 93,  58,   1,  30, 116},
+//		{ 94,  46, 115, 117,  47},
+//		{ 95, 115, 116, 118, 117},
+//		{ 96, 116,  30,  29, 118},
+//		{ 97,  47, 117, 119,  48},
+//		{ 98, 117, 118, 120, 119},
+//		{ 99, 118,  29,  28, 120},
+//		{100,  48, 119, 121,  49},
+//		{101, 119, 120, 122, 121},
+//		{102, 120,  28,  27, 122},
+//		{103,  49, 121, 123,  50},
+//		{104, 121, 122, 124, 123},
+//		{105, 122,  27,  26, 124},
+//		{106,  50, 123, 125,  51},
+//		{107, 123, 124, 126, 125},
+//		{108, 124,  26,  25, 126},
+//		{109,  51, 125, 127,  52},
+//		{110, 125, 126, 128, 127},
+//		{111, 126,  25,  24, 128},
+//		{112,  52, 127, 129,  53},
+//		{113, 127, 128, 130, 129},
+//		{114, 128,  24,  23, 130},
+//		{115,  53, 129, 131,  54},
+//		{116, 129, 130, 132, 131},
+//		{117, 130,  23,  22, 132},
+//		{118,  54, 131,  60,   8},
+//		{119, 131, 132,  59,  60},
+//		{120, 132,  22,   4,  59},
+//	};
+//
+//	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
+//	for (int i = 0; i < ne; i++)
+//	{
+//		nodeI = cn[i][1];
+//		nodeJ = cn[i][2];
+//		nodeP = cn[i][3];
+//		nodeQ = cn[i][4];
+//		ds->addRectShell4Elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
+//	}
+//
+//	int loadId = 1;
+//	int nP = 3;
+//	double time[3] {0,1,2};
+//	double p[3] {0,1,1};
+//	double P = 1000.0;
+//	ds->addLoad(loadId,time,p,nP,0.0,P);
+//
+//	int ln[4] {1, 2, 5, 7};
+//
+//	for (auto i : ln)
+//	{
+//		ds->addDofLoad(ds->Nodes.at(i)->dofY->id, loadId);
+//	}
+//
+//	ds->assembleMatrix();
+//	ds->printInfo();
+//
+//	ds->solveLinearStaticResponse();
+//	
+//	ds->Nodes.at(1)->dofX->printResponse();
+//	ds->Nodes.at(1)->dofY->printResponse();
+//	ds->Nodes.at(1)->dofZ->printResponse();
+//	ds->Nodes.at(1)->dofRX->printResponse();
+//	ds->Nodes.at(1)->dofRY->printResponse();
+//	ds->Nodes.at(1)->dofRZ->printResponse();
+//
+//	 char gmshFile[] = "data/shell_rectshell4elastic.msh";
+//	 ds->exportGmsh(gmshFile);
+//	 ds->exportResponseGmsh(gmshFile);
+//}
 
 //
 //void example_nonlinear_spring()
@@ -2106,10 +2165,11 @@ int main()
 	//test_material();
 	//example_truss();
 	//example_truss_RODS();
-	example_frame();
+	//example_frame();
 	//example_frame3D();
 	//example_cantilever();
 	//example_wall();
+	example_wall_RODS();
 	//example_nonlinear_spring();
 	//example_nonlinear_truss();
 	//example_nonlinear_cantilever();
