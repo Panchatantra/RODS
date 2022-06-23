@@ -32,6 +32,42 @@ $$
 -\boldsymbol{q}(t) + \boldsymbol{Q} + \boldsymbol{p}(t)
 $$
 
+## 模态分析
+
+### 实模态
+$$
+\boldsymbol{K \phi}
+ = \omega^2\boldsymbol{M \phi} 
+$$
+
+对质量矩阵进行Cholesky分解
+
+$$
+\boldsymbol{M} = \boldsymbol{LL}^T
+$$
+
+$$
+\boldsymbol{K \phi}
+ = \omega^2\boldsymbol{LL}^T\boldsymbol{\phi} 
+$$
+
+$$
+\boldsymbol{L}^{-1}\boldsymbol{K \phi}
+ = \omega^2\boldsymbol{L}^T\boldsymbol{\phi} 
+$$
+
+$$
+\boldsymbol{L}^{-1}\boldsymbol{K} (\boldsymbol{L}^T)^{-1}\boldsymbol{L}^T\boldsymbol{\phi}
+ = \omega^2\boldsymbol{L}^T\boldsymbol{\phi} 
+$$
+
+令 $\boldsymbol{\varphi} = \boldsymbol{L}^T\boldsymbol{\phi} $
+
+$$
+\boldsymbol{L}^{-1}\boldsymbol{K} (\boldsymbol{L}^{-1})^T\boldsymbol{\varphi}
+ = \omega^2\boldsymbol{\varphi} 
+$$
+
 ## 动力方程求解方法
 
 ### 隐式方法

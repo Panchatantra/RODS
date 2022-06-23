@@ -616,223 +616,222 @@ using namespace std;
 //	//ds->solveSeismicResponse(30);
 //}
 //
-//void example_frame3D()
-//{
-//	DynamicSystem *ds = new DynamicSystem(0.05);
-//
-//	double mass = 0.005;
-//	double E = 32.5, G = 13.5416666666667;
-//	double A_b = 80000.0, A_c = 160000.0;
-//	double I_by = 266666666.666667, I_cy = 2133333333.33333;
-//	double I_bz = 1066666666.66667, I_cz = 2133333333.33333;
-//	double Ip_b = 732416666.666667, Ip_c = 3605333333.33333;
-//	double EA_b = E * A_b, EA_c = E * A_c;
-//	double EI_by = E * I_by, EI_cy = E * I_cy;
-//	double EI_bz = E * I_bz, EI_cz = E * I_cz;
-//	double GIp_c = G*Ip_c, GIp_b = G*Ip_b;
-//
-//	int nnd = 36;
-//	int ne = 63;
-//
-//	double nodeCoord[36][3]{
-//		{-6000,0,0},
-//		{0,0,0},
-//		{6000,0,0},
-//		{-6000,0,3000},
-//		{0,0,3000},
-//		{6000,0,3000},
-//		{-6000,0,6000},
-//		{0,0,6000},
-//		{6000,0,6000},
-//		{-6000,0,9000},
-//		{0,0,9000},
-//		{6000,0,9000},
-//		{-6000,6000,0},
-//		{0,6000,0},
-//		{6000,6000,0},
-//		{-6000,6000,3000},
-//		{0,6000,3000},
-//		{6000,6000,3000},
-//		{-6000,6000,6000},
-//		{0,6000,6000},
-//		{6000,6000,6000},
-//		{-6000,6000,9000},
-//		{0,6000,9000},
-//		{6000,6000,9000},
-//		{-6000,12000,0},
-//		{0,12000,0},
-//		{6000,12000,0},
-//		{-6000,12000,3000},
-//		{0,12000,3000},
-//		{6000,12000,3000},
-//		{-6000,12000,6000},
-//		{0,12000,6000},
-//		{6000,12000,6000},
-//		{-6000,12000,9000},
-//		{0,12000,9000},
-//		{6000,12000,9000}
-//	};
-//
-//	double x = 0, y = 0, z = 0;
-//	for (int i = 0; i < nnd; i++)
-//	{
-//		ds->addDOF(6*i + 1, RODS::Direction::X, mass);
-//		ds->addDOF(6*i + 2, RODS::Direction::Y, mass);
-//		ds->addDOF(6*i + 3, RODS::Direction::Z, mass);
-//		ds->addDOF(6*i + 4, RODS::Direction::RX, mass);
-//		ds->addDOF(6*i + 5, RODS::Direction::RY, mass);
-//		ds->addDOF(6*i + 6, RODS::Direction::RZ, mass);
-//
-//		x = nodeCoord[i][0];
-//		y = nodeCoord[i][1];
-//		z = nodeCoord[i][2];
-//		ds->addNode(i + 1, x, y, z, 6*i+1, 6*i+2, 6*i+3, 6*i+4, 6*i+5, 6*i+6);
-//	}
-//
-//	ds->fixNode(1 );
-//	ds->fixNode(2 );
-//	ds->fixNode(3 );
-//	ds->fixNode(13);
-//	ds->fixNode(14);
-//	ds->fixNode(15);
-//	ds->fixNode(25);
-//	ds->fixNode(26);
-//	ds->fixNode(27);
-//
-//	int elementConnect[63][3]{
-//			{1, 4, 1},
-//			{2, 5, 1},
-//			{3, 6, 1},
-//			{4, 5, 2},
-//			{5, 6, 2},
-//			{4, 7, 1},
-//			{5, 8, 1},
-//			{6, 9, 1},
-//			{7, 8, 2},
-//			{8, 9, 2},
-//			{7, 10, 1},
-//			{8, 11, 1},
-//			{9, 12, 1},
-//			{10, 11, 2},
-//			{11, 12, 2},
-//			{4, 16, 2},
-//			{5, 17, 2},
-//			{6, 18, 2},
-//			{7, 19, 2},
-//			{8, 20, 2},
-//			{9, 21, 2},
-//			{10, 22, 2},
-//			{11, 23, 2},
-//			{12, 24, 2},
-//			{13, 16, 1},
-//			{14, 17, 1},
-//			{15, 18, 1},
-//			{16, 17, 2},
-//			{17, 18, 2},
-//			{16, 19, 1},
-//			{17, 20, 1},
-//			{18, 21, 1},
-//			{19, 20, 2},
-//			{20, 21, 2},
-//			{19, 22, 1},
-//			{20, 23, 1},
-//			{21, 24, 1},
-//			{22, 23, 2},
-//			{23, 24, 2},
-//			{16, 28, 2},
-//			{17, 29, 2},
-//			{18, 30, 2},
-//			{19, 31, 2},
-//			{20, 32, 2},
-//			{21, 33, 2},
-//			{22, 34, 2},
-//			{23, 35, 2},
-//			{24, 36, 2},
-//			{25, 28, 1},
-//			{26, 29, 1},
-//			{27, 30, 1},
-//			{28, 29, 2},
-//			{29, 30, 2},
-//			{28, 31, 1},
-//			{29, 32, 1},
-//			{30, 33, 1},
-//			{31, 32, 2},
-//			{32, 33, 2},
-//			{31, 34, 1},
-//			{32, 35, 1},
-//			{33, 36, 1},
-//			{34, 35, 2},
-//			{35, 36, 2}
-//	};
-//
-//	int ni = 0, nj = 0, st = 0;
-//	for (int i = 0; i < ne; i++)
-//	{
-//		ni = elementConnect[i][0];
-//		nj = elementConnect[i][1];
-//		st = elementConnect[i][2];
-//		if (st == 1)
-//		{
-//			ds->addFrameElastic3D(i + 1, ni, nj, EA_c, EI_cy, EI_cz, GIp_c);
-//		}
-//		else
-//		{
-//			ds->addFrameElastic3D(i + 1, ni, nj, EA_b, EI_by, EI_bz, GIp_b);
-//		}
-//	}
-//
-//	//double c = 5.0;
-//	//double k = 100.0;
-//	//double alpha = 0.15;
-//
-//	//ds->addDashpot2D(101, 6, 11, c);
-//	//ds->addDashpot2D(102, 6, 11, c);
-//	//ds->addDashpot2D(103, 8, 11, c);
-//
-//	//ds->addDashpotExp2D(101, 6, 9, c, alpha);
-//	//ds->addDashpotExp2D(102, 6, 11, c, alpha);
-//	//ds->addDashpotExp2D(103, 8, 11, c, alpha);
-//
-//	//ds->addDashpotMaxwell2D(101, 6, 9, k, c, alpha);
-//	//ds->addDashpotMaxwell2D(102, 6, 11, k, c, alpha);
-//	//ds->addDashpotMaxwell2D(103, 8, 11, k, c, alpha);
-//
-//	//double k0 = 16.0, uy = 0.5, alfa = 0.02;
-//	//ds->addSpringBoucWen2D(101, 6, 9, k0, uy, alfa);
-//	//ds->addSpringBoucWen2D(102, 6, 11, k0, uy, alfa);
-//	//ds->addSpringBoucWen2D(103, 8, 11, k0, uy, alfa);
-//
-//	ds->setRayleighDamping(2.0*PI / 0.36, 2.0*PI / 0.1);
-//
-//	ds->assembleMatrix();
-//	ds->solveEigen();
-//
-//	ds->printInfo();
-//
-//	//char gmshFile[] = "data/frame.msh";
-//	//ds->exportGmsh(gmshFile);
-//
-//	//int nrd = 1;
-//	//int *dofIds = new int[nrd] {
-//	//	ds->Nodes.at(4)->dofX->id
-//	//};
-//	//char dispOutput[] = "data/disp_frame_damped.dat";
-//	//ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
-//
-//	//int nre = 1;
-//	//int *eleIds = new int[nre] { 102 };
-//	//char eleOutput[] = "data/damper.dat";
-//	//ds->addElementRecorder(0, eleIds, nre, RODS::Response::ALL, eleOutput);
-//
-//	//int eqId = 1;
-//	//double dt = 0.005;
-//	//char eqFile[] = "data/EQ-S-1.txt";
-//	//ds->addWave(eqId, dt, eqFile);
-//
-//	//ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
-//	//ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
-//	//ds->solveSeismicResponse(30);
-//}
+void example_frame3D()
+{
+	DynamicSystem *ds = new DynamicSystem(0.05);
+	ds->setRayleighDamping(2.0*PI / 0.368, 2.0*PI / 0.1);
+	
+	double mass = 0.005;
+	double E = 32.5, G = 13.5416666666667;
+	double A_b = 80000.0, A_c = 160000.0;
+	double I_by = 266666666.666667, I_cy = 2133333333.33333;
+	double I_bz = 1066666666.66667, I_cz = 2133333333.33333;
+	double Ip_b = 732416666.666667, Ip_c = 3605333333.33333;
+	double EA_b = E * A_b, EA_c = E * A_c;
+	double EI_by = E * I_by, EI_cy = E * I_cy;
+	double EI_bz = E * I_bz, EI_cz = E * I_cz;
+	double GIp_c = G*Ip_c, GIp_b = G*Ip_b;
+
+	int nnd = 36;
+	int ne = 63;
+
+	double nodeCoord[36][3]{
+		{-6000,0,0},
+		{0,0,0},
+		{6000,0,0},
+		{-6000,0,3000},
+		{0,0,3000},
+		{6000,0,3000},
+		{-6000,0,6000},
+		{0,0,6000},
+		{6000,0,6000},
+		{-6000,0,9000},
+		{0,0,9000},
+		{6000,0,9000},
+		{-6000,6000,0},
+		{0,6000,0},
+		{6000,6000,0},
+		{-6000,6000,3000},
+		{0,6000,3000},
+		{6000,6000,3000},
+		{-6000,6000,6000},
+		{0,6000,6000},
+		{6000,6000,6000},
+		{-6000,6000,9000},
+		{0,6000,9000},
+		{6000,6000,9000},
+		{-6000,12000,0},
+		{0,12000,0},
+		{6000,12000,0},
+		{-6000,12000,3000},
+		{0,12000,3000},
+		{6000,12000,3000},
+		{-6000,12000,6000},
+		{0,12000,6000},
+		{6000,12000,6000},
+		{-6000,12000,9000},
+		{0,12000,9000},
+		{6000,12000,9000}
+	};
+
+	double x = 0, y = 0, z = 0;
+	for (int i = 0; i < nnd; i++)
+	{
+		ds->addDOF(6*i + 1, RODS::Direction::X, mass);
+		ds->addDOF(6*i + 2, RODS::Direction::Y, mass);
+		ds->addDOF(6*i + 3, RODS::Direction::Z, mass);
+		ds->addDOF(6*i + 4, RODS::Direction::RX, mass);
+		ds->addDOF(6*i + 5, RODS::Direction::RY, mass);
+		ds->addDOF(6*i + 6, RODS::Direction::RZ, mass);
+
+		x = nodeCoord[i][0];
+		y = nodeCoord[i][1];
+		z = nodeCoord[i][2];
+		ds->addNode(i + 1, x, y, z, 6*i+1, 6*i+2, 6*i+3, 6*i+4, 6*i+5, 6*i+6);
+	}
+
+	ds->fixNode(1 );
+	ds->fixNode(2 );
+	ds->fixNode(3 );
+	ds->fixNode(13);
+	ds->fixNode(14);
+	ds->fixNode(15);
+	ds->fixNode(25);
+	ds->fixNode(26);
+	ds->fixNode(27);
+
+	int elementConnect[63][3]{
+			{1, 4, 1},
+			{2, 5, 1},
+			{3, 6, 1},
+			{4, 5, 2},
+			{5, 6, 2},
+			{4, 7, 1},
+			{5, 8, 1},
+			{6, 9, 1},
+			{7, 8, 2},
+			{8, 9, 2},
+			{7, 10, 1},
+			{8, 11, 1},
+			{9, 12, 1},
+			{10, 11, 2},
+			{11, 12, 2},
+			{4, 16, 2},
+			{5, 17, 2},
+			{6, 18, 2},
+			{7, 19, 2},
+			{8, 20, 2},
+			{9, 21, 2},
+			{10, 22, 2},
+			{11, 23, 2},
+			{12, 24, 2},
+			{13, 16, 1},
+			{14, 17, 1},
+			{15, 18, 1},
+			{16, 17, 2},
+			{17, 18, 2},
+			{16, 19, 1},
+			{17, 20, 1},
+			{18, 21, 1},
+			{19, 20, 2},
+			{20, 21, 2},
+			{19, 22, 1},
+			{20, 23, 1},
+			{21, 24, 1},
+			{22, 23, 2},
+			{23, 24, 2},
+			{16, 28, 2},
+			{17, 29, 2},
+			{18, 30, 2},
+			{19, 31, 2},
+			{20, 32, 2},
+			{21, 33, 2},
+			{22, 34, 2},
+			{23, 35, 2},
+			{24, 36, 2},
+			{25, 28, 1},
+			{26, 29, 1},
+			{27, 30, 1},
+			{28, 29, 2},
+			{29, 30, 2},
+			{28, 31, 1},
+			{29, 32, 1},
+			{30, 33, 1},
+			{31, 32, 2},
+			{32, 33, 2},
+			{31, 34, 1},
+			{32, 35, 1},
+			{33, 36, 1},
+			{34, 35, 2},
+			{35, 36, 2}
+	};
+
+	int ni = 0, nj = 0, st = 0;
+	for (int i = 0; i < ne; i++)
+	{
+		ni = elementConnect[i][0];
+		nj = elementConnect[i][1];
+		st = elementConnect[i][2];
+		if (st == 1)
+		{
+			ds->addFrameElastic3D(i + 1, ni, nj, EA_c, EI_cy, EI_cz, GIp_c);
+		}
+		else
+		{
+			ds->addFrameElastic3D(i + 1, ni, nj, EA_b, EI_by, EI_bz, GIp_b);
+		}
+	}
+
+	//double c = 5.0;
+	//double k = 100.0;
+	//double alpha = 0.15;
+
+	//ds->addDashpot2D(101, 6, 11, c);
+	//ds->addDashpot2D(102, 6, 11, c);
+	//ds->addDashpot2D(103, 8, 11, c);
+
+	//ds->addDashpotExp2D(101, 6, 9, c, alpha);
+	//ds->addDashpotExp2D(102, 6, 11, c, alpha);
+	//ds->addDashpotExp2D(103, 8, 11, c, alpha);
+
+	//ds->addDashpotMaxwell2D(101, 6, 9, k, c, alpha);
+	//ds->addDashpotMaxwell2D(102, 6, 11, k, c, alpha);
+	//ds->addDashpotMaxwell2D(103, 8, 11, k, c, alpha);
+
+	//double k0 = 16.0, uy = 0.5, alfa = 0.02;
+	//ds->addSpringBoucWen2D(101, 6, 9, k0, uy, alfa);
+	//ds->addSpringBoucWen2D(102, 6, 11, k0, uy, alfa);
+	//ds->addSpringBoucWen2D(103, 8, 11, k0, uy, alfa);
+
+	ds->assembleMatrix();
+	ds->solveEigen();
+
+	ds->printInfo();
+
+	//char gmshFile[] = "data/frame.msh";
+	//ds->exportGmsh(gmshFile);
+
+	//int nrd = 1;
+	//int *dofIds = new int[nrd] {
+	//	ds->Nodes.at(4)->dofX->id
+	//};
+	//char dispOutput[] = "data/disp_frame_damped.dat";
+	//ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
+
+	//int nre = 1;
+	//int *eleIds = new int[nre] { 102 };
+	//char eleOutput[] = "data/damper.dat";
+	//ds->addElementRecorder(0, eleIds, nre, RODS::Response::ALL, eleOutput);
+
+	//int eqId = 1;
+	//double dt = 0.005;
+	//char eqFile[] = "data/EQ-S-1.txt";
+	//ds->addWave(eqId, dt, eqFile);
+
+	//ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
+	//ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
+	//ds->solveSeismicResponse(30);
+}
 //
 //void example_cantilever()
 //{
@@ -1006,9 +1005,15 @@ void example_wall()
 	char eqFile[] = "data/EQ-S-1.txt";
 	ds->addWave(eqId, dt, eqFile);
 
+	int dofRecorderId = 0;
+	char dofRecorderFile[] = "data/top_disp_wall.txt";
+	ds->addDOFRecorder(dofRecorderId, RODS::Response::DISP, dofRecorderFile);
+	ds->addDOFToRecorder(ds->Nodes.at(21)->dofX->id, dofRecorderId);
+
 	ds->setDynamicSolver(RODS::DynamicSolver::Newmark);
 	ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
 	ds->solveSeismicResponse(1);
+
 }
 
 void example_wall_RODS()
@@ -2166,10 +2171,10 @@ int main()
 	//example_truss();
 	//example_truss_RODS();
 	//example_frame();
-	//example_frame3D();
+	example_frame3D();
 	//example_cantilever();
 	//example_wall();
-	example_wall_RODS();
+	//example_wall_RODS();
 	//example_nonlinear_spring();
 	//example_nonlinear_truss();
 	//example_nonlinear_cantilever();
