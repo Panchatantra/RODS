@@ -2235,10 +2235,10 @@ void DynamicSystem::solveSeismicResponseStateSpace(const int nsub)
 	Element::dt = dt;
 
 	mat O = zeros<mat>(eqnCount, eqnCount);
-	mat I = eye<mat>(eqnCount, eqnCount);
+	mat I_ = eye<mat>(eqnCount, eqnCount);
 	mat A = -solve(M, K0);
 	mat B = -solve(M, C);
-	mat H = join_cols(join_rows(O, I), join_rows(A, B));
+	mat H = join_cols(join_rows(O, I_), join_rows(A, B));
 
 	double h = dt;
 	//mat T = expmat(H*h);
@@ -2296,10 +2296,10 @@ void DynamicSystem::solveSeismicResponseStateSpaceNL(const int nsub)
 	Element::dt = dt;
 
 	mat O = zeros<mat>(eqnCount, eqnCount);
-	mat I = eye<mat>(eqnCount, eqnCount);
+	mat I_ = eye<mat>(eqnCount, eqnCount);
 	mat A = -solve(M, K0);
 	mat B = -solve(M, C);
-	mat H = join_cols(join_rows(O, I), join_rows(A, B));
+	mat H = join_cols(join_rows(O, I_), join_rows(A, B));
 
 	double h = dt;
 	//mat T = expmat(H*h);
@@ -2607,10 +2607,10 @@ void DynamicSystem::solveSeismicResponseStateSpaceMD(const int nsub)
 	Element::dt = dt;
 
 	mat O = zeros<mat>(eqnCount, eqnCount);
-	mat I = eye<mat>(eqnCount, eqnCount);
+	mat I_ = eye<mat>(eqnCount, eqnCount);
 	mat A = -solve(M, K0);
 	mat B = -solve(M, C);
-	mat H = join_cols(join_rows(O, I), join_rows(A, B));
+	mat H = join_cols(join_rows(O, I_), join_rows(A, B));
 
 	double h = dt;
 	//mat T = expmat(H*h);
@@ -2688,10 +2688,10 @@ void DynamicSystem::solveSeismicResponseStateSpaceNLMD(const int nsub)
 	Element::dt = dt;
 
 	mat O = zeros<mat>(eqnCount, eqnCount);
-	mat I = eye<mat>(eqnCount, eqnCount);
+	mat I_ = eye<mat>(eqnCount, eqnCount);
 	mat A = -solve(M, K0);
 	mat B = -solve(M, C);
-	mat H = join_cols(join_rows(O, I), join_rows(A, B));
+	mat H = join_cols(join_rows(O, I_), join_rows(A, B));
 
 	double h = dt;
 	//mat T = expmat(H*h);
