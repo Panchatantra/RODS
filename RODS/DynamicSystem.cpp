@@ -199,6 +199,18 @@ void DynamicSystem::exportGmsh(char * fileName)
 		outFile << "$EndElements" << std::endl;
 	}
 
+	if (ROD3Ds.size() > 1)
+	{
+		outFile << "$Elements" << std::endl;
+		outFile << ROD3Ds.size() << std::endl;
+		for (auto it = ROD3Ds.begin(); it != ROD3Ds.end(); ++it)
+		{
+			auto ele = it->second;
+			outFile << it->first << " 1 1 1 " << ele->nodeI->id << " " << ele->nodeJ->id << std::endl;
+		}
+		outFile << "$EndElements" << std::endl;
+	}
+
 	if (Quad2Ds.size() > 1)
 	{
 		outFile << "$Elements" << std::endl;
@@ -268,7 +280,14 @@ void DynamicSystem::exportModalGmsh(char* fileName, const int order)
 	for (auto it = Nodes.begin(); it != Nodes.end(); it++)
 	{
 		auto nd = it->second;
-		outFile << it->first << " " << nd->dofX->dsp << " " << 0.0 << " " << nd->dofZ->dsp << std::endl;
+		if (nd->isActivated(RODS::Direction::Y))
+		{
+			outFile << it->first << " " << nd->dofX->dsp << " " << nd->dofY->dsp << " " << nd->dofZ->dsp << std::endl;
+		}
+		else
+		{
+			outFile << it->first << " " << nd->dofX->dsp << " " << 0.0 << " " << nd->dofZ->dsp << std::endl;
+		}
 	}
 
 	outFile << "$EndNodeData" << std::endl;
@@ -1495,6 +1514,17 @@ void DynamicSystem::solveEigen()
 	Phi = zeros<mat>(eqnCount, eqnCount);
 
 	eig_sym(K, M, omg, Phi);
+
+	//mat L = chol(M, "lower");
+	//mat L_i = L.i();
+	//mat A = L_i*K*L_i.t();
+
+	//vec omg_;
+	//mat Phi_;
+	//
+	//eig_sym(omg_, Phi_, A);
+	//omg = sqrt(omg_);
+	//Phi = solve(L.t(), Phi_);
 
 	eigenVectorNormed = true;
 

@@ -46,6 +46,8 @@ $$
 \boldsymbol{M} = \boldsymbol{LL}^T
 $$
 
+其中，$\boldsymbol{L}$ 为下三角矩阵。
+
 $$
 \boldsymbol{K \phi}
  = \omega^2\boldsymbol{LL}^T\boldsymbol{\phi} 

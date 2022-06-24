@@ -808,6 +808,18 @@ void example_frame3D()
 
 	ds->printInfo();
 
+	ds->Phi.cols(0, 2).print();
+
+	ds->M.save("M.txt", raw_ascii);
+	ds->K.save("K.txt", raw_ascii);
+
+	//cout << ds->Phi.col(0).t()*ds->M*ds->Phi.col(0) << endl;
+	//cout << ds->Phi.col(1).t()*ds->M*ds->Phi.col(1) << endl;
+	//cout << ds->Phi.col(0).t()*ds->M*ds->Phi.col(1) << endl;
+	//cout << ds->Phi.col(0).t()*ds->K*ds->Phi.col(1) << endl;
+	//cout << ds->omg(0)*ds->omg(0)*ds->M*ds->Phi.col(0) - ds->K*ds->Phi.col(0) << endl;
+	//cout << ds->omg(1)*ds->omg(1)*ds->M*ds->Phi.col(1) - ds->K*ds->Phi.col(1) << endl;
+
 	//char gmshFile[] = "data/frame.msh";
 	//ds->exportGmsh(gmshFile);
 
