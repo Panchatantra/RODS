@@ -1,0 +1,36 @@
+CXX = g++
+Linker = g++
+# OutputFile = RODS.exe
+# DynamicLib = RODS.dll
+OutputFile = RODS
+DynamicLib = RODS.so
+
+SourceFiles = $(wildcard *.cpp) $(wildcard material/*.cpp) $(wildcard element/*.cpp) $(wildcard section/*.cpp)  $(wildcard recorder/*.cpp)
+HeaderFiles = $(wildcard *.h) $(wildcard material/*.h) $(wildcard element/*.h) $(wildcard section/*.h)  $(wildcard recorder/*.h)
+Objects = $(subst .cpp,.o,$(SourceFiles))
+SharedObjects = $(subst .cpp,.cpp.o,$(SourceFiles))
+
+CXXFLAGS = -Wall -O2
+INCLUDE = -I. -I./material -I./element -I./section -I./recorder -I../../armadillo/include
+LIB = -lopenblas -llapacke
+
+.PHONY: all dylib clean
+
+all: $(OutputFile)
+
+$(OutputFile): $(Objects)
+	$(Linker) -o $(OutputFile) $(Objects) $(LIB)
+
+%.o:%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@ $(INCLUDE)
+
+dylib: $(DynamicLib)
+
+$(DynamicLib): $(SharedObjects)
+	$(Linker) -shared -o $(DynamicLib) $(SharedObjects) $(LIB)
+
+%.cpp.o:%.cpp
+	$(CXX) -shared -fPIC $(CXXFLAGS) -c $< -o $@ $(INCLUDE)
+
+clean:
+	rm -rvf *.exe *.dll *.o *.csv *.so RODS $(Objects) $(SharedObjects)
