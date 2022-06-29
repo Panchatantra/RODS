@@ -28,6 +28,9 @@ extern "C" {
 	DLL_API size_t add_node_3d(const int nodeId, const double x, const double y, const double z,
 								const int dofXId,  const int dofYId,  const int dofZId,
 								const int dofRXId, const int dofRYId, const int dofRZId);
+	DLL_API size_t set_dof_mass(const int id, const double m);
+	DLL_API size_t set_node_mass(const int id, const double m);
+
 	DLL_API size_t add_spring(const int id, const int i, const int j, const double k);
 	DLL_API size_t add_dashpot(const int id, const int i, const int j, const double c);
 	DLL_API size_t add_dashpot_exp(const int id, const int i, const int j, const double c, const double alpha);
@@ -72,6 +75,7 @@ extern "C" {
 	DLL_API size_t add_dof_recorder_with_dofs(const int id, int *dofIds, const int n, const int rType, char * fileName);
 	DLL_API size_t add_dof_recorder(const int id, const int rType, char * fileName);
 	DLL_API size_t add_dof_to_recorder(const int dofId, const int rId);
+	DLL_API size_t add_node_dof_to_recorder(const int nodeId, const int dir, const int rId);
 	DLL_API size_t add_ele_recorder_with_eles(const int id, int *eleIds, const int n, const int rType, char * fileName);
 	DLL_API size_t add_ele_recorder(const int id, const int rType, char * fileName);
 	DLL_API size_t add_ele_to_recorder(const int eleId, const int rId);

@@ -17,6 +17,9 @@ public:
 	void fixDOF(RODS::Direction dir);
 	bool isActivated(RODS::Direction dir);
 
+	void setMass(const double m);
+	void setMass(const double m, RODS::Direction dir);
+
 	double x, y, z;
 	double x0, y0, z0;
 

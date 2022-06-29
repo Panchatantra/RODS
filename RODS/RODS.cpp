@@ -341,3 +341,46 @@ size_t add_spring_nonlinear(const int id, const int ni, const int nj, const int 
 	ds->addSpringNonlinear(id, ni, nj, matId);
 	return ds->SpringNonlinears.size();
 }
+
+size_t set_dof_mass(const int id, const double m)
+{
+	ds->DOFs.at(id)->setMass(m);
+	return ds->DOFs.size();
+}
+
+size_t set_node_mass(const int id, const double m)
+{
+	ds->Nodes.at(id)->setMass(m);
+	return ds->Nodes.size();
+}
+
+size_t add_node_dof_to_recorder(const int nodeId, const int dir, const int rId)
+{
+	int dofId = -1;
+
+	switch (RODS::Direction(dir))
+	{
+	case RODS::Direction::X:
+		dofId = ds->Nodes.at(nodeId)->dofX->id;
+		break;
+	case RODS::Direction::Y:
+		dofId = ds->Nodes.at(nodeId)->dofY->id;
+		break;
+	case RODS::Direction::Z:
+		dofId = ds->Nodes.at(nodeId)->dofZ->id;
+		break;
+	case RODS::Direction::RX:
+		dofId = ds->Nodes.at(nodeId)->dofRX->id;
+		break;
+	case RODS::Direction::RY:
+		dofId = ds->Nodes.at(nodeId)->dofRY->id;
+		break;
+	case RODS::Direction::RZ:
+		dofId = ds->Nodes.at(nodeId)->dofRZ->id;
+		break;
+	default:
+		break;
+	}
+	ds->addDOFToRecorder(dofId, rId);
+	return ds->DOFRecorders.size();
+}

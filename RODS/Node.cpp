@@ -117,3 +117,43 @@ bool Node::isActivated(RODS::Direction dir)
 		return true;
 	}
 }
+
+void Node::setMass(const double m)
+{
+	if (dofX != nullptr) dofX->setMass(m);
+	if (dofY != nullptr) dofY->setMass(m);
+	if (dofZ != nullptr) dofZ->setMass(m);
+	if (dofRX != nullptr) dofRX->setMass(m);
+	if (dofRY != nullptr) dofRY->setMass(m);
+	if (dofRZ != nullptr) dofRZ->setMass(m);
+}
+
+void Node::setMass(const double m, RODS::Direction dir)
+{
+	if (isActivated(dir))
+	{
+		switch (dir)
+		{
+		case RODS::Direction::X:
+			dofX->setMass(m);
+			break;
+		case RODS::Direction::Y:
+			dofY->setMass(m);
+			break;
+		case RODS::Direction::Z:
+			dofZ->setMass(m);
+			break;
+		case RODS::Direction::RX:
+			dofRX->setMass(m);
+			break;
+		case RODS::Direction::RY:
+			dofRY->setMass(m);
+			break;
+		case RODS::Direction::RZ:
+			dofRZ->setMass(m);
+			break;
+		default:
+			break;
+		}
+	}
+}
