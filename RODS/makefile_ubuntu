@@ -3,7 +3,7 @@ Linker = g++
 # OutputFile = RODS.exe
 # DynamicLib = RODS.dll
 OutputFile = RODS
-DynamicLib = RODS.so
+DynamicLib = RODS_.so
 
 SourceFiles = $(wildcard *.cpp) $(wildcard material/*.cpp) $(wildcard element/*.cpp) $(wildcard section/*.cpp)  $(wildcard recorder/*.cpp)
 HeaderFiles = $(wildcard *.h) $(wildcard material/*.h) $(wildcard element/*.h) $(wildcard section/*.h)  $(wildcard recorder/*.h)
@@ -25,6 +25,7 @@ $(OutputFile): $(Objects)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ $(INCLUDE)
 
 dylib: $(DynamicLib)
+	cp $(DynamicLib) python/
 
 $(DynamicLib): $(SharedObjects)
 	$(Linker) -shared -o $(DynamicLib) $(SharedObjects) $(LIB)

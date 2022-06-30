@@ -1,10 +1,13 @@
+import sys
 from ctypes import cdll, POINTER, c_size_t, c_int, c_double, c_char_p
 import numpy as np
 
 import enum
 
-# RODSDLL = cdll.LoadLibrary("../x64/DLLDebug/RODS.dll")
-RODSDLL = cdll.LoadLibrary("./RODS.dll")
+if sys.platform == "linux":
+    RODSDLL = cdll.LoadLibrary("./RODS_.so")
+elif sys.platform == "win32":
+    RODSDLL = cdll.LoadLibrary("./RODS.dll")
 
 
 class DynamicSolver(enum.Enum):
