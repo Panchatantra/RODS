@@ -186,6 +186,21 @@ add_wave = RODSDLL.add_wave
 add_wave.restype = c_size_t
 add_wave.argtypes = [c_int, c_double, c_char_p]
 
+add_load_ = RODSDLL.add_load
+add_load_.restype = c_size_t
+add_load_.argtypes = [c_int, POINTER(c_double), POINTER(c_double), c_int, c_double, c_double]
+def add_load(id, t_, p_, arriveTime, scale):
+    nP = len(t_)
+    t_ = np.array(t_, dtype=np.float64)
+    p_ = np.array(p_, dtype=np.float64)
+    t = t_.ctypes.data_as(POINTER(c_double))
+    p = p_.ctypes.data_as(POINTER(c_double))
+    return add_load_(id, t, p, nP, arriveTime, scale)
+
+add_dof_load = RODSDLL.add_dof_load
+add_dof_load.restype = c_size_t
+add_dof_load.argtypes = [c_int, c_int]
+
 assemble_matrix = RODSDLL.assemble_matrix
 assemble_matrix.restype = c_size_t
 

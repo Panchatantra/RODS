@@ -1,6 +1,8 @@
 #pragma once
 #include "Basis.h"
+#include <vector>
 
+using namespace std;
 /**
  * @brief      The time-varying load.
  */
@@ -21,12 +23,15 @@ public:
 	 * @param[in]  scale       The scale factor of the load, default to 1.0
 	 */
 	Load(const int id, double *t, double *p, const int nP, const double arriveTime=0.0, const double scale=1.0);
+	Load(const int id, const double arriveTime=0.0, const double scale=1.0);
 	~Load();
 
+	double addValue(const double time, const double value);
 	double getValue(const double time);
 	void setConst(const bool keepConst=true);
+	void setScale(const double s) {scale = s;}
 
-	double *t, *p;
+	std::vector<double> t, p;
 	int nP;
 	double arriveTime, finishTime;
 	double scale;

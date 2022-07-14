@@ -68,6 +68,9 @@ extern "C" {
 
 	DLL_API size_t add_spis2(const int id, const int i, const int j, const int in, const double m, const double c, const double k);
 
+	DLL_API size_t add_load(const int id, double* t, double* p, const int nP, const double arriveTime,
+		const double scale);
+	DLL_API size_t add_dof_load(const int dofId, const int loadId);
 
 	DLL_API size_t add_wave(const int id, const double dt, char* fileName);
 	DLL_API size_t assemble_matrix();

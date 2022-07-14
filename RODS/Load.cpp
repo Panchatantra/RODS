@@ -5,7 +5,18 @@ Load::Load()
 }
 
 Load::Load(const int id, double *t, double *p, const int nP, const double arriveTime, const double scale):
-	Basis(id), t(t), p(p), nP(nP), arriveTime(arriveTime), finishTime(arriveTime+t[nP-1]),
+	Basis(id), nP(nP), arriveTime(arriveTime), finishTime(arriveTime+t[nP-1]),
+	scale(scale), keepConst(false)
+{
+	for (int i = 0; i < nP; i++)
+	{
+		this->t.push_back(t[i]);
+		this->p.push_back(p[i]);
+	}
+}
+
+Load::Load(const int id, const double arriveTime, const double scale):
+	Basis(id), nP(0), arriveTime(arriveTime), finishTime(arriveTime),
 	scale(scale), keepConst(false)
 {
 }
@@ -14,6 +25,15 @@ Load::Load(const int id, double *t, double *p, const int nP, const double arrive
 Load::~Load()
 {
 }
+
+double Load::addValue(const double time, const double value)
+{
+	t.push_back(time);
+	p.push_back(value);
+	nP += 1;
+	finishTime += time;
+}
+
 
 double Load::getValue(const double time)
 {

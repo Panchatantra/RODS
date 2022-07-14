@@ -178,6 +178,8 @@ public:
 	 * @param[in]  scale       The scale factor of the load, default to 1.0
 	 */
 	void addLoad(const int id, double *t, double *p, const int nP, const double arriveTime=0.0, const double scale=1.0);
+	void addLoad(const int id, const double arriveTime=0.0, const double scale=1.0);
+	void addLoadValue(const int id, const double time, const double value);
 
 	/**
 	 * @brief      Adds a Load to a DOF.

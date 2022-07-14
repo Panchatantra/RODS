@@ -167,6 +167,26 @@ void DynamicSystem::addLoad(const int id, double* t, double* p, const int nP, co
 	}
 }
 
+void DynamicSystem::addLoad(const int id, const double arriveTime, const double scale)
+{
+	if (Loads.count(id) == 0)
+	{
+		Load *load = new Load(id, arriveTime, scale);
+		Loads[id] = load;
+	}
+	else
+	{
+		cout << "Load ID: " << id << " already exists! The load will not be added." << endl;
+	}
+}
+
+void DynamicSystem::addLoadValue(const int id, const double time, const double value)
+{
+	auto load = Loads.at(id);
+	if (time > load->finishTime) load->addValue(time, value);
+	else cout << "Time series should be input in an ascending order. The value will not be added." << endl;
+}
+
 void DynamicSystem::addDofLoad(const int dofId, const int loadId)
 {
 	DOFs.at(dofId)->addLoad(Loads.at(loadId));

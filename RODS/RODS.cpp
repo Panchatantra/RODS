@@ -384,3 +384,15 @@ size_t add_node_dof_to_recorder(const int nodeId, const int dir, const int rId)
 	ds->addDOFToRecorder(dofId, rId);
 	return ds->DOFRecorders.size();
 }
+
+size_t add_load(const int id, double* t, double* p, const int nP, const double arriveTime, const double scale)
+{
+	ds->addLoad(id, t, p, nP, arriveTime, scale);
+	return ds->Loads.size();
+}
+
+size_t add_dof_load(const int dofId, const int loadId)
+{
+	ds->addDofLoad(dofId, loadId);
+	return ds->Loads.size();
+}
