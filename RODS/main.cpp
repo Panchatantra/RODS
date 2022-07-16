@@ -808,10 +808,8 @@ void example_frame3D()
 
 	ds->printInfo();
 
-	ds->Phi.cols(0, 2).print();
-
-	ds->M.save("M.txt", raw_ascii);
-	ds->K.save("K.txt", raw_ascii);
+	char periodFile[] = "data/frame_period.txt";
+	ds->exportPeriodVector(periodFile);
 
 	//cout << ds->Phi.col(0).t()*ds->M*ds->Phi.col(0) << endl;
 	//cout << ds->Phi.col(1).t()*ds->M*ds->Phi.col(1) << endl;

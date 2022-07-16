@@ -943,6 +943,8 @@ public:
 	void exportMassMatrix(const char* fileName) {M.save(fileName, raw_ascii);}
 	void exportStiffMatrix(const char* fileName) {K.save(fileName, raw_ascii);}
 	void exportDampMatrix(const char* fileName) {C.save(fileName, raw_ascii);}
+	void exportPeriodVector(const char* fileName) {P.save(fileName, raw_ascii);}
+	void exportModalMatrix(const char* fileName) {Phi.save(fileName, raw_ascii);}
 	
 	/// The map from a DOF identifier to its equation number
 	std::map<int, int> dofMapEqn;
