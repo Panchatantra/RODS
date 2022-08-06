@@ -6,16 +6,24 @@
 
 二选一
 
-* Visual Studio 2019 C++开发套装
-    * Reshaper C++插件（建议）
+* Visual Studio（C++开发套装）
+    > Visual Studio 安装选项：
+![VS安装选项](install_vs.png)
+
+    * Intel oneAPI Base Toolkit
+        > Intel oneAPI 安装选项：
+![Intel安装选项](install_intel.png)
+
+    * Reshaper C++插件（建议，可选）
+
 
 * Mingw-w64-GCC
     * MSYS2 环境（建议）
       * 需要安装的程序：
-> base-devel
-> mingw-w64-x86_64-toolchain
-> mingw-w64-x86_64-openblas
-> mingw-w64-x86_64-armadillo
+        > base-devel
+        > mingw-w64-x86_64-toolchain
+        > mingw-w64-x86_64-openblas
+        > mingw-w64-x86_64-armadillo
 
 ### Linux
 
