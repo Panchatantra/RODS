@@ -68,57 +68,57 @@ using namespace std;
 //	ds->solveSeismicResponse(1);
 //}
 
-//void example_sdof_inerter_system()
-//{
-//	double zeta = 0.02;
-//	double m = 800.0;
-//	double k = m*400.0;
-//	double c = 2.0*zeta*sqrt(m*k);
-//
-//	DynamicSystem *ds = new DynamicSystem();
-//
-//	ds->addDOF(1, m, FIXED);
-//	ds->addDOF(2, m);
-//
-//	ds->addSpring(1, 1, 2, k);
-//	ds->addDashpot(2, 1, 2, c);
-//
-//	double mu = 0.1;
-//	double kp = mu / (1.0 - mu);
-//	double xi = mu / 2.0*sqrt(kp / 2.0);
-//	double m_in = mu * m;
-//	double k_s = kp * k;
-//	double c_d = 2.0*xi*sqrt(m*k);
-//
-//	ds->addDOF(11, 0.0);
-//	ds->addInerter(11, 1, 11, m_in);
-//	ds->addDashpot(12, 1, 11, c_d);
-//	ds->addSpring(13, 11, 2, k_s);
-//
-//	//ds->addSPIS2(3, 1, 2, 11, m_in, c_d, k_s);
-//
-//	//ds->addTVMD(3, 1, 2, m_in, c_d, k_s);
-//
-//	ds->assembleMatrix();
-//
-//	ds->solveEigen();
-//	ds->P.print("Natural Periods:");
-//
-//	char eq[] = "data/EQ-S-1.txt";
-//	double dt = 0.005;
-//	ds->addWave(1, dt, eq);
-//
-//	int nrd = 1;
-//	int *dofIds = new int[nrd] { 2 };
-//	//char dispOutput[] = "data/disp0.dat";
-//	char dispOutput[] = "data/disp.dat";
-//	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
-//
-//	int ts = 1;
-//	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
-//	ds->activeGroundMotion(RODS::Direction::X, ts, 4000.0);
-//	ds->solveSeismicResponse(30);
-//}
+void example_sdof_inerter_system()
+{
+	double zeta = 0.02;
+	double m = 800.0;
+	double k = m*400.0;
+	double c = 2.0*zeta*sqrt(m*k);
+
+	DynamicSystem *ds = new DynamicSystem();
+
+	ds->addDOF(1, m, FIXED);
+	ds->addDOF(2, m);
+
+	ds->addSpring(1, 1, 2, k);
+	ds->addDashpot(2, 1, 2, c);
+
+	double mu = 0.1;
+	double kp = mu / (1.0 - mu);
+	double xi = mu / 2.0*sqrt(kp / 2.0);
+	double m_in = mu * m;
+	double k_s = kp * k;
+	double c_d = 2.0*xi*sqrt(m*k);
+
+	ds->addDOF(11, 0.0);
+	//ds->addInerter(11, 1, 11, m_in);
+	//ds->addDashpot(12, 1, 11, c_d);
+	//ds->addSpring(13, 11, 2, k_s);
+
+	ds->addSPIS2(3, 1, 2, 11, m_in, c_d, k_s);
+
+	//ds->addTVMD(3, 1, 2, m_in, c_d, k_s);
+
+	ds->assembleMatrix();
+
+	ds->solveEigen();
+	ds->P.print("Natural Periods:");
+
+	char eq[] = "data/EQ-S-1.txt";
+	double dt = 0.005;
+	ds->addWave(1, dt, eq);
+
+	int nrd = 1;
+	int *dofIds = new int[nrd] { 2 };
+	//char dispOutput[] = "data/disp0.dat";
+	char dispOutput[] = "data/disp.dat";
+	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
+	
+	int ts = 1;
+	ds->setDynamicSolver(RODS::DynamicSolver::StateSpace_NL);
+	ds->activeGroundMotion(RODS::Direction::X, ts, 4000.0);
+	ds->solveSeismicResponse(30);
+}
 //
 //void example_sdof_inerter_system_nl()
 //{
@@ -2172,7 +2172,7 @@ void example_plate4elastic()
 int main()
 {
 	//example_sdof();
-	//example_sdof_inerter_system();
+	example_sdof_inerter_system();
 	//example_sdof_inerter_system_nl();
 	//example_sdof_bl();
 	//example_shear_building();
@@ -2181,7 +2181,7 @@ int main()
 	//example_truss();
 	//example_truss_RODS();
 	//example_frame();
-	example_frame3D();
+	//example_frame3D();
 	//example_cantilever();
 	//example_wall();
 	//example_wall_RODS();

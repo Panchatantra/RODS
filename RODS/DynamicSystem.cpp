@@ -1229,7 +1229,7 @@ void DynamicSystem::assembleMatrix()
 	assembleStiffnessMatrix();
 	assembleDampingMatrix();
 	applyRestraint();
-	
+
 	if (useRayleighDamping)
 	{
 		buildRayleighDampingMatrix(RayleighOmg1, RayleighOmg2);
@@ -1238,7 +1238,7 @@ void DynamicSystem::assembleMatrix()
 	{
 		buildInherentDampingMatrix();
 	}
-	
+
 	applyLoad();
 
 	dsp = zeros<vec>(eqnCount);
@@ -1461,6 +1461,7 @@ void DynamicSystem::setNumModesInherentDamping(const int n)
 void DynamicSystem::buildInherentDampingMatrix()
 {
 	int eigenNum = NumModesInherentDamping > 0 ? NumModesInherentDamping : eqnCount;
+	std::cout << eigenNum << std::endl;
 	if (zeta == 0.0)
 	{
 		return;
@@ -1472,16 +1473,19 @@ void DynamicSystem::buildInherentDampingMatrix()
 			solveEigen();
 		}
 		mat Phi_ = Phi.head_cols(eigenNum);
+		vec omg_ = omg.head_rows(eigenNum);
 		mat MPhi = Mp * Phi_;
 		mat C_;
+		
 		if (eigenVectorNormed)
 		{
-			C_ = diagmat(2.0*zeta*omg);
+			C_ = diagmat(2.0*zeta*omg_);
 			C += MPhi * C_ * MPhi.t();
+			
 		}
 		else
 		{
-			C_ = diagmat(2.0*zeta*omg / diagvec(Phi.t()*MPhi));
+			C_ = diagmat(2.0*zeta*omg_ / diagvec(Phi_.t()*MPhi));
 			C += MPhi * C_ * MPhi.t();
 		}
 	}
