@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtGui import QColor, QIcon, QPainter, QPen
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QTableWidget, QTableWidgetItem, \
-                            QAction, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout, \
+from PySide6.QtCore import Qt, Slot
+from PySide6.QtGui import QColor, QIcon, QPainter, QPen, QAction
+from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QTableWidget, QTableWidgetItem, \
+                            QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout, \
                             QLabel, QSpinBox, QDoubleSpinBox, QComboBox, QLineEdit, QFileDialog
                             
 import numpy as np
