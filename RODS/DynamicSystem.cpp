@@ -29,6 +29,21 @@ DynamicSystem::~DynamicSystem()
 {
 }
 
+void DynamicSystem::addPoint(Point *p)
+{
+	auto it = Points.insert(std::make_pair(p->id, p));
+	if (!it.second)
+	{
+		cout << "Point ID: " << p->id << " already exists! The point will not be added." << endl;
+	}
+}
+
+void DynamicSystem::addPoint(const int pointId, const double x, const double y, const double z)
+{
+	Point *p = new Point(pointId, x, y, z);
+	addPoint(p);
+}
+
 void DynamicSystem::addNode(Node * nd)
 {
 	auto it = Nodes.insert(std::make_pair(nd->id, nd));
@@ -134,7 +149,7 @@ void DynamicSystem::addLine(Line *l)
 
 void DynamicSystem::addLine(const int id, const int ni, const int nj)
 {
-	Line *l = new Line(id, Nodes.at(ni), Nodes.at(nj));
+	Line *l = new Line(id, Points.at(ni), Points.at(nj));
 	addLine(l);
 }
 
@@ -2276,7 +2291,7 @@ void DynamicSystem::solveSeismicResponseStateSpace(const int nsub)
 	getElementResponse();
 	recordResponse();
 
-	double agd, agi, agj;
+	double agd, agi, agj=0.0;
 	for (int i = 0; i < nsteps - 1; i++)
 	{
 		cstep += 1;
@@ -2648,9 +2663,9 @@ void DynamicSystem::solveSeismicResponseStateSpaceMD(const int nsub)
 	getElementResponse();
 	recordResponse();
 
-	double agdX, agiX, agjX;
-	double agdY, agiY, agjY;
-	double agdZ, agiZ, agjZ;
+	double agdX, agiX, agjX=0.0;
+	double agdY, agiY, agjY=0.0;
+	double agdZ, agiZ, agjZ=0.0;
 	for (int i = 0; i < nsteps - 1; i++)
 	{
 		cstep += 1;
@@ -2730,9 +2745,9 @@ void DynamicSystem::solveSeismicResponseStateSpaceNLMD(const int nsub)
 	assembleNonlinearForceVector(true);
 	recordResponse();
 
-	double agdX, agiX, agjX;
-	double agdY, agiY, agjY;
-	double agdZ, agiZ, agjZ;
+	double agdX, agiX, agjX=0.0;
+	double agdY, agiY, agjY=0.0;
+	double agdZ, agiZ, agjZ=0.0;
 	for (int i = 0; i < nsteps - 1; i++)
 	{
 		cstep += 1;

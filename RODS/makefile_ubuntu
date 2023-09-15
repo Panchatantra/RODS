@@ -26,6 +26,7 @@ $(OutputFile): $(Objects)
 
 dylib: $(DynamicLib)
 	cp $(DynamicLib) python/
+	cp $(DynamicLib) ../RODS_GUI/
 
 $(DynamicLib): $(SharedObjects)
 	$(Linker) -shared -o $(DynamicLib) $(SharedObjects) $(LIB)

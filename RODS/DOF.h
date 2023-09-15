@@ -94,8 +94,10 @@ public:
 	void printResponse();
 
 	void setNodeId(const int id) {nodeId = id;}
+	void setPointId(const int id) {pointId = id;}
 
 	int nodeId; ///< The identifier of the associated node
+	int pointId; ///< The identifier of the associated node
     int eqnId; ///< The identifier of the DOF in system equations
 	double mass; ///< mass
 	RODS::Direction dir; ///< Direction

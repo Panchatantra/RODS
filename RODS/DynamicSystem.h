@@ -86,6 +86,9 @@ public:
 	DynamicSystem(const double z=0.05);
 	~DynamicSystem();
 
+	void addPoint(Point *p);
+	void addPoint(const int pointId, const double x, const double y=0.0, const double z=0.0);
+
 	void addNode(Node *nd);
 
 	/**
@@ -954,6 +957,7 @@ public:
 	std::map<int, int> dofMapNode;
 
 	std::map<int, Node *> Nodes; 			///< Nodes
+	std::map<int, Point *> Points; 			///< Points
 	std::map<int, Line *> Lines; 			///< Lines
 	std::map<int, DOF *> DOFs; 				///< DOFs
 	std::map<int, Element *> Elements; 		///< Elements
@@ -1073,9 +1077,6 @@ public:
 	double RayleighOmg2;		///< The second circular frequency for Rayleigh damping
 	int NumModesInherentDamping;///< The number of modes to calculate inherent damping
 
-	int dispControlDOFId;		///< The identifier of displacement control DOF
-	int dispControlLoadId;		///< The identifier of load pattern for displacement control DOF
-	int dispControlEqn;			///< The equation number of displacement control DOF
 
 	int XSeismicWaveId;			///< The identifier of seismic wave in X direction
 	int YSeismicWaveId;			///< The identifier of seismic wave in Y direction
@@ -1084,6 +1085,10 @@ public:
 	double XSeismicWaveScale;	///< The scale factor of seismic wave in X direction
 	double YSeismicWaveScale;	///< The scale factor of seismic wave in Y direction
 	double ZSeismicWaveScale;	///< The scale factor of seismic wave in Z direction
+
+	int dispControlDOFId;		///< The identifier of displacement control DOF
+	int dispControlLoadId;		///< The identifier of load pattern for displacement control DOF
+	int dispControlEqn;			///< The equation number of displacement control DOF
 
 	int NumDynamicSubSteps;
 	double tol;  ///< The tolerance for convergence check

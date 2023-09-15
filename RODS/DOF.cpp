@@ -2,7 +2,8 @@
 #include <iostream>
 
 DOF::DOF(const int id, RODS::Direction dir) :
-    Basis(id), eqnId(0), mass(0.0), dir(dir), isFixed(false), nodeId(-1),
+    Basis(id), eqnId(0), mass(0.0), dir(dir), isFixed(false),
+	nodeId(-1), pointId(-1),
     dsp(0.0), vel(0.0), acc(0.0)
 {
 	loads.clear();
@@ -10,7 +11,8 @@ DOF::DOF(const int id, RODS::Direction dir) :
 
 DOF::DOF(const int id, RODS::Direction dir, const double m, const bool fixed) :
 	Basis(id), eqnId(0), mass(m), dir(dir), isFixed(fixed),
-    dsp(0.0), vel(0.0), acc(0.0)
+    nodeId(-1), pointId(-1),
+	dsp(0.0), vel(0.0), acc(0.0)
 {
 	loads.clear();
 }

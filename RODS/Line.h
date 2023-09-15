@@ -1,6 +1,6 @@
 #pragma once
 #include "Basis.h"
-#include "Node.h"
+#include "Point.h"
 
 /**
  * @brief      The line.
@@ -9,9 +9,9 @@ class Line :
 	public Basis
 {
 public:
-	Line(const int id, Node *i, Node *j);
+	Line(const int id, Point *i, Point *j);
 	~Line();
 
-	Node *nodeI, *nodeJ;
+	Point *pointI, *pointJ;
 };
 

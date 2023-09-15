@@ -24,7 +24,6 @@ bld/
 RODS/x64/
 RODS/x86/
 RODS/latex/
-RODS/RODS
 
 # Cmake files
 cmake-build-Debug/
@@ -358,6 +357,8 @@ Thumbs.db
 # --------
 *.dll
 *.exe
+RODS/RODS
+RODS_GUI/RODS_GUI
 
 # docs
 RODS/html/
