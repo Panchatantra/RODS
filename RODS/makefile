@@ -1,9 +1,9 @@
 CXX = g++
 Linker = g++
-OutputFile = RODS.exe
-DynamicLib = RODS.dll
-# OutputFile = RODS
-# DynamicLib = RODS.so
+# OutputFile = RODS.exe
+# DynamicLib = RODS.dll
+OutputFile = RODS
+DynamicLib = librods.so
 
 SourceFiles = $(wildcard *.cpp) $(wildcard material/*.cpp) $(wildcard element/*.cpp) $(wildcard section/*.cpp)  $(wildcard recorder/*.cpp)
 HeaderFiles = $(wildcard *.h) $(wildcard material/*.h) $(wildcard element/*.h) $(wildcard section/*.h)  $(wildcard recorder/*.h)
@@ -11,10 +11,10 @@ Objects = $(subst .cpp,.o,$(SourceFiles))
 SharedObjects = $(subst .cpp,.cpp.o,$(SourceFiles))
 
 CXXFLAGS = -Wall -O2
-INCLUDE = -I. -I./material -I./element -I./section -I./recorder
-LIB = -lopenblas
+INCLUDE = -I. -I./material -I./element -I./section -I./recorder -I../../armadillo/include
+LIB = -lopenblas -llapacke
 
-.PHONY: all dylib clean
+.PHONY: all dylib install clean
 
 all: $(OutputFile)
 
@@ -25,6 +25,10 @@ $(OutputFile): $(Objects)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ $(INCLUDE)
 
 dylib: $(DynamicLib)
+	cp $(DynamicLib) python/
+
+install: $(DynamicLib)
+	sudo cp $(DynamicLib) /usr/local/lib
 
 $(DynamicLib): $(SharedObjects)
 	$(Linker) -shared -o $(DynamicLib) $(SharedObjects) $(LIB)
