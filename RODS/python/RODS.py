@@ -43,6 +43,9 @@ class LocalAxis(enum.Enum):
 set_damping_ratio = RODSDLL.set_damping_ratio
 set_damping_ratio.argtypes = [c_double]
 
+get_damping_ratio = RODSDLL.get_damping_ratio
+get_damping_ratio.restype = c_double
+
 set_rayleigh_damping = RODSDLL.set_rayleigh_damping
 set_rayleigh_damping.argtypes = [c_double, c_double]
 
@@ -60,6 +63,12 @@ add_dof.argtypes = [c_int, c_int, c_double]
 set_dof_mass = RODSDLL.set_dof_mass
 set_dof_mass.restype = c_size_t
 set_dof_mass.argtypes = [c_int, c_double]
+
+get_num_dof = RODSDLL.get_num_dof
+get_num_dof.restype = c_int
+
+get_num_ele = RODSDLL.get_num_ele
+get_num_ele.restype = c_int
 
 set_node_mass = RODSDLL.set_node_mass
 set_node_mass.restype = c_size_t

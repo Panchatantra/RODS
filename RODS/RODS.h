@@ -12,7 +12,9 @@
 
 
 extern "C" {
+
 	DLL_API void clear();
+	DLL_API void delete_model();
 	DLL_API void set_damping_ratio(const double zeta);
 	DLL_API void set_rayleigh_damping(const double omg1, const double omg2);
 	DLL_API void set_num_modes_inherent_damping(const int n);
@@ -93,4 +95,7 @@ extern "C" {
 
 	DLL_API size_t add_mat_sma_bilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift);
 
+	DLL_API double get_damping_ratio();
+	DLL_API size_t get_num_dof();
+	DLL_API size_t get_num_ele();
 }

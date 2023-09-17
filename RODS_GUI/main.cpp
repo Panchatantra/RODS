@@ -12,6 +12,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "RODS.h"
+
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
@@ -32,7 +34,7 @@ const char* fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(0.7f, 0.5f, 0.0f, 1.0f);\n"
+    "   FragColor = vec4(0.2f, 0.5f, 0.0f, 1.0f);\n"
     "}\n\0";
 
 // Main code
@@ -108,7 +110,7 @@ int main(int, char**)
     // - Read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
     //io.Fonts->AddFontDefault();
-    io.Fonts->AddFontFromFileTTF("./resource/FiraSans-Regular.ttf", 36.0f);
+    io.Fonts->AddFontFromFileTTF("./resource/FiraSans-Regular.ttf", 42.0f);
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
 
@@ -133,7 +135,7 @@ int main(int, char**)
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
-
+    // delete shaders
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
@@ -141,8 +143,9 @@ int main(int, char**)
          0.5f,  0.5f, 0.0f,  // top right
          0.5f, -0.5f, 0.0f,  // bottom right
         -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left 
+        -0.5f,  0.5f, 0.0f   // top left
     };
+
     unsigned int indices[] = {  // note that we start from 0!
         0, 1, 3,  // first Triangle
         1, 2, 3   // second Triangle
@@ -171,6 +174,7 @@ int main(int, char**)
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -226,6 +230,19 @@ int main(int, char**)
         //    ImGui::End();
         //}
 
+        ImGui::Begin("Inherent Damping");
+        static float zeta = 0.05;
+        ImGui::InputFloat("Damping Ratio", &zeta);
+        if (ImGui::Button("Set Damping Ratio"))
+            set_damping_ratio(zeta);
+        static int rayleigh_damping_modes[2] = { 1, 2 };
+        ImGui::InputInt2("Rayleigh Damping Modes", rayleigh_damping_modes);
+        ImGui::Button("Use Rayleigh Damping");
+        static int num_modes = 1;
+        ImGui::InputInt("Number of Modes", &num_modes);
+        ImGui::Button("Use Mode Orthogonal Damping");
+        ImGui::End();
+
         ImGui::Begin("Add Point");
         static int pt_id = 1;
         ImGui::InputInt("Point ID", &pt_id);
@@ -239,6 +256,14 @@ int main(int, char**)
         ImGui::InputInt("DOF ID", &dof_id);
         static double mass = 1.0;
         ImGui::InputDouble("DOF Mass", &mass);
+        ImGui::Button("Add DOF");
+        ImGui::End();
+
+        ImGui::Begin("Model Information");
+        ImGui::Text("RODS");
+        ImGui::Text("Inherent Damping Ratio: %.3f", get_damping_ratio());
+        ImGui::Text("Number of DOFs: %d", get_num_dof());
+        ImGui::Text("Number of Elements: %d", get_num_ele());
         ImGui::End();
 
         // Rendering
@@ -280,6 +305,8 @@ int main(int, char**)
 
     glfwDestroyWindow(window);
     glfwTerminate();
+
+    delete_model();
 
     return 0;
 }
