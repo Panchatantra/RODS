@@ -23,6 +23,8 @@ extern "C" {
 	DLL_API size_t add_dof_x(const int id, const double m);
 	DLL_API size_t add_dof(const int id, const int dir, const double m);
 	DLL_API size_t add_node_1d(const int nodeId, const double x, const int dofId);
+	DLL_API size_t add_point(const int pointId, const double x, const double y, const double z);
+	DLL_API size_t add_line(const int lineId, const int i, const int j);
 	DLL_API size_t add_node_2d(const int nodeId, const double x, const double z,
 								const int dofXId, const int dofZId, const int dofRYId);
 	DLL_API size_t add_node_3d(const int nodeId, const double x, const double y, const double z,

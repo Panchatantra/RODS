@@ -106,6 +106,18 @@ size_t add_node_1d(const int nodeId, const double x, const int dofId)
 	return ds->Nodes.size();
 }
 
+DLL_API size_t add_point(const int pointId, const double x, const double y, const double z)
+{
+	ds->addPoint(pointId, x, y, z);
+	return ds->Points.size();
+}
+
+DLL_API size_t add_line(const int lineId, const int i, const int j)
+{
+	ds->addLine(lineId, i, j);
+	return ds->Lines.size();
+}
+
 size_t add_node_2d(const int nodeId, const double x, const double z, const int dofXId, const int dofZId,
 	const int dofRYId)
 {

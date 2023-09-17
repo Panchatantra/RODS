@@ -2,7 +2,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
-#include <iostream>
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
@@ -30,7 +29,7 @@ const char* fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+    "   FragColor = vec4(0.7f, 0.5f, 0.0f, 1.0f);\n"
     "}\n\0";
 
 // Main code
@@ -105,12 +104,8 @@ int main(int, char**)
     // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
     // - Read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    // - Our Emscripten build process allows embedding fonts to be accessible at runtime from the "fonts/" folder. See Makefile.emscripten for details.
     //io.Fonts->AddFontDefault();
     io.Fonts->AddFontFromFileTTF("./resource/FiraSans-Regular.ttf", 36.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
 
@@ -118,7 +113,7 @@ int main(int, char**)
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cout << "Failed to initialize GLAD" << std::endl;
+        printf("Failed to initialize GLAD!\n");
         return -1;
     }
 
@@ -228,10 +223,19 @@ int main(int, char**)
         //    ImGui::End();
         //}
 
-        ImGui::Begin("Add DOF");
-        static int dof_id = 0;
-        ImGui::InputInt("DOF ID", &dof_id);
+        ImGui::Begin("Add Point");
+        static int pt_id = 1;
+        ImGui::InputInt("Point ID", &pt_id);
+        static double coord[3] = {0.0, 0.0, 0.0};
+        ImGui::InputFloat3("Coords (X,Y,Z)", (float *)&coord);
+        ImGui::Button("Add Point");
+        ImGui::End();
 
+        ImGui::Begin("Add DOF");
+        static int dof_id = 1;
+        ImGui::InputInt("DOF ID", &dof_id);
+        static double mass = 1.0;
+        ImGui::InputDouble("DOF Mass", &mass);
         ImGui::End();
 
         // Rendering

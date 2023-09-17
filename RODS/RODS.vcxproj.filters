@@ -230,6 +230,9 @@
     <ClCompile Include="element\SpringNonlinear3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Point.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="numeric.h">
@@ -452,6 +455,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="element\SpringNonlinear3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
