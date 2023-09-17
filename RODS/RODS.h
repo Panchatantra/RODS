@@ -2,6 +2,7 @@
 
 #ifdef __GNUC__
 #define DLL_API
+#include <cstddef>
 #else
 #ifdef DLLEXPORT
 #define DLL_API __declspec(dllexport)
