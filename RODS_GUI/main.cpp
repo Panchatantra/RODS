@@ -290,11 +290,6 @@ int main(int, char**)
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(backup_current_context);
         }
-        
-        // add_point(1, 0.0, 0.0, 0.0);
-        // add_point(2, 0.2, 0.0, 0.0);
-        // add_point(3, 0.5, 0.0, 0.0);
-        // num_point = get_num_point();
 
         if (num_point > 0) {
             
@@ -308,12 +303,6 @@ int main(int, char**)
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
             glDrawArrays(GL_POINTS, 0, num_point);
-            
-
-            for (size_t i = 0; i < num_point; i++)
-            {
-                printf("%f\n", vertices[i*3]);
-            }
         }
         
         glUseProgram(shaderProgram);
