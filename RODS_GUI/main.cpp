@@ -293,22 +293,24 @@ int main(int, char**)
 
         if (num_point > 0) {
             
-            float vertices[num_point*3];
-            get_point_coord(vertices);
+            //float vertices[num_point*3];
+            float* vertices = new float[num_point * 3];
+            get_point_coord(vertices, false);
 
             glUseProgram(shaderProgram);
             glBindVertexArray(VAO);
 
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, num_point*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
 
             glDrawArrays(GL_POINTS, 0, num_point);
+            delete[] vertices;
         }
         
         glUseProgram(shaderProgram);
         glDrawArrays(GL_POINTS, 0, 3);
         //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+        
         glfwSwapBuffers(window);
     }
 

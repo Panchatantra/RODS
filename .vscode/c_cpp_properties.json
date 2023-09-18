@@ -6,6 +6,7 @@
                 "${workspaceFolder}/**",
                 "${default}",
                 "../glad/include",
+                "../glfw/include",
                 "../armadillo/include",
                 "${workspaceFolder}/RODS"
             ],
@@ -14,6 +15,27 @@
             "cStandard": "c17",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-clang-x64"
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${default}",
+                "../glad/include",
+                "../glfw/include",
+                "../armadillo/include",
+                "${workspaceFolder}/RODS"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.22000.0",
+            "compilerPath": "cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
         }
     ],
     "version": 4
