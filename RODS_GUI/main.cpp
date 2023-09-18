@@ -27,14 +27,14 @@ const char* vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0f);\n"
     "}\0";
 
 const char* fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(0.2f, 0.5f, 0.0f, 1.0f);\n"
+    "   FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
     "}\n\0";
 
 // Main code
@@ -110,7 +110,7 @@ int main(int, char**)
     // - Read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
     //io.Fonts->AddFontDefault();
-    io.Fonts->AddFontFromFileTTF("./resource/FiraSans-Regular.ttf", 42.0f);
+    io.Fonts->AddFontFromFileTTF("./resource/FiraSans-Regular.ttf", 36.0f);
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
 
@@ -121,6 +121,8 @@ int main(int, char**)
         printf("Failed to initialize GLAD!\n");
         return -1;
     }
+
+    glPointSize(10);
 
     // vertex shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -139,11 +141,10 @@ int main(int, char**)
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    float vertices[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left
+    float vertices_[] = {
+         0.0f,  0.0f, 0.0f,
+         0.2f,  0.0f, 0.0f,
+         0.5f, -0.0f, 0.0f
     };
 
     unsigned int indices[] = {  // note that we start from 0!
@@ -154,25 +155,25 @@ int main(int, char**)
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    // glGenBuffers(1, &EBO);
+    
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
-
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_), vertices_, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0);
+    // glBindVertexArray(0);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
@@ -243,15 +244,17 @@ int main(int, char**)
         ImGui::Button("Use Mode Orthogonal Damping");
         ImGui::End();
 
-        ImGui::Begin("Add Point");
+        ImGui::Begin("Point");
         static int pt_id = 1;
         ImGui::InputInt("Point ID", &pt_id);
-        static double coord[3] = {0.0, 0.0, 0.0};
-        ImGui::InputFloat3("Coords (X,Y,Z)", (float *)&coord);
-        ImGui::Button("Add Point");
+        static float coord[3] = {0.0, 0.0, 0.0};
+        ImGui::InputFloat3("Coords (X,Y,Z)", coord);
+        if (ImGui::Button("Add Point")) {
+            add_point(pt_id, coord[0], coord[1], coord[2]);
+        }
         ImGui::End();
 
-        ImGui::Begin("Add DOF");
+        ImGui::Begin("DOF");
         static int dof_id = 1;
         ImGui::InputInt("DOF ID", &dof_id);
         static double mass = 1.0;
@@ -259,10 +262,12 @@ int main(int, char**)
         ImGui::Button("Add DOF");
         ImGui::End();
 
-        ImGui::Begin("Model Information");
+        ImGui::Begin("Basic Information");
         ImGui::Text("RODS");
         ImGui::Text("Inherent Damping Ratio: %.3f", get_damping_ratio());
         ImGui::Text("Number of DOFs: %d", get_num_dof());
+        auto num_point = get_num_point();
+        ImGui::Text("Number of Points: %d", num_point);
         ImGui::Text("Number of Elements: %d", get_num_ele());
         ImGui::End();
 
@@ -285,10 +290,35 @@ int main(int, char**)
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(backup_current_context);
         }
+        
+        // add_point(1, 0.0, 0.0, 0.0);
+        // add_point(2, 0.2, 0.0, 0.0);
+        // add_point(3, 0.5, 0.0, 0.0);
+        // num_point = get_num_point();
+
+        if (num_point > 0) {
+            
+            float vertices[num_point*3];
+            get_point_coord(vertices);
+
+            glUseProgram(shaderProgram);
+            glBindVertexArray(VAO);
+
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+
+            glDrawArrays(GL_POINTS, 0, num_point);
+            
+
+            for (size_t i = 0; i < num_point; i++)
+            {
+                printf("%f\n", vertices[i*3]);
+            }
+        }
+        
         glUseProgram(shaderProgram);
-        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_POINTS, 0, 3);
+        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
     }

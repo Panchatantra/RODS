@@ -35,6 +35,8 @@ extern "C" {
 								const int dofRXId, const int dofRYId, const int dofRZId);
 	DLL_API size_t set_dof_mass(const int id, const double m);
 	DLL_API size_t set_node_mass(const int id, const double m);
+	DLL_API size_t set_dof_point_id(const int dof_id, const int point_id);
+	DLL_API size_t set_dof_node_id(const int dof_id, const int node_id);
 
 	DLL_API size_t add_spring(const int id, const int i, const int j, const double k);
 	DLL_API size_t add_dashpot(const int id, const int i, const int j, const double c);
@@ -98,5 +100,7 @@ extern "C" {
 
 	DLL_API double get_damping_ratio();
 	DLL_API size_t get_num_dof();
+	DLL_API size_t get_num_point();
 	DLL_API size_t get_num_ele();
+	DLL_API size_t get_point_coord(float *pt, const bool norm=true);
 }

@@ -370,6 +370,18 @@ DLL_API size_t set_node_mass(const int id, const double m)
 	return ds->Nodes.size();
 }
 
+DLL_API size_t set_dof_point_id(const int dof_id, const int point_id)
+{
+    ds->DOFs.at(dof_id)->setPointId(point_id);
+	return ds->DOFs.size();
+}
+
+DLL_API size_t set_dof_node_id(const int dof_id, const int node_id)
+{
+    ds->DOFs.at(dof_id)->setNodeId(node_id);
+	return ds->Nodes.size();
+}
+
 DLL_API size_t add_node_dof_to_recorder(const int nodeId, const int dir, const int rId)
 {
 	int dofId = -1;
@@ -423,9 +435,47 @@ DLL_API size_t get_num_dof()
 	return ds->DOFs.size();
 }
 
+DLL_API size_t get_num_point()
+{
+    return ds->Points.size();
+}
+
 DLL_API size_t get_num_ele()
 {
 	return ds->Elements.size();
 }
 
-
+DLL_API size_t get_point_coord(float *pt, const bool norm)
+{
+    auto np = ds->Points.size();
+	size_t i = 0;
+	if (np>0)
+	{
+		for (auto it = ds->Points.begin(); it != ds->Points.end(); it++)
+		{
+			auto x = it->second->x;
+			auto y = it->second->y;
+			auto z = it->second->z;
+			if (norm) {
+				if (ds->xMax > 0.0 || ds->xMin < 0.0) {
+					x /= ds->xMax > -ds->xMin ? ds->xMax : -ds->xMin ;
+					x *= 0.9;
+				}
+				if (ds->yMax > 0.0 || ds->yMin < 0.0) {
+					y /= ds->yMax > -ds->yMin ? ds->yMax : -ds->yMin ;
+					y *= 0.9;
+				}
+				if (ds->zMax > 0.0 || ds->zMin < 0.0) {
+					z /= ds->zMax > -ds->zMin ? ds->zMax : -ds->zMin ;
+					z *= 0.9;
+				}
+			}
+			pt[3*i] = x;
+			pt[3*i+1] = y;
+			pt[3*i+2] = z;
+			i++;
+		}
+	}
+	
+	return np*3;
+}

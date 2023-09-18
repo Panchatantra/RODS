@@ -21,7 +21,8 @@ DynamicSystem::DynamicSystem(const double z) :
 	XSeismicWaveScale(0.0), YSeismicWaveScale(0.0), ZSeismicWaveScale(0.0),
 	dispControlDOFId(-1), dispControlLoadId(-1), dispControlEqn(-1),
 	NumDynamicSubSteps(1), tol(1e-6), maxIter(20),
-	exportGmshInterval(-1)
+	exportGmshInterval(-1),
+	xMax(0.0), xMin(0.0), yMax(0.0), yMin(0.0), zMax(0.0), zMin(0.0)
 {
 }
 
@@ -35,6 +36,17 @@ void DynamicSystem::addPoint(Point *p)
 	if (!it.second)
 	{
 		cout << "Point ID: " << p->id << " already exists! The point will not be added." << endl;
+	}
+	else
+	{
+		if (p->x > xMax) xMax = p->x;
+		else if (p->x < xMin) xMin = p->x;
+
+		if (p->y > yMax) yMax = p->y;
+		else if (p->y < yMin) yMin = p->y;
+
+		if (p->z > zMax) zMax = p->z;
+		else if (p->z < zMin) zMin = p->z;
 	}
 }
 
@@ -50,6 +62,17 @@ void DynamicSystem::addNode(Node * nd)
 	if (!it.second)
 	{
 		cout << "Node ID: " << nd->id << " already exists! The node will not be added." << endl;
+	}
+	else
+	{
+		if (nd->x > xMax) xMax = nd->x;
+		else if (nd->x < xMin) xMin = nd->x;
+
+		if (nd->y > yMax) yMax = nd->y;
+		else if (nd->y < yMin) yMin = nd->y;
+
+		if (nd->z > zMax) zMax = nd->z;
+		else if (nd->z < zMin) zMin = nd->z;
 	}
 }
 

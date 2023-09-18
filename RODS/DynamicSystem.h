@@ -1098,4 +1098,8 @@ public:
 	std::ofstream gmshFile;
 	int exportGmshInterval;
 	string name;
+
+	double xMax, xMin;
+	double yMax, yMin;
+	double zMax, zMin;
 };
