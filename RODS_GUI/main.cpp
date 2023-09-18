@@ -1,6 +1,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "implot.h"
 #include <stdio.h>
 #define GL_SILENCE_DEPRECATION
 #if defined(__arm__)
@@ -17,6 +18,7 @@
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
+#include <math.h>
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -77,6 +79,7 @@ int main(int, char**)
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -141,12 +144,6 @@ int main(int, char**)
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    float vertices_[] = {
-         0.0f,  0.0f, 0.0f,
-         0.2f,  0.0f, 0.0f,
-         0.5f, -0.0f, 0.0f
-    };
-
     unsigned int indices[] = {  // note that we start from 0!
         0, 1, 3,  // first Triangle
         1, 2, 3   // second Triangle
@@ -160,7 +157,6 @@ int main(int, char**)
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_), vertices_, GL_STATIC_DRAW);
 
     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -168,14 +164,9 @@ int main(int, char**)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    // glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -192,7 +183,7 @@ int main(int, char**)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         //if (show_demo_window)
@@ -271,6 +262,21 @@ int main(int, char**)
         ImGui::Text("Number of Elements: %d", get_num_ele());
         ImGui::End();
 
+        ImGui::Begin("Wave");
+        float x_data[1000];
+        float y_data[1000];
+        float dt = 0.01;
+        for (size_t i = 0; i < 1000; i++)
+        {
+            x_data[i] = dt * i;
+            y_data[i] = sinf(6.28f * dt * i);
+        }
+        if (ImPlot::BeginPlot("My Plot")) {
+            ImPlot::PlotLine("My Line Plot", x_data, y_data, 1000);
+            ImPlot::EndPlot();
+        }
+        ImGui::End();
+
         // Rendering
         ImGui::Render();
         int display_w, display_h;
@@ -293,9 +299,8 @@ int main(int, char**)
 
         if (num_point > 0) {
             
-            //float vertices[num_point*3];
             float* vertices = new float[num_point * 3];
-            get_point_coord(vertices, false);
+            get_point_coord(vertices, true);
 
             glUseProgram(shaderProgram);
             glBindVertexArray(VAO);
@@ -307,8 +312,6 @@ int main(int, char**)
             delete[] vertices;
         }
         
-        glUseProgram(shaderProgram);
-        glDrawArrays(GL_POINTS, 0, 3);
         //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
         glfwSwapBuffers(window);
@@ -317,6 +320,7 @@ int main(int, char**)
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
 
     glDeleteVertexArrays(1, &VAO);
