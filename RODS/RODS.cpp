@@ -455,6 +455,11 @@ DLL_API size_t get_point_id(int *pid)
 	return np;
 }
 
+DLL_API size_t get_num_line()
+{
+	return ds->Lines.size();
+}
+
 DLL_API size_t get_num_ele()
 {
 	return ds->Elements.size();
@@ -493,4 +498,20 @@ DLL_API size_t get_point_coord(float *pt, const bool norm)
 	}
 	
 	return np*3;
+}
+
+DLL_API size_t get_line_point_id(int* pid)
+{
+	auto nl = ds->Lines.size();
+	size_t i = 0;
+	if (nl > 0)
+	{
+		for (auto it = ds->Lines.begin(); it != ds->Lines.end(); it++)
+		{
+			pid[i*2] = it->second->pointI->id;
+			pid[i*2+1] = it->second->pointJ->id;
+			i++;
+		}
+	}
+	return nl*2;
 }

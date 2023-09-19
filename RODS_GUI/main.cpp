@@ -5,6 +5,7 @@
 #include "ImGuiFileDialog.h"
 #include <stdio.h>
 #include <fstream>
+#include <map>
 #define GL_SILENCE_DEPRECATION
 #if defined(__arm__)
 #define IMGUI_IMPL_OPENGL_ES2
@@ -21,6 +22,9 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 #include <math.h>
+
+std::map<int, int> PointIdMapOrder;
+static int point_order = 0;
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -146,22 +150,14 @@ int main(int, char**)
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,  // first Triangle
-        1, 2, 3   // second Triangle
-    };
-
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    // glGenBuffers(1, &EBO);
+    glGenBuffers(1, &EBO);
     
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -169,6 +165,13 @@ int main(int, char**)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    float* wave_t_data = nullptr;
+    float* wave_a_data = nullptr;
+
+    static int num_dof = 0;
+    static int num_point = 0;
+    static int num_line = 0;
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -237,24 +240,26 @@ int main(int, char**)
         ImGui::Button("Use Mode Orthogonal Damping");
         ImGui::End();
 
-        static int num_point;
-
         ImGui::Begin("Point");
         static int pt_id = 1;
         ImGui::InputInt("Point ID", &pt_id);
         static float coord[3] = {0.0, 0.0, 0.0};
         ImGui::InputFloat3("Coords (X,Y,Z)", coord);
         if (ImGui::Button("Add Point")) {
-            add_point(pt_id, coord[0], coord[1], coord[2]);
-            num_point = get_num_point();
+            num_point = add_point(pt_id, coord[0], coord[1], coord[2]);
+            if (PointIdMapOrder.count(pt_id) == 0)
+            {
+                PointIdMapOrder[pt_id] = point_order;
+                point_order++;
+            }
         }
         ImGui::End();
 
         int *pointList;
         ImGui::Begin("Line");
         static int l_id = 1;
-        static int p_id_i = 1;
-        static int p_id_j = 1;
+        static int p_id_i = 0;
+        static int p_id_j = 0;
         ImGui::InputInt("Line ID", &l_id);
         if (ImGui::Button("Choose Points"))
             ImGui::OpenPopup("Choose Points for Line");
@@ -265,15 +270,21 @@ int main(int, char**)
             const char** pointItems = new const char* [num_point];
             for (size_t i = 0; i < num_point; i++)
             {
-                pointItems[i] = std::to_string(pointList[i]).c_str();
+                auto item_str = new char[20];
+                snprintf(item_str, 20, "%d", pointList[i]);
+                pointItems[i] = item_str;
             }
-            static int item_order_i = 0;
-            static int item_order_j = 0;
-            ImGui::Combo("Point I", &item_order_i, pointItems, num_point);
+            static int point_item_index_i = 0;
+            static int point_item_index_j = 0;
+            ImGui::Combo("Point I", &point_item_index_i, pointItems, num_point);
+            ImGui::Combo("Point J", &point_item_index_j, pointItems, num_point);
+            p_id_i = pointList[point_item_index_i];
+            p_id_j = pointList[point_item_index_j];
             ImGui::EndPopup();
         }
+        ImGui::Text("Choosed Point I: %d, Point J: %d", p_id_i, p_id_j);
         if (ImGui::Button("Add Line")) {
-            // add_line(l_id, coord[0], coord[1]);
+             num_line = add_line(l_id, p_id_i, p_id_j);
         }
         ImGui::End();
 
@@ -290,6 +301,7 @@ int main(int, char**)
         ImGui::Text("Inherent Damping Ratio: %.3f", get_damping_ratio());
         ImGui::Text("Number of DOFs: %d", get_num_dof());
         ImGui::Text("Number of Points: %d", num_point);
+        ImGui::Text("Number of Lines: %d", num_line);
         ImGui::Text("Number of Elements: %d", get_num_ele());
         ImGui::End();
 
@@ -301,8 +313,6 @@ int main(int, char**)
         static int num_steps;
         static std::string waveFilePathName;
         static std::string waveFileName;
-        float *x_data;
-        float *y_data;
 
         // open Dialog Simple
         if (ImGui::Button("Choose File"))
@@ -326,11 +336,11 @@ int main(int, char**)
                 wf.close();
 
                 wf.open(waveFilePathName);
-                y_data = new float[num_steps];
+                wave_a_data = new float[num_steps];
 
                 for (size_t i = 0; i < num_steps; i++)
                 {
-                    wf >> y_data[i];
+                    wf >> wave_a_data[i];
                 }
                 wf.close();
             }
@@ -344,14 +354,14 @@ int main(int, char**)
         
         if (num_steps > 0)
         {
-            x_data = new float[num_steps];
+            wave_t_data = new float[num_steps];
             for (size_t i = 0; i < num_steps; i++)
             {
-                x_data[i] = dt*i;
+                wave_t_data[i] = dt*i;
             }
             if (ImPlot::BeginPlot("Wave")) {
                 ImPlot::SetupAxes("Time", "Value", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-                ImPlot::PlotLine(waveFileName.c_str(), x_data, y_data, num_steps);
+                ImPlot::PlotLine(waveFileName.c_str(), wave_t_data, wave_a_data, num_steps);
                 ImPlot::EndPlot();
             }
         }
@@ -383,20 +393,37 @@ int main(int, char**)
 
         if (num_point > 0) {
             
-            float* vertices = new float[num_point * 3];
+            float* vertices = new float[(size_t)num_point*3];
             get_point_coord(vertices, true);
 
             glUseProgram(shaderProgram);
             glBindVertexArray(VAO);
 
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, num_point*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, (size_t)num_point*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
 
             glDrawArrays(GL_POINTS, 0, num_point);
+
+            if (num_line > 0) {
+
+                int* indices = new int[(size_t)num_line*2];
+                get_line_point_id(indices);
+
+                for (size_t i = 0; i < (size_t)num_line * 2; i++)
+                {
+                    //--indices[i];
+                    indices[i] = PointIdMapOrder[indices[i]];
+                }
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_line*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
+
+                glDrawElements(GL_LINES, 2*num_line, GL_UNSIGNED_INT, (void*)0);
+                
+                delete[] indices;
+            }
             delete[] vertices;
         }
-        
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
         glfwSwapBuffers(window);
     }

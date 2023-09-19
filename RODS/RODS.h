@@ -102,6 +102,8 @@ extern "C" {
 	DLL_API size_t get_num_dof();
 	DLL_API size_t get_num_point();
 	DLL_API size_t get_point_id(int *pid);
+	DLL_API size_t get_num_line();
 	DLL_API size_t get_num_ele();
 	DLL_API size_t get_point_coord(float *pt, const bool norm=true);
+	DLL_API size_t get_line_point_id(int* pid);
 }
