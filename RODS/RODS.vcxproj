@@ -120,11 +120,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DLLRelease|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseIntelMKL>Parallel</UseIntelMKL>
     <UseInteloneMKL>Parallel</UseInteloneMKL>
+    <UseIntelMPI>true</UseIntelMPI>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
