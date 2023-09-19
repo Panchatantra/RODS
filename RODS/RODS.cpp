@@ -440,6 +440,21 @@ DLL_API size_t get_num_point()
     return ds->Points.size();
 }
 
+DLL_API size_t get_point_id(int *pid)
+{
+    auto np = ds->Points.size();
+	size_t i = 0;
+	if (np>0)
+	{
+		for (auto it = ds->Points.begin(); it != ds->Points.end(); it++)
+		{
+			pid[i] = it->second->id;
+			i++;
+		}
+	}
+	return np;
+}
+
 DLL_API size_t get_num_ele()
 {
 	return ds->Elements.size();

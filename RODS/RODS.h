@@ -101,6 +101,7 @@ extern "C" {
 	DLL_API double get_damping_ratio();
 	DLL_API size_t get_num_dof();
 	DLL_API size_t get_num_point();
+	DLL_API size_t get_point_id(int *pid);
 	DLL_API size_t get_num_ele();
 	DLL_API size_t get_point_coord(float *pt, const bool norm=true);
 }

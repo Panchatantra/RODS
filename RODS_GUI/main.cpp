@@ -2,7 +2,9 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "implot.h"
+#include "ImGuiFileDialog.h"
 #include <stdio.h>
+#include <fstream>
 #define GL_SILENCE_DEPRECATION
 #if defined(__arm__)
 #define IMGUI_IMPL_OPENGL_ES2
@@ -183,7 +185,7 @@ int main(int, char**)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::ShowDemoWindow();
+        // ImGui::ShowDemoWindow();
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         //if (show_demo_window)
@@ -235,6 +237,8 @@ int main(int, char**)
         ImGui::Button("Use Mode Orthogonal Damping");
         ImGui::End();
 
+        static int num_point;
+
         ImGui::Begin("Point");
         static int pt_id = 1;
         ImGui::InputInt("Point ID", &pt_id);
@@ -242,6 +246,34 @@ int main(int, char**)
         ImGui::InputFloat3("Coords (X,Y,Z)", coord);
         if (ImGui::Button("Add Point")) {
             add_point(pt_id, coord[0], coord[1], coord[2]);
+            num_point = get_num_point();
+        }
+        ImGui::End();
+
+        int *pointList;
+        ImGui::Begin("Line");
+        static int l_id = 1;
+        static int p_id_i = 1;
+        static int p_id_j = 1;
+        ImGui::InputInt("Line ID", &l_id);
+        if (ImGui::Button("Choose Points"))
+            ImGui::OpenPopup("Choose Points for Line");
+        if (ImGui::BeginPopup("Choose Points for Line"))
+        {
+            pointList = new int [num_point];
+            get_point_id(pointList);
+            const char** pointItems = new const char* [num_point];
+            for (size_t i = 0; i < num_point; i++)
+            {
+                pointItems[i] = std::to_string(pointList[i]).c_str();
+            }
+            static int item_order_i = 0;
+            static int item_order_j = 0;
+            ImGui::Combo("Point I", &item_order_i, pointItems, num_point);
+            ImGui::EndPopup();
+        }
+        if (ImGui::Button("Add Line")) {
+            // add_line(l_id, coord[0], coord[1]);
         }
         ImGui::End();
 
@@ -257,23 +289,75 @@ int main(int, char**)
         ImGui::Text("RODS");
         ImGui::Text("Inherent Damping Ratio: %.3f", get_damping_ratio());
         ImGui::Text("Number of DOFs: %d", get_num_dof());
-        auto num_point = get_num_point();
         ImGui::Text("Number of Points: %d", num_point);
         ImGui::Text("Number of Elements: %d", get_num_ele());
         ImGui::End();
 
         ImGui::Begin("Wave");
-        float x_data[1000];
-        float y_data[1000];
-        float dt = 0.01;
-        for (size_t i = 0; i < 1000; i++)
+        static int wave_id = 1;
+        ImGui::InputInt("Wave ID", &wave_id);
+        static double dt = 0.02;
+        ImGui::InputDouble("Time Interval", &dt);
+        static int num_steps;
+        static std::string waveFilePathName;
+        static std::string waveFileName;
+        float *x_data;
+        float *y_data;
+
+        // open Dialog Simple
+        if (ImGui::Button("Choose File"))
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".txt,.dat,.*", ".");
+
+        // display
+        if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
         {
-            x_data[i] = dt * i;
-            y_data[i] = sinf(6.28f * dt * i);
+            // action if OK
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                waveFilePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+                // std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+                waveFileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
+
+                std::string line;
+                std::ifstream wf(waveFilePathName);
+                num_steps = 0;
+                while (std::getline(wf, line))
+                    ++num_steps;
+                wf.close();
+
+                wf.open(waveFilePathName);
+                y_data = new float[num_steps];
+
+                for (size_t i = 0; i < num_steps; i++)
+                {
+                    wf >> y_data[i];
+                }
+                wf.close();
+            }
+            // close
+            ImGuiFileDialog::Instance()->Close();
         }
-        if (ImPlot::BeginPlot("My Plot")) {
-            ImPlot::PlotLine("My Line Plot", x_data, y_data, 1000);
-            ImPlot::EndPlot();
+        ImGui::SameLine();
+        ImGui::Text("Wave File: %s", waveFileName.c_str());
+        ImGui::SameLine();
+        ImGui::Text("Number of Steps: %d", num_steps);
+        
+        if (num_steps > 0)
+        {
+            x_data = new float[num_steps];
+            for (size_t i = 0; i < num_steps; i++)
+            {
+                x_data[i] = dt*i;
+            }
+            if (ImPlot::BeginPlot("Wave")) {
+                ImPlot::SetupAxes("Time", "Value", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                ImPlot::PlotLine(waveFileName.c_str(), x_data, y_data, num_steps);
+                ImPlot::EndPlot();
+            }
+        }
+        if (ImGui::Button("Add Wave")) {
+            char * waveFilePathName_ = &waveFilePathName[0];
+            add_wave(wave_id, dt, waveFilePathName_);
         }
         ImGui::End();
 
