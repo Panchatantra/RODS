@@ -26,6 +26,8 @@
 std::map<int, int> PointIdMapOrder;
 static int point_order = 0;
 
+static bool duplicate_error = false;
+
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
@@ -283,9 +285,22 @@ int main(int, char**)
             ImGui::EndPopup();
         }
         ImGui::Text("Choosed Point I: %d, Point J: %d", p_id_i, p_id_j);
+        
+        duplicate_error = p_id_i == p_id_j;
         if (ImGui::Button("Add Line")) {
-             num_line = add_line(l_id, p_id_i, p_id_j);
+            if (duplicate_error)
+                ImGui::OpenPopup("Error");
+            else num_line = add_line(l_id, p_id_i, p_id_j);
         }
+
+        if (ImGui::BeginPopupModal("Error"))
+        {
+            ImGui::Text("Points are duplicated!");
+            if (ImGui::Button("Confirm"))
+                ImGui::CloseCurrentPopup();
+            ImGui::EndPopup();
+        }
+
         ImGui::End();
 
         ImGui::Begin("DOF");
