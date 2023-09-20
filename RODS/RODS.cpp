@@ -515,3 +515,8 @@ DLL_API size_t get_line_point_id(int* pid)
 	}
 	return nl*2;
 }
+
+DLL_API bool get_use_rayleigh_damping()
+{
+    return ds->useRayleighDamping;
+}
