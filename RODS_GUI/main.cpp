@@ -3,9 +3,11 @@
 #include "imgui_impl_opengl3.h"
 #include "implot.h"
 #include "ImGuiFileDialog.h"
+
 #include <stdio.h>
 #include <fstream>
 #include <map>
+
 #define GL_SILENCE_DEPRECATION
 #if defined(__arm__)
 #define IMGUI_IMPL_OPENGL_ES2
@@ -26,8 +28,6 @@
 std::map<int, int> PointIdMapOrder;
 static int point_order = 0;
 
-static bool duplicate_error = false;
-
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
@@ -44,7 +44,7 @@ const char* fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
+    "   FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
     "}\n\0";
 
 // Main code
@@ -156,12 +156,12 @@ int main(int, char**)
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
-    
+
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -213,12 +213,12 @@ int main(int, char**)
         static float coord[3] = {0.0, 0.0, 0.0};
         ImGui::InputFloat3("Coords (X,Y,Z)", coord);
         if (ImGui::Button("Add Point")) {
-            num_point = add_point(pt_id, coord[0], coord[1], coord[2]);
             if (PointIdMapOrder.count(pt_id) == 0)
             {
                 PointIdMapOrder[pt_id] = point_order;
                 point_order++;
             }
+            num_point = add_point(pt_id++, coord[0], coord[1], coord[2]);
         }
         ImGui::End();
 
@@ -250,12 +250,11 @@ int main(int, char**)
             ImGui::EndPopup();
         }
         ImGui::Text("Choosed Point I: %d, Point J: %d", p_id_i, p_id_j);
-        
-        duplicate_error = p_id_i == p_id_j;
+
         if (ImGui::Button("Add Line")) {
-            if (duplicate_error)
+            if (p_id_i == p_id_j)
                 ImGui::OpenPopup("Error");
-            else num_line = add_line(l_id, p_id_i, p_id_j);
+            else num_line = add_line(l_id++, p_id_i, p_id_j);
         }
 
         if (ImGui::BeginPopupModal("Error"))
@@ -273,13 +272,26 @@ int main(int, char**)
         ImGui::InputInt("DOF ID", &dof_id);
         static double mass = 1.0;
         ImGui::InputDouble("DOF Mass", &mass);
-        ImGui::Button("Add DOF");
+        static int dir = 0;
+        const char * dirItems[3] = {"X", "Y", "Z"};
+        ImGui::Combo("Direction", &dir, dirItems, 3);
+        if (ImGui::Button("Add DOF"))
+            num_dof = add_dof(dof_id++, dir, mass);
+        ImGui::End();
+
+        ImGui::Begin("Element1D");
+        static int ele_id = 1;
+        ImGui::InputInt("Element ID", &ele_id);
+        static int ele_type = 0;
+        const char * Element1DTypes[3] = {"Spring1D", "Dashpot1D", "Inerter1D"};
+        ImGui::Combo("Element Type", &ele_type, Element1DTypes, 3);
+        ImGui::Button("Add Element");
         ImGui::End();
 
         ImGui::Begin("Basic Information");
         ImGui::Text("RODS");
         ImGui::Text("Inherent Damping Ratio: %.3f", get_damping_ratio());
-        ImGui::Text("Number of DOFs: %d", get_num_dof());
+        ImGui::Text("Number of DOFs: %d", num_dof);
         ImGui::Text("Number of Points: %d", num_point);
         ImGui::Text("Number of Lines: %d", num_line);
         ImGui::Text("Number of Elements: %d", get_num_ele());
@@ -291,7 +303,7 @@ int main(int, char**)
         ImGui::InputInt("Wave ID", &wave_id);
         static double dt = 0.02;
         ImGui::InputDouble("Time Interval", &dt);
-        static int num_steps;
+        static int num_wave_steps;
         static std::string waveFilePathName;
         static std::string waveFileName;
 
@@ -311,15 +323,15 @@ int main(int, char**)
 
                 std::string line;
                 std::ifstream wf(waveFilePathName);
-                num_steps = 0;
+                num_wave_steps = 0;
                 while (std::getline(wf, line))
-                    ++num_steps;
+                    ++num_wave_steps;
                 wf.close();
 
                 wf.open(waveFilePathName);
-                wave_a_data = new float[num_steps];
+                wave_a_data = new float[num_wave_steps];
 
-                for (size_t i = 0; i < num_steps; i++)
+                for (size_t i = 0; i < num_wave_steps; i++)
                 {
                     wf >> wave_a_data[i];
                 }
@@ -331,19 +343,22 @@ int main(int, char**)
         ImGui::SameLine();
         ImGui::Text("Wave File: %s", waveFileName.c_str());
         ImGui::SameLine();
-        ImGui::Text("Number of Steps: %d", num_steps);
-        
-        if (num_steps > 0)
+        ImGui::Text("Number of Steps: %d", num_wave_steps);
+
+        if (num_wave_steps > 0)
         {
-            wave_t_data = new float[num_steps];
-            for (size_t i = 0; i < num_steps; i++)
+            wave_t_data = new float[num_wave_steps];
+            if (dt > 0.0)
             {
-                wave_t_data[i] = dt*i;
-            }
-            if (ImPlot::BeginPlot("Wave")) {
-                ImPlot::SetupAxes("Time", "Value", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-                ImPlot::PlotLine(waveFileName.c_str(), wave_t_data, wave_a_data, num_steps);
-                ImPlot::EndPlot();
+                for (size_t i = 0; i < num_wave_steps; i++)
+                {
+                    wave_t_data[i] = dt*i;
+                }
+                if (ImPlot::BeginPlot("Wave")) {
+                    ImPlot::SetupAxes("Time", "Value", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                    ImPlot::PlotLine(waveFileName.c_str(), wave_t_data, wave_a_data, num_wave_steps);
+                    ImPlot::EndPlot();
+                }
             }
         }
         if (ImGui::Button("Add Wave")) {
@@ -373,7 +388,7 @@ int main(int, char**)
         }
 
         if (num_point > 0) {
-            
+
             float* vertices = new float[(size_t)num_point*3];
             get_point_coord(vertices, true);
 
