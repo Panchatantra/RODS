@@ -2,7 +2,7 @@
 #define DLLEXPORT
 #endif
 
-#include "RODS.h"
+#include "rods.h"
 #include "DynamicSystem.h"
 
 DynamicSystem* ds = new DynamicSystem();
@@ -27,6 +27,11 @@ DLL_API void active_ground_motion(const int dir, const int waveId, const double 
 
 DLL_API void fix_dof(const int id) {
 	ds->fixDOF(id);
+}
+
+DLL_API void free_dof(const int id)
+{
+    ds->freeDOF(id);
 }
 
 DLL_API size_t add_dof_x(const int id, const double m) {
@@ -440,7 +445,7 @@ DLL_API size_t get_num_point()
     return ds->Points.size();
 }
 
-DLL_API size_t get_point_id(int *pid)
+DLL_API size_t get_point_id(int *id)
 {
     auto np = ds->Points.size();
 	size_t i = 0;
@@ -448,11 +453,26 @@ DLL_API size_t get_point_id(int *pid)
 	{
 		for (auto it = ds->Points.begin(); it != ds->Points.end(); it++)
 		{
-			pid[i] = it->second->id;
+			id[i] = it->second->id;
 			i++;
 		}
 	}
 	return np;
+}
+
+DLL_API size_t get_dof_id(int *id)
+{
+    auto nd = ds->DOFs.size();
+	size_t i = 0;
+	if (nd>0)
+	{
+		for (auto it = ds->DOFs.begin(); it != ds->DOFs.end(); it++)
+		{
+			id[i] = it->second->id;
+			i++;
+		}
+	}
+	return nd;
 }
 
 DLL_API size_t get_num_line()
@@ -500,7 +520,7 @@ DLL_API size_t get_point_coord(float *pt, const bool norm)
 	return np*3;
 }
 
-DLL_API size_t get_line_point_id(int* pid)
+DLL_API size_t get_line_point_id(int* id)
 {
 	auto nl = ds->Lines.size();
 	size_t i = 0;
@@ -508,8 +528,8 @@ DLL_API size_t get_line_point_id(int* pid)
 	{
 		for (auto it = ds->Lines.begin(); it != ds->Lines.end(); it++)
 		{
-			pid[i*2] = it->second->pointI->id;
-			pid[i*2+1] = it->second->pointJ->id;
+			id[i*2] = it->second->pointI->id;
+			id[i*2+1] = it->second->pointJ->id;
 			i++;
 		}
 	}
@@ -519,4 +539,22 @@ DLL_API size_t get_line_point_id(int* pid)
 DLL_API bool get_use_rayleigh_damping()
 {
     return ds->useRayleighDamping;
+}
+
+DLL_API size_t remove_dof(const int id)
+{
+    ds->DOFs.erase(id);
+	return ds->DOFs.size();
+}
+
+DLL_API size_t remove_point(const int id)
+{
+    ds->Points.erase(id);
+	return ds->Points.size();
+}
+
+DLL_API size_t remove_line(const int id)
+{
+    ds->Lines.erase(id);
+	return ds->Lines.size();
 }

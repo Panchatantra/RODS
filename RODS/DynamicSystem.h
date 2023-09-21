@@ -156,6 +156,13 @@ public:
 	void fixDOF(const int dofId);
 
 	/**
+	 * @brief      Free a DOF.
+	 *
+	 * @param[in]  dofId    The DOF identifier
+	 */
+	void freeDOF(const int dofId);
+
+	/**
 	 * @brief      Fix all the DOFs of a Node.
 	 *
 	 * @param[in]  nodeId    The Node identifier

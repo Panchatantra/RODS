@@ -21,6 +21,7 @@ extern "C" {
 	DLL_API void set_num_modes_inherent_damping(const int n);
 	DLL_API void active_ground_motion(const int dir, const int waveId, const double waveScale);
 	DLL_API void fix_dof(const int id);
+	DLL_API void free_dof(const int id);
 	DLL_API void fix_node(const int id);
 	DLL_API void fix_node_dof(const int nodeId, const int dir);
 	DLL_API size_t add_dof_x(const int id, const double m);
@@ -101,11 +102,17 @@ extern "C" {
 	DLL_API double get_damping_ratio();
 	DLL_API size_t get_num_dof();
 	DLL_API size_t get_num_point();
-	DLL_API size_t get_point_id(int *pid);
+	DLL_API size_t get_point_id(int *id);
+	DLL_API size_t get_dof_id(int *id);
 	DLL_API size_t get_num_line();
 	DLL_API size_t get_num_ele();
 	DLL_API size_t get_point_coord(float *pt, const bool norm=true);
-	DLL_API size_t get_line_point_id(int* pid);
+	DLL_API size_t get_line_point_id(int* id);
 
 	DLL_API bool get_use_rayleigh_damping();
+
+	DLL_API size_t remove_dof(const int id);
+	DLL_API size_t remove_point(const int id);
+	DLL_API size_t remove_line(const int id);
+	
 }

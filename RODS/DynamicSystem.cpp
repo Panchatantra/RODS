@@ -181,6 +181,11 @@ void DynamicSystem::fixDOF(const int dofId)
 	DOFs.at(dofId)->setFixed();
 }
 
+void DynamicSystem::freeDOF(const int dofId)
+{
+	DOFs.at(dofId)->setFixed(false);
+}
+
 void DynamicSystem::fixNode(const int nodeId)
 {
 	Nodes.at(nodeId)->fixDOF();

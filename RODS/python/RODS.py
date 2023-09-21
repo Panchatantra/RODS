@@ -5,7 +5,7 @@ import numpy as np
 import enum
 
 if sys.platform == "linux":
-    RODSDLL = cdll.LoadLibrary("./RODS_.so")
+    RODSDLL = cdll.LoadLibrary("./librods.so")
 elif sys.platform == "win32":
     RODSDLL = cdll.LoadLibrary("./RODS.dll")
 
