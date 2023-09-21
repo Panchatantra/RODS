@@ -121,7 +121,7 @@ int main(int, char**)
 
     unsigned int shaderProgram;
     RODS_GUI::createShader(shaderProgram);
-    glUseProgram(shaderProgram);
+
     unsigned int VBO, VAO, EBO;
     RODS_GUI::buildVertex(VBO, VAO, EBO);
 
@@ -171,7 +171,7 @@ int main(int, char**)
         }
 
         RODS_GUI::draw(VBO, VAO, EBO);
-        
+
         glfwSwapBuffers(window);
     }
 

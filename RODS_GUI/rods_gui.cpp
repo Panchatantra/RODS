@@ -49,7 +49,7 @@ void RODS_GUI::createShader(unsigned int &shaderProgram)
     // delete shaders
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-
+    glUseProgram(shaderProgram);
 }
 
 void RODS_GUI::buildVertex(unsigned int &VBO, unsigned int &VAO, unsigned int &EBO)
@@ -79,9 +79,8 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             if (ImGui::MenuItem("New")) {}
             if (ImGui::MenuItem("Open")) {}
             if (ImGui::MenuItem("Save")) {}
-            if (ImGui::MenuItem("Exit")) {
+            if (ImGui::MenuItem("Exit"))
                 glfwSetWindowShouldClose(window, true);
-            }
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Set"))
@@ -94,7 +93,7 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
         {
             if (ImGui::MenuItem("DOF"))
                 show_dof_window = true;
-            
+
             if (ImGui::MenuItem("Point"))
                 show_point_window = true;
 
@@ -126,7 +125,7 @@ void RODS_GUI::dampingWindow()
     if (show_damping_window)
     {
         ImGui::Begin("Inherent Damping");
-        static float zeta = 0.05;
+        static float zeta = 0.05f;
         ImGui::InputFloat("Damping Ratio", &zeta);
         if (ImGui::Button("Set Damping Ratio"))
             set_damping_ratio(zeta);
@@ -168,9 +167,9 @@ void RODS_GUI::dofWindow()
             if (ImGui::BeginPopup("Select DOF to Edit"))
             {
                 RODS_GUI::updateDOFList();
-                static int dof_item_index = 0;
-                ImGui::Combo("DOF", &dof_item_index, dofStrList, num_dof);
-                int selected_dof_id = dofList[dof_item_index];
+                static int dof_index = 0;
+                ImGui::Combo("DOF", &dof_index, dofStrList, num_dof);
+                int selected_dof_id = dofList[dof_index];
                 if (ImGui::Button("Fix"))
                     fix_dof(selected_dof_id);
                 ImGui::SameLine();
@@ -253,12 +252,12 @@ void RODS_GUI::lineWindow()
                 snprintf(item_str, 20, "%d", pointList[i]);
                 pointItems[i] = item_str;
             }
-            static int point_item_index_i = 0;
-            static int point_item_index_j = 0;
-            ImGui::Combo("Point I", &point_item_index_i, pointItems, num_point);
-            ImGui::Combo("Point J", &point_item_index_j, pointItems, num_point);
-            p_id_i = pointList[point_item_index_i];
-            p_id_j = pointList[point_item_index_j];
+            static int point_index_i = 0;
+            static int point_index_j = 0;
+            ImGui::Combo("Point I", &point_index_i, pointItems, num_point);
+            ImGui::Combo("Point J", &point_index_j, pointItems, num_point);
+            p_id_i = pointList[point_index_i];
+            p_id_j = pointList[point_index_j];
             ImGui::EndPopup();
         }
         ImGui::Text("Selected Points: I: %d, J: %d", p_id_i, p_id_j);
@@ -335,7 +334,7 @@ void RODS_GUI::waveWindow()
             {
                 for (int i = 0; i < num_wave_steps; i++)
                 {
-                    wave_t_data[i] = dt*i;
+                    wave_t_data[i] = (float)dt*i;
                 }
                 if (ImPlot::BeginPlot("Wave")) {
                     ImPlot::SetupAxes("Time", "Value", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
@@ -350,7 +349,6 @@ void RODS_GUI::waveWindow()
         }
         ImGui::End();
     }
-    
 }
 
 void RODS_GUI::element1dWindow()
@@ -363,16 +361,55 @@ void RODS_GUI::element1dWindow()
         static int ele_type = 0;
         const char * Element1DTypes[3] = {"Spring1D", "Dashpot1D", "Inerter1D"};
         ImGui::Combo("Element Type", &ele_type, Element1DTypes, 3);
-        switch (ele_type)
-        {
-        case 0:
-            
-            break;
-        
-        default:
-            break;
+
+        static int dof_index_i = 0;
+        static int dof_index_j = 0;
+        static double param[3] = {0.0, 0.0, 0.0};
+
+        if (num_dof > 1) {
+            switch (ele_type)
+            {
+            case 0:
+            {
+                updateDOFList();
+                ImGui::Combo("dof I", &dof_index_i, dofStrList, num_dof);
+                ImGui::Combo("dof J", &dof_index_j, dofStrList, num_dof);
+                ImGui::InputDouble("Stiffness", param);
+                if (ImGui::Button("Add Element1D")) {
+                    num_ele = add_spring(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
+                }
+            }
+                break;
+            case 1:
+            {
+                updateDOFList();
+                ImGui::Combo("dof I", &dof_index_i, dofStrList, num_dof);
+                ImGui::Combo("dof J", &dof_index_j, dofStrList, num_dof);
+                ImGui::InputDouble("Damping Coefficient", param);
+                if (ImGui::Button("Add Element1D")) {
+                    num_ele = add_dashpot(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
+                }
+            }
+                break;
+            case 2:
+            {
+                updateDOFList();
+                ImGui::Combo("dof I", &dof_index_i, dofStrList, num_dof);
+                ImGui::Combo("dof J", &dof_index_j, dofStrList, num_dof);
+                ImGui::InputDouble("Inertance", param);
+                if (ImGui::Button("Add Element1D")) {
+                    num_ele = add_inerter(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
+                }
+            }
+                break;
+            default:
+                break;
+            }
         }
-        ImGui::Button("Add Element");
+
+        if (ImGui::Button("Close"))
+            show_element1d_window = false;
+
         ImGui::End();
     }
 }
