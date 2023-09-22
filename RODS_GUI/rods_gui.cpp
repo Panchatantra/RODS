@@ -125,18 +125,30 @@ void RODS_GUI::dampingWindow()
     if (show_damping_window)
     {
         ImGui::Begin("Inherent Damping");
-        static float zeta = 0.05f;
+        static float zeta = 0.02f;
         ImGui::InputFloat("Damping Ratio", &zeta);
         if (ImGui::Button("Set Damping Ratio"))
             set_damping_ratio(zeta);
-        static int rayleigh_damping_modes[2] = { 1, 2 };
-        ImGui::InputInt2("Order of Modes", rayleigh_damping_modes);
-        if (ImGui::Button("Use Rayleigh Damping"))
-            set_rayleigh_damping(rayleigh_damping_modes[0], rayleigh_damping_modes[1]);
-        static int num_modes = 1;
-        ImGui::InputInt("Number of Modes", &num_modes);
-        if (ImGui::Button("Use Mode Orthogonal Damping"))
-            set_num_modes_inherent_damping(num_modes);
+        
+        ImGui::Text("Inherent Damping Model: ");
+        static int inherent_damping_model = 0;
+        ImGui::RadioButton("Rayleigh Damping", &inherent_damping_model, 0); ImGui::SameLine();
+        ImGui::RadioButton("Mode Orthogonal Damping", &inherent_damping_model, 1);
+        
+        if (inherent_damping_model == 0)
+        {
+            static float rayleigh_damping_freqs[2] = { 10.0f, 20.0f };
+            ImGui::InputFloat2("Circular frequencies", rayleigh_damping_freqs);
+            if (ImGui::Button("Use Rayleigh Damping"))
+                set_rayleigh_damping(rayleigh_damping_freqs[0], rayleigh_damping_freqs[1]);
+        }
+        else
+        {
+            static int num_modes_for_damping = 1;
+            ImGui::InputInt("Number of Modes", &num_modes_for_damping);
+            if (ImGui::Button("Use Mode Orthogonal Damping"))
+                set_num_modes_inherent_damping(num_modes_for_damping);
+        }
         
         if (ImGui::Button("Close"))
             show_damping_window = false;
@@ -271,7 +283,7 @@ void RODS_GUI::lineWindow()
 
         if (ImGui::BeginPopupModal("Error"))
         {
-            ImGui::Text("Points are duplicated!");
+            ImGui::Text("Points are repetitive!");
             if (ImGui::Button("Confirm"))
                 ImGui::CloseCurrentPopup();
             ImGui::EndPopup();
@@ -366,44 +378,70 @@ void RODS_GUI::element1dWindow()
         static int dof_index_j = 0;
         static double param[3] = {0.0, 0.0, 0.0};
 
+        static int dof_id_i = 0;
+        static int dof_id_j = 0;
+
         if (num_dof > 1) {
-            switch (ele_type)
-            {
-            case 0:
+            
+            if (ImGui::Button("Select DOFs"))
+                ImGui::OpenPopup("Select DOFs for Element1D");
+            if (ImGui::BeginPopup("Select DOFs for Element1D"))
             {
                 updateDOFList();
                 ImGui::Combo("dof I", &dof_index_i, dofStrList, num_dof);
                 ImGui::Combo("dof J", &dof_index_j, dofStrList, num_dof);
+                dof_id_i = dofList[dof_index_i];
+                dof_id_j = dofList[dof_index_j];
+                ImGui::EndPopup();
+            }
+            ImGui::Text("Selected DOFs: I: %d, J: %d", dof_id_i, dof_id_j);
+
+            switch (ele_type)
+            {
+            case 0:
+            {
                 ImGui::InputDouble("Stiffness", param);
                 if (ImGui::Button("Add Element1D")) {
-                    num_ele = add_spring(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
+                    if (dof_id_i == dof_id_j)
+                        ImGui::OpenPopup("Error");
+                    else
+                        num_ele = add_spring(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
                 }
             }
                 break;
             case 1:
             {
-                updateDOFList();
-                ImGui::Combo("dof I", &dof_index_i, dofStrList, num_dof);
-                ImGui::Combo("dof J", &dof_index_j, dofStrList, num_dof);
                 ImGui::InputDouble("Damping Coefficient", param);
                 if (ImGui::Button("Add Element1D")) {
-                    num_ele = add_dashpot(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
+                    if (dof_id_i == dof_id_j)
+                        ImGui::OpenPopup("Error");
+                    else
+                        num_ele = add_dashpot(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
                 }
             }
                 break;
             case 2:
             {
                 updateDOFList();
-                ImGui::Combo("dof I", &dof_index_i, dofStrList, num_dof);
-                ImGui::Combo("dof J", &dof_index_j, dofStrList, num_dof);
                 ImGui::InputDouble("Inertance", param);
                 if (ImGui::Button("Add Element1D")) {
-                    num_ele = add_inerter(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
+                    if (dof_id_i == dof_id_j)
+                        ImGui::OpenPopup("Error");
+                    else
+                        num_ele = add_inerter(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
                 }
             }
                 break;
             default:
                 break;
+            }
+
+            if (ImGui::BeginPopupModal("Error"))
+            {
+                ImGui::Text("DOFs are repetitive!");
+                if (ImGui::Button("Confirm"))
+                    ImGui::CloseCurrentPopup();
+                ImGui::EndPopup();
             }
         }
 

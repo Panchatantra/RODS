@@ -10,6 +10,9 @@ static bool show_basic_info_window = false;
 static bool show_wave_window = false;
 static bool show_element1d_window = false;
 
+static bool use_rayleigh_damping = true;
+static bool use_mode_orthogonal_damping = false;
+
 static int num_dof = 0;
 static int num_point = 0;
 static int num_line = 0;
