@@ -39,6 +39,11 @@ c = 2.0*zeta*np.sqrt(m*k)
 dashpot_id = 1
 RODS.add_dashpot(dashpot_id, fixed_dof_id, free_dof_id, c)
 
+print("SDOF Structure Information")
+print("mass: ", m)
+print("stiffness: ", k)
+print("damping coefficient: ", c)
+
 # 组装结构矩阵
 RODS.assemble_matrix()
 
@@ -51,7 +56,7 @@ RODS.print_info()
 # 添加地震波
 dt = 0.005
 wave_id = 0
-wave_file = 'EQ-S-1.txt'.encode() # 文件名为 bytes 类型 
+wave_file = 'EQ-S-1.txt'.encode() # 文件名为 bytes 类型
 RODS.add_wave(wave_id, dt, wave_file)
 
 # 添加自由度和单元响应记录器

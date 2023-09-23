@@ -104,15 +104,31 @@ extern "C" {
 	DLL_API size_t get_num_point();
 	DLL_API size_t get_point_id(int *id);
 	DLL_API size_t get_dof_id(int *id);
+	DLL_API size_t get_ele_id(int *id);
+	DLL_API size_t get_wave_id(int *id);
+	DLL_API size_t get_dof_recorder_id(int *id);
+	DLL_API size_t get_ele_recorder_id(int *id);
 	DLL_API size_t get_num_line();
 	DLL_API size_t get_num_ele();
-	DLL_API size_t get_point_coord(float *pt, const bool norm=true);
+	DLL_API size_t get_num_eqn();
+	DLL_API size_t get_point_coord(float* pt, const bool norm=true);
 	DLL_API size_t get_line_point_id(int* id);
+
+	DLL_API size_t get_period(double* P);
+
+	DLL_API void get_dof_info(const int id, int &dir, double &mass, bool &is_fixed);
+	DLL_API void get_spring_info(const int id, int &i, int &j, double &k);
+	DLL_API void get_dashpot_info(const int id, int &i, int &j, double &c);
+	DLL_API void get_inerter_info(const int id, int &i, int &j, double &m);
 
 	DLL_API bool get_use_rayleigh_damping();
 
 	DLL_API size_t remove_dof(const int id);
+	DLL_API size_t remove_spring(const int id);
+	DLL_API size_t remove_dashpot(const int id);
+	DLL_API size_t remove_inerter(const int id);
+	DLL_API size_t remove_wave(const int id);
 	DLL_API size_t remove_point(const int id);
 	DLL_API size_t remove_line(const int id);
-	
+
 }

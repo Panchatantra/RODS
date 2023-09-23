@@ -78,6 +78,19 @@ void ElementRecorder::init(const int nsteps)
 
 void ElementRecorder::add_ele(Element* ele)
 {
-	eles.push_back(ele);
-	n = eles.size();
+	auto it = std::find(eles.begin(), eles.end(), ele);
+	if (it == eles.end())
+	{
+		eles.push_back(ele);
+		n = static_cast<int>(eles.size());
+	}
+}
+
+void ElementRecorder::get_ele_id(int *id)
+{
+	int i = 0;
+	for (auto &it : eles)
+	{
+		id[i++] = it->id;
+	}
 }

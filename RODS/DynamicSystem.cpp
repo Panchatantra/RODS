@@ -461,6 +461,11 @@ void DynamicSystem::addDOF(const int id, RODS::Direction dir, const double m, co
 	addDOF(d);
 }
 
+void DynamicSystem::removeDOF(const int id)
+{
+	DOFs.erase(id);
+}
+
 void DynamicSystem::setMass(const int id, const double m)
 {
 	DOFs.at(id)->setMass(m);
@@ -658,6 +663,13 @@ void DynamicSystem::addSpring(const int id, const int ni, const int nj, const do
 	linearElasticElements[id] = s;
 }
 
+void DynamicSystem::removeSpring(const int id)
+{
+	Springs.erase(id);
+    Elements.erase(id);
+    linearElasticElements.erase(id);
+}
+
 void DynamicSystem::addSpringBilinear(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha)
 {
 	if ( !checkDuplicateElement(id) ) return;
@@ -719,6 +731,13 @@ void DynamicSystem::addDashpot(const int id, const int ni, const int nj, const d
 
 }
 
+void DynamicSystem::removeDashpot(const int id)
+{
+	Dashpots.erase(id);
+	Elements.erase(id);
+	linearDampingElements.erase(id);
+}
+
 void DynamicSystem::addDashpotExp(const int id, const int ni, const int nj, const double c, const double alpha)
 {
 	if ( !checkDuplicateElement(id) ) return;
@@ -746,6 +765,13 @@ void DynamicSystem::addInerter(const int id, const int i, const int j, const dou
 	Elements[id] = in;
 	Inerters[id] = in;
 	inertialMassElements[id] = in;
+}
+
+void DynamicSystem::removeInerter(const int id)
+{
+	Inerters.erase(id);
+	Elements.erase(id);
+	inertialMassElements.erase(id);
 }
 
 void DynamicSystem::addSlider(const int id, const int i, const int j, const double muN)
@@ -2894,7 +2920,6 @@ void DynamicSystem::initRecorders()
 			dr->init(nsteps);
 		}
 	}
-	
 
 	if (!(ElementRecorders.empty()))
 	{

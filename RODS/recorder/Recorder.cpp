@@ -18,6 +18,7 @@ void Recorder::init(const int nsteps)
 void Recorder::save()
 {
 	Res.save(fileName, raw_ascii);
+	Res.clear();
 }
 
 void Recorder::setFileName(char *fileName)

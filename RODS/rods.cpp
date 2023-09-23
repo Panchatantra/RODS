@@ -475,6 +475,66 @@ DLL_API size_t get_dof_id(int *id)
 	return nd;
 }
 
+DLL_API size_t get_ele_id(int * id)
+{
+	auto ne = ds->Elements.size();
+	size_t i = 0;
+	if (ne>0)
+	{
+		for (auto it = ds->Elements.begin(); it != ds->Elements.end(); it++)
+		{
+			id[i] = it->second->id;
+			i++;
+		}
+	}
+	return ne;
+}
+
+DLL_API size_t get_wave_id(int * id)
+{
+	auto nw = ds->Waves.size();
+	size_t i = 0;
+	if (nw>0)
+	{
+		for (auto it = ds->Waves.begin(); it != ds->Waves.end(); it++)
+		{
+			id[i] = it->second->id;
+			i++;
+		}
+	}
+	return nw;
+}
+
+DLL_API size_t get_dof_recorder_id(int * id)
+{
+	auto n = ds->DOFRecorders.size();
+	size_t i = 0;
+	if (n>0)
+	{
+		for (auto it = ds->DOFRecorders.begin(); it != ds->DOFRecorders.end(); it++)
+		{
+			id[i] = it->second->id;
+			i++;
+		}
+	}
+	return n;
+}
+
+DLL_API size_t get_ele_recorder_id(int * id)
+{
+	auto n = ds->ElementRecorders.size();
+	size_t i = 0;
+	if (n>0)
+	{
+		for (auto it = ds->ElementRecorders.begin(); it != ds->ElementRecorders.end(); it++)
+		{
+			id[i] = it->second->id;
+			i++;
+		}
+	}
+	return n;
+}
+
 DLL_API size_t get_num_line()
 {
 	return ds->Lines.size();
@@ -483,6 +543,11 @@ DLL_API size_t get_num_line()
 DLL_API size_t get_num_ele()
 {
 	return ds->Elements.size();
+}
+
+DLL_API size_t get_num_eqn()
+{
+	return ds->eqnCount;
 }
 
 DLL_API size_t get_point_coord(float *pt, const bool norm)
@@ -510,9 +575,9 @@ DLL_API size_t get_point_coord(float *pt, const bool norm)
 					z *= 0.9;
 				}
 			}
-			pt[3*i] = x;
-			pt[3*i+1] = y;
-			pt[3*i+2] = z;
+			pt[3*i] = (float)x;
+			pt[3*i+1] = (float)y;
+			pt[3*i+2] = (float)z;
 			i++;
 		}
 	}
@@ -536,6 +601,47 @@ DLL_API size_t get_line_point_id(int* id)
 	return nl*2;
 }
 
+DLL_API size_t get_period(double* P)
+{
+	for (auto i = 0; i < ds->eqnCount; i++)
+	{
+		P[i] = ds->P(i);
+	}
+	return ds->eqnCount;
+}
+
+DLL_API void get_dof_info(const int id, int & dir, double & mass, bool & is_fixed)
+{
+	auto dof = ds->DOFs.at(id);
+	dir = (int)dof->dir;
+	mass = dof->mass;
+	is_fixed = dof->isFixed;
+}
+
+DLL_API void get_spring_info(const int id, int & i, int & j, double & k)
+{
+	auto ele = ds->Springs.at(id);
+	i = ele->dofI->id;
+	j = ele->dofJ->id;
+	k = ele->k;
+}
+
+DLL_API void get_dashpot_info(const int id, int & i, int & j, double & c)
+{
+	auto ele = ds->Dashpots.at(id);
+	i = ele->dofI->id;
+	j = ele->dofJ->id;
+	c = ele->c;
+}
+
+DLL_API void get_inerter_info(const int id, int & i, int & j, double & m)
+{
+	auto ele = ds->Inerters.at(id);
+	i = ele->dofI->id;
+	j = ele->dofJ->id;
+	m = ele->m;
+}
+
 DLL_API bool get_use_rayleigh_damping()
 {
     return ds->useRayleighDamping;
@@ -543,8 +649,32 @@ DLL_API bool get_use_rayleigh_damping()
 
 DLL_API size_t remove_dof(const int id)
 {
-    ds->DOFs.erase(id);
+    ds->removeDOF(id);
 	return ds->DOFs.size();
+}
+
+DLL_API size_t remove_spring(const int id)
+{
+    ds->removeSpring(id);
+	return ds->Springs.size();
+}
+
+DLL_API size_t remove_dashpot(const int id)
+{
+    ds->removeDashpot(id);
+	return ds->Dashpots.size();
+}
+
+DLL_API size_t remove_inerter(const int id)
+{
+    ds->removeInerter(id);
+	return ds->Inerters.size();
+}
+
+DLL_API size_t remove_wave(const int id)
+{
+    ds->Waves.erase(id);
+	return ds->Waves.size();
 }
 
 DLL_API size_t remove_point(const int id)

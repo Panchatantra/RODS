@@ -62,7 +62,7 @@ int main(int, char**)
 #endif
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 800, "RODS", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1920, 1080, "RODS", nullptr, nullptr);
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
@@ -105,7 +105,7 @@ int main(int, char**)
     // - Read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
     //io.Fonts->AddFontDefault();
-    io.Fonts->AddFontFromFileTTF("./resource/FiraSans-Regular.ttf", 36.0f);
+    io.Fonts->AddFontFromFileTTF("./resource/FiraSans-Regular.ttf", 45.0f);
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
 
@@ -149,6 +149,15 @@ int main(int, char**)
         RODS_GUI::lineWindow();
         RODS_GUI::basicInfoWindow();
         RODS_GUI::element1dWindow();
+
+        RODS_GUI::waveWindow();
+        RODS_GUI::recorderWindow();
+        RODS_GUI::solveSeismicWindow();
+
+        RODS_GUI::dofTableWindow();
+
+        RODS_GUI::assembleMatrixWindow();
+        RODS_GUI::solveEigenWindow();
 
         // Rendering
         ImGui::Render();

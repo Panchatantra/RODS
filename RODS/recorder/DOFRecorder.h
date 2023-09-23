@@ -16,6 +16,7 @@ public:
 
 	void record(const int cstep, const double ctime) override;
 	void add_dof(DOF *dof);
+	void get_dof_id(int *id);
 
 	std::vector<DOF *> dofs;
 };

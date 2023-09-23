@@ -16,5 +16,7 @@ public:
 	void record(const int cstep, const double ctime) override;
 	void init(const int nsteps);
 	void add_ele(Element *ele);
+	void get_ele_id(int *id);
+
 	std::vector<Element *> eles;
 };

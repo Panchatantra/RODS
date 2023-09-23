@@ -111,7 +111,7 @@ public:
 	 * @param[in]  dofRYId  The DOF RY identifier, set a negative integer to deactive the rotational DOF
 	 */
 	void addNode(const int nodeId, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId);
-	
+
 	/**
 	 * @brief      Adds a 3D Node into the system.
 	 *
@@ -144,7 +144,7 @@ public:
 	*/
 	void addNodePlate2D(const int nodeId, const double x, const double y, const int dofZId, const int dofRXId, const int dofRYId);
 
-	
+
 	void addLine(Line *l);
 	void addLine(const int id, const int ni, const int nj);
 
@@ -234,6 +234,8 @@ public:
 	 * @param[in]  fixed  Indicates if the DOF is fixed
 	 */
 	void addDOF(const int id, RODS::Direction dir, const double m, const bool fixed=false);
+
+	void removeDOF(const int id);
 
 	/**
 	 * @brief      Sets the mass of a DOF.
@@ -358,7 +360,7 @@ public:
 	 * @param[in]  k     The stiffness
 	 */
 	void addSpring(const int id, const int ni, const int nj, const double k);
-
+	void removeSpring(const int id);
 	/**
 	 * @brief      Adds a bilinear spring.
 	 *
@@ -383,7 +385,7 @@ public:
 	void addSpringNonlinear2D(const int id, const int ni, const int nj, const int matId, RODS::LocalAxis U=RODS::LocalAxis::U1);
 	void addSpringNonlinear3D(const int id, const int ni, const int nj, const int matId, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
-	
+
 	/**
 	 * @brief      Adds a Bouc-Wen spring.
 	 *
@@ -407,7 +409,7 @@ public:
 	 * @param[in]  c     The damping coefficient
 	 */
 	void addDashpot(const int id, const int ni, const int nj, const double c);
-
+	void removeDashpot(const int id);
 	/**
 	 * @brief      Adds a nonlinear dashpot.
 	 *
@@ -422,6 +424,7 @@ public:
 	void addDashpotMaxwell(const int id, const int ni, const int nj, const double k, const double c, const double alpha = 1.0);
 
 	void addInerter(const int id, const int i, const int j, const double m);
+	void removeInerter(const int id);
 
 	void addSlider(const int id, const int i, const int j, const double muN);
 
@@ -516,7 +519,7 @@ public:
 	*/
 	void addInerter3D(const int id, const int ni, const int nj, const double m, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
-	
+
 	/**
 	 * @brief      Adds a DashpotExp2D.
 	 *
@@ -768,7 +771,7 @@ public:
 
 	void setDofRecorderFileName(const int id, char * fileName);
 	void setElementRecorderFileName(const int id, char * fileName);
-	
+
 	/**
 	 * @brief      Sets the frequencies of Rayleigh damping.
 	 *
@@ -955,7 +958,7 @@ public:
 	void exportDampMatrix(const char* fileName) {C.save(fileName, raw_ascii);}
 	void exportPeriodVector(const char* fileName) {P.save(fileName, raw_ascii);}
 	void exportModalMatrix(const char* fileName) {Phi.save(fileName, raw_ascii);}
-	
+
 	/// The map from a DOF identifier to its equation number
 	std::map<int, int> dofMapEqn;
 	/// The map from a equation number to its DOF identifier
@@ -1013,7 +1016,7 @@ public:
 	std::map<int, TVMD2D *> TVMD2Ds; ///< TVMD2Ds in the system
 	std::map<int, SpringNonlinear2D *> SpringNonlinear2Ds; ///< SpringNonlinear2Ds in the system
 
-	
+
 	std::map<int, Spring3D *> Spring3Ds; ///< Spring3Ds in the system
 	std::map<int, Dashpot3D *> Dashpot3Ds; ///< Dashpot3Ds in the system
 	std::map<int, Inerter3D *> Inerter3Ds; ///< Inerter3Ds in the system

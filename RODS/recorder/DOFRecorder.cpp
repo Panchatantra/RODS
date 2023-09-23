@@ -45,6 +45,19 @@ void DOFRecorder::record(const int cstep, const double ctime)
 
 void DOFRecorder::add_dof(DOF* dof)
 {
-	dofs.push_back(dof);
-	n = static_cast<int>(dofs.size());
+	auto it = std::find(dofs.begin(), dofs.end(), dof);
+	if (it == dofs.end())
+	{
+		dofs.push_back(dof);
+		n = static_cast<int>(dofs.size());
+	}
+}
+
+void DOFRecorder::get_dof_id(int *id)
+{
+	int i = 0;
+	for (auto &it : dofs)
+	{
+		id[i++] = it->id;
+	}
 }
