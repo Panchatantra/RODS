@@ -177,21 +177,33 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
 
 void RODS_GUI::dirWindow()
 {
+    static char workDir[100] = ".";
     if (show_dir_window)
     {
         ImGui::Begin("Work Directory && Name");
 
-        static char workDir[100];
+        if (ImGui::Button("Select Directory"))
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseDirDlgKey", "Choose a Directory", nullptr, ".");
+
+        if (ImGuiFileDialog::Instance()->Display("ChooseDirDlgKey"))
+        {
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                auto pathName = ImGuiFileDialog::Instance()->GetCurrentPath();
+                strcpy_s(workDir, pathName.c_str());
+            }
+            ImGuiFileDialog::Instance()->Close();
+        }
+
         ImGui::InputText("Work Directory", workDir, 100);
         if (ImGui::Button("Set Work Directory"))
             set_work_dir(workDir);
 
-        static char name[100];
+        static char name[100] = "RODS";
         ImGui::InputText("Name", name, 100);
         if (ImGui::Button("Set Name"))
             set_name(name);
 
-        ImGui::SameLine();
         if (ImGui::Button("Close"))
             show_dir_window = false;
 
