@@ -1,6 +1,6 @@
 #include "ElementRecorder.h"
 
-ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, RODS::Response rType, char * fileName):
+ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, RODS::Response rType, const char * fileName):
 	Recorder(id, rType, fileName), eles(eles)
 {
 	if (rType == RODS::Response::ALL)
@@ -13,7 +13,7 @@ ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, RODS
 	}
 }
 
-ElementRecorder::ElementRecorder(const int id, RODS::Response rType, char* fileName): Recorder(id, rType, fileName)
+ElementRecorder::ElementRecorder(const int id, RODS::Response rType, const char* fileName): Recorder(id, rType, fileName)
 {
 }
 

@@ -1,19 +1,32 @@
 #include "DOFRecorder.h"
 
-DOFRecorder::DOFRecorder(const int id, std::vector<DOF *> dofs, RODS::Response rType, char * fileName):
+DOFRecorder::DOFRecorder(const int id, std::vector<DOF *> dofs, RODS::Response rType, const char * fileName):
 	Recorder(id, rType, fileName), dofs(dofs)
 
 {
 	n = static_cast<int>(dofs.size());
 }
 
-DOFRecorder::DOFRecorder(const int id, RODS::Response rType, char* fileName):
+DOFRecorder::DOFRecorder(const int id, RODS::Response rType, const char* fileName):
 	Recorder(id, rType, fileName)
 {
 }
 
 DOFRecorder::~DOFRecorder()
 {
+}
+
+void DOFRecorder::init(const int nsteps)
+{
+	if (rtype == RODS::Response::ALL)
+	{
+		n = 3*dofs.size();
+	}
+	else
+	{
+		n = dofs.size();
+	}
+	Recorder::init(nsteps);
 }
 
 void DOFRecorder::record(const int cstep, const double ctime)
@@ -36,6 +49,11 @@ void DOFRecorder::record(const int cstep, const double ctime)
 		case RODS::Response::FORCE:
 			break;
 		case RODS::Response::DEF:
+			break;
+		case RODS::Response::ALL:
+			Res(cstep, 3*i + 1) = d->dsp;
+			Res(cstep, 3*i + 2) = d->vel;
+			Res(cstep, 3*i + 3) = d->acc;
 			break;
 		default:
 			break;

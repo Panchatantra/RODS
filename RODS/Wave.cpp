@@ -6,22 +6,23 @@ Wave::Wave(const int id, const double dt, const vec &s):
 	name = std::to_string(id);
 }
 
-Wave::Wave(const int id, const double dt, char* filePathName):
+Wave::Wave(const int id, const double dt, const char* filePathName):
 	Basis(id), dt(dt)
 {
-	std::string file_path_name = filePathName;
-	name = file_path_name.substr(file_path_name.find_last_of("/\\") + 1);
+	this->filePathName = filePathName;
+	name = this->filePathName.substr(this->filePathName.find_last_of("/\\") + 1);
 
-	series.load(filePathName, raw_ascii);
+	series.load(this->filePathName, raw_ascii);
 	nsteps = (int)series.n_rows;
 }
 
 Wave::Wave(const int id, const double dt, std::string file_path_name):
 	Basis(id), dt(dt)
 {
-	name = file_path_name.substr(file_path_name.find_last_of("/\\") + 1);
+	this->filePathName = filePathName;
+	name = this->filePathName.substr(this->filePathName.find_last_of("/\\") + 1);
 
-	series.load(file_path_name, raw_ascii);
+	series.load(this->filePathName, raw_ascii);
 	nsteps = (int)series.n_rows;
 }
 
@@ -37,6 +38,9 @@ Wave::~Wave()
 
 void Wave::load(char *filePathName)
 {
+	this->filePathName = filePathName;
+	name = this->filePathName.substr(this->filePathName.find_last_of("/\\") + 1);
+
 	series.load(filePathName, raw_ascii);
 	nsteps = (int)series.n_rows;
 }

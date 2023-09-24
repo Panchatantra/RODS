@@ -34,6 +34,8 @@ static void glfw_error_callback(int error, const char* description)
 // Main code
 int main(int, char**)
 {
+    RODS_GUI::sdof_model();
+
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
@@ -143,6 +145,7 @@ int main(int, char**)
         // ImGui::ShowDemoWindow();
 
         RODS_GUI::mainMenu(window);
+        RODS_GUI::dirWindow();
         RODS_GUI::dampingWindow();
         RODS_GUI::dofWindow();
         RODS_GUI::pointWindow();
@@ -158,6 +161,10 @@ int main(int, char**)
 
         RODS_GUI::assembleMatrixWindow();
         RODS_GUI::solveEigenWindow();
+
+        RODS_GUI::timeHistoryPlotWindow();
+
+        // ImPlot::ShowDemoWindow();
 
         // Rendering
         ImGui::Render();
@@ -179,7 +186,8 @@ int main(int, char**)
             glfwMakeContextCurrent(backup_current_context);
         }
 
-        RODS_GUI::draw(VBO, VAO, EBO);
+        // RODS_GUI::draw(VBO, VAO, EBO);
+        // RODS_GUI::draw_1d(VBO, VAO, EBO);
 
         glfwSwapBuffers(window);
     }

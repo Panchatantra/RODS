@@ -14,7 +14,7 @@ class Wave : public Basis
 public:
 	Wave(const int id, const double dt);
 	Wave(const int id, const double dt, const vec &s);
-	Wave(const int id, const double dt, char *filePathName);
+	Wave(const int id, const double dt, const char *filePathName);
 	Wave(const int id, const double dt, std::string file_path_name);
 	~Wave();
 
@@ -29,4 +29,5 @@ public:
 	double dt;
 	vec series;
 	std::string name;
+	std::string filePathName;
 };

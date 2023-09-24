@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ctime>
 #include <glad/glad.h>
 #include "imgui.h"
 #include "implot.h"
@@ -8,10 +9,14 @@
 #include "rods.h"
 
 #include <map>
-std::map<int, int> PointIdMapIndex;
+std::map<int, int> pointIdMapIndex;
+std::map<int, int> dofIdMapIndex;
 
 float * wave_t_data = nullptr;
 float * wave_a_data = nullptr;
+
+float* t_data = nullptr;
+float* r_data = nullptr;
 
 double * period = nullptr;
 
@@ -108,6 +113,9 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
         }
         if (ImGui::BeginMenu("Set"))
         {
+            if (ImGui::MenuItem("Work Directory && Name"))
+                show_dir_window = true;
+
             if (ImGui::MenuItem("Inherent Damping"))
                 show_damping_window = true;
             ImGui::EndMenu();
@@ -144,6 +152,9 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             if (ImGui::MenuItem("DOF Table"))
                 show_dof_table_window = true;
 
+            if (ImGui::MenuItem("Time History Curve"))
+                show_time_history_plot_window = true;
+
             ImGui::EndMenu();
         }
 
@@ -161,6 +172,30 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
+    }
+}
+
+void RODS_GUI::dirWindow()
+{
+    if (show_dir_window)
+    {
+        ImGui::Begin("Work Directory && Name");
+
+        static char workDir[100];
+        ImGui::InputText("Work Directory", workDir, 100);
+        if (ImGui::Button("Set Work Directory"))
+            set_work_dir(workDir);
+
+        static char name[100];
+        ImGui::InputText("Name", name, 100);
+        if (ImGui::Button("Set Name"))
+            set_name(name);
+
+        ImGui::SameLine();
+        if (ImGui::Button("Close"))
+            show_dir_window = false;
+
+        ImGui::End();
     }
 }
 
@@ -194,6 +229,7 @@ void RODS_GUI::dampingWindow()
                 set_num_modes_inherent_damping(num_modes_for_damping);
         }
 
+        ImGui::SameLine();
         if (ImGui::Button("Close"))
             show_damping_window = false;
 
@@ -214,7 +250,11 @@ void RODS_GUI::dofWindow()
         const char * dirItems[3] = {"X", "Y", "Z"};
         ImGui::Combo("Direction", &dir, dirItems, 3);
         if (ImGui::Button("Add DOF"))
+        {
+            if (dofIdMapIndex.count(dof_id) == 0)
+                dofIdMapIndex[dof_id] = dof_index++;
             num_dof = add_dof(dof_id++, dir, mass);
+        }
 
         if (num_dof > 0) {
             ImGui::SameLine();
@@ -228,12 +268,17 @@ void RODS_GUI::dofWindow()
                 int selected_dof_id = dofList[dof_index];
                 if (ImGui::Button("Fix"))
                     fix_dof(selected_dof_id);
+
                 ImGui::SameLine();
                 if (ImGui::Button("Free"))
                     free_dof(selected_dof_id);
+
                 ImGui::SameLine();
                 if (ImGui::Button("Remove"))
+                {
                     num_dof = remove_dof(selected_dof_id);
+                    dofIdMapIndex.erase(selected_dof_id);
+                }
                 ImGui::EndPopup();
             }
         }
@@ -254,9 +299,9 @@ void RODS_GUI::pointWindow()
         static float coord[3] = {0.0, 0.0, 0.0};
         ImGui::InputFloat3("Coords (X,Y,Z)", coord);
         if (ImGui::Button("Add Point")) {
-            if (PointIdMapIndex.count(pt_id) == 0)
+            if (pointIdMapIndex.count(pt_id) == 0)
             {
-                PointIdMapIndex[pt_id] = point_index;
+                pointIdMapIndex[pt_id] = point_index;
                 point_index++;
             }
             num_point = add_point(pt_id++, coord[0], coord[1], coord[2]);
@@ -343,6 +388,9 @@ void RODS_GUI::lineWindow()
 
 void RODS_GUI::waveWindow()
 {
+    // ImPlotStyle& style = ImPlot::GetStyle();
+    // style.PlotDefaultSize.y = 500;
+
     if (show_wave_window)
     {
         ImGui::Begin("Wave");
@@ -397,7 +445,8 @@ void RODS_GUI::waveWindow()
                 {
                     wave_t_data[i] = (float)dt*i;
                 }
-                if (ImPlot::BeginPlot("Wave")) {
+                if (ImPlot::BeginPlot("Wave", ImVec2(-1,500)))
+                {
                     ImPlot::SetupAxes("Time", "Acc", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
                     ImPlot::PlotLine(waveFileName.c_str(), wave_t_data, wave_a_data, num_wave_steps);
                     ImPlot::EndPlot();
@@ -408,6 +457,11 @@ void RODS_GUI::waveWindow()
             char * waveFilePathName_ = &waveFilePathName[0];
             num_wave = add_wave(wave_id++, dt, waveFilePathName_);
         }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Close"))
+            show_wave_window = false;
+
         ImGui::End();
     }
 }
@@ -647,6 +701,7 @@ void RODS_GUI::recorderWindow()
                         ImGui::SameLine();
                         ImGui::Text("DOF %d is added to Recorder %d.",
                                     dofList[dof_index], dofRecorderList[dof_recorder_index]);
+                        pause(2);
                     }
                     ImGui::EndPopup();
                 }
@@ -727,25 +782,36 @@ void RODS_GUI::solveSeismicWindow()
         const char * dirs[3] = {"X", "Y", "Z"};
         ImGui::Combo("Active Direction", &dir, dirs, 3);
 
-        if (ImGui::Button("Select Wave") && num_wave>0)
-            ImGui::OpenPopup("Select Wave");
-
-        if (ImGui::BeginPopup("Select Wave"))
+        if (num_wave > 0)
         {
-            updateWaveList();
-            static int wave_index = 0;
-            ImGui::Combo("Wave", &wave_index, waveStrList, num_wave);
+            if (ImGui::Button("Select Wave") && num_wave>0)
+                ImGui::OpenPopup("Select Wave");
 
-            ImGui::EndPopup();
+            static int wave_index = 0;
+            static int wave_id = 0;
+            if (ImGui::BeginPopup("Select Wave"))
+            {
+                updateWaveList();
+                ImGui::Combo("Wave", &wave_index, waveStrList, num_wave);
+                wave_id = waveList[wave_index];
+                ImGui::EndPopup();
+            }
+
+            ImGui::SameLine();
+            ImGui::Text("Wave %d is Selected.", wave_id);
+
+            if (ImGui::Button("Activate Groud Motion"))
+                active_ground_motion(dir, wave_id, scale_factor);
+
+            static int num_sub_steps = 1;
+            ImGui::InputInt("Number of Substeps", &num_sub_steps);
+
+            if (ImGui::Button("Solve Seismic Respones"))
+                solve_seismic_response(num_sub_steps);
+
+            ImGui::SameLine();
         }
 
-        static int num_sub_steps = 1;
-        ImGui::InputInt("Number of Substeps", &num_sub_steps);
-
-        if (ImGui::Button("Solve Seismic Respones"))
-            solve_seismic_response(num_sub_steps);
-
-        ImGui::SameLine();
         if (ImGui::Button("Close"))
             show_solve_seismic_window = false;
 
@@ -843,6 +909,67 @@ void RODS_GUI::element1dTableWindow()
     }
 }
 
+void RODS_GUI::timeHistoryPlotWindow()
+{
+    if (show_time_history_plot_window)
+    {
+        ImGui::Begin("Time History Plot");
+
+        static int num_res_steps = 0;
+        static std::string resFilePathName;
+        static std::string resFileName;
+
+        if (ImGui::Button("Select File"))
+            ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", ".");
+
+        if (ImGuiFileDialog::Instance()->Display("SelectFileDlgKey"))
+        {
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                resFilePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+                // std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+                resFileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
+
+                std::string line;
+                std::ifstream wf(resFilePathName);
+                num_res_steps = 0;
+                while (std::getline(wf, line))
+                    ++num_res_steps;
+                wf.close();
+
+                wf.open(resFilePathName);
+                t_data = new float[num_res_steps];
+                r_data = new float[num_res_steps];
+
+                for (int i = 0; i < num_res_steps; i++)
+                {
+                    wf >> t_data[i] >> r_data[i];
+                    printf("%.3f %.3f\n", t_data[i], r_data[i]);
+                }
+                wf.close();
+            }
+            ImGuiFileDialog::Instance()->Close();
+        }
+        ImGui::SameLine();
+        ImGui::Text("Response File: %s", resFileName.c_str());
+
+        if (num_res_steps > 0)
+        {
+            if (ImPlot::BeginPlot("Response", ImVec2(-1,500)))
+            {
+                ImPlot::SetupAxes("Time", "Response", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                ImPlot::PlotLine(resFileName.c_str(), t_data, r_data, num_res_steps);
+                ImPlot::EndPlot();
+            }
+        }
+
+        if (ImGui::Button("Close"))
+            show_time_history_plot_window = false;
+
+        ImGui::End();
+    }
+}
+
 void RODS_GUI::draw(unsigned int VBO, unsigned int VAO, unsigned int EBO)
 {
     if (num_point > 0) {
@@ -866,13 +993,61 @@ void RODS_GUI::draw(unsigned int VBO, unsigned int VAO, unsigned int EBO)
             for (int i = 0; i < num_line * 2; i++)
             {
                 //--indices[i];
-                indices[i] = PointIdMapIndex.at(indices[i]);
+                indices[i] = pointIdMapIndex.at(indices[i]);
             }
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_line*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
 
             glDrawElements(GL_LINES, 2*num_line, GL_UNSIGNED_INT, (void*)0);
+
+            delete[] indices;
+        }
+        delete[] vertices;
+    }
+}
+
+void RODS_GUI::draw_1d(unsigned int VBO, unsigned int VAO, unsigned int EBO)
+{
+    if (num_dof > 0) {
+
+        float H = 0.8f;
+        float h = 0.0f;
+
+        if (num_dof>1)
+            h = H/(num_dof - 1);
+
+        float* vertices = new float[(size_t)num_dof*3];
+
+        for (int i = 0; i < num_dof; i++)
+        {
+            vertices[3*i] = h*i;
+            vertices[3*i+1] = 0.0f;
+            vertices[3*i+2] = 0.0f;
+        }
+
+        // glUseProgram(shaderProgram);
+        glBindVertexArray(VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, (size_t)num_dof*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
+
+        glDrawArrays(GL_POINTS, 0, num_dof);
+
+        if (num_ele > 0) {
+            updateDOFList();
+            int* indices = new int[(size_t)num_ele*2];
+            get_rod1d_dof_id(indices);
+
+            for (int i = 0; i < num_ele * 2; i++)
+            {
+                indices[i] = dofIdMapIndex.at(indices[i]);
+            }
+
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
+
+            glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
 
             delete[] indices;
         }
@@ -943,4 +1118,40 @@ void RODS_GUI::updateEleList()
         snprintf(item_str, 20, "%d", eleList[i]);
         eleStrList[i] = item_str;
     }
+}
+
+void RODS_GUI::pause(int dur)
+{
+    int temp = time(NULL) + dur;
+    while(temp > time(NULL));
+}
+
+void RODS_GUI::sdof_model()
+{
+    set_damping_ratio(0.02);
+    set_rayleigh_damping(10.0, 20.0);
+
+    add_dof_x(1, 1.0);
+    // dofIdMapIndex[1] = dof_index++;
+    num_dof = add_dof_x(2, 1.0);
+    // dofIdMapIndex[2] = dof_index++;
+    fix_dof(1);
+
+    add_spring(1,1,2,100.0);
+    add_dashpot(2,1,2,0.4);
+
+    num_ele = get_num_ele();
+
+    assemble_matrix();
+
+    char rfn[100] = "D:\\Develop\\RODS\\RODS\\x64\\Release\\disp.txt";
+    num_dof_recorder = add_dof_recorder(1,0,rfn);
+    add_dof_to_recorder(2,1);
+
+    char wfn[100] = "D:\\Develop\\RODS\\RODS\\x64\\Release\\EQ-S-1.txt";
+    num_wave = add_wave(1, 0.005, wfn);
+
+    set_dynamic_solver(0);
+    active_ground_motion(0,1,1.0);
+    solve_seismic_response();
 }

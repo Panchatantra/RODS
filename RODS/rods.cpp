@@ -54,7 +54,7 @@ DLL_API size_t add_dashpot(const int id, const int i, const int j, const double 
 	return ds->Dashpots.size();
 }
 
-DLL_API size_t add_wave(const int id, const double dt, char* fileName) {
+DLL_API size_t add_wave(const int id, const double dt, const char* fileName) {
 	ds->addWave(id, dt, fileName);
 	return ds->Waves.size();
 }
@@ -601,6 +601,22 @@ DLL_API size_t get_line_point_id(int* id)
 	return nl*2;
 }
 
+DLL_API size_t get_rod1d_dof_id(int * id)
+{
+	auto n = ds->ROD1Ds.size();
+	size_t i = 0;
+	if (n > 0)
+	{
+		for (auto it = ds->ROD1Ds.begin(); it != ds->ROD1Ds.end(); it++)
+		{
+			id[i*2] = it->second->dofI->id;
+			id[i*2+1] = it->second->dofJ->id;
+			i++;
+		}
+	}
+	return n*2;
+}
+
 DLL_API size_t get_period(double* P)
 {
 	for (auto i = 0; i < ds->eqnCount; i++)
@@ -687,4 +703,24 @@ DLL_API size_t remove_line(const int id)
 {
     ds->Lines.erase(id);
 	return ds->Lines.size();
+}
+
+DLL_API void record_all_dof_response(const int id)
+{
+	ds->recordAllDofResponse(id);
+}
+
+DLL_API void record_all_ele_response(const int id)
+{
+	ds->recordAllEleResponse(id);
+}
+
+DLL_API void set_name(const char * name)
+{
+	ds->setName(name);
+}
+
+DLL_API void set_work_dir(const char * workDir)
+{
+	ds->setWorkDir(workDir);
 }

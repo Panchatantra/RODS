@@ -728,7 +728,7 @@ public:
 	 * @param[in]  dt        The time interval
 	 * @param      fileName  The file name
 	 */
-	void addWave(const int id, const double dt, char * fileName);
+	void addWave(const int id, const double dt, const char * fileName);
 
 	/**
 	 * @brief      Adds a DOF Recorder.
@@ -739,7 +739,7 @@ public:
 	 * @param[in]  rType     The Response type
 	 * @param      fileName  The record file name
 	 */
-	void addDOFRecorder(const int id, int *dofIds, const int n, RODS::Response rType, char * fileName);
+	void addDOFRecorder(const int id, int *dofIds, const int n, RODS::Response rType, const char * fileName);
 
 	/**
 	* @brief      Adds a DOF Recorder.
@@ -750,7 +750,7 @@ public:
 	* @param[in]  rType     The Response type
 	* @param      fileName  The record file name
 	*/
-	void addDOFRecorder(const int id, RODS::Response rType, char * fileName);
+	void addDOFRecorder(const int id, RODS::Response rType, const char * fileName);
 
 	void addDOFToRecorder(const int dofId, const int rId);
 
@@ -763,9 +763,9 @@ public:
 	 * @param[in]  rType     The Response type
 	 * @param      fileName  The record file name
 	 */
-	void addElementRecorder(const int id, int *eleIds, const int n, RODS::Response rType, char * fileName);
+	void addElementRecorder(const int id, int *eleIds, const int n, RODS::Response rType, const char * fileName);
 
-	void addElementRecorder(const int id, RODS::Response rType, char * fileName);
+	void addElementRecorder(const int id, RODS::Response rType, const char * fileName);
 
 	void addElementToRecorder(const int eleId, const int rId);
 
@@ -827,6 +827,9 @@ public:
 	 */
 	void solveEigen();
 	void solveComplexEigen();
+
+	void recordAllDofResponse(const int id);
+	void recordAllEleResponse(const int id);
 
 	/**
 	 * @brief      Solves the stochastic seismic response
@@ -952,6 +955,8 @@ public:
 	void printInfo();
 
 	void setCurrentTime(double ctime);
+	void setName(const char * name);
+	void setWorkDir(const char * dir);
 
 	void exportMassMatrix(const char* fileName) {M.save(fileName, raw_ascii);}
 	void exportStiffMatrix(const char* fileName) {K.save(fileName, raw_ascii);}
@@ -971,6 +976,7 @@ public:
 	std::map<int, Line *> Lines; 			///< Lines
 	std::map<int, DOF *> DOFs; 				///< DOFs
 	std::map<int, Element *> Elements; 		///< Elements
+	std::map<int, ROD1D *> ROD1Ds; 	///< ROD1Ds
 	std::map<int, ROD2D *> ROD2Ds; 	///< ROD2Ds
 	std::map<int, Quad2D *> Quad2Ds; 		///< Quad2Ds
 	std::map<int, Tri2D *> Tri2Ds;    	///< Tri2Ds
@@ -1108,6 +1114,7 @@ public:
 	std::ofstream gmshFile;
 	int exportGmshInterval;
 	string name;
+	string workDir;
 
 	double xMax, xMin;
 	double yMax, yMin;

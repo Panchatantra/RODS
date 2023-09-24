@@ -80,7 +80,7 @@ extern "C" {
 		const double scale);
 	DLL_API size_t add_dof_load(const int dofId, const int loadId);
 
-	DLL_API size_t add_wave(const int id, const double dt, char* fileName);
+	DLL_API size_t add_wave(const int id, const double dt, const char* fileName);
 	DLL_API size_t assemble_matrix();
 	DLL_API size_t solve_eigen();
 	DLL_API size_t add_dof_recorder_with_dofs(const int id, int *dofIds, const int n, const int rType, char * fileName);
@@ -113,6 +113,7 @@ extern "C" {
 	DLL_API size_t get_num_eqn();
 	DLL_API size_t get_point_coord(float* pt, const bool norm=true);
 	DLL_API size_t get_line_point_id(int* id);
+	DLL_API size_t get_rod1d_dof_id(int* id);
 
 	DLL_API size_t get_period(double* P);
 
@@ -130,5 +131,11 @@ extern "C" {
 	DLL_API size_t remove_wave(const int id);
 	DLL_API size_t remove_point(const int id);
 	DLL_API size_t remove_line(const int id);
+
+	DLL_API void record_all_dof_response(const int id);
+	DLL_API void record_all_ele_response(const int id);
+
+	DLL_API void set_name(const char * name);
+	DLL_API void set_work_dir(const char * workDir);
 
 }
