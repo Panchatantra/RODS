@@ -40,6 +40,9 @@ class LocalAxis(enum.Enum):
     U3 = 2
 
 
+set_name = RODSDLL.set_name
+set_name.argtypes = [c_char_p]
+
 set_damping_ratio = RODSDLL.set_damping_ratio
 set_damping_ratio.argtypes = [c_double]
 
@@ -65,10 +68,13 @@ set_dof_mass.restype = c_size_t
 set_dof_mass.argtypes = [c_int, c_double]
 
 get_num_dof = RODSDLL.get_num_dof
-get_num_dof.restype = c_int
+get_num_dof.restype = c_size_t
+
+get_num_eqn = RODSDLL.get_num_eqn
+get_num_eqn.restype = c_size_t
 
 get_num_ele = RODSDLL.get_num_ele
-get_num_ele.restype = c_int
+get_num_ele.restype = c_size_t
 
 set_node_mass = RODSDLL.set_node_mass
 set_node_mass.restype = c_size_t
@@ -274,3 +280,15 @@ export_modal_gmsh.argtypes = [c_char_p, c_int]
 
 set_response_gmsh = RODSDLL.set_response_gmsh
 set_response_gmsh.argtypes = [c_char_p, c_int]
+
+get_period_ = RODSDLL.get_period
+get_period_.restype = c_size_t
+get_period_.argtypes = [POINTER(c_double)]
+
+def get_period():
+    P = create_array_double(get_num_eqn())
+    get_period_(P)
+    return list(P)
+
+def create_array_double(n):
+    return (c_double * n)()

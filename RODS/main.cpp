@@ -908,234 +908,234 @@ void example_frame3D()
 //	//char gmshFile[] = "frame.msh";
 //	//ds->exportGmsh(gmshFile);
 //}
+
+//void example_wall()
+//{
+//	DynamicSystem *ds = new DynamicSystem(0.05);
+//	ds->setRayleighDamping(2.0*PI/0.28, 2.0*PI/0.07);
 //
-void example_wall()
-{
-	DynamicSystem *ds = new DynamicSystem(0.05);
-	ds->setRayleighDamping(2.0*PI/0.28, 2.0*PI/0.07);
-
-	double mass = 0.05;
-	double E = 32.5;
-	double nu = 0.2;
-	double t = 250.0;
-
-	int nnd = 28;
-	int ne = 18;
-
-	double crds[28][2] {{-1500, 0},
-						{-500, 0},
-						{-500, 1000},
-						{-1500, 1000},
-						{-500, 2000},
-						{-1500, 2000},
-						{-500, 3000},
-						{-1500, 3000},
-						{-500, 4000},
-						{-1500, 4000},
-						{-500, 5000},
-						{-1500, 5000},
-						{-500, 6000},
-						{-1500, 6000},
-						{500, 0},
-						{500, 1000},
-						{500, 2000},
-						{500, 3000},
-						{500, 4000},
-						{500, 5000},
-						{500, 6000},
-						{1500, 0},
-						{1500, 1000},
-						{1500, 2000},
-						{1500, 3000},
-						{1500, 4000},
-						{1500, 5000},
-						{1500, 6000}
-	};
-
-	double x = 0.0, z = 0.0;
-	for (auto i = 0; i < nnd; i++)
-	{
-		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
-		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
-
-		x = crds[i][0];
-		z = crds[i][1];
-		ds->addNode(i + 1, x, z, 2*i+1, 2*i+2, -1);
-	}
-
-	ds->fixNode(1 );
-	ds->fixNode(2 );
-	ds->fixNode(15);
-	ds->fixNode(22);
-
-	int cn[18][4] {{1, 2, 3, 4},
-	{4, 3, 5, 6},
-	{6, 5, 7, 8},
-	{8, 7, 9, 10},
-	{10, 9, 11, 12},
-	{12, 11, 13, 14},
-	{2, 15, 16, 3},
-	{3, 16, 17, 5},
-	{5, 17, 18, 7},
-	{7, 18, 19, 9},
-	{9, 19, 20, 11},
-	{11, 20, 21, 13},
-	{15, 22, 23, 16},
-	{16, 23, 24, 17},
-	{17, 24, 25, 18},
-	{18, 25, 26, 19},
-	{19, 26, 27, 20},
-	{20, 27, 28, 21}};
-
-	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
-	for (int i = 0; i < ne; i++)
-	{
-		nodeI = cn[i][0];
-		nodeJ = cn[i][1];
-		nodeP = cn[i][2];
-		nodeQ = cn[i][3];
-		ds->addQuad4Elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
-	}
-
-	ds->assembleMatrix();
-
-	ds->solveEigen();
-	ds->printInfo();
-
-	char gmshFile[] = "data/wall.msh";
-	ds->exportGmsh(gmshFile);
-	ds->exportModalGmsh(gmshFile, 1);
-	ds->exportModalGmsh(gmshFile, 2);
-	ds->exportModalGmsh(gmshFile, 3);
-
-	ds->setResponseGmsh(gmshFile, 10);
-
-	int eqId = 1;
-	double dt = 0.005;
-	char eqFile[] = "data/EQ-S-1.txt";
-	ds->addWave(eqId, dt, eqFile);
-
-	int dofRecorderId = 0;
-	char dofRecorderFile[] = "data/top_disp_wall.txt";
-	ds->addDOFRecorder(dofRecorderId, RODS::Response::DISP, dofRecorderFile);
-	ds->addDOFToRecorder(ds->Nodes.at(21)->dofX->id, dofRecorderId);
-
-	ds->setDynamicSolver(RODS::DynamicSolver::Newmark);
-	ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
-	ds->solveSeismicResponse(1);
-
-}
-
-void example_wall_RODS()
-{
-	set_damping_ratio(0.05);
-	set_rayleigh_damping(2.0*PI/0.28, 2.0*PI/0.07);
-
-	double mass = 0.05;
-	double E = 32.5;
-	double nu = 0.2;
-	double t = 250.0;
-
-	int nnd = 28;
-	int ne = 18;
-
-	double crds[28][2] {{-1500, 0},
-	{-500, 0},
-	{-500, 1000},
-	{-1500, 1000},
-	{-500, 2000},
-	{-1500, 2000},
-	{-500, 3000},
-	{-1500, 3000},
-	{-500, 4000},
-	{-1500, 4000},
-	{-500, 5000},
-	{-1500, 5000},
-	{-500, 6000},
-	{-1500, 6000},
-	{500, 0},
-	{500, 1000},
-	{500, 2000},
-	{500, 3000},
-	{500, 4000},
-	{500, 5000},
-	{500, 6000},
-	{1500, 0},
-	{1500, 1000},
-	{1500, 2000},
-	{1500, 3000},
-	{1500, 4000},
-	{1500, 5000},
-	{1500, 6000}
-	};
-
-	double x = 0.0, z = 0.0;
-	for (auto i = 0; i < nnd; i++)
-	{
-		add_dof(2 * i + 1, (int)RODS::Direction::X, mass);
-		add_dof(2 * i + 2, (int)RODS::Direction::Z, mass);
-
-		x = crds[i][0];
-		z = crds[i][1];
-		add_node_2d(i + 1, x, z, 2 * i + 1, 2 * i + 2, -1);
-	}
-
-	fix_node(1 );
-	fix_node(2 );
-	fix_node(15);
-	fix_node(22);
-
-	int cn[18][4] {{1, 2, 3, 4},
-	{4, 3, 5, 6},
-	{6, 5, 7, 8},
-	{8, 7, 9, 10},
-	{10, 9, 11, 12},
-	{12, 11, 13, 14},
-	{2, 15, 16, 3},
-	{3, 16, 17, 5},
-	{5, 17, 18, 7},
-	{7, 18, 19, 9},
-	{9, 19, 20, 11},
-	{11, 20, 21, 13},
-	{15, 22, 23, 16},
-	{16, 23, 24, 17},
-	{17, 24, 25, 18},
-	{18, 25, 26, 19},
-	{19, 26, 27, 20},
-	{20, 27, 28, 21}};
-
-	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
-	for (int i = 0; i < ne; i++)
-	{
-		nodeI = cn[i][0];
-		nodeJ = cn[i][1];
-		nodeP = cn[i][2];
-		nodeQ = cn[i][3];
-		add_quad4_elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
-	}
-
-	assemble_matrix();
-
-	solve_eigen();
-	print_info();
-
-	//char gmshFile[] = "data/wall.msh";
-	//ds->exportGmsh(gmshFile);
-	//ds->exportModalGmsh(gmshFile, 1);
-	//ds->exportModalGmsh(gmshFile, 2);
-	//ds->exportModalGmsh(gmshFile, 3);
-
-	//ds->setResponseGmsh(gmshFile, 10);
-
-	//int eqId = 1;
-	//double dt = 0.005;
-	//char eqFile[] = "data/EQ-S-1.txt";
-	//ds->addWave(eqId, dt, eqFile);
-
-	//ds->setDynamicSolver(RODS::DynamicSolver::Newmark);
-	//ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
-	//ds->solveSeismicResponse(1);
-}
+//	double mass = 0.05;
+//	double E = 32.5;
+//	double nu = 0.2;
+//	double t = 250.0;
+//
+//	int nnd = 28;
+//	int ne = 18;
+//
+//	double crds[28][2] {{-1500, 0},
+//						{-500, 0},
+//						{-500, 1000},
+//						{-1500, 1000},
+//						{-500, 2000},
+//						{-1500, 2000},
+//						{-500, 3000},
+//						{-1500, 3000},
+//						{-500, 4000},
+//						{-1500, 4000},
+//						{-500, 5000},
+//						{-1500, 5000},
+//						{-500, 6000},
+//						{-1500, 6000},
+//						{500, 0},
+//						{500, 1000},
+//						{500, 2000},
+//						{500, 3000},
+//						{500, 4000},
+//						{500, 5000},
+//						{500, 6000},
+//						{1500, 0},
+//						{1500, 1000},
+//						{1500, 2000},
+//						{1500, 3000},
+//						{1500, 4000},
+//						{1500, 5000},
+//						{1500, 6000}
+//	};
+//
+//	double x = 0.0, z = 0.0;
+//	for (auto i = 0; i < nnd; i++)
+//	{
+//		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
+//		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
+//
+//		x = crds[i][0];
+//		z = crds[i][1];
+//		ds->addNode(i + 1, x, z, 2*i+1, 2*i+2, -1);
+//	}
+//
+//	ds->fixNode(1 );
+//	ds->fixNode(2 );
+//	ds->fixNode(15);
+//	ds->fixNode(22);
+//
+//	int cn[18][4] {{1, 2, 3, 4},
+//	{4, 3, 5, 6},
+//	{6, 5, 7, 8},
+//	{8, 7, 9, 10},
+//	{10, 9, 11, 12},
+//	{12, 11, 13, 14},
+//	{2, 15, 16, 3},
+//	{3, 16, 17, 5},
+//	{5, 17, 18, 7},
+//	{7, 18, 19, 9},
+//	{9, 19, 20, 11},
+//	{11, 20, 21, 13},
+//	{15, 22, 23, 16},
+//	{16, 23, 24, 17},
+//	{17, 24, 25, 18},
+//	{18, 25, 26, 19},
+//	{19, 26, 27, 20},
+//	{20, 27, 28, 21}};
+//
+//	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
+//	for (int i = 0; i < ne; i++)
+//	{
+//		nodeI = cn[i][0];
+//		nodeJ = cn[i][1];
+//		nodeP = cn[i][2];
+//		nodeQ = cn[i][3];
+//		ds->addQuad4Elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
+//	}
+//
+//	ds->assembleMatrix();
+//
+//	ds->solveEigen();
+//	ds->printInfo();
+//
+//	char gmshFile[] = "data/wall.msh";
+//	ds->exportGmsh(gmshFile);
+//	ds->exportModalGmsh(gmshFile, 1);
+//	ds->exportModalGmsh(gmshFile, 2);
+//	ds->exportModalGmsh(gmshFile, 3);
+//
+//	ds->setResponseGmsh(gmshFile, 10);
+//
+//	int eqId = 1;
+//	double dt = 0.005;
+//	char eqFile[] = "data/EQ-S-1.txt";
+//	ds->addWave(eqId, dt, eqFile);
+//
+//	int dofRecorderId = 0;
+//	char dofRecorderFile[] = "data/top_disp_wall.txt";
+//	ds->addDOFRecorder(dofRecorderId, RODS::Response::DISP, dofRecorderFile);
+//	ds->addDOFToRecorder(ds->Nodes.at(21)->dofX->id, dofRecorderId);
+//
+//	ds->setDynamicSolver(RODS::DynamicSolver::Newmark);
+//	ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
+//	ds->solveSeismicResponse(1);
+//
+//}
+//
+//void example_wall_RODS()
+//{
+//	set_damping_ratio(0.05);
+//	set_rayleigh_damping(2.0*PI/0.28, 2.0*PI/0.07);
+//
+//	double mass = 0.05;
+//	double E = 32.5;
+//	double nu = 0.2;
+//	double t = 250.0;
+//
+//	int nnd = 28;
+//	int ne = 18;
+//
+//	double crds[28][2] {{-1500, 0},
+//	{-500, 0},
+//	{-500, 1000},
+//	{-1500, 1000},
+//	{-500, 2000},
+//	{-1500, 2000},
+//	{-500, 3000},
+//	{-1500, 3000},
+//	{-500, 4000},
+//	{-1500, 4000},
+//	{-500, 5000},
+//	{-1500, 5000},
+//	{-500, 6000},
+//	{-1500, 6000},
+//	{500, 0},
+//	{500, 1000},
+//	{500, 2000},
+//	{500, 3000},
+//	{500, 4000},
+//	{500, 5000},
+//	{500, 6000},
+//	{1500, 0},
+//	{1500, 1000},
+//	{1500, 2000},
+//	{1500, 3000},
+//	{1500, 4000},
+//	{1500, 5000},
+//	{1500, 6000}
+//	};
+//
+//	double x = 0.0, z = 0.0;
+//	for (auto i = 0; i < nnd; i++)
+//	{
+//		add_dof(2 * i + 1, (int)RODS::Direction::X, mass);
+//		add_dof(2 * i + 2, (int)RODS::Direction::Z, mass);
+//
+//		x = crds[i][0];
+//		z = crds[i][1];
+//		add_node_2d(i + 1, x, z, 2 * i + 1, 2 * i + 2, -1);
+//	}
+//
+//	fix_node(1 );
+//	fix_node(2 );
+//	fix_node(15);
+//	fix_node(22);
+//
+//	int cn[18][4] {{1, 2, 3, 4},
+//	{4, 3, 5, 6},
+//	{6, 5, 7, 8},
+//	{8, 7, 9, 10},
+//	{10, 9, 11, 12},
+//	{12, 11, 13, 14},
+//	{2, 15, 16, 3},
+//	{3, 16, 17, 5},
+//	{5, 17, 18, 7},
+//	{7, 18, 19, 9},
+//	{9, 19, 20, 11},
+//	{11, 20, 21, 13},
+//	{15, 22, 23, 16},
+//	{16, 23, 24, 17},
+//	{17, 24, 25, 18},
+//	{18, 25, 26, 19},
+//	{19, 26, 27, 20},
+//	{20, 27, 28, 21}};
+//
+//	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
+//	for (int i = 0; i < ne; i++)
+//	{
+//		nodeI = cn[i][0];
+//		nodeJ = cn[i][1];
+//		nodeP = cn[i][2];
+//		nodeQ = cn[i][3];
+//		add_quad4_elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
+//	}
+//
+//	assemble_matrix();
+//
+//	solve_eigen();
+//	print_info();
+//
+//	//char gmshFile[] = "data/wall.msh";
+//	//ds->exportGmsh(gmshFile);
+//	//ds->exportModalGmsh(gmshFile, 1);
+//	//ds->exportModalGmsh(gmshFile, 2);
+//	//ds->exportModalGmsh(gmshFile, 3);
+//
+//	//ds->setResponseGmsh(gmshFile, 10);
+//
+//	//int eqId = 1;
+//	//double dt = 0.005;
+//	//char eqFile[] = "data/EQ-S-1.txt";
+//	//ds->addWave(eqId, dt, eqFile);
+//
+//	//ds->setDynamicSolver(RODS::DynamicSolver::Newmark);
+//	//ds->activeGroundMotion(RODS::Direction::X, eqId, 700.0);
+//	//ds->solveSeismicResponse(1);
+//}
 //
 //void example_plane_stress_tri3elastic()
 //{
@@ -1349,288 +1349,288 @@ void example_wall_RODS()
 //}
 
 
-void example_plane_stress_rect4elastic()
-{
-	DynamicSystem *ds = new DynamicSystem(0.05);
-
-	double mass = 0.0;
-	double E = 200.0;
-	double nu = 0.3;
-	double t = 100.0;
-
-	int nnd = 63;
-	int ne = 40;
-
-	double crds[63][2] {
-	{   0.,   0.},
-	{ 150.,   0.},
-	{ 300.,   0.},
-	{ 450.,   0.},
-	{ 600.,   0.},
-	{ 750.,   0.},
-	{ 900.,   0.},
-	{1050.,   0.},
-	{1200.,   0.},
-	{1350.,   0.},
-	{1500.,   0.},
-	{1650.,   0.},
-	{1800.,   0.},
-	{1950.,   0.},
-	{2100.,   0.},
-	{2250.,   0.},
-	{2400.,   0.},
-	{2550.,   0.},
-	{2700.,   0.},
-	{2850.,   0.},
-	{3000.,   0.},
-	{   0., 150.},
-	{ 150., 150.},
-	{ 300., 150.},
-	{ 450., 150.},
-	{ 600., 150.},
-	{ 750., 150.},
-	{ 900., 150.},
-	{1050., 150.},
-	{1200., 150.},
-	{1350., 150.},
-	{1500., 150.},
-	{1650., 150.},
-	{1800., 150.},
-	{1950., 150.},
-	{2100., 150.},
-	{2250., 150.},
-	{2400., 150.},
-	{2550., 150.},
-	{2700., 150.},
-	{2850., 150.},
-	{3000., 150.},
-	{   0., 300.},
-	{ 150., 300.},
-	{ 300., 300.},
-	{ 450., 300.},
-	{ 600., 300.},
-	{ 750., 300.},
-	{ 900., 300.},
-	{1050., 300.},
-	{1200., 300.},
-	{1350., 300.},
-	{1500., 300.},
-	{1650., 300.},
-	{1800., 300.},
-	{1950., 300.},
-	{2100., 300.},
-	{2250., 300.},
-	{2400., 300.},
-	{2550., 300.},
-	{2700., 300.},
-	{2850., 300.},
-	{3000., 300.},
-	};
-
-	double x = 0.0, z = 0.0;
-	for (auto i = 0; i < nnd; i++)
-	{
-		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
-		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
-
-		x = crds[i][0];
-		z = crds[i][1];
-		ds->addNode(i + 1, x, z, 2*i+1, 2*i+2, -1);
-	}
-
-	ds->fixNode(1);
-	ds->fixNode(22);
-	ds->fixNode(43);
-
-	int cn[80][5] {
-	{ 1,  1,  2, 23, 22},
-	{ 2,  2,  3, 24, 23},
-	{ 3,  3,  4, 25, 24},
-	{ 4,  4,  5, 26, 25},
-	{ 5,  5,  6, 27, 26},
-	{ 6,  6,  7, 28, 27},
-	{ 7,  7,  8, 29, 28},
-	{ 8,  8,  9, 30, 29},
-	{ 9,  9, 10, 31, 30},
-	{10, 10, 11, 32, 31},
-	{11, 11, 12, 33, 32},
-	{12, 12, 13, 34, 33},
-	{13, 13, 14, 35, 34},
-	{14, 14, 15, 36, 35},
-	{15, 15, 16, 37, 36},
-	{16, 16, 17, 38, 37},
-	{17, 17, 18, 39, 38},
-	{18, 18, 19, 40, 39},
-	{19, 19, 20, 41, 40},
-	{20, 20, 21, 42, 41},
-	{21, 22, 23, 44, 43},
-	{22, 23, 24, 45, 44},
-	{23, 24, 25, 46, 45},
-	{24, 25, 26, 47, 46},
-	{25, 26, 27, 48, 47},
-	{26, 27, 28, 49, 48},
-	{27, 28, 29, 50, 49},
-	{28, 29, 30, 51, 50},
-	{29, 30, 31, 52, 51},
-	{30, 31, 32, 53, 52},
-	{31, 32, 33, 54, 53},
-	{32, 33, 34, 55, 54},
-	{33, 34, 35, 56, 55},
-	{34, 35, 36, 57, 56},
-	{35, 36, 37, 58, 57},
-	{36, 37, 38, 59, 58},
-	{37, 38, 39, 60, 59},
-	{38, 39, 40, 61, 60},
-	{39, 40, 41, 62, 61},
-	{40, 41, 42, 63, 62},
-	};
-
-	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
-	for (int i = 0; i < ne; i++)
-	{
-		nodeI = cn[i][1];
-		nodeJ = cn[i][2];
-		nodeP = cn[i][3];
-		nodeQ = cn[i][4];
-		ds->addRect4Elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
-	}
-
-	int loadId = 1;
-	int nP = 3;
-	double time[3] {0,1,2};
-	double p[3] {0,1,1};
-	double P = -100.0;
-
-	ds->addLoad(loadId,time,p,nP,0.0,P);
-
-	ds->addDofLoad(ds->Nodes.at(21)->dofZ->id, loadId);
-	ds->addDofLoad(ds->Nodes.at(63)->dofZ->id, loadId);
-
-	ds->assembleMatrix();
-	ds->solveLinearStaticResponse();
-
-	ds->Nodes.at(21)->dofX->printResponse();
-	ds->Nodes.at(21)->dofZ->printResponse();
-
-	ds->Nodes.at(63)->dofX->printResponse();
-	ds->Nodes.at(63)->dofZ->printResponse();
-
-	char gmshFile[] = "data/plane_stress_rect4elastic.msh";
-	ds->exportGmsh(gmshFile);
-	ds->exportResponseGmsh(gmshFile);
-}
-
-void example_plate4elastic()
-{
-	DynamicSystem *ds = new DynamicSystem(0.05);
-
-	double mass = 0.0;
-	double E = 32.5;
-	double nu = 0.2;
-	double t = 100.0;
-
-	int nnd = 25;
-	int ne = 16;
-
-	double crds[25][3] {
-	{   1,    0.,    0.},
-	{   2,  750.,    0.},
-	{   3, 1500.,    0.},
-	{   4, 2250.,    0.},
-	{   5, 3000.,    0.},
-	{   6,    0.,  750.},
-	{   7,  750.,  750.},
-	{   8, 1500.,  750.},
-	{   9, 2250.,  750.},
-	{  10, 3000.,  750.},
-	{  11,    0., 1500.},
-	{  12,  750., 1500.},
-	{  13, 1500., 1500.},
-	{  14, 2250., 1500.},
-	{  15, 3000., 1500.},
-	{  16,    0., 2250.},
-	{  17,  750., 2250.},
-	{  18, 1500., 2250.},
-	{  19, 2250., 2250.},
-	{  20, 3000., 2250.},
-	{  21,    0., 3000.},
-	{  22,  750., 3000.},
-	{  23, 1500., 3000.},
-	{  24, 2250., 3000.},
-	{  25, 3000., 3000.},
-	};
-
-	double x = 0.0, y = 0.0;
-	for (auto i = 0; i < nnd; i++)
-	{
-		ds->addDOF(3 * i + 1, RODS::Direction::Z, mass);
-		ds->addDOF(3 * i + 2, RODS::Direction::RX, mass);
-		ds->addDOF(3 * i + 3, RODS::Direction::RY, mass);
-
-		x = crds[i][1];
-		y = crds[i][2];
-		ds->addNodePlate2D(i + 1, x, y, 3*i+1, 3*i+2, 3*i+3);
-	}
-
-	int fn[16] {1,  2,  3,  4,  5,  6, 10, 11, 15, 16, 20, 21, 22, 23, 24, 25};
-
-	for (auto i = 0; i < 16; i++)
-	{
-		ds->fixNode(fn[i], RODS::Direction::Z);
-	}
-
-	int cn[16][5] {
-	{ 1,  1,  2,  7,  6},
-	{ 2,  2,  3,  8,  7},
-	{ 3,  3,  4,  9,  8},
-	{ 4,  4,  5, 10,  9},
-	{ 5,  6,  7, 12, 11},
-	{ 6,  7,  8, 13, 12},
-	{ 7,  8,  9, 14, 13},
-	{ 8,  9, 10, 15, 14},
-	{ 9, 11, 12, 17, 16},
-	{10, 12, 13, 18, 17},
-	{11, 13, 14, 19, 18},
-	{12, 14, 15, 20, 19},
-	{13, 16, 17, 22, 21},
-	{14, 17, 18, 23, 22},
-	{15, 18, 19, 24, 23},
-	{16, 19, 20, 25, 24},
-	};
-
-	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
-	for (int i = 0; i < ne; i++)
-	{
-		nodeI = cn[i][1];
-		nodeJ = cn[i][2];
-		nodeP = cn[i][3];
-		nodeQ = cn[i][4];
-		ds->addPlate4Elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
-	}
-
-	int loadId = 1;
-	int nP = 3;
-	double time[3] {0,1,2};
-	double p[3] {0,1,1};
-	double P = -1000.0;
-
-	ds->addLoad(loadId,time,p,nP,0.0,P);
-
-	ds->addDofLoad(ds->Nodes.at(13)->dofZ->id, loadId);
-
-	ds->assembleMatrix();
-
-	ds->printInfo();
-	ds->K.print();
-
-	ds->solveLinearStaticResponse();
-
-	ds->Nodes.at(13)->dofZ->printResponse();
-
-	// char gmshFile[] = "data/plane_stress_rect4elastic.msh";
-	// ds->exportGmsh(gmshFile);
-	// ds->exportResponseGmsh(gmshFile);
-}
+//void example_plane_stress_rect4elastic()
+//{
+//	DynamicSystem *ds = new DynamicSystem(0.05);
+//
+//	double mass = 0.0;
+//	double E = 200.0;
+//	double nu = 0.3;
+//	double t = 100.0;
+//
+//	int nnd = 63;
+//	int ne = 40;
+//
+//	double crds[63][2] {
+//	{   0.,   0.},
+//	{ 150.,   0.},
+//	{ 300.,   0.},
+//	{ 450.,   0.},
+//	{ 600.,   0.},
+//	{ 750.,   0.},
+//	{ 900.,   0.},
+//	{1050.,   0.},
+//	{1200.,   0.},
+//	{1350.,   0.},
+//	{1500.,   0.},
+//	{1650.,   0.},
+//	{1800.,   0.},
+//	{1950.,   0.},
+//	{2100.,   0.},
+//	{2250.,   0.},
+//	{2400.,   0.},
+//	{2550.,   0.},
+//	{2700.,   0.},
+//	{2850.,   0.},
+//	{3000.,   0.},
+//	{   0., 150.},
+//	{ 150., 150.},
+//	{ 300., 150.},
+//	{ 450., 150.},
+//	{ 600., 150.},
+//	{ 750., 150.},
+//	{ 900., 150.},
+//	{1050., 150.},
+//	{1200., 150.},
+//	{1350., 150.},
+//	{1500., 150.},
+//	{1650., 150.},
+//	{1800., 150.},
+//	{1950., 150.},
+//	{2100., 150.},
+//	{2250., 150.},
+//	{2400., 150.},
+//	{2550., 150.},
+//	{2700., 150.},
+//	{2850., 150.},
+//	{3000., 150.},
+//	{   0., 300.},
+//	{ 150., 300.},
+//	{ 300., 300.},
+//	{ 450., 300.},
+//	{ 600., 300.},
+//	{ 750., 300.},
+//	{ 900., 300.},
+//	{1050., 300.},
+//	{1200., 300.},
+//	{1350., 300.},
+//	{1500., 300.},
+//	{1650., 300.},
+//	{1800., 300.},
+//	{1950., 300.},
+//	{2100., 300.},
+//	{2250., 300.},
+//	{2400., 300.},
+//	{2550., 300.},
+//	{2700., 300.},
+//	{2850., 300.},
+//	{3000., 300.},
+//	};
+//
+//	double x = 0.0, z = 0.0;
+//	for (auto i = 0; i < nnd; i++)
+//	{
+//		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
+//		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
+//
+//		x = crds[i][0];
+//		z = crds[i][1];
+//		ds->addNode(i + 1, x, z, 2*i+1, 2*i+2, -1);
+//	}
+//
+//	ds->fixNode(1);
+//	ds->fixNode(22);
+//	ds->fixNode(43);
+//
+//	int cn[80][5] {
+//	{ 1,  1,  2, 23, 22},
+//	{ 2,  2,  3, 24, 23},
+//	{ 3,  3,  4, 25, 24},
+//	{ 4,  4,  5, 26, 25},
+//	{ 5,  5,  6, 27, 26},
+//	{ 6,  6,  7, 28, 27},
+//	{ 7,  7,  8, 29, 28},
+//	{ 8,  8,  9, 30, 29},
+//	{ 9,  9, 10, 31, 30},
+//	{10, 10, 11, 32, 31},
+//	{11, 11, 12, 33, 32},
+//	{12, 12, 13, 34, 33},
+//	{13, 13, 14, 35, 34},
+//	{14, 14, 15, 36, 35},
+//	{15, 15, 16, 37, 36},
+//	{16, 16, 17, 38, 37},
+//	{17, 17, 18, 39, 38},
+//	{18, 18, 19, 40, 39},
+//	{19, 19, 20, 41, 40},
+//	{20, 20, 21, 42, 41},
+//	{21, 22, 23, 44, 43},
+//	{22, 23, 24, 45, 44},
+//	{23, 24, 25, 46, 45},
+//	{24, 25, 26, 47, 46},
+//	{25, 26, 27, 48, 47},
+//	{26, 27, 28, 49, 48},
+//	{27, 28, 29, 50, 49},
+//	{28, 29, 30, 51, 50},
+//	{29, 30, 31, 52, 51},
+//	{30, 31, 32, 53, 52},
+//	{31, 32, 33, 54, 53},
+//	{32, 33, 34, 55, 54},
+//	{33, 34, 35, 56, 55},
+//	{34, 35, 36, 57, 56},
+//	{35, 36, 37, 58, 57},
+//	{36, 37, 38, 59, 58},
+//	{37, 38, 39, 60, 59},
+//	{38, 39, 40, 61, 60},
+//	{39, 40, 41, 62, 61},
+//	{40, 41, 42, 63, 62},
+//	};
+//
+//	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
+//	for (int i = 0; i < ne; i++)
+//	{
+//		nodeI = cn[i][1];
+//		nodeJ = cn[i][2];
+//		nodeP = cn[i][3];
+//		nodeQ = cn[i][4];
+//		ds->addRect4Elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
+//	}
+//
+//	int loadId = 1;
+//	int nP = 3;
+//	double time[3] {0,1,2};
+//	double p[3] {0,1,1};
+//	double P = -100.0;
+//
+//	ds->addLoad(loadId,time,p,nP,0.0,P);
+//
+//	ds->addDofLoad(ds->Nodes.at(21)->dofZ->id, loadId);
+//	ds->addDofLoad(ds->Nodes.at(63)->dofZ->id, loadId);
+//
+//	ds->assembleMatrix();
+//	ds->solveLinearStaticResponse();
+//
+//	ds->Nodes.at(21)->dofX->printResponse();
+//	ds->Nodes.at(21)->dofZ->printResponse();
+//
+//	ds->Nodes.at(63)->dofX->printResponse();
+//	ds->Nodes.at(63)->dofZ->printResponse();
+//
+//	char gmshFile[] = "data/plane_stress_rect4elastic.msh";
+//	ds->exportGmsh(gmshFile);
+//	ds->exportResponseGmsh(gmshFile);
+//}
+//
+//void example_plate4elastic()
+//{
+//	DynamicSystem *ds = new DynamicSystem(0.05);
+//
+//	double mass = 0.0;
+//	double E = 32.5;
+//	double nu = 0.2;
+//	double t = 100.0;
+//
+//	int nnd = 25;
+//	int ne = 16;
+//
+//	double crds[25][3] {
+//	{   1,    0.,    0.},
+//	{   2,  750.,    0.},
+//	{   3, 1500.,    0.},
+//	{   4, 2250.,    0.},
+//	{   5, 3000.,    0.},
+//	{   6,    0.,  750.},
+//	{   7,  750.,  750.},
+//	{   8, 1500.,  750.},
+//	{   9, 2250.,  750.},
+//	{  10, 3000.,  750.},
+//	{  11,    0., 1500.},
+//	{  12,  750., 1500.},
+//	{  13, 1500., 1500.},
+//	{  14, 2250., 1500.},
+//	{  15, 3000., 1500.},
+//	{  16,    0., 2250.},
+//	{  17,  750., 2250.},
+//	{  18, 1500., 2250.},
+//	{  19, 2250., 2250.},
+//	{  20, 3000., 2250.},
+//	{  21,    0., 3000.},
+//	{  22,  750., 3000.},
+//	{  23, 1500., 3000.},
+//	{  24, 2250., 3000.},
+//	{  25, 3000., 3000.},
+//	};
+//
+//	double x = 0.0, y = 0.0;
+//	for (auto i = 0; i < nnd; i++)
+//	{
+//		ds->addDOF(3 * i + 1, RODS::Direction::Z, mass);
+//		ds->addDOF(3 * i + 2, RODS::Direction::RX, mass);
+//		ds->addDOF(3 * i + 3, RODS::Direction::RY, mass);
+//
+//		x = crds[i][1];
+//		y = crds[i][2];
+//		ds->addNodePlate2D(i + 1, x, y, 3*i+1, 3*i+2, 3*i+3);
+//	}
+//
+//	int fn[16] {1,  2,  3,  4,  5,  6, 10, 11, 15, 16, 20, 21, 22, 23, 24, 25};
+//
+//	for (auto i = 0; i < 16; i++)
+//	{
+//		ds->fixNode(fn[i], RODS::Direction::Z);
+//	}
+//
+//	int cn[16][5] {
+//	{ 1,  1,  2,  7,  6},
+//	{ 2,  2,  3,  8,  7},
+//	{ 3,  3,  4,  9,  8},
+//	{ 4,  4,  5, 10,  9},
+//	{ 5,  6,  7, 12, 11},
+//	{ 6,  7,  8, 13, 12},
+//	{ 7,  8,  9, 14, 13},
+//	{ 8,  9, 10, 15, 14},
+//	{ 9, 11, 12, 17, 16},
+//	{10, 12, 13, 18, 17},
+//	{11, 13, 14, 19, 18},
+//	{12, 14, 15, 20, 19},
+//	{13, 16, 17, 22, 21},
+//	{14, 17, 18, 23, 22},
+//	{15, 18, 19, 24, 23},
+//	{16, 19, 20, 25, 24},
+//	};
+//
+//	int nodeI = 0, nodeJ = 0, nodeP = 0, nodeQ = 0;
+//	for (int i = 0; i < ne; i++)
+//	{
+//		nodeI = cn[i][1];
+//		nodeJ = cn[i][2];
+//		nodeP = cn[i][3];
+//		nodeQ = cn[i][4];
+//		ds->addPlate4Elastic(i+1, nodeI, nodeJ, nodeP, nodeQ, E, nu, t);
+//	}
+//
+//	int loadId = 1;
+//	int nP = 3;
+//	double time[3] {0,1,2};
+//	double p[3] {0,1,1};
+//	double P = -1000.0;
+//
+//	ds->addLoad(loadId,time,p,nP,0.0,P);
+//
+//	ds->addDofLoad(ds->Nodes.at(13)->dofZ->id, loadId);
+//
+//	ds->assembleMatrix();
+//
+//	ds->printInfo();
+//	ds->K.print();
+//
+//	ds->solveLinearStaticResponse();
+//
+//	ds->Nodes.at(13)->dofZ->printResponse();
+//
+//	// char gmshFile[] = "data/plane_stress_rect4elastic.msh";
+//	// ds->exportGmsh(gmshFile);
+//	// ds->exportResponseGmsh(gmshFile);
+//}
 
 //void example_shell_rectshell4elastic()
 //{

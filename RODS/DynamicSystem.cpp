@@ -324,7 +324,7 @@ void DynamicSystem::exportModalGmsh(char* fileName, const int order)
 
 	int od = order-1;
 	if (order > eqnCount) od = eqnCount-1;
-	
+
 	vec modeshape = Phi.col(od);
 	for (int i = 0; i < eqnCount; i++)
 	{
@@ -437,6 +437,25 @@ void DynamicSystem::setResponseGmsh(char* fileName, const int interval)
 	exportGmshInterval = interval;
 }
 
+void DynamicSystem::getDofModalResponse(double *res, const int order)
+{
+	int od = order-1;
+	if (order > eqnCount) od = 1;
+
+	vec modeshape = Phi.col(od);
+
+	for (int i = 0; i < eqnCount; i++)
+	{
+		DOF *d = DOFs.at(eqnMapDof.at(i));
+		d->dsp = modeshape(i);
+	}
+
+	auto i = 0;
+	for (auto it = DOFs.begin(); it != DOFs.end(); it++)
+	{
+		res[i++] = it->second->dsp;
+	}
+}
 
 void DynamicSystem::addDOF(DOF * d)
 {
@@ -1236,6 +1255,13 @@ void DynamicSystem::setRayleighDamping(const double omg1, const double omg2)
 	RayleighOmg2 = omg2;
 }
 
+void DynamicSystem::setRayleighDamping(const int i, const int j)
+{
+	useRayleighDamping = true;
+	RayleighOmg1 = omg(i-1);
+	RayleighOmg2 = omg(j-1);
+}
+
 void DynamicSystem::activeGroundMotion(RODS::Direction dir, const int waveId, const double waveScale)
 {
 	if (Waves.count(waveId) == 0)
@@ -1566,7 +1592,6 @@ void DynamicSystem::buildInherentDampingMatrix()
 		{
 			C_ = diagmat(2.0*zeta*omg_);
 			C += MPhi * C_ * MPhi.t();
-			
 		}
 		else
 		{
@@ -3044,10 +3069,11 @@ void DynamicSystem::printInfo()
 	cout << "            R  RR   OOO   DDD   SSSS             " << endl;
 	cout << "=================================================" << endl;
 
-	cout << "Number of DOFs:" << DOFs.size() << endl;
-	cout << "Number of Nodes:" << Nodes.size() << endl;
-	cout << "Number of Elements:" << Elements.size() << endl;
-	cout << "Number of Equations:" << eqnCount << endl;
+	cout << "Model Name: " << name << endl;
+	cout << "Number of DOFs: " << DOFs.size() << endl;
+	cout << "Number of Nodes: " << Nodes.size() << endl;
+	cout << "Number of Elements: " << Elements.size() << endl;
+	cout << "Number of Equations: " << eqnCount << endl;
 
 	int nModes = (int)P.n_rows;
 	if (nModes > 0)
@@ -3058,6 +3084,8 @@ void DynamicSystem::printInfo()
 			cout << "Mode " << i + 1 << ", T = " << P(i) << endl;
 		}
 	}
+
+	cout << "=================================================" << endl;
 }
 
 void DynamicSystem::setCurrentTime(double ctime)

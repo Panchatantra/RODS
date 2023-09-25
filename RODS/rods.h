@@ -18,6 +18,7 @@ extern "C" {
 	DLL_API void delete_model();
 	DLL_API void set_damping_ratio(const double zeta);
 	DLL_API void set_rayleigh_damping(const double omg1, const double omg2);
+	DLL_API void set_rayleigh_damping_order(const int i, const int j);
 	DLL_API void set_num_modes_inherent_damping(const int n);
 	DLL_API void active_ground_motion(const int dir, const int waveId, const double waveScale);
 	DLL_API void fix_dof(const int id);
@@ -96,6 +97,8 @@ extern "C" {
 	DLL_API void export_gmsh(char * fileName);
 	DLL_API void export_modal_gmsh(char * fileName, const int order);
 	DLL_API void set_response_gmsh(char * fileName, const int interval);
+	DLL_API void export_modal_matrix(const char * fileName);
+	DLL_API void export_modal_matrix_auto_name();
 
 	DLL_API size_t add_mat_sma_bilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift);
 
@@ -114,6 +117,7 @@ extern "C" {
 	DLL_API size_t get_point_coord(float* pt, const bool norm=true);
 	DLL_API size_t get_line_point_id(int* id);
 	DLL_API size_t get_rod1d_dof_id(int* id);
+	DLL_API void get_dof_modal_response(double *res, const int order=1);
 
 	DLL_API size_t get_period(double* P);
 

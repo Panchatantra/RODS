@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['Microsoft Yahei']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
+# 设置模型名
+RODS.set_name(b"SDOF")
+
 # 设置固有阻尼比
 RODS.set_damping_ratio(0.02)
 
@@ -26,7 +29,7 @@ RODS.add_dof_x(free_dof_id, m)
 RODS.fix_dof(fixed_dof_id)
 
 # 刚度
-k = m*100.0
+k = m*2500.0
 # 添加弹簧
 spring_id = 0
 RODS.add_spring(spring_id, fixed_dof_id, free_dof_id, k)
@@ -56,15 +59,15 @@ RODS.print_info()
 # 添加地震波
 dt = 0.005
 wave_id = 0
-wave_file = 'EQ-S-1.txt'.encode() # 文件名为 bytes 类型
+wave_file = b'EQ-S-1.txt' # 文件名为 bytes 类型
 RODS.add_wave(wave_id, dt, wave_file)
 
 # 添加自由度和单元响应记录器
 dof_recorder_id = 0
-RODS.add_dof_recorder(dof_recorder_id, RODS.Response.DISP.value, 'd.txt'.encode())
+RODS.add_dof_recorder(dof_recorder_id, RODS.Response.DISP.value, b'sdof_disp.txt')
 RODS.add_dof_to_recorder(free_dof_id, dof_recorder_id)
 ele_recorder_id = 0
-RODS.add_ele_recorder(dof_recorder_id, RODS.Response.FORCE.value, 'f.txt'.encode())
+RODS.add_ele_recorder(dof_recorder_id, RODS.Response.FORCE.value, b'sdof_force.txt')
 RODS.add_ele_to_recorder(spring_id, ele_recorder_id)
 RODS.add_ele_to_recorder(dashpot_id, ele_recorder_id)
 
@@ -78,7 +81,7 @@ n_sub_step = 1
 RODS.solve_seismic_response(n_sub_step)
 
 # 读取位移响应结果并绘制曲线
-data_d = np.loadtxt('d.txt')
+data_d = np.loadtxt('sdof_disp.txt')
 t = data_d[:,0]
 d = data_d[:,1]
 plt.figure("结构位移响应时程曲线", (12,4))
@@ -88,7 +91,7 @@ plt.ylabel("位移")
 plt.grid()
 
 # 读取力响应结果并绘制曲线
-data_f = np.loadtxt('f.txt')
+data_f = np.loadtxt('sdof_force.txt')
 t = data_f[:,0]
 f = data_f[:,2]
 plt.figure("阻尼器滞回曲线", (6,6))

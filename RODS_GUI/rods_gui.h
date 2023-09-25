@@ -17,6 +17,7 @@ static bool show_element1d_table_window = false;
 static bool show_recorder_window = false;
 static bool show_time_history_plot_window = false;
 static bool show_dir_window = false;
+static bool show_draw_mode_window = false;
 
 static bool use_rayleigh_damping = true;
 static bool use_mode_orthogonal_damping = false;
@@ -35,6 +36,11 @@ static int num_ele_recorder = 0;
 
 static int point_index = 0;
 static int dof_index = 0;
+
+static int draw_mode = 1;
+static int draw_type = 1;
+
+static int mode_order = 1;
 
 const size_t C_STR_LEN = 100;
 const size_t C_STR_LEN_S = 20;
@@ -61,6 +67,8 @@ namespace RODS_GUI {
 
     void timeHistoryPlotWindow();
 
+    void drawModeWindow();
+
     void draw(unsigned int VBO, unsigned int VAO, unsigned int EBO);
     void draw_1d(unsigned int VBO, unsigned int VAO, unsigned int EBO);
     void updateDOFList();
@@ -68,6 +76,7 @@ namespace RODS_GUI {
     void updateEleRecorderList();
     void updateWaveList();
     void updateEleList();
+    void updatedofIdMapIndex();
 
     void pause(int dur);
     void sdof_model();

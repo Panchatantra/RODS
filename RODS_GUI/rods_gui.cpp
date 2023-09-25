@@ -8,6 +8,7 @@
 #include "rods_gui.h"
 #include "rods.h"
 
+#include <math.h>
 #include <map>
 std::map<int, int> pointIdMapIndex;
 std::map<int, int> dofIdMapIndex;
@@ -17,6 +18,8 @@ float * wave_a_data = nullptr;
 
 float* t_data = nullptr;
 float* r_data = nullptr;
+
+double* dof_response = nullptr;
 
 double * period = nullptr;
 
@@ -58,7 +61,7 @@ void RODS_GUI::createShader(unsigned int &shaderProgram)
         "out vec4 FragColor;\n"
         "void main()\n"
         "{\n"
-        "   FragColor = vec4(0.5f, 0.0f, 0.0f, 1.0f);\n"
+        "   FragColor = vec4(0.5f, 0.2f, 0.2f, 1.0f);\n"
         "}\n\0";
 
     // vertex shader
@@ -118,6 +121,9 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
 
             if (ImGui::MenuItem("Inherent Damping"))
                 show_damping_window = true;
+
+            if (ImGui::MenuItem("Drawing Mode"))
+                show_draw_mode_window = true;
             ImGui::EndMenu();
         }
 
@@ -268,7 +274,8 @@ void RODS_GUI::dofWindow()
             num_dof = add_dof(dof_id++, dir, mass);
         }
 
-        if (num_dof > 0) {
+        if (num_dof > 0)
+        {
             ImGui::SameLine();
             if (ImGui::Button("Edit DOF"))
                 ImGui::OpenPopup("Select DOF to Edit");
@@ -292,6 +299,16 @@ void RODS_GUI::dofWindow()
                     dofIdMapIndex.erase(selected_dof_id);
                 }
                 ImGui::EndPopup();
+            }
+        }
+
+        static int dof_id_bat[3] = {1,11,1};
+        ImGui::InputInt3("DOF ID (Start, Stop, Step)", dof_id_bat);
+        if (ImGui::Button("Batch Add DOF"))
+        {
+            for (size_t id = dof_id_bat[0]; id <= dof_id_bat[1]; id+=dof_id_bat[2])
+            {
+                num_dof = add_dof(id, dir, mass);
             }
         }
 
@@ -496,7 +513,8 @@ void RODS_GUI::element1dWindow()
         static int dof_id_i = 0;
         static int dof_id_j = 0;
 
-        if (num_dof > 1) {
+        if (num_dof > 1)
+        {
             if (ImGui::Button("Select DOFs"))
                 ImGui::OpenPopup("Select DOFs for Element1D");
             if (ImGui::BeginPopup("Select DOFs for Element1D"))
@@ -538,7 +556,6 @@ void RODS_GUI::element1dWindow()
                 break;
             case 2:
             {
-                updateDOFList();
                 ImGui::InputDouble("Inertance", param);
                 if (ImGui::Button("Add Element1D")) {
                     if (dof_id_i == dof_id_j)
@@ -559,6 +576,41 @@ void RODS_GUI::element1dWindow()
                 if (ImGui::Button("Confirm"))
                     ImGui::CloseCurrentPopup();
                 ImGui::EndPopup();
+            }
+
+            static int ele_id_bat[3] = {1,10,1};
+            static int dof_i_id_bat[2] = {1,1};
+            static int dof_j_id_bat[2] = {2,1};
+            ImGui::InputInt3("Element ID (Start, Stop, Step)", ele_id_bat);
+            ImGui::InputInt2("DOF I ID (Start, Step)", dof_i_id_bat);
+            ImGui::InputInt2("DOF J ID (Start, Step)", dof_j_id_bat);
+
+            if (ImGui::Button("Batch Add Element1D"))
+            {
+                auto dof_i_id = dof_i_id_bat[0];
+                auto dof_j_id = dof_j_id_bat[0];
+                for (size_t id = ele_id_bat[0]; id <= ele_id_bat[1]; id+=ele_id_bat[2])
+                {
+                    switch (ele_type)
+                    {
+                    case 0:
+                        num_spring = add_spring(id, dof_i_id, dof_j_id, param[0]);
+                        num_ele = get_num_ele();
+                        break;
+                    case 1:
+                        num_dashpot = add_dashpot(id, dof_i_id, dof_j_id, param[0]);
+                        num_ele = get_num_ele();
+                        break;
+                    case 2:
+                        num_inerter = add_inerter(id, dof_i_id, dof_j_id, param[0]);
+                        num_ele = get_num_ele();
+                        break;
+                    default:
+                        break;
+                    }
+                    dof_i_id += dof_i_id_bat[1];
+                    dof_j_id += dof_j_id_bat[1];
+                }
             }
         }
 
@@ -649,6 +701,18 @@ void RODS_GUI::solveEigenWindow()
                 }
                 ImGui::EndTable();
             }
+
+            ImGui::SliderInt("Order", &mode_order, 1, num_eqn);
+
+            if (ImGui::Button("Start Mode Animation"))
+            {
+                draw_type = 2;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Stop"))
+            {
+                draw_type = 1;
+            }
         }
 
         if (ImGui::Button("Close"))
@@ -671,118 +735,136 @@ void RODS_GUI::recorderWindow()
 
         if (recorder_type == 0)
         {
+            static bool record_all = 0;
+            ImGui::Checkbox("Record All", &record_all);
+
             static int dof_recorder_id = 1;
             ImGui::InputInt("Recorder ID", &dof_recorder_id);
-            static int response_type = 0;
-            ImGui::Combo("Response Type", &response_type, dofResponse, 3);
 
-            char workDir[C_STR_LEN];
-            get_work_dir(workDir, C_STR_LEN);
-            strcat_s(workDir, "/");
-            if (ImGui::Button("Set File for Recorder"))
-                ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
-                                ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
-            static std::string recorderFilePathName = "";
-            static char _recorderFilePathName[C_STR_LEN] = "r.txt";
-            ImGui::InputText("Recorder File", _recorderFilePathName, C_STR_LEN);
-            if (ImGuiFileDialog::Instance()->Display("RecorderFileDlgKey"))
+            if (!record_all)
             {
-                if (ImGuiFileDialog::Instance()->IsOk())
+                static int response_type = 0;
+                ImGui::Combo("Response Type", &response_type, dofResponse, 3);
+
+                char workDir[C_STR_LEN];
+                get_work_dir(workDir, C_STR_LEN);
+                strcat_s(workDir, "/");
+                if (ImGui::Button("Set File for Recorder"))
+                    ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
+                                    ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
+                static std::string recorderFilePathName = "";
+                static char _recorderFilePathName[C_STR_LEN] = "r.txt";
+                ImGui::InputText("Recorder File", _recorderFilePathName, C_STR_LEN);
+                if (ImGuiFileDialog::Instance()->Display("RecorderFileDlgKey"))
                 {
-                    recorderFilePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-                    strcpy_s(_recorderFilePathName, recorderFilePathName.c_str());
-                }
-                ImGuiFileDialog::Instance()->Close();
-            }
-            if (ImGui::Button("Add DOF Recorder"))
-                num_dof_recorder = add_dof_recorder(dof_recorder_id++, response_type, _recorderFilePathName);
-
-            if (num_dof_recorder > 0 && num_dof > 0)
-            {
-                ImGui::Separator();
-
-                if (ImGui::Button("Select DOF"))
-                    ImGui::OpenPopup("Select DOF");
-
-                if (ImGui::BeginPopup("Select DOF"))
-                {
-                    updateDOFList();
-                    updateDOFRecorderList();
-                    static int dof_index = 0;
-                    static int dof_recorder_index = 0;
-                    ImGui::Combo("DOF", &dof_index, dofStrList, num_dof);
-                    ImGui::Combo("DOF Recorder", &dof_recorder_index, dofRecorderStrList, num_dof_recorder);
-                    if (ImGui::Button("Add"))
+                    if (ImGuiFileDialog::Instance()->IsOk())
                     {
-                        add_dof_to_recorder(dofList[dof_index], dofRecorderList[dof_recorder_index]);
-                        ImGui::SameLine();
-                        ImGui::Text("DOF %d is added to Recorder %d.",
-                                    dofList[dof_index], dofRecorderList[dof_recorder_index]);
-                        pause(2);
+                        recorderFilePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+                        strcpy_s(_recorderFilePathName, recorderFilePathName.c_str());
                     }
-                    ImGui::EndPopup();
+                    ImGuiFileDialog::Instance()->Close();
+                }
+                if (ImGui::Button("Add DOF Recorder"))
+                    num_dof_recorder = add_dof_recorder(dof_recorder_id++, response_type, _recorderFilePathName);
+
+                if (num_dof_recorder > 0 && num_dof > 0)
+                {
+                    ImGui::Separator();
+
+                    if (ImGui::Button("Select DOF"))
+                        ImGui::OpenPopup("Select DOF");
+
+                    if (ImGui::BeginPopup("Select DOF"))
+                    {
+                        updateDOFList();
+                        updateDOFRecorderList();
+                        static int dof_index = 0;
+                        static int dof_recorder_index = 0;
+                        ImGui::Combo("DOF", &dof_index, dofStrList, num_dof);
+                        ImGui::Combo("DOF Recorder", &dof_recorder_index, dofRecorderStrList, num_dof_recorder);
+                        if (ImGui::Button("Add"))
+                        {
+                            add_dof_to_recorder(dofList[dof_index], dofRecorderList[dof_recorder_index]);
+                            ImGui::SameLine();
+                            ImGui::Text("DOF %d is added to Recorder %d.",
+                                        dofList[dof_index], dofRecorderList[dof_recorder_index]);
+                            pause(2);
+                        }
+                        ImGui::EndPopup();
+                    }
                 }
             }
-            if (ImGui::Button("Record All DOF Response"))
+            else
             {
-                record_all_dof_response(dof_recorder_id);
+                if (ImGui::Button("Add DOF Recorder"))
+                    record_all_dof_response(dof_recorder_id);
             }
         }
         else
         {
+            static bool record_all = 0;
+            ImGui::Checkbox("Record All", &record_all);
             static int ele_recorder_id = 1;
             ImGui::InputInt("Recorder ID", &ele_recorder_id);
-            static int response_type = 0;
-            ImGui::Combo("Response Type", &response_type, eleResponse, 3);
 
-            char workDir[C_STR_LEN];
-            get_work_dir(workDir, C_STR_LEN);
-            strcat_s(workDir, "/");
-            if (ImGui::Button("Set File for Recorder"))
-                ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
-                                ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
-            static std::string recorderFilePathName = "";
-            static char _recorderFilePathName[C_STR_LEN] = "r.txt";
-            ImGui::InputText("Recorder File", _recorderFilePathName, C_STR_LEN);
-            if (ImGuiFileDialog::Instance()->Display("RecorderFileDlgKey"))
+            if (!record_all)
             {
-                if (ImGuiFileDialog::Instance()->IsOk())
+                static int response_type = 0;
+                ImGui::Combo("Response Type", &response_type, eleResponse, 3);
+
+                char workDir[C_STR_LEN];
+                get_work_dir(workDir, C_STR_LEN);
+                strcat_s(workDir, "/");
+                if (ImGui::Button("Set File for Recorder"))
+                    ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
+                                    ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
+                static std::string recorderFilePathName = "";
+                static char _recorderFilePathName[C_STR_LEN] = "r.txt";
+                ImGui::InputText("Recorder File", _recorderFilePathName, C_STR_LEN);
+                if (ImGuiFileDialog::Instance()->Display("RecorderFileDlgKey"))
                 {
-                    recorderFilePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-                    strcpy_s(_recorderFilePathName, recorderFilePathName.c_str());
-                }
-                ImGuiFileDialog::Instance()->Close();
-            }
-            if (ImGui::Button("Add Element Recorder"))
-                num_ele_recorder = add_ele_recorder(ele_recorder_id++, response_type+3, _recorderFilePathName);
-
-            if (num_ele_recorder > 0 && num_ele > 0)
-            {
-                ImGui::Separator();
-
-                if (ImGui::Button("Select Element"))
-                    ImGui::OpenPopup("Select Element");
-
-                if (ImGui::BeginPopup("Select Element"))
-                {
-                    updateEleList();
-                    updateEleRecorderList();
-                    static int ele_index = 0;
-                    static int ele_recorder_index = 0;
-                    ImGui::Combo("Element", &ele_index, dofStrList, num_dof);
-                    ImGui::Combo("Element Recorder", &ele_recorder_index, dofRecorderStrList, num_ele_recorder);
-                    if (ImGui::Button("Add"))
+                    if (ImGuiFileDialog::Instance()->IsOk())
                     {
-                        add_ele_to_recorder(eleList[ele_index], eleRecorderList[ele_recorder_index]);
-                        ImGui::SameLine();
-                        ImGui::Text("Element %d is added to Recorder %d.",
-                                    eleList[ele_index], eleRecorderList[ele_recorder_index]);
+                        recorderFilePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+                        strcpy_s(_recorderFilePathName, recorderFilePathName.c_str());
                     }
-                    ImGui::EndPopup();
+                    ImGuiFileDialog::Instance()->Close();
                 }
+                if (ImGui::Button("Add Element Recorder"))
+                    num_ele_recorder = add_ele_recorder(ele_recorder_id++, response_type+3, _recorderFilePathName);
+
+                if (num_ele_recorder > 0 && num_ele > 0)
+                {
+                    ImGui::Separator();
+
+                    if (ImGui::Button("Select Element"))
+                        ImGui::OpenPopup("Select Element");
+
+                    if (ImGui::BeginPopup("Select Element"))
+                    {
+                        updateEleList();
+                        updateEleRecorderList();
+                        static int ele_index = 0;
+                        static int ele_recorder_index = 0;
+                        ImGui::Combo("Element", &ele_index, dofStrList, num_dof);
+                        ImGui::Combo("Element Recorder", &ele_recorder_index, dofRecorderStrList, num_ele_recorder);
+                        if (ImGui::Button("Add"))
+                        {
+                            add_ele_to_recorder(eleList[ele_index], eleRecorderList[ele_recorder_index]);
+                            ImGui::SameLine();
+                            ImGui::Text("Element %d is added to Recorder %d.",
+                                        eleList[ele_index], eleRecorderList[ele_recorder_index]);
+                        }
+                        ImGui::EndPopup();
+                    }
+                }
+            }
+            else
+            {
+                if (ImGui::Button("Add Element Recorder"))
+                    record_all_ele_response(ele_recorder_id);
             }
         }
-
 
         if (ImGui::Button("Close"))
             show_recorder_window = false;
@@ -998,6 +1080,29 @@ void RODS_GUI::timeHistoryPlotWindow()
     }
 }
 
+void RODS_GUI::drawModeWindow()
+{
+    if (show_draw_mode_window)
+    {
+        ImGui::Begin("Drawing Mode");
+
+        ImGui::Text("Dimension: "); ImGui::SameLine();
+        ImGui::RadioButton("1D", &draw_mode, 1); ImGui::SameLine();
+        ImGui::RadioButton("2D", &draw_mode, 2); ImGui::SameLine();
+        ImGui::RadioButton("3D", &draw_mode, 3);
+
+        ImGui::Text("Draw: "); ImGui::SameLine();
+        ImGui::RadioButton("Model", &draw_type, 1); ImGui::SameLine();
+        ImGui::RadioButton("Mode Shape", &draw_type, 2); ImGui::SameLine();
+        ImGui::RadioButton("Response", &draw_type, 3);
+
+        if (ImGui::Button("Close"))
+            show_draw_mode_window = false;
+
+        ImGui::End();
+    }
+}
+
 void RODS_GUI::draw(unsigned int VBO, unsigned int VAO, unsigned int EBO)
 {
     if (num_point > 0) {
@@ -1039,18 +1144,26 @@ void RODS_GUI::draw_1d(unsigned int VBO, unsigned int VAO, unsigned int EBO)
 {
     if (num_dof > 0) {
 
-        float H = 0.8f;
+        float H = 1.6f;
         float h = 0.0f;
+        float H_0 = -0.8f;
 
         if (num_dof>1)
             h = H/(num_dof - 1);
 
         float* vertices = new float[(size_t)num_dof*3];
 
+        if (draw_type == 2)
+        {
+            dof_response = new double[(size_t)num_dof];
+            get_dof_modal_response(dof_response, mode_order);
+        }
+
         for (int i = 0; i < num_dof; i++)
         {
-            vertices[3*i] = h*i;
-            vertices[3*i+1] = 0.0f;
+            vertices[3*i] = 0.0f;
+            if (draw_type == 2) vertices[3*i] += dof_response[i]*sinf(2.0*3.142/6.0*glfwGetTime());
+            vertices[3*i+1] = H_0 + h*i;
             vertices[3*i+2] = 0.0f;
         }
 
@@ -1063,7 +1176,7 @@ void RODS_GUI::draw_1d(unsigned int VBO, unsigned int VAO, unsigned int EBO)
         glDrawArrays(GL_POINTS, 0, num_dof);
 
         if (num_ele > 0) {
-            updateDOFList();
+            updatedofIdMapIndex();
             int* indices = new int[(size_t)num_ele*2];
             get_rod1d_dof_id(indices);
 
@@ -1145,6 +1258,18 @@ void RODS_GUI::updateEleList()
         auto item_str = new char[C_STR_LEN_S];
         snprintf(item_str, C_STR_LEN_S, "%d", eleList[i]);
         eleStrList[i] = item_str;
+    }
+}
+
+void RODS_GUI::updatedofIdMapIndex()
+{
+    dofList = new int [num_dof];
+    get_dof_id(dofList);
+
+    dofIdMapIndex.clear();
+    for (auto index = 0; index < num_dof; index++)
+    {
+        dofIdMapIndex[dofList[index]] = index;
     }
 }
 

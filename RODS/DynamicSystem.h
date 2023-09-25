@@ -214,6 +214,8 @@ public:
 
 	void setResponseGmsh(char * fileName, const int interval);
 
+	void getDofModalResponse(double *res, const int order=1);
+
     void addDOF(DOF *d);
 
     /**
@@ -773,12 +775,20 @@ public:
 	void setElementRecorderFileName(const int id, char * fileName);
 
 	/**
-	 * @brief      Sets the frequencies of Rayleigh damping.
+	 * @brief      Sets the circular frequencies for Rayleigh damping.
 	 *
 	 * @param[in]  omg1  The first circular frequency for Rayleigh damping
 	 * @param[in]  omg2  The second circular frequency for Rayleigh damping
 	 */
 	void setRayleighDamping(const double omg1, const double omg2);
+
+	/**
+	 * @brief      Sets the orders of modes for Rayleigh damping.
+	 *
+	 * @param[in]  i  The first order of mode for Rayleigh damping
+	 * @param[in]  j  The second order of mode for Rayleigh damping
+	 */
+	void setRayleighDamping(const int i, const int j);
 
 	/**
 	 * @brief      Actives Ground Motion

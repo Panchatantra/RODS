@@ -323,6 +323,11 @@ DLL_API void set_rayleigh_damping(const double omg1, const double omg2)
 	ds->setRayleighDamping(omg1, omg2);
 }
 
+DLL_API void set_rayleigh_damping_order(const int i, const int j)
+{
+	ds->setRayleighDamping(i, j);
+}
+
 DLL_API void set_num_modes_inherent_damping(const int n)
 {
 	ds->setNumModesInherentDamping(n);
@@ -336,6 +341,16 @@ DLL_API void export_modal_gmsh(char* fileName, const int order)
 DLL_API void set_response_gmsh(char* fileName, const int interval)
 {
 	ds->setResponseGmsh(fileName, interval);
+}
+
+DLL_API void export_modal_matrix(const char * fileName)
+{
+	ds->exportModalMatrix(fileName);
+}
+
+DLL_API void export_modal_matrix_auto_name()
+{
+	ds->exportModalMatrix((ds->workDir + "/" + ds->name + "_modal_matrix.txt").c_str());
 }
 
 DLL_API size_t add_mat_sma_bilinear(const int id, const double E0, const double fy, const double alpha,
@@ -615,6 +630,11 @@ DLL_API size_t get_rod1d_dof_id(int * id)
 		}
 	}
 	return n*2;
+}
+
+DLL_API void get_dof_modal_response(double * res, const int order)
+{
+	ds->getDofModalResponse(res, order);
 }
 
 DLL_API size_t get_period(double* P)
