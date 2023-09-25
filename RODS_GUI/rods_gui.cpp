@@ -177,13 +177,13 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
 
 void RODS_GUI::dirWindow()
 {
-    static char workDir[100] = ".";
+    static char workDir[C_STR_LEN] = "./";
     if (show_dir_window)
     {
         ImGui::Begin("Work Directory && Name");
 
         if (ImGui::Button("Select Directory"))
-            ImGuiFileDialog::Instance()->OpenDialog("ChooseDirDlgKey", "Choose a Directory", nullptr, ".");
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseDirDlgKey", "Choose a Directory", nullptr, "./");
 
         if (ImGuiFileDialog::Instance()->Display("ChooseDirDlgKey"))
         {
@@ -195,12 +195,12 @@ void RODS_GUI::dirWindow()
             ImGuiFileDialog::Instance()->Close();
         }
 
-        ImGui::InputText("Work Directory", workDir, 100);
+        ImGui::InputText("Work Directory", workDir, C_STR_LEN);
         if (ImGui::Button("Set Work Directory"))
             set_work_dir(workDir);
 
-        static char name[100] = "RODS";
-        ImGui::InputText("Name", name, 100);
+        static char name[C_STR_LEN] = "RODS";
+        ImGui::InputText("Name", name, C_STR_LEN);
         if (ImGui::Button("Set Name"))
             set_name(name);
 
@@ -366,8 +366,8 @@ void RODS_GUI::lineWindow()
             const char** pointItems = new const char* [num_point];
             for (int i = 0; i < num_point; i++)
             {
-                auto item_str = new char[20];
-                snprintf(item_str, 20, "%d", pointList[i]);
+                auto item_str = new char[C_STR_LEN_S];
+                snprintf(item_str, C_STR_LEN_S, "%d", pointList[i]);
                 pointItems[i] = item_str;
             }
             static int point_index_i = 0;
@@ -400,9 +400,6 @@ void RODS_GUI::lineWindow()
 
 void RODS_GUI::waveWindow()
 {
-    // ImPlotStyle& style = ImPlot::GetStyle();
-    // style.PlotDefaultSize.y = 500;
-
     if (show_wave_window)
     {
         ImGui::Begin("Wave");
@@ -414,8 +411,11 @@ void RODS_GUI::waveWindow()
         static std::string waveFilePathName;
         static std::string waveFileName;
 
+        char workDir[C_STR_LEN];
+        get_work_dir(workDir, C_STR_LEN);
+        strcat_s(workDir, "/");
         if (ImGui::Button("Select File"))
-            ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", ".");
+            ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", workDir);
 
         if (ImGuiFileDialog::Instance()->Display("SelectFileDlgKey"))
         {
@@ -663,6 +663,7 @@ void RODS_GUI::recorderWindow()
     if (show_recorder_window)
     {
         ImGui::Begin("Recorder");
+
         static int recorder_type = 0;
         ImGui::Text("Recorder Type"); ImGui::SameLine();
         ImGui::RadioButton("DOF", &recorder_type, 0); ImGui::SameLine();
@@ -674,12 +675,16 @@ void RODS_GUI::recorderWindow()
             ImGui::InputInt("Recorder ID", &dof_recorder_id);
             static int response_type = 0;
             ImGui::Combo("Response Type", &response_type, dofResponse, 3);
+
+            char workDir[C_STR_LEN];
+            get_work_dir(workDir, C_STR_LEN);
+            strcat_s(workDir, "/");
             if (ImGui::Button("Set File for Recorder"))
                 ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
-                                ".*", ".", "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
+                                ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
             static std::string recorderFilePathName = "";
-            static char _recorderFilePathName[100] = "r.txt";
-            ImGui::InputText("Recorder File", _recorderFilePathName, 100);
+            static char _recorderFilePathName[C_STR_LEN] = "r.txt";
+            ImGui::InputText("Recorder File", _recorderFilePathName, C_STR_LEN);
             if (ImGuiFileDialog::Instance()->Display("RecorderFileDlgKey"))
             {
                 if (ImGuiFileDialog::Instance()->IsOk())
@@ -718,6 +723,10 @@ void RODS_GUI::recorderWindow()
                     ImGui::EndPopup();
                 }
             }
+            if (ImGui::Button("Record All DOF Response"))
+            {
+                record_all_dof_response(dof_recorder_id);
+            }
         }
         else
         {
@@ -725,12 +734,16 @@ void RODS_GUI::recorderWindow()
             ImGui::InputInt("Recorder ID", &ele_recorder_id);
             static int response_type = 0;
             ImGui::Combo("Response Type", &response_type, eleResponse, 3);
+
+            char workDir[C_STR_LEN];
+            get_work_dir(workDir, C_STR_LEN);
+            strcat_s(workDir, "/");
             if (ImGui::Button("Set File for Recorder"))
                 ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
-                                ".*", ".", "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
+                                ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
             static std::string recorderFilePathName = "";
-            static char _recorderFilePathName[100] = "r.txt";
-            ImGui::InputText("Recorder File", _recorderFilePathName, 100);
+            static char _recorderFilePathName[C_STR_LEN] = "r.txt";
+            ImGui::InputText("Recorder File", _recorderFilePathName, C_STR_LEN);
             if (ImGuiFileDialog::Instance()->Display("RecorderFileDlgKey"))
             {
                 if (ImGuiFileDialog::Instance()->IsOk())
@@ -931,8 +944,11 @@ void RODS_GUI::timeHistoryPlotWindow()
         static std::string resFilePathName;
         static std::string resFileName;
 
+        char workDir[C_STR_LEN];
+        get_work_dir(workDir, C_STR_LEN);
+        strcat_s(workDir, "/");
         if (ImGui::Button("Select File"))
-            ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", ".");
+            ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", workDir);
 
         if (ImGuiFileDialog::Instance()->Display("SelectFileDlgKey"))
         {
@@ -1074,8 +1090,8 @@ void RODS_GUI::updateDOFList()
     dofStrList = new const char* [num_dof];
     for (int i = 0; i < num_dof; i++)
     {
-        auto dof_str = new char[20];
-        snprintf(dof_str, 20, "%d", dofList[i]);
+        auto dof_str = new char[C_STR_LEN_S];
+        snprintf(dof_str, C_STR_LEN_S, "%d", dofList[i]);
         dofStrList[i] = dof_str;
     }
 }
@@ -1087,8 +1103,8 @@ void RODS_GUI::updateDOFRecorderList()
     dofRecorderStrList = new const char* [num_dof_recorder];
     for (int i = 0; i < num_dof_recorder; i++)
     {
-        auto dof_recorder_str = new char[20];
-        snprintf(dof_recorder_str, 20, "%d", dofRecorderList[i]);
+        auto dof_recorder_str = new char[C_STR_LEN_S];
+        snprintf(dof_recorder_str, C_STR_LEN_S, "%d", dofRecorderList[i]);
         dofRecorderStrList[i] = dof_recorder_str;
     }
 }
@@ -1100,8 +1116,8 @@ void RODS_GUI::updateEleRecorderList()
     eleRecorderStrList = new const char* [num_ele_recorder];
     for (int i = 0; i < num_ele_recorder; i++)
     {
-        auto ele_recorder_str = new char[20];
-        snprintf(ele_recorder_str, 20, "%d", eleRecorderList[i]);
+        auto ele_recorder_str = new char[C_STR_LEN_S];
+        snprintf(ele_recorder_str, C_STR_LEN_S, "%d", eleRecorderList[i]);
         eleRecorderStrList[i] = ele_recorder_str;
     }
 }
@@ -1113,8 +1129,8 @@ void RODS_GUI::updateWaveList()
     waveStrList = new const char* [num_wave];
     for (int i = 0; i < num_wave; i++)
     {
-        auto wave_str = new char[20];
-        snprintf(wave_str, 20, "%d", waveList[i]);
+        auto wave_str = new char[C_STR_LEN_S];
+        snprintf(wave_str, C_STR_LEN_S, "%d", waveList[i]);
         waveStrList[i] = wave_str;
     }
 }
@@ -1126,8 +1142,8 @@ void RODS_GUI::updateEleList()
     eleStrList = new const char* [num_ele];
     for (int i = 0; i < num_ele; i++)
     {
-        auto item_str = new char[20];
-        snprintf(item_str, 20, "%d", eleList[i]);
+        auto item_str = new char[C_STR_LEN_S];
+        snprintf(item_str, C_STR_LEN_S, "%d", eleList[i]);
         eleStrList[i] = item_str;
     }
 }
@@ -1140,6 +1156,9 @@ void RODS_GUI::pause(int dur)
 
 void RODS_GUI::sdof_model()
 {
+    set_name("SDOF");
+    set_work_dir("D:/Develop/RODS/RODS/x64/Release");
+
     set_damping_ratio(0.02);
     set_rayleigh_damping(10.0, 20.0);
 
@@ -1156,11 +1175,14 @@ void RODS_GUI::sdof_model()
 
     assemble_matrix();
 
-    char rfn[100] = "D:\\Develop\\RODS\\RODS\\x64\\Release\\disp.txt";
-    num_dof_recorder = add_dof_recorder(1,0,rfn);
-    add_dof_to_recorder(2,1);
+    record_all_dof_response(1);
+    record_all_ele_response(1);
 
-    char wfn[100] = "D:\\Develop\\RODS\\RODS\\x64\\Release\\EQ-S-1.txt";
+    char rfn[C_STR_LEN] = "D:/Develop/RODS/RODS/x64/Release/disp.txt";
+    num_dof_recorder = add_dof_recorder(2,0,rfn);
+    add_dof_to_recorder(2,2);
+
+    char wfn[C_STR_LEN] = "D:/Develop/RODS/RODS/x64/Release/EQ-S-1.txt";
     num_wave = add_wave(1, 0.005, wfn);
 
     set_dynamic_solver(0);

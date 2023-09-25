@@ -720,7 +720,17 @@ DLL_API void set_name(const char * name)
 	ds->setName(name);
 }
 
+DLL_API void get_name(char * name, const size_t size)
+{
+	strcpy_s(name, size, ds->name.c_str());
+}
+
 DLL_API void set_work_dir(const char * workDir)
 {
 	ds->setWorkDir(workDir);
+}
+
+DLL_API void get_work_dir(char * workDir, const size_t size)
+{
+	strcpy_s(workDir, size, ds->workDir.c_str());
 }

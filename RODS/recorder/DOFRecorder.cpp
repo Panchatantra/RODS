@@ -32,18 +32,21 @@ void DOFRecorder::init(const int nsteps)
 void DOFRecorder::record(const int cstep, const double ctime)
 {
 	Res(cstep, 0) = ctime;
+	DOF* d;
 	for (size_t i = 0; i < n; i++)
 	{
-		DOF * d = dofs[i];
 		switch (rtype)
 		{
 		case RODS::Response::DISP:
+			d = dofs[i];
 			Res(cstep, i + 1) = d->dsp;
 			break;
 		case RODS::Response::VEL:
+			d = dofs[i];
 			Res(cstep, i + 1) = d->vel;
 			break;
 		case RODS::Response::ACC:
+			d = dofs[i];
 			Res(cstep, i + 1) = d->acc;
 			break;
 		case RODS::Response::FORCE:
@@ -51,9 +54,14 @@ void DOFRecorder::record(const int cstep, const double ctime)
 		case RODS::Response::DEF:
 			break;
 		case RODS::Response::ALL:
-			Res(cstep, 3*i + 1) = d->dsp;
-			Res(cstep, 3*i + 2) = d->vel;
-			Res(cstep, 3*i + 3) = d->acc;
+		{
+			auto p = i % 3;
+			auto q = i / 3;
+			d = dofs[q];
+			if (p == 0) Res(cstep, i+1) = d->dsp;
+			else if (p == 1) Res(cstep, i+1) = d->vel;
+			else Res(cstep, i+1) = d->acc;
+		}
 			break;
 		default:
 			break;

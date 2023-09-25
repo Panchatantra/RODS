@@ -136,6 +136,8 @@ extern "C" {
 	DLL_API void record_all_ele_response(const int id);
 
 	DLL_API void set_name(const char * name);
+	DLL_API void get_name(char * name, const size_t size);
 	DLL_API void set_work_dir(const char * workDir);
+	DLL_API void get_work_dir(char * workDir, const size_t size);
 
 }

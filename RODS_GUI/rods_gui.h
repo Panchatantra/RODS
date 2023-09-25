@@ -36,6 +36,9 @@ static int num_ele_recorder = 0;
 static int point_index = 0;
 static int dof_index = 0;
 
+const size_t C_STR_LEN = 100;
+const size_t C_STR_LEN_S = 20;
+
 namespace RODS_GUI {
     void createShader(unsigned int &shaderProgram);
     void buildVertex(unsigned int &VBO, unsigned int &VAO, unsigned int &EBO);
