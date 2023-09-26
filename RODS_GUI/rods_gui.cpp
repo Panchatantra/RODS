@@ -434,11 +434,8 @@ void RODS_GUI::waveWindow()
 
         char workDir[C_STR_LEN];
         get_work_dir(workDir, C_STR_LEN);
-#ifdef __GNUC__
-        strcat(workDir, "/");
-#else
-        strcat_s(workDir, "/");
-#endif
+        strncat(workDir, "/", 1);
+
         if (ImGui::Button("Select File"))
             ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", workDir);
 
@@ -768,11 +765,8 @@ void RODS_GUI::recorderWindow()
 
                 char workDir[C_STR_LEN];
                 get_work_dir(workDir, C_STR_LEN);
-#ifdef __GNUC__
-                strcat(workDir, "/");
-#else
-                strcat_s(workDir, "/");
-#endif
+                strncat(workDir, "/", 1);
+
                 if (ImGui::Button("Set File for Recorder"))
                     ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
                                     ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
@@ -842,11 +836,8 @@ void RODS_GUI::recorderWindow()
 
                 char workDir[C_STR_LEN];
                 get_work_dir(workDir, C_STR_LEN);
-#ifdef __GNUC__
-                strcat(workDir, "/");
-#else
-                strcat_s(workDir, "/");
-#endif
+                strncat(workDir, "/", 1);
+
                 if (ImGui::Button("Set File for Recorder"))
                     ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
                                     ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
@@ -1064,11 +1055,8 @@ void RODS_GUI::timeHistoryPlotWindow()
 
         char workDir[C_STR_LEN];
         get_work_dir(workDir, C_STR_LEN);
-#ifdef __GNUC__
-        strcat(workDir, "/");
-#else
-        strcat_s(workDir, "/");
-#endif
+        strncat(workDir, "/", 1);
+
         if (ImGui::Button("Select File"))
             ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", workDir);
 

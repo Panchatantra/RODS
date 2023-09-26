@@ -16,7 +16,10 @@
         * Intel MKL
     * 使用GCC编译器
         * OpenBLAS
-
+* GUI 依赖库
+    * Dear ImGUI（代码里已包含）
+    * glfw
+    * glad（OpenGL 3.3，仅核心部分）
 
 ## 编译环境搭建
 
@@ -61,12 +64,14 @@
         * liblapacke-dev
         * libarpack2-dev
         * libsuperlu-dev
+        * libglfw3-dev
         ```shell
         sudo apt install build-essential\
             libopenblas-dev\
             liblapacke-dev\
             libarpack2-dev\
-            libsuperlu-dev
+            libsuperlu-dev\
+            libglfw3-dev
         ```
 
 > * 已测试操作系统 
@@ -98,7 +103,7 @@
 * graphviz（流程图、UML图）
 * gnuplot（曲线图绘制）
 * GeoGebra（几何图形绘制）
-* LaTeX 或 TeXmacs（公式较多的理论文档）
+* LaTeX 或 TeXmacs 或 Typst（公式较多的理论文档）
 
 
 # 编译过程
@@ -111,31 +116,50 @@
 
 2. 下载 armadillo 源代码，解压至开发文件夹（MSYS2 不需要）
 
-3. 用 git 获取 RODS 最新代码
+3. 编译 RODS_GUI 尚需下载 glfw (Linux 系统不需要) 和 glad，目录结构为
+
+- Develop
+  - glfw
+    - include
+    - lib-vc20XX-64/32
+      - glfw3.lib
+  - glad
+    - include
+      - glad
+      - KHR
+
+4. 用 git 获取 RODS 最新代码
 
     ```shell
     git clone https://gitee.com/rods/rods.git
     ```
 
-4. 编译
-* 若使用 Visual Studio：打开RODS.sln，点击生成解决方案即可。
+5. 编译
+* 使用 Visual Studio：打开RODS.sln，点击生成解决方案即可。运行程序需要将以下 dll 文件复制到生成程序所在文件夹或将 dll 文件所在文件夹加入系统 Path。
+  * libiomo5md.dll
+  * mkl_core.X.dll
+  * mkl_def.X.dll
+  * mkl_intel_thread.X.dll
 
-* 若使用 GCC
+* 使用 GCC
     * MSYS2
 
     ```shell
-    cd rods/RODS && make -j n
+    cd rods/RODS && make -j n  -f makefile_mingw
     # 说明：n为并行编译的进程数
     ```
 
     * Ubuntu/Debian
 
     ```shell
-    cd rods/RODS && make -j n -f makefile_ubuntu
+    cd rods/RODS && make -j n
     # 说明：n为并行编译的进程数
+    # 可选编译选项：
+    #   dylib：编译成动态链接库并复制到 python 文件夹
+    #   install：编译成动态链接库并复制到 /usr/local/lib 文件夹
     ```
 
-5. 生成帮助文档（MSYS2 或 Linux）
+6. 生成帮助文档（MSYS2 或 Linux）
 
     ```shell
     doxygen
