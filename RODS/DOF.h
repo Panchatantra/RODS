@@ -1,6 +1,7 @@
 #pragma once
 #include "Basis.h"
 #include "Load.h"
+#include "json.hpp"
 #include <vector>
 
 using namespace std;
@@ -109,4 +110,6 @@ public:
 	double acc; ///< acceleration of the DOF
 
 	static double g; ///< gravity acceleration
+
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(DOF, id, dir, mass, isFixed);
 };

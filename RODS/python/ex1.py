@@ -80,6 +80,8 @@ RODS.active_ground_motion(RODS.Direction.X.value, wave_id, scaling_factor)
 n_sub_step = 1
 RODS.solve_seismic_response(n_sub_step)
 
+RODS.save_to_json(b"SDOF.json")
+
 # 读取位移响应结果并绘制曲线
 data_d = np.loadtxt('sdof_disp.txt')
 t = data_d[:,0]

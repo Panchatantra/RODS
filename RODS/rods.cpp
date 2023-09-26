@@ -596,7 +596,6 @@ DLL_API size_t get_point_coord(float *pt, const bool norm)
 			i++;
 		}
 	}
-	
 	return np*3;
 }
 
@@ -761,4 +760,9 @@ DLL_API void get_work_dir(char * workDir, const size_t size)
 #else
 	strcpy_s(workDir, size, ds->workDir.c_str());
 #endif
+}
+
+DLL_API void save_to_json(const char * file_name)
+{
+	ds->saveToJSON(file_name);
 }

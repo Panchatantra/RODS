@@ -69,7 +69,7 @@ namespace RODS_GUI {
 
     void drawModeWindow();
 
-    void draw(unsigned int VBO, unsigned int VAO, unsigned int EBO);
+    void draw_geo(unsigned int VBO, unsigned int VAO, unsigned int EBO);
     void draw_1d(unsigned int VBO, unsigned int VAO, unsigned int EBO);
     void updateDOFList();
     void updateDOFRecorderList();

@@ -11,20 +11,20 @@
 #include "material/SMABilinear.h"
 #include "material/CyclicHardenTrilinear.h"
 
-#include "json.hpp"
-using json = nlohmann::json;
 
 DynamicSystem::DynamicSystem(const double z) :
+	name("RODS"), workDir("./"),
 	zeta(z), eqnCount(0), fixedDofCount(0), eigenVectorNormed(false),
-	dynamicSolver(RODS::DynamicSolver::StateSpace), dt(0.02), ctime(0.0), nsteps(0), cstep(0),
-	useRayleighDamping(true), RayleighOmg1(2 * PI / 0.3), RayleighOmg2(2 * PI / 0.1),
+	dynamicSolver(RODS::DynamicSolver::StateSpace),
+	dt(0.02), ctime(0.0), nsteps(0), cstep(0),
+	useRayleighDamping(true), RayleighOmg1(2*PI/0.3), RayleighOmg2(2*PI/0.1),
 	NumModesInherentDamping(-1),
 	XSeismicWaveId(-1), YSeismicWaveId(-1), ZSeismicWaveId(-1),
 	XSeismicWaveScale(0.0), YSeismicWaveScale(0.0), ZSeismicWaveScale(0.0),
+	NumDynamicSubSteps(1),
 	dispControlDOFId(-1), dispControlLoadId(-1), dispControlEqn(-1),
-	NumDynamicSubSteps(1), tol(1e-6), maxIter(20),
+	tol(1e-6), maxIter(20),
 	exportGmshInterval(-1),
-	name("RODS"), workDir("./"),
 	xMax(0.0), xMin(0.0), yMax(0.0), yMin(0.0), zMax(0.0), zMin(0.0)
 {
 }
@@ -35,13 +35,82 @@ DynamicSystem::~DynamicSystem()
 
 void DynamicSystem::loadFromJSON(const char *fileName)
 {
-	std::ifstream f(fileName);
-	json model = json::parse(f);
+	std::ifstream ifs(fileName);
+	json model;
+	ifs >> model;
+	from_json(model, *this);
+	ifs.close();
 }
 
 void DynamicSystem::saveToJSON(const char *fileName)
 {
+	//json model = {
+	//	{"name", name},
+	//	{"workDir", workDir},
 
+	//	{"zeta", zeta},
+	//	{"eqnCount", eqnCount},
+	//	{"fixedDofCount", fixedDofCount},
+	//	{"eigenVectorNormed", eigenVectorNormed},
+
+	//	{"dynamicSolver", dynamicSolver},
+	//	{"dt", dt},
+	//	{"ctime", ctime},
+	//	{"nsteps", nsteps},
+	//	{"cstep", cstep},
+
+	//	{"useRayleighDamping", useRayleighDamping},
+	//	{"RayleighOmg1", RayleighOmg1},
+	//	{"RayleighOmg2", RayleighOmg2},
+	//	{"NumModesInherentDamping", NumModesInherentDamping},
+
+	//	{"XSeismicWaveId", XSeismicWaveId},
+	//	{"YSeismicWaveId", YSeismicWaveId},
+	//	{"ZSeismicWaveId", ZSeismicWaveId},
+
+	//	{"XSeismicWaveScale", XSeismicWaveScale},
+	//	{"YSeismicWaveScale", YSeismicWaveScale},
+	//	{"ZSeismicWaveScale", ZSeismicWaveScale},
+	//	{"NumDynamicSubSteps", NumDynamicSubSteps},
+
+	//	{"dispControlDOFId", dispControlDOFId},
+	//	{"dispControlLoadId", dispControlLoadId},
+	//	{"dispControlEqn", dispControlEqn},
+
+	//	{"tol", tol},
+	//	{"maxIter", maxIter},
+
+	//	// {"gmshFileName", gmshFileName},
+	//	// {"gmshFile", gmshFile},
+	//	{"exportGmshInterval", exportGmshInterval},
+
+	//	{"xMax", xMax},
+	//	{"yMax", yMax},
+	//	{"zMax", zMax},
+	//	{"xMin", xMin},
+	//	{"yMin", yMin},
+	//	{"zMin", zMin},
+	//};
+
+	//std::vector<DOF> DOFs_;
+
+	//if (DOFs.size()>0)
+	//{
+	//	for (auto it = DOFs.begin(); it != DOFs.end(); it++)
+	//	{
+	//		DOFs_.push_back(*(it->second));
+	//	}
+	//}
+
+	//json j_dofs(DOFs_);
+	//model["DOFs"] = j_dofs;
+
+	json model;
+	to_json(model, *this);
+
+	std::ofstream ofs(fileName);
+	ofs << std::setw(4) << model;
+	ofs.close();
 }
 
 void DynamicSystem::addPoint(Point *p)
@@ -407,7 +476,6 @@ void DynamicSystem::exportResponseGmsh(char* fileName)
 			outFile << it->first << " " << nd->dofX->dsp << " " << 0.0 << " " << nd->dofZ->dsp << std::endl;
 		}
 	}
-	
 	outFile << "$EndNodeData" << std::endl;
 
 	outFile.close();

@@ -144,4 +144,6 @@ extern "C" {
 	DLL_API void set_work_dir(const char * workDir);
 	DLL_API void get_work_dir(char * workDir, const size_t size);
 
+	DLL_API void save_to_json(const char * file_name);
+
 }

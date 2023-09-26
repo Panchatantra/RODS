@@ -705,13 +705,13 @@ void RODS_GUI::solveEigenWindow()
                     ImGui::TableNextColumn();
                     ImGui::Text("%d", row + 1);
                     ImGui::TableNextColumn();
-                    ImGui::Text("%.3f", period[row]);
+                    ImGui::Text("%.6f", period[row]);
                 }
                 ImGui::EndTable();
             }
 
             ImGui::SliderInt("Order", &mode_order, 1, num_eqn);
-            
+
             if (ImGui::Button("Draw Mode"))
             {
                 draw_type = 2;
@@ -1148,7 +1148,7 @@ void RODS_GUI::drawModeWindow()
     }
 }
 
-void RODS_GUI::draw(unsigned int VBO, unsigned int VAO, unsigned int EBO)
+void RODS_GUI::draw_geo(unsigned int VBO, unsigned int VAO, unsigned int EBO)
 {
     if (num_point > 0) {
 

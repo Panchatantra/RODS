@@ -56,6 +56,9 @@
 #include "element/SpringNonlinear3D.h"
 #include "element/DashpotMaxwell3D.h"
 
+#include "json.hpp"
+using json = nlohmann::json;
+
 using namespace arma;
 
 constexpr double PI = 3.14159265;
@@ -958,7 +961,7 @@ public:
 	void recordResponse();
 
 	/**
-	 * @brief      Saves the responses.
+	 * @brief      Saves the responses when analysis is finished.
 	 */
 	void saveResponse();
 
@@ -989,12 +992,11 @@ public:
 	std::map<int, Line *> Lines; 			///< Lines
 	std::map<int, DOF *> DOFs; 				///< DOFs
 	std::map<int, Element *> Elements; 		///< Elements
-	std::map<int, ROD1D *> ROD1Ds; 	///< ROD1Ds
-	std::map<int, ROD2D *> ROD2Ds; 	///< ROD2Ds
+	std::map<int, ROD1D *> ROD1Ds; 			///< ROD1Ds
+	std::map<int, ROD2D *> ROD2Ds; 			///< ROD2Ds
 	std::map<int, Quad2D *> Quad2Ds; 		///< Quad2Ds
-	std::map<int, Tri2D *> Tri2Ds;    	///< Tri2Ds
-
-	std::map<int, ROD3D *> ROD3Ds; 	///< ROD3Ds
+	std::map<int, Tri2D *> Tri2Ds;    		///< Tri2Ds
+	std::map<int, ROD3D *> ROD3Ds; 			///< ROD3Ds
 
 	/// The elements for assembling #Mp
 	std::map<int, Element *> physicalMassElements;
@@ -1034,7 +1036,6 @@ public:
 	std::map<int, Inerter2D *> Inerter2Ds; ///< Inerter2Ds in the system
 	std::map<int, TVMD2D *> TVMD2Ds; ///< TVMD2Ds in the system
 	std::map<int, SpringNonlinear2D *> SpringNonlinear2Ds; ///< SpringNonlinear2Ds in the system
-
 
 	std::map<int, Spring3D *> Spring3Ds; ///< Spring3Ds in the system
 	std::map<int, Dashpot3D *> Dashpot3Ds; ///< Dashpot3Ds in the system
@@ -1090,6 +1091,9 @@ public:
 	vec dsp0;		///< The backup of displacement vector
 	vec p;			///< The dynamic load vector
 
+	string name;
+	string workDir;
+
     double zeta;				///< The inherent damping ratio
     int eqnCount;				///< The number of equations
     int fixedDofCount;			///< The number of fixed DOFs
@@ -1106,7 +1110,6 @@ public:
 	double RayleighOmg2;		///< The second circular frequency for Rayleigh damping
 	int NumModesInherentDamping;///< The number of modes to calculate inherent damping
 
-
 	int XSeismicWaveId;			///< The identifier of seismic wave in X direction
 	int YSeismicWaveId;			///< The identifier of seismic wave in Y direction
 	int ZSeismicWaveId;			///< The identifier of seismic wave in Z direction
@@ -1114,22 +1117,58 @@ public:
 	double XSeismicWaveScale;	///< The scale factor of seismic wave in X direction
 	double YSeismicWaveScale;	///< The scale factor of seismic wave in Y direction
 	double ZSeismicWaveScale;	///< The scale factor of seismic wave in Z direction
+	int NumDynamicSubSteps;
 
 	int dispControlDOFId;		///< The identifier of displacement control DOF
 	int dispControlLoadId;		///< The identifier of load pattern for displacement control DOF
 	int dispControlEqn;			///< The equation number of displacement control DOF
 
-	int NumDynamicSubSteps;
 	double tol;  ///< The tolerance for convergence check
 	int maxIter; ///< The maximum iterations before converged
 
 	string gmshFileName;
 	std::ofstream gmshFile;
 	int exportGmshInterval;
-	string name;
-	string workDir;
 
 	double xMax, xMin;
 	double yMax, yMin;
 	double zMax, zMin;
+
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(DynamicSystem,
+		name,
+		workDir,
+		zeta,
+		eqnCount,
+		fixedDofCount,
+		eigenVectorNormed,
+		dynamicSolver,
+		dt,
+		ctime,
+		nsteps,
+		cstep,
+		useRayleighDamping,
+		RayleighOmg1,
+		RayleighOmg2,
+		NumModesInherentDamping,
+		XSeismicWaveId,
+		YSeismicWaveId,
+		ZSeismicWaveId,
+		XSeismicWaveScale,
+		YSeismicWaveScale,
+		ZSeismicWaveScale,
+		NumDynamicSubSteps,
+		dispControlDOFId,
+		dispControlLoadId,
+		dispControlEqn,
+		tol,
+		maxIter,
+		exportGmshInterval,
+		xMax,
+		yMax,
+		zMax,
+		xMin,
+		yMin,
+		zMin,
+		DOFs
+		);
 };
