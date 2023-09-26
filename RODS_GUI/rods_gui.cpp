@@ -196,7 +196,11 @@ void RODS_GUI::dirWindow()
             if (ImGuiFileDialog::Instance()->IsOk())
             {
                 auto pathName = ImGuiFileDialog::Instance()->GetCurrentPath();
+#ifdef __GNUC__
+                strcpy(workDir, pathName.c_str());
+#else
                 strcpy_s(workDir, pathName.c_str());
+#endif
             }
             ImGuiFileDialog::Instance()->Close();
         }
@@ -430,7 +434,11 @@ void RODS_GUI::waveWindow()
 
         char workDir[C_STR_LEN];
         get_work_dir(workDir, C_STR_LEN);
+#ifdef __GNUC__
+        strcat(workDir, "/");
+#else
         strcat_s(workDir, "/");
+#endif
         if (ImGui::Button("Select File"))
             ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", workDir);
 
@@ -703,21 +711,33 @@ void RODS_GUI::solveEigenWindow()
             }
 
             ImGui::SliderInt("Order", &mode_order, 1, num_eqn);
-
-            if (ImGui::Button("Start Mode Animation"))
+            
+            if (ImGui::Button("Draw Mode"))
             {
                 draw_type = 2;
             }
             ImGui::SameLine();
-            if (ImGui::Button("Stop"))
+            if (ImGui::Button("Resume"))
             {
                 draw_type = 1;
+            }
+
+            if (ImGui::Button("Start Animation"))
+            {
+                draw_type = 3;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Stop"))
+            {
+                draw_type = 2;
             }
         }
 
         if (ImGui::Button("Close"))
+        {
             show_solve_eigen_window = false;
-
+            draw_type = 1;
+        }
         ImGui::End();
     }
 }
@@ -748,7 +768,11 @@ void RODS_GUI::recorderWindow()
 
                 char workDir[C_STR_LEN];
                 get_work_dir(workDir, C_STR_LEN);
+#ifdef __GNUC__
+                strcat(workDir, "/");
+#else
                 strcat_s(workDir, "/");
+#endif
                 if (ImGui::Button("Set File for Recorder"))
                     ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
                                     ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
@@ -760,7 +784,11 @@ void RODS_GUI::recorderWindow()
                     if (ImGuiFileDialog::Instance()->IsOk())
                     {
                         recorderFilePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+#ifdef __GNUC__
+                        strcpy(_recorderFilePathName, recorderFilePathName.c_str());
+#else
                         strcpy_s(_recorderFilePathName, recorderFilePathName.c_str());
+#endif
                     }
                     ImGuiFileDialog::Instance()->Close();
                 }
@@ -814,7 +842,11 @@ void RODS_GUI::recorderWindow()
 
                 char workDir[C_STR_LEN];
                 get_work_dir(workDir, C_STR_LEN);
+#ifdef __GNUC__
+                strcat(workDir, "/");
+#else
                 strcat_s(workDir, "/");
+#endif
                 if (ImGui::Button("Set File for Recorder"))
                     ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
                                     ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
@@ -826,7 +858,11 @@ void RODS_GUI::recorderWindow()
                     if (ImGuiFileDialog::Instance()->IsOk())
                     {
                         recorderFilePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+#ifdef __GNUC__
+                        strcpy(_recorderFilePathName, recorderFilePathName.c_str());
+#else
                         strcpy_s(_recorderFilePathName, recorderFilePathName.c_str());
+#endif
                     }
                     ImGuiFileDialog::Instance()->Close();
                 }
@@ -1028,7 +1064,11 @@ void RODS_GUI::timeHistoryPlotWindow()
 
         char workDir[C_STR_LEN];
         get_work_dir(workDir, C_STR_LEN);
+#ifdef __GNUC__
+        strcat(workDir, "/");
+#else
         strcat_s(workDir, "/");
+#endif
         if (ImGui::Button("Select File"))
             ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", workDir);
 
@@ -1087,9 +1127,9 @@ void RODS_GUI::drawModeWindow()
         ImGui::Begin("Drawing Mode");
 
         ImGui::Text("Dimension: "); ImGui::SameLine();
-        ImGui::RadioButton("1D", &draw_mode, 1); ImGui::SameLine();
-        ImGui::RadioButton("2D", &draw_mode, 2); ImGui::SameLine();
-        ImGui::RadioButton("3D", &draw_mode, 3);
+        ImGui::RadioButton("1D", &draw_dim, 1); ImGui::SameLine();
+        ImGui::RadioButton("2D", &draw_dim, 2); ImGui::SameLine();
+        ImGui::RadioButton("3D", &draw_dim, 3);
 
         ImGui::Text("Draw: "); ImGui::SameLine();
         ImGui::RadioButton("Model", &draw_type, 1); ImGui::SameLine();
@@ -1153,7 +1193,7 @@ void RODS_GUI::draw_1d(unsigned int VBO, unsigned int VAO, unsigned int EBO)
 
         float* vertices = new float[(size_t)num_dof*3];
 
-        if (draw_type == 2)
+        if (draw_type == 2 || draw_type == 3)
         {
             dof_response = new double[(size_t)num_dof];
             get_dof_modal_response(dof_response, mode_order);
@@ -1162,7 +1202,8 @@ void RODS_GUI::draw_1d(unsigned int VBO, unsigned int VAO, unsigned int EBO)
         for (int i = 0; i < num_dof; i++)
         {
             vertices[3*i] = 0.0f;
-            if (draw_type == 2) vertices[3*i] += dof_response[i]*sinf(2.0*3.142/6.0*glfwGetTime());
+            if (draw_type == 2) vertices[3*i] += dof_response[i];
+            else if (draw_type == 3) vertices[3*i] += dof_response[i]*sinf(2.0*3.142/5.0*glfwGetTime());
             vertices[3*i+1] = H_0 + h*i;
             vertices[3*i+2] = 0.0f;
         }

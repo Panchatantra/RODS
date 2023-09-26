@@ -11,7 +11,7 @@
 #include "material/CyclicHardenTrilinear.h"
 
 #include "plot.h"
-#include "RODS.h"
+#include "rods.h"
 
 using namespace std;
 

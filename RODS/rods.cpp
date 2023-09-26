@@ -742,7 +742,11 @@ DLL_API void set_name(const char * name)
 
 DLL_API void get_name(char * name, const size_t size)
 {
+#ifdef __GNUC__
+	strcpy(name, ds->name.c_str());
+#else
 	strcpy_s(name, size, ds->name.c_str());
+#endif
 }
 
 DLL_API void set_work_dir(const char * workDir)
@@ -752,5 +756,9 @@ DLL_API void set_work_dir(const char * workDir)
 
 DLL_API void get_work_dir(char * workDir, const size_t size)
 {
+#ifdef __GNUC__
+	strcpy(workDir, ds->workDir.c_str());
+#else
 	strcpy_s(workDir, size, ds->workDir.c_str());
+#endif
 }

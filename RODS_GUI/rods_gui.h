@@ -37,7 +37,7 @@ static int num_ele_recorder = 0;
 static int point_index = 0;
 static int dof_index = 0;
 
-static int draw_mode = 1;
+static int draw_dim = 1;
 static int draw_type = 1;
 
 static int mode_order = 1;
@@ -80,4 +80,12 @@ namespace RODS_GUI {
 
     void pause(int dur);
     void sdof_model();
+
+    enum class DrawType
+	{
+		Model = 1,
+		Mode_Static,
+		Mode_Animate,
+		Time_History
+	};
 }
