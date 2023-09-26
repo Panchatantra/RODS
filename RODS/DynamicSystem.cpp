@@ -11,6 +11,8 @@
 #include "material/SMABilinear.h"
 #include "material/CyclicHardenTrilinear.h"
 
+#include "json.hpp"
+using json = nlohmann::json;
 
 DynamicSystem::DynamicSystem(const double z) :
 	zeta(z), eqnCount(0), fixedDofCount(0), eigenVectorNormed(false),
@@ -29,6 +31,17 @@ DynamicSystem::DynamicSystem(const double z) :
 
 DynamicSystem::~DynamicSystem()
 {
+}
+
+void DynamicSystem::loadFromJSON(const char *fileName)
+{
+	std::ifstream f(fileName);
+	json model = json::parse(f);
+}
+
+void DynamicSystem::saveToJSON(const char *fileName)
+{
+
 }
 
 void DynamicSystem::addPoint(Point *p)

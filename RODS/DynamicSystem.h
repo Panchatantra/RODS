@@ -86,6 +86,9 @@ public:
 	DynamicSystem(const double z=0.05);
 	~DynamicSystem();
 
+	void loadFromJSON(const char * fileName);
+	void saveToJSON(const char * fileName);
+
 	void addPoint(Point *p);
 	void addPoint(const int pointId, const double x, const double y=0.0, const double z=0.0);
 

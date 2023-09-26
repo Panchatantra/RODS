@@ -43,7 +43,7 @@ const char** waveStrList = nullptr;
 int * element1dList = nullptr;
 
 const char* direction[6] = {"X", "Y", "Z", "RX", "RY", "RZ"};
-const char* dofResponse[3] = {"Displacement", "Velocity", "Acceleration"};
+const char* dofResponse[4] = {"Displacement", "Velocity", "Acceleration", "ALL"};
 const char* eleResponse[3] = {"Force", "Deformation", "Force and Deformation"};
 const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
@@ -199,7 +199,7 @@ void RODS_GUI::dirWindow()
 #ifdef __GNUC__
                 strcpy(workDir, pathName.c_str());
 #else
-                strcpy_s(workDir, pathName.c_str());
+                strcpy_s(workDir, C_STR_LEN, pathName.c_str());
 #endif
             }
             ImGuiFileDialog::Instance()->Close();
@@ -434,8 +434,11 @@ void RODS_GUI::waveWindow()
 
         char workDir[C_STR_LEN];
         get_work_dir(workDir, C_STR_LEN);
-        strncat(workDir, "/", 1);
-
+#ifdef __GNUC__
+        strcat(workDir, "/");
+#else
+        strcat_s(workDir, "/");
+#endif
         if (ImGui::Button("Select File"))
             ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", workDir);
 
@@ -761,12 +764,15 @@ void RODS_GUI::recorderWindow()
             if (!record_all)
             {
                 static int response_type = 0;
-                ImGui::Combo("Response Type", &response_type, dofResponse, 3);
+                ImGui::Combo("Response Type", &response_type, dofResponse, 4);
 
                 char workDir[C_STR_LEN];
                 get_work_dir(workDir, C_STR_LEN);
-                strncat(workDir, "/", 1);
-
+#ifdef __GNUC__
+                strcat(workDir, "/");
+#else
+                strcat_s(workDir, "/");
+#endif
                 if (ImGui::Button("Set File for Recorder"))
                     ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
                                     ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
@@ -781,13 +787,18 @@ void RODS_GUI::recorderWindow()
 #ifdef __GNUC__
                         strcpy(_recorderFilePathName, recorderFilePathName.c_str());
 #else
-                        strcpy_s(_recorderFilePathName, recorderFilePathName.c_str());
+                        strcpy_s(_recorderFilePathName, C_STR_LEN, recorderFilePathName.c_str());
 #endif
                     }
                     ImGuiFileDialog::Instance()->Close();
                 }
                 if (ImGui::Button("Add DOF Recorder"))
-                    num_dof_recorder = add_dof_recorder(dof_recorder_id++, response_type, _recorderFilePathName);
+                {
+                    if (response_type < 3)
+                        num_dof_recorder = add_dof_recorder(dof_recorder_id++, response_type, _recorderFilePathName);
+                    else
+                        num_dof_recorder = add_dof_recorder(dof_recorder_id++, 5, _recorderFilePathName);
+                }
 
                 if (num_dof_recorder > 0 && num_dof > 0)
                 {
@@ -836,8 +847,11 @@ void RODS_GUI::recorderWindow()
 
                 char workDir[C_STR_LEN];
                 get_work_dir(workDir, C_STR_LEN);
-                strncat(workDir, "/", 1);
-
+#ifdef __GNUC__
+                strcat(workDir, "/");
+#else
+                strcat_s(workDir, "/");
+#endif
                 if (ImGui::Button("Set File for Recorder"))
                     ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
                                     ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
@@ -852,7 +866,7 @@ void RODS_GUI::recorderWindow()
 #ifdef __GNUC__
                         strcpy(_recorderFilePathName, recorderFilePathName.c_str());
 #else
-                        strcpy_s(_recorderFilePathName, recorderFilePathName.c_str());
+                        strcpy_s(_recorderFilePathName, C_STR_LEN, recorderFilePathName.c_str());
 #endif
                     }
                     ImGuiFileDialog::Instance()->Close();
@@ -1055,8 +1069,11 @@ void RODS_GUI::timeHistoryPlotWindow()
 
         char workDir[C_STR_LEN];
         get_work_dir(workDir, C_STR_LEN);
-        strncat(workDir, "/", 1);
-
+#ifdef __GNUC__
+        strcat(workDir, "/");
+#else
+        strcat_s(workDir, "/");
+#endif
         if (ImGui::Button("Select File"))
             ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", workDir);
 
@@ -1317,9 +1334,7 @@ void RODS_GUI::sdof_model()
     set_rayleigh_damping(10.0, 20.0);
 
     add_dof_x(1, 1.0);
-    // dofIdMapIndex[1] = dof_index++;
     num_dof = add_dof_x(2, 1.0);
-    // dofIdMapIndex[2] = dof_index++;
     fix_dof(1);
 
     add_spring(1,1,2,100.0);
