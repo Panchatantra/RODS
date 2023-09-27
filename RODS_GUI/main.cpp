@@ -126,8 +126,8 @@ int main(int, char**)
         return -1;
     }
 
-    glPointSize(20);
-    glLineWidth(5);
+    glPointSize(30);
+    glLineWidth(10);
 
     unsigned int shaderProgram;
     RODS_GUI::createShader(shaderProgram);

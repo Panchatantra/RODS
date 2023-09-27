@@ -1091,12 +1091,12 @@ public:
 	vec dsp0;		///< The backup of displacement vector
 	vec p;			///< The dynamic load vector
 
-	string name;
-	string workDir;
+	string name;    ///< name of the model
+	string workDir;	///< the working directory
 
     double zeta;				///< The inherent damping ratio
     int eqnCount;				///< The number of equations
-    int dofCount;				///< The number of DOFs
+    size_t dofCount;			///< The number of DOFs
     int fixedDofCount;			///< The number of fixed DOFs
     bool eigenVectorNormed;		///< If the eigen vectors are normed
 
@@ -1118,14 +1118,14 @@ public:
 	double XSeismicWaveScale;	///< The scale factor of seismic wave in X direction
 	double YSeismicWaveScale;	///< The scale factor of seismic wave in Y direction
 	double ZSeismicWaveScale;	///< The scale factor of seismic wave in Z direction
-	int NumDynamicSubSteps;
+	int NumDynamicSubSteps;		///< Number of substeps in an analysis step
 
 	int dispControlDOFId;		///< The identifier of displacement control DOF
 	int dispControlLoadId;		///< The identifier of load pattern for displacement control DOF
 	int dispControlEqn;			///< The equation number of displacement control DOF
 
 	double tol;  ///< The tolerance for convergence check
-	int maxIter; ///< The maximum iterations before converged
+	size_t maxIter; ///< The maximum iterations before converged
 
 	string gmshFileName;
 	std::ofstream gmshFile;

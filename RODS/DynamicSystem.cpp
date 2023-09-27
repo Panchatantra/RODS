@@ -41,28 +41,45 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 	ifs.close();
 	from_json(model, *this);
 
-	auto j = model.at("dofVec");
+	auto j_dof = model.at("dofVec");
 
+	DOF dof;
 	for (auto i = 0; i<model.at("dofCount"); i++)
 	{
-		DOF dof;
-		j[i].get_to(dof);
-		addDOF(&dof);
+		j_dof[i].get_to(dof);
+		addDOF(dof.id, dof.dir, dof.mass, dof.isFixed);
+	}
+
+	auto j_Spring = model.at("SpringVec");
+
+	Spring Spring_;
+	for (auto i = 0; i<model.at("SpringCount"); i++)
+	{
+		j_Spring[i].get_to(Spring_);
+		addSpring(Spring_.id, Spring_.IdDofI, Spring_.IdDofJ, Spring_.k);
 	}
 }
 
 void DynamicSystem::saveToJSON(const char *fileName)
-{	
+{
 	json model;
 	to_json(model, *this);
 
-	model["dofCount"] = DOFs.size();
+	model["dofCount"] = dofCount;
 	vector<DOF> dofVec;
 	for (auto it = DOFs.begin(); it != DOFs.end(); it++)
 	{
 		dofVec.push_back(*(it->second));
 	}
 	model["dofVec"] = dofVec;
+
+	model["SpringCount"] = Springs.size();
+	vector<Spring> SpringVec;
+	for (auto it = Springs.begin(); it != Springs.end(); it++)
+	{
+		SpringVec.push_back(*(it->second));
+	}
+	model["SpringVec"] = SpringVec;
 
 	std::ofstream ofs(fileName);
 	ofs << std::setw(4) << model;
@@ -157,7 +174,7 @@ void DynamicSystem::addNode(const int nodeId, const double x, const double y, co
 	DOFs.at(dofXId)->setNodeId(nodeId);
 	DOFs.at(dofYId)->setNodeId(nodeId);
 	DOFs.at(dofZId)->setNodeId(nodeId);
-	
+
 	if (dofRXId >= 0) {
 		auto d = DOFs.at(dofRXId);
 		nd->setDof(d);
@@ -183,7 +200,7 @@ void DynamicSystem::addNodeWithDof(const int id, const double x, const int dofId
 	Node *nd = new Node(id, x, 0.0, 0.0);
 	nd->setDof(d);
 	d->setNodeId(id);
-	
+
 	addDOF(d);
 	addNode(nd);
 }
@@ -499,6 +516,7 @@ void DynamicSystem::addDOF(DOF * d)
 	if (DOFs.count(d->id) == 0)
 	{
 		DOFs[d->id] = d;
+		dofCount = DOFs.size();
 	}
 	else
 	{
@@ -521,6 +539,7 @@ void DynamicSystem::addDOF(const int id, RODS::Direction dir, const double m, co
 void DynamicSystem::removeDOF(const int id)
 {
 	DOFs.erase(id);
+	dofCount = DOFs.size();
 }
 
 void DynamicSystem::setMass(const int id, const double m)
@@ -537,7 +556,6 @@ void DynamicSystem::setNodeMass(const int id, const double m)
 	if (nd->isActivated(RODS::Direction::RX)) nd->dofRX->setMass(m);
 	if (nd->isActivated(RODS::Direction::RY)) nd->dofRY->setMass(m);
 	if (nd->isActivated(RODS::Direction::RZ)) nd->dofRZ->setMass(m);
-
 }
 
 void DynamicSystem::setNodeMass(const int id, const double m, const double J)
@@ -1196,7 +1214,7 @@ void DynamicSystem::addWave(const int id, const double dt, const char* fileName)
 		cout << "Wave ID: " << id << " already exists! The wave will not be added." << endl;
 		return;
 	}
-	
+
 	Wave *ts = new Wave(id, dt, fileName);
 	Waves[ts->id] = ts;
 }
@@ -1624,7 +1642,7 @@ void DynamicSystem::buildInherentDampingMatrix()
 		vec omg_ = omg.head_rows(eigenNum);
 		mat MPhi = Mp * Phi_;
 		mat C_;
-		
+
 		if (eigenVectorNormed)
 		{
 			C_ = diagmat(2.0*zeta*omg_);
@@ -2230,7 +2248,7 @@ void DynamicSystem::solveSeismicResponseNewmark(const int nsub)
 	nsteps = Waves.at(XSeismicWaveId)->nsteps;
 	dt = Waves.at(XSeismicWaveId)->dt;
 	vec agX = XSeismicWaveScale*Waves.at(XSeismicWaveId)->series;
-	
+
 	vec u0(dsp);
 	vec v0(vel);
 	vec a0(acc);
@@ -2330,7 +2348,7 @@ void DynamicSystem::solveSeismicResponseNewmarkNL(const int nsub)
 	mat K_h = K_h_ + K0;
 
 	a0 = solve(M, -Mp*EX*agX(0) - C*v0);
-	
+
 	dsp = u0;
 	vel = v0;
 	acc = a0;
@@ -2339,7 +2357,7 @@ void DynamicSystem::solveSeismicResponseNewmarkNL(const int nsub)
 	getElementResponse();
 	assembleNonlinearForceVector(true);
 	recordResponse();
-	
+
 	vec p_h;
 	vec u_p, v_p, a_p;
 	vec du;

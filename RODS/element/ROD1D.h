@@ -23,4 +23,5 @@ public:
 	virtual void assembleNonlinearForceVector(vec &q) {}
 
 	DOF *dofI, *dofJ;
+	int IdDofI, IdDofJ;
 };

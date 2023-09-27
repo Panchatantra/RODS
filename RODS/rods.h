@@ -54,7 +54,7 @@ extern "C" {
 	DLL_API size_t add_frame_elastic_3d(const int id, const int ni, const int nj, const double EA, const double EIy, const double EIz, const double GIp);
 	DLL_API size_t add_quad4_elastic(const int id, const int nodeI, const int nodeJ,
 										const int nodeP, const int nodeQ,
-										 const double E, const double nu, const double t);
+										const double E, const double nu, const double t);
 	DLL_API size_t add_rect_shell4_elastic(const int id, const int nodeI, const int nodeJ,
 											const int nodeP, const int nodeQ,
 											const double E, const double nu, const double t);

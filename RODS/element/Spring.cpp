@@ -1,5 +1,10 @@
 #include "Spring.h"
 
+Spring::Spring() :
+	ROD1D(0, 0, 0), k(0.0), u(0.0), f(0.0)
+{
+}
+
 Spring::Spring(const int id, DOF *i, DOF *j, const double k) :
 	ROD1D(id, i, j), k(k), u(0.0), f(0.0)
 {

@@ -816,13 +816,7 @@ void RODS_GUI::recorderWindow()
                         ImGui::Combo("DOF", &dof_index, dofStrList, num_dof);
                         ImGui::Combo("DOF Recorder", &dof_recorder_index, dofRecorderStrList, num_dof_recorder);
                         if (ImGui::Button("Add"))
-                        {
                             add_dof_to_recorder(dofList[dof_index], dofRecorderList[dof_recorder_index]);
-                            ImGui::SameLine();
-                            ImGui::Text("DOF %d is added to Recorder %d.",
-                                        dofList[dof_index], dofRecorderList[dof_recorder_index]);
-                            pause(2);
-                        }
                         ImGui::EndPopup();
                     }
                 }

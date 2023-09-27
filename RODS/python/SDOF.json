@@ -3,6 +3,15 @@
     "NumModesInherentDamping": -1,
     "RayleighOmg1": 10.0,
     "RayleighOmg2": 20.0,
+    "SpringCount": 1,
+    "SpringVec": [
+        {
+            "IdDofI": 0,
+            "IdDofJ": 1,
+            "id": 0,
+            "k": 2500.0
+        }
+    ],
     "XSeismicWaveId": 0,
     "XSeismicWaveScale": 1.0,
     "YSeismicWaveId": -1,
