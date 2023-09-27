@@ -1096,6 +1096,7 @@ public:
 
     double zeta;				///< The inherent damping ratio
     int eqnCount;				///< The number of equations
+    int dofCount;				///< The number of DOFs
     int fixedDofCount;			///< The number of fixed DOFs
     bool eigenVectorNormed;		///< If the eigen vectors are normed
 
@@ -1139,6 +1140,7 @@ public:
 		workDir,
 		zeta,
 		eqnCount,
+		dofCount,
 		fixedDofCount,
 		eigenVectorNormed,
 		dynamicSolver,
@@ -1168,7 +1170,6 @@ public:
 		zMax,
 		xMin,
 		yMin,
-		zMin,
-		DOFs
+		zMin
 		);
 };

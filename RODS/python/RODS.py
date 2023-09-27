@@ -295,3 +295,6 @@ def create_array_double(n):
 
 save_to_json = RODSDLL.save_to_json
 save_to_json.argtypes = [c_char_p]
+
+load_from_json = RODSDLL.load_from_json
+load_from_json.argtypes = [c_char_p]

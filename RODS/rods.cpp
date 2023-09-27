@@ -762,7 +762,12 @@ DLL_API void get_work_dir(char * workDir, const size_t size)
 #endif
 }
 
-DLL_API void save_to_json(const char * file_name)
+DLL_API void load_from_json(const char *file_name)
+{
+    ds->loadFromJSON(file_name);
+}
+
+DLL_API void save_to_json(const char *file_name)
 {
 	ds->saveToJSON(file_name);
 }

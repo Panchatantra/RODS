@@ -14,7 +14,7 @@
 
 DynamicSystem::DynamicSystem(const double z) :
 	name("RODS"), workDir("./"),
-	zeta(z), eqnCount(0), fixedDofCount(0), eigenVectorNormed(false),
+	zeta(z), eqnCount(0), dofCount(0), fixedDofCount(0), eigenVectorNormed(false),
 	dynamicSolver(RODS::DynamicSolver::StateSpace),
 	dt(0.02), ctime(0.0), nsteps(0), cstep(0),
 	useRayleighDamping(true), RayleighOmg1(2*PI/0.3), RayleighOmg2(2*PI/0.1),
@@ -38,75 +38,31 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 	std::ifstream ifs(fileName);
 	json model;
 	ifs >> model;
-	from_json(model, *this);
 	ifs.close();
+	from_json(model, *this);
+
+	auto j = model.at("dofVec");
+
+	for (auto i = 0; i<model.at("dofCount"); i++)
+	{
+		DOF dof;
+		j[i].get_to(dof);
+		addDOF(&dof);
+	}
 }
 
 void DynamicSystem::saveToJSON(const char *fileName)
-{
-	//json model = {
-	//	{"name", name},
-	//	{"workDir", workDir},
-
-	//	{"zeta", zeta},
-	//	{"eqnCount", eqnCount},
-	//	{"fixedDofCount", fixedDofCount},
-	//	{"eigenVectorNormed", eigenVectorNormed},
-
-	//	{"dynamicSolver", dynamicSolver},
-	//	{"dt", dt},
-	//	{"ctime", ctime},
-	//	{"nsteps", nsteps},
-	//	{"cstep", cstep},
-
-	//	{"useRayleighDamping", useRayleighDamping},
-	//	{"RayleighOmg1", RayleighOmg1},
-	//	{"RayleighOmg2", RayleighOmg2},
-	//	{"NumModesInherentDamping", NumModesInherentDamping},
-
-	//	{"XSeismicWaveId", XSeismicWaveId},
-	//	{"YSeismicWaveId", YSeismicWaveId},
-	//	{"ZSeismicWaveId", ZSeismicWaveId},
-
-	//	{"XSeismicWaveScale", XSeismicWaveScale},
-	//	{"YSeismicWaveScale", YSeismicWaveScale},
-	//	{"ZSeismicWaveScale", ZSeismicWaveScale},
-	//	{"NumDynamicSubSteps", NumDynamicSubSteps},
-
-	//	{"dispControlDOFId", dispControlDOFId},
-	//	{"dispControlLoadId", dispControlLoadId},
-	//	{"dispControlEqn", dispControlEqn},
-
-	//	{"tol", tol},
-	//	{"maxIter", maxIter},
-
-	//	// {"gmshFileName", gmshFileName},
-	//	// {"gmshFile", gmshFile},
-	//	{"exportGmshInterval", exportGmshInterval},
-
-	//	{"xMax", xMax},
-	//	{"yMax", yMax},
-	//	{"zMax", zMax},
-	//	{"xMin", xMin},
-	//	{"yMin", yMin},
-	//	{"zMin", zMin},
-	//};
-
-	//std::vector<DOF> DOFs_;
-
-	//if (DOFs.size()>0)
-	//{
-	//	for (auto it = DOFs.begin(); it != DOFs.end(); it++)
-	//	{
-	//		DOFs_.push_back(*(it->second));
-	//	}
-	//}
-
-	//json j_dofs(DOFs_);
-	//model["DOFs"] = j_dofs;
-
+{	
 	json model;
 	to_json(model, *this);
+
+	model["dofCount"] = DOFs.size();
+	vector<DOF> dofVec;
+	for (auto it = DOFs.begin(); it != DOFs.end(); it++)
+	{
+		dofVec.push_back(*(it->second));
+	}
+	model["dofVec"] = dofVec;
 
 	std::ofstream ofs(fileName);
 	ofs << std::setw(4) << model;

@@ -14,6 +14,21 @@
     "dispControlDOFId": -1,
     "dispControlEqn": -1,
     "dispControlLoadId": -1,
+    "dofCount": 2,
+    "dofVec": [
+        {
+            "dir": 0,
+            "id": 0,
+            "isFixed": true,
+            "mass": 1.0
+        },
+        {
+            "dir": 0,
+            "id": 1,
+            "isFixed": false,
+            "mass": 1.0
+        }
+    ],
     "dt": 0.005,
     "dynamicSolver": 0,
     "eigenVectorNormed": true,

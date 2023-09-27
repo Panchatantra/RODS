@@ -31,6 +31,9 @@ namespace RODS
 class DOF : public Basis
 {
 public:
+
+	DOF();
+
 	/**
 	 * @brief      Constructs a new instance.
 	 *

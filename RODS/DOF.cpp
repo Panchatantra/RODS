@@ -1,10 +1,18 @@
 #include "DOF.h"
 #include <iostream>
 
+DOF::DOF() :
+	Basis(0), eqnId(0), mass(0.0), dir(RODS::Direction::X),
+	isFixed(false), nodeId(-1), pointId(-1),
+	dsp(0.0), vel(0.0), acc(0.0)
+{
+
+}
+
 DOF::DOF(const int id, RODS::Direction dir) :
-    Basis(id), eqnId(0), mass(0.0), dir(dir), isFixed(false),
+	Basis(id), eqnId(0), mass(0.0), dir(dir), isFixed(false),
 	nodeId(-1), pointId(-1),
-    dsp(0.0), vel(0.0), acc(0.0)
+	dsp(0.0), vel(0.0), acc(0.0)
 {
 	loads.clear();
 }
