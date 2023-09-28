@@ -1,6 +1,11 @@
 #include "Dashpot.h"
 
-Dashpot::Dashpot(const int id, DOF * i, DOF * j, const double c) :
+Dashpot::Dashpot() :
+	ROD1D(0, nullptr, nullptr), c(0.0), u(0.0), f(0.0)
+{
+}
+
+Dashpot::Dashpot(const int id, DOF *i, DOF *j, const double c) :
 	ROD1D(id, i, j), c(c), u(0.0), f(0.0)
 {
     buildMatrix();

@@ -82,23 +82,56 @@ class DynamicSystem : public Basis
 {
 public:
 	/**
-	 * @brief      Constructs a new instance.
+	 * @brief      Construct function of DynamicSystem.
 	 *
 	 * @param[in]  z     The inherent damping ratio
 	 */
 	DynamicSystem(const double z=0.05);
 	~DynamicSystem();
 
+	/**
+	 * @brief Load model from a json file.
+	 * 
+	 * @param fileName name of the json file
+	 */
 	void loadFromJSON(const char * fileName);
-	void saveToJSON(const char * fileName);
+	void loadFromJSON() {loadFromJSON((workDir+"/"+name+".json").c_str());}
 
+	/**
+	 * @brief Save model to a json file.
+	 * 
+	 * @param fileName name of the json file
+	 */
+	void saveToJSON(const char * fileName);
+	void saveToJSON() {saveToJSON((workDir+"/"+name+".json").c_str());}
+
+	/**
+	 * @brief Add a Point into the system.
+	 * 
+	 * @param p The pointer to a Point
+	 */
 	void addPoint(Point *p);
+
+	/**
+	 * @brief Add a Point into the system.
+	 * 
+	 * @param pointId The identifier
+	 * @param x The X coordinate
+	 * @param y The Y coordinate, default value 0.0
+	 * @param z The Z coordinate, default value 0.0
+	 */
 	void addPoint(const int pointId, const double x, const double y=0.0, const double z=0.0);
 
+	
+	/**
+	 * @brief Add a Node into the system.
+	 * 
+	 * @param nd The pointer to a Node
+	 */
 	void addNode(Node *nd);
 
 	/**
-	 * @brief      Adds a 1D Node into the system.
+	 * @brief      Add a 1D Node into the system.
 	 *
 	 * @param[in]  nodeId     The identifier
 	 * @param[in]  x      The X coordinate
@@ -107,7 +140,7 @@ public:
 	void addNode(const int nodeId, const double x, const int dofId);
 
 	/**
-	 * @brief      Adds a 2D Node into the system.
+	 * @brief      Add a 2D Node into the system.
 	 *
 	 * @param[in]  nodeId       The identifier
 	 * @param[in]  x        The X coordinate
@@ -119,7 +152,7 @@ public:
 	void addNode(const int nodeId, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId);
 
 	/**
-	 * @brief      Adds a 3D Node into the system.
+	 * @brief      Add a 3D Node into the system.
 	 *
 	 * @param[in]  nodeId       The identifier
 	 * @param[in]  x        The X coordinate
@@ -139,7 +172,7 @@ public:
 	void addNodeWithDof(const int id, const double x, const int dofId);
 
 	/**
-	* @brief      Adds a 2D Node (for 2D plate elements) into the system.
+	* @brief      Add a 2D Node (for 2D plate elements) into the system.
 	*
 	* @param[in]  nodeId       The identifier
 	* @param[in]  x        The X coordinate
@@ -184,7 +217,7 @@ public:
 	void fixNode(const int nodeId, RODS::Direction dir);
 
 	/**
-	 * @brief      Adds a load into the system.
+	 * @brief      Add a load into the system.
 	 *
 	 * @param[in]  id          The Load identifier
 	 * @param      t           The loading moments
@@ -198,7 +231,7 @@ public:
 	void addLoadValue(const int id, const double time, const double value);
 
 	/**
-	 * @brief      Adds a Load to a DOF.
+	 * @brief      Add a Load to a DOF.
 	 *
 	 * @param[in]  dofId   The DOF identifier
 	 * @param[in]  loadId  The Load identifier
@@ -225,7 +258,7 @@ public:
     void addDOF(DOF *d);
 
     /**
-     * @brief      Adds a DOF (X Direction) into the system.
+     * @brief      Add a DOF (X Direction) into the system.
      *
      * @param[in]  id     The identifier
      * @param[in]  m      The mass of the DOF
@@ -234,7 +267,7 @@ public:
 	void addDOF(const int id, const double m, const bool fixed=false);
 
 	/**
-	 * @brief      Adds a DOF into the system.
+	 * @brief      Add a DOF into the system.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  dir    The Direction
@@ -277,7 +310,7 @@ public:
 	void addMaterialElastic(const int id, const double E0);
 
 	/**
-	 * @brief      Adds a elastoplastic material.
+	 * @brief      Add a elastoplastic material.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  E0     The initial tangent module
@@ -287,7 +320,7 @@ public:
 	void addMaterialElastoplastic(const int id, const double E0, const double fy, const double alpha=0.02);
 
 	/**
-	 * @brief      Adds a bilinear steel material.
+	 * @brief      Add a bilinear steel material.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  E0     The initial tangent module
@@ -298,7 +331,7 @@ public:
 	void addMaterialSteelBilinear(const int id, const double E0, const double fy, const double alpha=0.02, const double beta=0.5);
 
 	/**
-	 * @brief      Adds a trilinear concrete material.
+	 * @brief      Add a trilinear concrete material.
 	 *
 	 * @param[in]  id         The identifier
 	 * @param[in]  E0         The initial tangent module
@@ -312,7 +345,7 @@ public:
 		const double sigma_cr, const double sigma_u, const double epsilon_u);
 
 	/**
-	 * @brief      Adds a bilinear SMA material.
+	 * @brief      Add a bilinear SMA material.
 	 *
 	 * @param[in]  id           The identifier
 	 * @param[in]  E0           The initial tangent module
@@ -327,7 +360,7 @@ public:
 											const double sigma2, const double alpha2);
 
 	/**
-	 * @brief      Adds a fiber.
+	 * @brief      Add a fiber.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  matId  The material identifier
@@ -338,7 +371,7 @@ public:
 	void addFiber(const int id, const int matId, const double A, const double y, const double z=0.0);
 
 	/**
-	 * @brief      Adds a fiber-based truss section.
+	 * @brief      Add a fiber-based truss section.
 	 *
 	 * @param[in]  id        The identifier
 	 * @param      fiberIds  The fiber identifiers
@@ -347,7 +380,7 @@ public:
 	void addSectionTruss(const int id, int *fiberIds, const int nFibers);
 
 	/**
-	 * @brief      Adds a fiber-based frame section.
+	 * @brief      Add a fiber-based frame section.
 	 *
 	 * @param[in]  id        The identifier
 	 * @param      fiberIds  The fiber identifiers
@@ -360,7 +393,7 @@ public:
 	bool checkDuplicateElement(const int eleId);
 
 	/**
-	 * @brief      Adds a spring.
+	 * @brief      Add a spring.
 	 *
 	 * @param[in]  id    The identifier
 	 * @param[in]  ni    The identifier of DOF i
@@ -370,7 +403,7 @@ public:
 	void addSpring(const int id, const int ni, const int nj, const double k);
 	void removeSpring(const int id);
 	/**
-	 * @brief      Adds a bilinear spring.
+	 * @brief      Add a bilinear spring.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  ni     The identifier of DOF i
@@ -382,7 +415,7 @@ public:
 	void addSpringBilinear(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0);
 
 	/**
-	 * @brief      Adds a nonlinear spring related to a nonlinear Material1D.
+	 * @brief      Add a nonlinear spring related to a nonlinear Material1D.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  ni     The identifier of DOF i
@@ -395,7 +428,7 @@ public:
 
 
 	/**
-	 * @brief      Adds a Bouc-Wen spring.
+	 * @brief      Add a Bouc-Wen spring.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  ni     The identifier of DOF i
@@ -409,7 +442,7 @@ public:
 	void addSpringBoucWen(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta = 0.5, const double n=20);
 
 	/**
-	 * @brief      Adds a dashpot.
+	 * @brief      Add a dashpot.
 	 *
 	 * @param[in]  id    The identifier
 	 * @param[in]  ni    The identifier of DOF i
@@ -419,7 +452,7 @@ public:
 	void addDashpot(const int id, const int ni, const int nj, const double c);
 	void removeDashpot(const int id);
 	/**
-	 * @brief      Adds a nonlinear dashpot.
+	 * @brief      Add a nonlinear dashpot.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  ni     The identifier of DOF i
@@ -443,7 +476,7 @@ public:
 	void addTVMD3D(const int id, const int ni, const int nj, const double m, const double c, const double k, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
 	/**
-	 * @brief      Adds a Spring2D.
+	 * @brief      Add a Spring2D.
 	 *
 	 * @param[in]  id    The identifier
 	 * @param[in]  ni    The identifier of Node i
@@ -454,7 +487,7 @@ public:
 	void addSpring2D(const int id, const int ni, const int nj, const double k, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
 	/**
-	* @brief      Adds a Spring3D.
+	* @brief      Add a Spring3D.
 	*
 	* @param[in]  id    The identifier
 	* @param[in]  ni    The identifier of Node i
@@ -465,7 +498,7 @@ public:
 	void addSpring3D(const int id, const int ni, const int nj, const double k, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
 	/**
-	 * @brief      Adds a SpringBoucWen2D.
+	 * @brief      Add a SpringBoucWen2D.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  ni     The identifier of Node i
@@ -480,7 +513,7 @@ public:
 	void addSpringBoucWen2D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, const double beta=0.5, const double n=20, RODS::LocalAxis U = RODS::LocalAxis::U1);
 
 	/**
-	 * @brief      Adds a Dashpot2D.
+	 * @brief      Add a Dashpot2D.
 	 *
 	 * @param[in]  id    The identifier
 	 * @param[in]  ni    The identifier of Node i
@@ -491,7 +524,7 @@ public:
 	void addDashpot2D(const int id, const int ni, const int nj, const double c, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
 	/**
-	 * @brief      Adds a Inerter2D.
+	 * @brief      Add a Inerter2D.
 	 *
 	 * @param[in]  id    The identifier
 	 * @param[in]  ni    The identifier of Node i
@@ -506,7 +539,7 @@ public:
 	void addSpringBilinear3D(const int id, const int ni, const int nj, const double k0, const double uy, const double alpha=0.0, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
 	/**
-	* @brief      Adds a Dashpot3D.
+	* @brief      Add a Dashpot3D.
 	*
 	* @param[in]  id    The identifier
 	* @param[in]  ni    The identifier of Node i
@@ -517,7 +550,7 @@ public:
 	void addDashpot3D(const int id, const int ni, const int nj, const double c, RODS::LocalAxis U=RODS::LocalAxis::U1);
 
 	/**
-	* @brief      Adds a Inerter3D.
+	* @brief      Add a Inerter3D.
 	*
 	* @param[in]  id    The identifier
 	* @param[in]  ni    The identifier of Node i
@@ -529,7 +562,7 @@ public:
 
 
 	/**
-	 * @brief      Adds a DashpotExp2D.
+	 * @brief      Add a DashpotExp2D.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  ni     The identifier of Node i
@@ -541,7 +574,7 @@ public:
 	void addDashpotExp2D(const int id, const int ni, const int nj, const double c, const double alpha, RODS::LocalAxis U = RODS::LocalAxis::U1);
 
 	/**
-	 * @brief      Adds a DashpotMaxwell2D.
+	 * @brief      Add a DashpotMaxwell2D.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  ni     The identifier of Node i
@@ -555,7 +588,7 @@ public:
 	void addDashpotMaxwell3D(const int id, const int ni, const int nj, const double k, const double c, const double alpha, RODS::LocalAxis U = RODS::LocalAxis::U1);
 
 	/**
-	 * @brief      Adds a TrussElastic2D element.
+	 * @brief      Add a TrussElastic2D element.
 	 *
 	 * @param[in]  id    The identifier
 	 * @param[in]  ni    The identifier of Node i
@@ -565,7 +598,7 @@ public:
 	void addTrussElastic2D(const int id, const int ni, const int nj, const double EA);
 
 	/**
-	* @brief      Adds a TrussElastic3D element.
+	* @brief      Add a TrussElastic3D element.
 	*
 	* @param[in]  id    The identifier
 	* @param[in]  ni    The identifier of Node i
@@ -575,7 +608,7 @@ public:
 	void addTrussElastic3D(const int id, const int ni, const int nj, const double EA);
 
 	/**
-	 * @brief      Adds a BeamElastic2D element.
+	 * @brief      Add a BeamElastic2D element.
 	 *
 	 * @param[in]  id    The identifier
 	 * @param[in]  ni    The identifier of Node i
@@ -585,7 +618,7 @@ public:
 	void addBeamElastic2D(const int id, const int ni, const int nj, const double EI);
 
 	/**
-	 * @brief      Adds a FrameElastic2D element.
+	 * @brief      Add a FrameElastic2D element.
 	 *
 	 * @param[in]  id    The identifier
 	 * @param[in]  ni    The identifier of Node i
@@ -596,7 +629,7 @@ public:
 	void addFrameElastic2D(const int id, const int ni, const int nj, const double EA, const double EI);
 
 	/**
-	* @brief      Adds a FrameElastic3D element.
+	* @brief      Add a FrameElastic3D element.
 	*
 	* @param[in]  id    The identifier
 	* @param[in]  ni    The identifier of Node i
@@ -610,7 +643,7 @@ public:
 						const double EIy, const double EIz, const double GIp);
 
 	/**
-	 * @brief      Adds a Tri3Elastic element.
+	 * @brief      Add a Tri3Elastic element.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  nodeI  The identifier of node I
@@ -625,7 +658,7 @@ public:
 						const double E, const double nu, const double t);
 
 	/**
-	* @brief      Adds a Rect4Elastic element.
+	* @brief      Add a Rect4Elastic element.
 	*
 	* @param[in]  id     The identifier
 	* @param[in]  nodeI  The identifier of node I
@@ -641,7 +674,7 @@ public:
 		const double E, const double nu, const double t);
 
 	/**
-	* @brief      Adds a Plate4Elastic element.
+	* @brief      Add a Plate4Elastic element.
 	*
 	* @param[in]  id     The identifier
 	* @param[in]  nodeI  The identifier of node I
@@ -657,7 +690,7 @@ public:
 		const double E, const double nu, const double t);
 
 	/**
-	 * @brief      Adds a Quad4Elastic element.
+	 * @brief      Add a Quad4Elastic element.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  nodeI  The identifier of node I
@@ -673,7 +706,7 @@ public:
 						const double E, const double nu, const double t);
 
 	/**
-	* @brief      Adds a RectShell4Elastic element.
+	* @brief      Add a RectShell4Elastic element.
 	*
 	* @param[in]  id     The identifier
 	* @param[in]  nodeI  The identifier of node I
@@ -689,7 +722,7 @@ public:
 		const double E, const double nu, const double t);
 
 	/**
-	 * @brief      Adds a nonlinear Truss2D element.
+	 * @brief      Add a nonlinear Truss2D element.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  ni     The identifier of Node i
@@ -699,7 +732,7 @@ public:
 	void addTruss2D(const int id, const int ni, const int nj, const int secId);
 
 	/**
-	 * @brief      Adds a nonlinear Frame2D element.
+	 * @brief      Add a nonlinear Frame2D element.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  ni     The identifier of Node i
@@ -710,7 +743,7 @@ public:
 	void addFrame2D(const int id, const int ni, const int nj, const int secId, const int nIntP=2);
 
 	/**
-	 * @brief      Adds a nonlinear FramePDelta2D element.
+	 * @brief      Add a nonlinear FramePDelta2D element.
 	 *
 	 * @param[in]  id     The identifier
 	 * @param[in]  ni     The identifier of Node i
@@ -721,7 +754,7 @@ public:
 	void addFramePDelta2D(const int id, const int ni, const int nj, const int secId, const int nIntP=2);
 
 	/**
-	 * @brief      Adds a wave from a armadillo vector.
+	 * @brief      Add a wave from a armadillo vector.
 	 *
 	 * @param[in]  id    The identifier
 	 * @param[in]  dt    The time interval
@@ -730,7 +763,7 @@ public:
 	void addWave(const int id, const double dt, const vec &s);
 
 	/**
-	 * @brief      Adds a wave from a file (one column data file).
+	 * @brief      Add a wave from a file (one column data file).
 	 *
 	 * @param[in]  id        The identifier
 	 * @param[in]  dt        The time interval
@@ -739,7 +772,7 @@ public:
 	void addWave(const int id, const double dt, const char * fileName);
 
 	/**
-	 * @brief      Adds a DOF Recorder.
+	 * @brief      Add a DOF Recorder.
 	 *
 	 * @param[in]  id        The identifier
 	 * @param      dofIds    The DOF identifiers
@@ -750,7 +783,7 @@ public:
 	void addDOFRecorder(const int id, int *dofIds, const int n, RODS::Response rType, const char * fileName);
 
 	/**
-	* @brief      Adds a DOF Recorder.
+	* @brief      Add a DOF Recorder.
 	*
 	* @param[in]  id        The identifier
 	* @param      dofIds    The DOF identifiers
@@ -763,7 +796,7 @@ public:
 	void addDOFToRecorder(const int dofId, const int rId);
 
 	/**
-	 * @brief      Adds a Element Recorder.
+	 * @brief      Add a Element Recorder.
 	 *
 	 * @param[in]  id        The identifier
 	 * @param      dofIds    The Element identifiers

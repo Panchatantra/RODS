@@ -129,11 +129,8 @@ int main(int, char**)
     glPointSize(30);
     glLineWidth(10);
 
-    unsigned int shaderProgram;
-    RODS_GUI::createShader(shaderProgram);
-
-    unsigned int VBO, VAO, EBO;
-    RODS_GUI::buildVertex(VBO, VAO, EBO);
+    RODS_GUI::createShader();
+    RODS_GUI::buildVertex();
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -195,8 +192,8 @@ int main(int, char**)
             glfwMakeContextCurrent(backup_current_context);
         }
 
-        // RODS_GUI::draw(VBO, VAO, EBO);
-        RODS_GUI::draw_1d(VBO, VAO, EBO);
+        // RODS_GUI::draw_geo();
+        RODS_GUI::draw_1d();
 
         glfwSwapBuffers(window);
     }
@@ -206,11 +203,6 @@ int main(int, char**)
     ImGui_ImplGlfw_Shutdown();
     ImPlot::DestroyContext();
     ImGui::DestroyContext();
-
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shaderProgram);
 
     glfwDestroyWindow(window);
     glfwTerminate();

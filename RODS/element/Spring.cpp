@@ -1,7 +1,7 @@
 #include "Spring.h"
 
 Spring::Spring() :
-	ROD1D(0, 0, 0), k(0.0), u(0.0), f(0.0)
+	ROD1D(0, nullptr, nullptr), k(0.0), u(0.0), f(0.0)
 {
 }
 

@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <ctime>
 #include <glad/glad.h>
 #include "imgui.h"
 #include "implot.h"
@@ -12,6 +11,10 @@
 #include <map>
 std::map<int, int> pointIdMapIndex;
 std::map<int, int> dofIdMapIndex;
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 float * wave_t_data = nullptr;
 float * wave_a_data = nullptr;
@@ -48,20 +51,23 @@ const char* eleResponse[3] = {"Force", "Deformation", "Force and Deformation"};
 const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
 
-void RODS_GUI::createShader(unsigned int &shaderProgram)
+void RODS_GUI::createShader()
 {
     const char* vertexShaderSource = "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
+        "out vec4 vertexColor;\n"
         "void main()\n"
         "{\n"
         "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0f);\n"
+        "   vertexColor = gl_Position;\n"
         "}\0";
 
     const char* fragmentShaderSource = "#version 330 core\n"
         "out vec4 FragColor;\n"
+        "in vec4 vertexColor;\n"
         "void main()\n"
         "{\n"
-        "   FragColor = vec4(0.5f, 0.2f, 0.2f, 1.0f);\n"
+        "   FragColor = vertexColor;\n"
         "}\n\0";
 
     // vertex shader
@@ -83,7 +89,7 @@ void RODS_GUI::createShader(unsigned int &shaderProgram)
     glUseProgram(shaderProgram);
 }
 
-void RODS_GUI::buildVertex(unsigned int &VBO, unsigned int &VAO, unsigned int &EBO)
+void RODS_GUI::buildVertex()
 {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -107,9 +113,27 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
     {
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("New")) {}
-            if (ImGui::MenuItem("Open")) {}
-            if (ImGui::MenuItem("Save")) {}
+            // if (ImGui::MenuItem("New")) {
+            //     clear();
+            //     initVars();
+            // }
+            
+            char workDir[C_STR_LEN];
+            get_work_dir(workDir, C_STR_LEN);
+#ifdef __GNUC__
+            strcat(workDir, "/");
+#else
+            strcat_s(workDir, "/");
+#endif
+            if (ImGui::MenuItem("Open")) {
+                ImGuiFileDialog::Instance()->OpenDialog("Open Model", "Select File", ".json", workDir);
+            }
+            
+            if (ImGui::MenuItem("Save")) {
+                ImGuiFileDialog::Instance()->OpenDialog("Save Model", "Select File Path",
+                                    ".json", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
+            }
+
             if (ImGui::MenuItem("Exit"))
                 glfwSetWindowShouldClose(window, true);
             ImGui::EndMenu();
@@ -178,6 +202,28 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
+    }
+
+    if (ImGuiFileDialog::Instance()->Display("Open Model"))
+    {
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            auto fileName = ImGuiFileDialog::Instance()->GetFilePathName();
+            load_from_json(fileName.c_str());
+            updateVars();
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
+
+    if (ImGuiFileDialog::Instance()->Display("Save Model"))
+    {
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            auto fileName = ImGuiFileDialog::Instance()->GetFilePathName();
+            save_to_json(fileName.c_str());
+            updateVars();
+        }
+        ImGuiFileDialog::Instance()->Close();
     }
 }
 
@@ -1142,7 +1188,7 @@ void RODS_GUI::drawModeWindow()
     }
 }
 
-void RODS_GUI::draw_geo(unsigned int VBO, unsigned int VAO, unsigned int EBO)
+void RODS_GUI::draw_geo()
 {
     if (num_point > 0) {
 
@@ -1179,7 +1225,7 @@ void RODS_GUI::draw_geo(unsigned int VBO, unsigned int VAO, unsigned int EBO)
     }
 }
 
-void RODS_GUI::draw_1d(unsigned int VBO, unsigned int VAO, unsigned int EBO)
+void RODS_GUI::draw_1d()
 {
     if (num_dof > 0) {
 
@@ -1238,14 +1284,18 @@ void RODS_GUI::draw_1d(unsigned int VBO, unsigned int VAO, unsigned int EBO)
 
 void RODS_GUI::updateDOFList()
 {
-    dofList = new int [num_dof];
-    get_dof_id(dofList);
-    dofStrList = new const char* [num_dof];
-    for (int i = 0; i < num_dof; i++)
+    num_dof = get_num_dof();
+    if (num_dof > 0)
     {
-        auto dof_str = new char[C_STR_LEN_S];
-        snprintf(dof_str, C_STR_LEN_S, "%d", dofList[i]);
-        dofStrList[i] = dof_str;
+        dofList = new int [num_dof];
+        get_dof_id(dofList);
+        dofStrList = new const char* [num_dof];
+        for (int i = 0; i < num_dof; i++)
+        {
+            auto dof_str = new char[C_STR_LEN_S];
+            snprintf(dof_str, C_STR_LEN_S, "%d", dofList[i]);
+            dofStrList[i] = dof_str;
+        } 
     }
 }
 
@@ -1313,10 +1363,12 @@ void RODS_GUI::updatedofIdMapIndex()
     }
 }
 
-void RODS_GUI::pause(int dur)
+void RODS_GUI::glDeleteAll()
 {
-    int temp = time(NULL) + dur;
-    while(temp > time(NULL));
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    glDeleteProgram(shaderProgram);
 }
 
 void RODS_GUI::sdof_model()
@@ -1351,4 +1403,37 @@ void RODS_GUI::sdof_model()
     set_dynamic_solver(0);
     active_ground_motion(0,1,1.0);
     solve_seismic_response();
+}
+
+void RODS_GUI::initVars()
+{
+    num_dof = 0;
+    num_point = 0;
+    num_line = 0;
+    num_ele = 0;
+    num_spring = 0;
+    num_dashpot = 0;
+    num_inerter = 0;
+    num_eqn = 0;
+    num_wave = 0;
+    num_dof_recorder = 0;
+    num_ele_recorder = 0;
+
+    point_index = 0;
+    dof_index = 0;
+}
+
+void RODS_GUI::updateVars()
+{
+    num_dof = get_num_dof();
+    num_point = get_num_point();
+    num_line = get_num_line();
+    num_ele = get_num_ele();
+    num_spring = get_num_spring();
+    num_dashpot = get_num_dashpot();
+    num_inerter = get_num_inerter();
+    num_eqn = get_num_eqn();
+    num_wave = get_num_wave();
+    num_dof_recorder = get_num_dof_recorder();
+    num_ele_recorder = get_num_ele_recorder();
 }

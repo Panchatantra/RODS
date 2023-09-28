@@ -1,8 +1,10 @@
 #pragma once
 #include "Basis.h"
 #include "Load.h"
-#include "json.hpp"
 #include <vector>
+
+#include "json.hpp"
+using json = nlohmann::json;
 
 using namespace std;
 

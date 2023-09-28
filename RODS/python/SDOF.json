@@ -1,4 +1,13 @@
 {
+    "DashpotCount": 1,
+    "DashpotVec": [
+        {
+            "IdDofI": 0,
+            "IdDofJ": 1,
+            "c": 2.0,
+            "id": 1
+        }
+    ],
     "NumDynamicSubSteps": 1,
     "NumModesInherentDamping": -1,
     "RayleighOmg1": 10.0,
@@ -39,7 +48,7 @@
         }
     ],
     "dt": 0.005,
-    "dynamicSolver": 0,
+    "dynamicSolver": 2,
     "eigenVectorNormed": true,
     "eqnCount": 1,
     "exportGmshInterval": -1,

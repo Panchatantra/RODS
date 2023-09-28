@@ -560,6 +560,36 @@ DLL_API size_t get_num_ele()
 	return ds->Elements.size();
 }
 
+DLL_API size_t get_num_spring()
+{
+    return ds->Springs.size();
+}
+
+DLL_API size_t get_num_dashpot()
+{
+    return ds->Dashpots.size();
+}
+
+DLL_API size_t get_num_inerter()
+{
+    return ds->Inerters.size();
+}
+
+DLL_API size_t get_num_wave()
+{
+    return ds->Waves.size();
+}
+
+DLL_API size_t get_num_dof_recorder()
+{
+    return ds->DOFRecorders.size();
+}
+
+DLL_API size_t get_num_ele_recorder()
+{
+    return ds->ElementRecorders.size();
+}
+
 DLL_API size_t get_num_eqn()
 {
 	return ds->eqnCount;

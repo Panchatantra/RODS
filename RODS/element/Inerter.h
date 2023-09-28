@@ -24,5 +24,7 @@ public:
 	mat::fixed<2,2> M;
 
 	double u, f;
+
+	
 };
 

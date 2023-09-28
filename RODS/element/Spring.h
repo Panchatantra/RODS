@@ -25,17 +25,17 @@ public:
 
 	mat::fixed<2,2> K;
 
-	friend void to_json(nlohmann::json& nlohmann_json_j, const Spring& nlohmann_json_t) {
-		nlohmann_json_j["id"] = nlohmann_json_t.id;
-		nlohmann_json_j["IdDofI"] = nlohmann_json_t.dofI->id;
-		nlohmann_json_j["IdDofJ"] = nlohmann_json_t.dofJ->id;
-		nlohmann_json_j["k"] = nlohmann_json_t.k;
+	friend void to_json(json& jsonObj, const Spring& SpringObj) {
+		jsonObj["id"] = SpringObj.id;
+		jsonObj["IdDofI"] = SpringObj.dofI->id;
+		jsonObj["IdDofJ"] = SpringObj.dofJ->id;
+		jsonObj["k"] = SpringObj.k;
 	}
-	friend void from_json(const nlohmann::json& nlohmann_json_j, Spring& nlohmann_json_t) {
-		nlohmann_json_j.at("id").get_to(nlohmann_json_t.id);
-		nlohmann_json_j.at("IdDofI").get_to(nlohmann_json_t.IdDofI);
-		nlohmann_json_j.at("IdDofJ").get_to(nlohmann_json_t.IdDofJ);
-		nlohmann_json_j.at("k").get_to(nlohmann_json_t.k);
+	friend void from_json(const json& jsonObj, Spring& SpringObj) {
+		jsonObj.at("id").get_to(SpringObj.id);
+		jsonObj.at("IdDofI").get_to(SpringObj.IdDofI);
+		jsonObj.at("IdDofJ").get_to(SpringObj.IdDofJ);
+		jsonObj.at("k").get_to(SpringObj.k);
 	};
 };
 

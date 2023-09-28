@@ -111,9 +111,17 @@ extern "C" {
 	DLL_API size_t get_wave_id(int *id);
 	DLL_API size_t get_dof_recorder_id(int *id);
 	DLL_API size_t get_ele_recorder_id(int *id);
+
 	DLL_API size_t get_num_line();
 	DLL_API size_t get_num_ele();
+	DLL_API size_t get_num_spring();
+	DLL_API size_t get_num_dashpot();
+	DLL_API size_t get_num_inerter();
+	DLL_API size_t get_num_wave();
+	DLL_API size_t get_num_dof_recorder();
+	DLL_API size_t get_num_ele_recorder();
 	DLL_API size_t get_num_eqn();
+	
 	DLL_API size_t get_point_coord(float* pt, const bool norm=true);
 	DLL_API size_t get_line_point_id(int* id);
 	DLL_API size_t get_rod1d_dof_id(int* id);

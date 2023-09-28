@@ -45,9 +45,12 @@ static int mode_order = 1;
 const size_t C_STR_LEN = 100;
 const size_t C_STR_LEN_S = 20;
 
+static unsigned int shaderProgram;
+static unsigned int VBO, VAO, EBO;
+
 namespace RODS_GUI {
-    void createShader(unsigned int &shaderProgram);
-    void buildVertex(unsigned int &VBO, unsigned int &VAO, unsigned int &EBO);
+    void createShader();
+    void buildVertex();
     void mainMenu(GLFWwindow* window);
     void dirWindow();
     void dampingWindow();
@@ -69,8 +72,9 @@ namespace RODS_GUI {
 
     void drawModeWindow();
 
-    void draw_geo(unsigned int VBO, unsigned int VAO, unsigned int EBO);
-    void draw_1d(unsigned int VBO, unsigned int VAO, unsigned int EBO);
+    void draw_geo();
+    void draw_1d();
+
     void updateDOFList();
     void updateDOFRecorderList();
     void updateEleRecorderList();
@@ -78,8 +82,11 @@ namespace RODS_GUI {
     void updateEleList();
     void updatedofIdMapIndex();
 
-    void pause(int dur);
+    void glDeleteAll();
+
     void sdof_model();
+    void initVars();
+    void updateVars();
 
     enum class DrawType
 	{
