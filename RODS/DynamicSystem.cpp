@@ -1,5 +1,6 @@
 #include "DynamicSystem.h"
 #include "numeric.h"
+#include "macro.h"
 
 #include <fstream>
 #include <vector>
@@ -49,21 +50,12 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 		addDOF(dof.id, dof.dir, dof.mass, dof.isFixed);
 	}
 
-	auto j_array_Spring = model.at("SpringVec");
-	Spring Spring_;
-	for (auto i = 0; i<model.at("SpringCount"); i++)
-	{
-		j_array_Spring[i].get_to(Spring_);
-		addSpring(Spring_.id, Spring_.IdDofI, Spring_.IdDofJ, Spring_.k);
-	}
+	JSON_TO_ELEMENTS(Spring, k)
+	JSON_TO_ELEMENTS(Dashpot, c)
+	JSON_TO_ELEMENTS(Inerter, m)
 
-	auto j_array_Dashpot = model.at("DashpotVec");
-	Dashpot Dashpot_;
-	for (auto i = 0; i<model.at("DashpotCount"); i++)
-	{
-		j_array_Dashpot[i].get_to(Dashpot_);
-		addDashpot(Dashpot_.id, Dashpot_.IdDofI, Dashpot_.IdDofJ, Dashpot_.c);
-	}
+	JSON_TO_ELEMENTS_3(SpringBilinear, k0, uy, alpha)
+
 }
 
 void DynamicSystem::saveToJSON(const char *fileName)
@@ -79,21 +71,10 @@ void DynamicSystem::saveToJSON(const char *fileName)
 	}
 	model["dofVec"] = dofVec;
 
-	model["SpringCount"] = Springs.size();
-	vector<Spring> SpringVec;
-	for (auto it = Springs.begin(); it != Springs.end(); it++)
-	{
-		SpringVec.push_back(*(it->second));
-	}
-	model["SpringVec"] = SpringVec;
-
-	model["DashpotCount"] = Dashpots.size();
-	vector<Dashpot> DashpotVec;
-	for (auto it = Dashpots.begin(); it != Dashpots.end(); it++)
-	{
-		DashpotVec.push_back(*(it->second));
-	}
-	model["DashpotVec"] = DashpotVec;
+	ELEMENTS_TO_JSON(Spring)
+	ELEMENTS_TO_JSON(Dashpot)
+	ELEMENTS_TO_JSON(Inerter)
+	ELEMENTS_TO_JSON(SpringBilinear)
 
 	std::ofstream ofs(fileName);
 	ofs << std::setw(4) << model;

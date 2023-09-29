@@ -1,12 +1,21 @@
 #include "SpringBilinear.h"
 
-
-SpringBilinear::SpringBilinear(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha) :
-	ROD1D(id,i,j), k0(k0), uy(uy),
-	k1(alpha*k0), fy(k0*uy), alpha(alpha),
-	k(k0), u(0), f(0),
-	kp(k0), up(0), dup(0), fp(0),
+SpringBilinear::SpringBilinear() :
+	ROD1D(0, nullptr, nullptr), k0(0.0), uy(0.0),
+	k1(0.0), fy(0.0), alpha(0.0),
+	k(0.0), u(0), f(0),
+	kp(0.0), up(0), dup(0), fp(0),
 	status(0), sp(0)
+{
+}
+
+SpringBilinear::SpringBilinear(const int id, DOF *i, DOF *j,
+					const double k0, const double uy, const double alpha) :
+					ROD1D(id, i, j), k0(k0), uy(uy),
+					k1(alpha * k0), fy(k0 * uy), alpha(alpha),
+					k(k0), u(0), f(0),
+					kp(k0), up(0), dup(0), fp(0),
+					status(0), sp(0)
 {
 	buildMatrix();
 }

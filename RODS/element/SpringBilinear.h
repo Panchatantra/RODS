@@ -12,6 +12,7 @@ using namespace arma;
 class SpringBilinear : public ROD1D
 {
 public:
+	SpringBilinear();
 	SpringBilinear(const int id, DOF *i, DOF *j, const double k0, const double uy, const double alpha);
 	~SpringBilinear();
 
@@ -27,5 +28,22 @@ public:
 
 	mat::fixed<2, 2> K;
 	vec::fixed<2> q;
+
+	friend void to_json(json& jsonObj, const SpringBilinear& SpringBilinearObj) {
+		jsonObj["id"] = SpringBilinearObj.id;
+		jsonObj["IdDofI"] = SpringBilinearObj.dofI->id;
+		jsonObj["IdDofJ"] = SpringBilinearObj.dofJ->id;
+		jsonObj["k0"] = SpringBilinearObj.k0;
+		jsonObj["uy"] = SpringBilinearObj.uy;
+		jsonObj["alpha"] = SpringBilinearObj.alpha;
+	}
+	friend void from_json(const json& jsonObj, SpringBilinear& SpringBilinearObj) {
+		jsonObj.at("id").get_to(SpringBilinearObj.id);
+		jsonObj.at("IdDofI").get_to(SpringBilinearObj.IdDofI);
+		jsonObj.at("IdDofJ").get_to(SpringBilinearObj.IdDofJ);
+		jsonObj.at("k0").get_to(SpringBilinearObj.k0);
+		jsonObj.at("uy").get_to(SpringBilinearObj.uy);
+		jsonObj.at("alpha").get_to(SpringBilinearObj.alpha);
+	};
 };
 

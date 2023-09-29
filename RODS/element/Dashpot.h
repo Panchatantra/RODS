@@ -25,17 +25,17 @@ public:
 
 	mat::fixed<2, 2> C;
 
-	friend void to_json(json& jsonObj, const Dashpot& json_t) {
-		jsonObj["id"] = json_t.id;
-		jsonObj["IdDofI"] = json_t.dofI->id;
-		jsonObj["IdDofJ"] = json_t.dofJ->id;
-		jsonObj["c"] = json_t.c;
+	friend void to_json(json& jsonObj, const Dashpot& DashpotObj) {
+		jsonObj["id"] = DashpotObj.id;
+		jsonObj["IdDofI"] = DashpotObj.dofI->id;
+		jsonObj["IdDofJ"] = DashpotObj.dofJ->id;
+		jsonObj["c"] = DashpotObj.c;
 	}
-	friend void from_json(const json& jsonObj, Dashpot& json_t) {
-		jsonObj.at("id").get_to(json_t.id);
-		jsonObj.at("IdDofI").get_to(json_t.IdDofI);
-		jsonObj.at("IdDofJ").get_to(json_t.IdDofJ);
-		jsonObj.at("c").get_to(json_t.c);
+	friend void from_json(const json& jsonObj, Dashpot& DashpotObj) {
+		jsonObj.at("id").get_to(DashpotObj.id);
+		jsonObj.at("IdDofI").get_to(DashpotObj.IdDofI);
+		jsonObj.at("IdDofJ").get_to(DashpotObj.IdDofJ);
+		jsonObj.at("c").get_to(DashpotObj.c);
 	};
 };
 

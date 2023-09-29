@@ -117,7 +117,6 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             //     clear();
             //     initVars();
             // }
-            
             char workDir[C_STR_LEN];
             get_work_dir(workDir, C_STR_LEN);
 #ifdef __GNUC__
@@ -128,7 +127,7 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             if (ImGui::MenuItem("Open")) {
                 ImGuiFileDialog::Instance()->OpenDialog("Open Model", "Select File", ".json", workDir);
             }
-            
+
             if (ImGui::MenuItem("Save")) {
                 ImGuiFileDialog::Instance()->OpenDialog("Save Model", "Select File Path",
                                     ".json", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
@@ -151,20 +150,37 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("Edit"))
+        if (ImGui::BeginMenu("Geometry"))
         {
-            if (ImGui::MenuItem("DOF"))
-                show_dof_window = true;
-
             if (ImGui::MenuItem("Point"))
                 show_point_window = true;
 
             if (ImGui::MenuItem("Line"))
                 show_line_window = true;
 
+            if (ImGui::MenuItem("Triangle")) {}
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Model"))
+        {
+            if (ImGui::MenuItem("DOF"))
+                show_dof_window = true;
+
+            if (ImGui::MenuItem("Node")) {}
+
             if (ImGui::MenuItem("Element1D"))
                 show_element1d_window = true;
 
+            if (ImGui::MenuItem("Element2D")) {}
+
+            if (ImGui::MenuItem("Element3D")) {}
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Input/Output"))
+        {
             if (ImGui::MenuItem("Wave"))
                 show_wave_window = true;
 
@@ -260,6 +276,7 @@ void RODS_GUI::dirWindow()
         if (ImGui::Button("Set Name"))
             set_name(name);
 
+        ImGui::SameLine();
         if (ImGui::Button("Close"))
             show_dir_window = false;
 
@@ -371,7 +388,8 @@ void RODS_GUI::dofWindow()
 
 void RODS_GUI::pointWindow()
 {
-    if (show_point_window) {
+    if (show_point_window)
+    {
         ImGui::Begin("Point");
         static int pt_id = 1;
         ImGui::InputInt("Point ID", &pt_id);
@@ -385,6 +403,10 @@ void RODS_GUI::pointWindow()
             }
             num_point = add_point(pt_id++, coord[0], coord[1], coord[2]);
         }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Close"))
+            show_point_window = false;
         ImGui::End();
     }
 }
@@ -418,7 +440,6 @@ void RODS_GUI::lineWindow()
 {
     if (show_line_window)
     {
-
         ImGui::Begin("Line");
         static int l_id = 1;
         static int p_id_i = 0;
@@ -461,6 +482,10 @@ void RODS_GUI::lineWindow()
                 ImGui::CloseCurrentPopup();
             ImGui::EndPopup();
         }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Close"))
+            show_line_window = false;
         ImGui::End();
     }
 }
@@ -770,7 +795,7 @@ void RODS_GUI::solveEigenWindow()
 
             if (ImGui::Button("Start Animation"))
             {
-                draw_type = 3;
+                draw_type = 22;
             }
             ImGui::SameLine();
             if (ImGui::Button("Stop"))
@@ -1173,13 +1198,16 @@ void RODS_GUI::drawModeWindow()
 
         ImGui::Text("Dimension: "); ImGui::SameLine();
         ImGui::RadioButton("1D", &draw_dim, 1); ImGui::SameLine();
+        ImGui::RadioButton("1D (dof with bonded point)", &draw_dim, 11);
         ImGui::RadioButton("2D", &draw_dim, 2); ImGui::SameLine();
         ImGui::RadioButton("3D", &draw_dim, 3);
 
         ImGui::Text("Draw: "); ImGui::SameLine();
         ImGui::RadioButton("Model", &draw_type, 1); ImGui::SameLine();
         ImGui::RadioButton("Mode Shape", &draw_type, 2); ImGui::SameLine();
-        ImGui::RadioButton("Response", &draw_type, 3);
+        ImGui::RadioButton("Mode Shape (Animated)", &draw_type, 22);
+        ImGui::RadioButton("Static Response", &draw_type, 3);ImGui::SameLine();
+        ImGui::RadioButton("Dynamic Response", &draw_type, 4);
 
         if (ImGui::Button("Close"))
             show_draw_mode_window = false;
@@ -1238,7 +1266,7 @@ void RODS_GUI::draw_1d()
 
         float* vertices = new float[(size_t)num_dof*3];
 
-        if (draw_type == 2 || draw_type == 3)
+        if (draw_type == 2 || draw_type == 22)
         {
             dof_response = new double[(size_t)num_dof];
             get_dof_modal_response(dof_response, mode_order);
@@ -1248,7 +1276,7 @@ void RODS_GUI::draw_1d()
         {
             vertices[3*i] = 0.0f;
             if (draw_type == 2) vertices[3*i] += dof_response[i];
-            else if (draw_type == 3) vertices[3*i] += dof_response[i]*sinf(2.0*3.142/5.0*glfwGetTime());
+            else if (draw_type == 22) vertices[3*i] += dof_response[i]*sinf(2.0*3.142/5.0*glfwGetTime());
             vertices[3*i+1] = H_0 + h*i;
             vertices[3*i+2] = 0.0f;
         }
