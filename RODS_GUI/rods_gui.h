@@ -1,5 +1,12 @@
 #pragma once
 
+#if defined(__arm__)
+#define IMGUI_IMPL_OPENGL_ES2
+#endif
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+#include <GLES2/gl2.h>
+#endif
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 static bool show_basic_info_window = true;
@@ -19,8 +26,8 @@ static bool show_time_history_plot_window = false;
 static bool show_dir_window = false;
 static bool show_draw_mode_window = false;
 
-static bool use_rayleigh_damping = true;
-static bool use_mode_orthogonal_damping = false;
+// static bool use_rayleigh_damping = true;
+// static bool use_mode_orthogonal_damping = false;
 
 static int num_dof = 0;
 static int num_point = 0;

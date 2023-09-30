@@ -1,11 +1,5 @@
 #include <stdio.h>
-#if defined(__arm__)
-#define IMGUI_IMPL_OPENGL_ES2
-#endif
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <GLES2/gl2.h>
-#endif
-#include <glad/glad.h>
+
 #include "imgui.h"
 #include "implot.h"
 #include "ImGuiFileDialog.h"
@@ -379,7 +373,7 @@ void RODS_GUI::dofWindow()
         ImGui::InputInt3("DOF ID (Start, Stop, Step)", dof_id_bat);
         if (ImGui::Button("Batch Add DOF"))
         {
-            for (size_t id = dof_id_bat[0]; id <= dof_id_bat[1]; id+=dof_id_bat[2])
+            for (auto id = dof_id_bat[0]; id <= dof_id_bat[1]; id+=dof_id_bat[2])
             {
                 num_dof = add_dof(id, dir, mass);
             }
@@ -622,8 +616,10 @@ void RODS_GUI::element1dWindow()
                     if (dof_id_i == dof_id_j)
                         ImGui::OpenPopup("Error");
                     else
+                    {
                         num_spring = add_spring(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
                         num_ele = get_num_ele();
+                    }
                 }
             }
                 break;
@@ -634,8 +630,10 @@ void RODS_GUI::element1dWindow()
                     if (dof_id_i == dof_id_j)
                         ImGui::OpenPopup("Error");
                     else
+                    {
                         num_dashpot = add_dashpot(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
                         num_ele = get_num_ele();
+                    }
                 }
             }
                 break;
@@ -646,8 +644,10 @@ void RODS_GUI::element1dWindow()
                     if (dof_id_i == dof_id_j)
                         ImGui::OpenPopup("Error");
                     else
+                    {
                         num_inerter = add_inerter(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
                         num_ele = get_num_ele();
+                    }
                 }
             }
                 break;
@@ -674,7 +674,7 @@ void RODS_GUI::element1dWindow()
             {
                 auto dof_i_id = dof_i_id_bat[0];
                 auto dof_j_id = dof_j_id_bat[0];
-                for (size_t id = ele_id_bat[0]; id <= ele_id_bat[1]; id+=ele_id_bat[2])
+                for (auto id = ele_id_bat[0]; id <= ele_id_bat[1]; id+=ele_id_bat[2])
                 {
                     switch (ele_type)
                     {
