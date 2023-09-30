@@ -119,8 +119,11 @@ int main(int, char**)
     //IM_ASSERT(font != nullptr);
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+    if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress))
+#else
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+#endif
     {
         printf("Failed to initialize GLAD!\n");
         return -1;

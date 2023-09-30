@@ -1,4 +1,10 @@
 #include <stdio.h>
+#if defined(__arm__)
+#define IMGUI_IMPL_OPENGL_ES2
+#endif
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+#include <GLES2/gl2.h>
+#endif
 #include <glad/glad.h>
 #include "imgui.h"
 #include "implot.h"
@@ -91,19 +97,25 @@ void RODS_GUI::createShader()
 
 void RODS_GUI::buildVertex()
 {
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
     glGenVertexArrays(1, &VAO);
+#endif
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
 
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
     glBindVertexArray(VAO);
+#endif
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
     glBindVertexArray(0);
+#endif
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
@@ -1224,7 +1236,9 @@ void RODS_GUI::draw_geo()
         get_point_coord(vertices, true);
 
         // glUseProgram(shaderProgram);
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
         glBindVertexArray(VAO);
+#endif
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, (size_t)num_point*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
@@ -1282,7 +1296,11 @@ void RODS_GUI::draw_1d()
         }
 
         // glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
+        // glBindVertexArray(VAO);
+    #endif
+#endif
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, (size_t)num_dof*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
@@ -1393,7 +1411,9 @@ void RODS_GUI::updatedofIdMapIndex()
 
 void RODS_GUI::glDeleteAll()
 {
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
     glDeleteVertexArrays(1, &VAO);
+#endif
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     glDeleteProgram(shaderProgram);
