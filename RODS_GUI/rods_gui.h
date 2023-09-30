@@ -25,6 +25,7 @@ static bool show_recorder_window = false;
 static bool show_time_history_plot_window = false;
 static bool show_dir_window = false;
 static bool show_draw_mode_window = false;
+static bool show_node_window = false;
 
 // static bool use_rayleigh_damping = true;
 // static bool use_mode_orthogonal_damping = false;
@@ -67,6 +68,7 @@ namespace RODS_GUI {
     void lineWindow();
     void waveWindow();
     void element1dWindow();
+    void nodeWindow();
     void assembleMatrixWindow();
     void solveEigenWindow();
     void recorderWindow();

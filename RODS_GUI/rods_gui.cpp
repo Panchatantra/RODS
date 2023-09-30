@@ -45,6 +45,8 @@ const char** waveStrList = nullptr;
 
 int * element1dList = nullptr;
 
+const int dimension_dof_count[5] = {1, 3, 6, 2, 3};
+const char* dimension[5] = { "1D", "2D", "3D", "2D (W/O Rotate)", "3D (W/O Rotate)" };
 const char* direction[6] = {"X", "Y", "Z", "RX", "RY", "RZ"};
 const char* dofResponse[4] = {"Displacement", "Velocity", "Acceleration", "ALL"};
 const char* eleResponse[3] = {"Force", "Deformation", "Force and Deformation"};
@@ -113,10 +115,11 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
     {
         if (ImGui::BeginMenu("File"))
         {
-            // if (ImGui::MenuItem("New")) {
-            //     clear();
-            //     initVars();
-            // }
+            if (ImGui::MenuItem("New")) {
+                clear();
+                initVars();
+            }
+
             char workDir[C_STR_LEN];
             get_work_dir(workDir, C_STR_LEN);
 #ifdef __GNUC__
@@ -167,7 +170,8 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             if (ImGui::MenuItem("DOF"))
                 show_dof_window = true;
 
-            if (ImGui::MenuItem("Node")) {}
+            if (ImGui::MenuItem("Node"))
+                show_node_window = true;
 
             if (ImGui::MenuItem("Element1D"))
                 show_element1d_window = true;
@@ -416,7 +420,9 @@ void RODS_GUI::basicInfoWindow()
     if (show_basic_info_window)
     {
         ImGui::Begin("Basic Information");
-        ImGui::Text("RODS");
+        char name[C_STR_LEN];
+        get_name(name, C_STR_LEN);
+        ImGui::Text("Model Name: %s", name);
         ImGui::Text("Inherent Damping Ratio: %.3f", get_damping_ratio());
         ImGui::Text("Use RayleighDamping: %s", get_use_rayleigh_damping() ? "True" : "False");
         ImGui::Separator();
@@ -702,6 +708,57 @@ void RODS_GUI::element1dWindow()
         ImGui::SameLine();
         if (ImGui::Button("Close"))
             show_element1d_window = false;
+
+        ImGui::End();
+    }
+}
+
+void RODS_GUI::nodeWindow()
+{
+    if (show_node_window)
+    {
+        ImGui::Begin("Node");
+        static int node_id = 1;
+        ImGui::InputInt("Node ID", &node_id);
+        static int node_dim = 1;
+        ImGui::Combo("Dimension", &node_dim, dimension, 5);
+        ImGui::Text("Method to Link with DOF: "); ImGui::SameLine();
+        static int dof_method = 1;
+        ImGui::RadioButton("Select", &dof_method, 1); ImGui::SameLine();
+        ImGui::RadioButton("Auto Generate", &dof_method, 2);
+        ImGui::Text("Method to define Coordinates: "); ImGui::SameLine();
+        static int coord_method = 1;
+        ImGui::RadioButton("Directly Input", &coord_method, 1); ImGui::SameLine();
+        ImGui::RadioButton("From a Point", &coord_method, 2);
+
+        if (dof_method == 1)
+        {
+            if (ImGui::Button("Select DOF") && num_dof>1)
+                ImGui::OpenPopup("Select DOF");
+            if (ImGui::BeginPopup("Select DOF"))
+            {
+                updateDOFList();
+                int dof_count = dimension_dof_count[node_dim];
+                int *dof_id = new int[dof_count];
+                
+                for (int i = 0; i < dof_count; i++)
+                {
+                    static int dof_id_index = 0;
+                    ImGui::Combo(dimension[i], &dof_id_index, dofStrList, 5);
+                    dof_id[i] = dofList[dof_id_index];
+                }
+
+                ImGui::EndPopup();
+            }
+        }
+
+        static float coord[3] = {0.0, 0.0, 0.0};
+        ImGui::InputFloat3("Coords (X,Y,Z)", coord);
+
+        if (ImGui::Button("Add Node")) {}
+        ImGui::SameLine();
+        if (ImGui::Button("Close"))
+            show_node_window = false;
 
         ImGui::End();
     }

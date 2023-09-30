@@ -550,6 +550,11 @@ DLL_API size_t get_ele_recorder_id(int * id)
 	return n;
 }
 
+DLL_API int get_next_dof_id()
+{
+	return ds->getNextDofId();
+}
+
 DLL_API size_t get_num_line()
 {
 	return ds->Lines.size();

@@ -5,8 +5,8 @@
     "InerterVec": [],
     "NumDynamicSubSteps": 1,
     "NumModesInherentDamping": -1,
-    "RayleighOmg1": 20.943951000000002,
-    "RayleighOmg2": 62.831853,
+    "RayleighOmg1": 10.0,
+    "RayleighOmg2": 20.0,
     "SpringBilinearCount": 0,
     "SpringBilinearVec": [],
     "SpringCount": 10,
@@ -159,7 +159,7 @@
     "exportGmshInterval": -1,
     "fixedDofCount": 1,
     "maxIter": 20,
-    "name": "RODS",
+    "name": "MDOF",
     "nsteps": 0,
     "tol": 1e-06,
     "useRayleighDamping": true,
@@ -170,5 +170,5 @@
     "yMin": 0.0,
     "zMax": 0.0,
     "zMin": 0.0,
-    "zeta": 0.05
+    "zeta": 0.019999999552965164
 }

@@ -160,6 +160,7 @@ int main(int, char**)
         RODS_GUI::lineWindow();
         RODS_GUI::basicInfoWindow();
         RODS_GUI::element1dWindow();
+        RODS_GUI::nodeWindow();
 
         RODS_GUI::waveWindow();
         RODS_GUI::recorderWindow();

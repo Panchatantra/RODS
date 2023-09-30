@@ -112,6 +112,8 @@ extern "C" {
 	DLL_API size_t get_dof_recorder_id(int *id);
 	DLL_API size_t get_ele_recorder_id(int *id);
 
+	DLL_API int get_next_dof_id();
+
 	DLL_API size_t get_num_line();
 	DLL_API size_t get_num_ele();
 	DLL_API size_t get_num_spring();

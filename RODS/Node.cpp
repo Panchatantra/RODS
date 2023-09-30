@@ -1,10 +1,16 @@
 #include "Node.h"
 
+Node::Node() :
+	Basis(0), x(0.0), y(0.0), z(0.0), x0(0.0), y0(0.0), z0(0.0),
+	dofX(nullptr), dofY(nullptr), dofZ(nullptr),
+	dofRX(nullptr), dofRY(nullptr), dofRZ(nullptr)
+{
+}
 
-Node::Node(const int id, const double x, const double y, const double z):
-		Basis(id), x(x), y(y), z(z), x0(x), y0(y), z0(z),
-		dofX(nullptr), dofY(nullptr), dofZ(nullptr),
-		dofRX(nullptr), dofRY(nullptr), dofRZ(nullptr)
+Node::Node(const int id, const double x, const double y, const double z) :
+	Basis(id), x(x), y(y), z(z), x0(x), y0(y), z0(z),
+	dofX(nullptr), dofY(nullptr), dofZ(nullptr),
+	dofRX(nullptr), dofRY(nullptr), dofRZ(nullptr)
 {
 }
 
@@ -108,13 +114,35 @@ bool Node::isActivated(RODS::Direction dir)
 		break;
 	}
 
-	if (d == nullptr)
+	if (d == nullptr) return false;
+	else return true;
+
+}
+
+void Node::Deactivate(RODS::Direction dir)
+{
+	switch (dir)
 	{
-		return false;
-	}
-	else
-	{
-		return true;
+	case RODS::Direction::X:
+		dofX = nullptr;
+		break;
+	case RODS::Direction::Y:
+		dofY = nullptr;
+		break;
+	case RODS::Direction::Z:
+		dofZ = nullptr;
+		break;
+	case RODS::Direction::RX:
+		dofRX = nullptr;
+		break;
+	case RODS::Direction::RY:
+		dofRY = nullptr;
+		break;
+	case RODS::Direction::RZ:
+		dofRZ = nullptr;
+		break;
+	default:
+		break;
 	}
 }
 

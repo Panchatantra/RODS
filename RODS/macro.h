@@ -36,3 +36,13 @@ vector<ELE_TYPE> ELE_TYPE##Vec;\
 for (auto it = ELE_TYPE##s.begin(); it != ELE_TYPE##s.end(); it++)\
     ELE_TYPE##Vec.push_back(*(it->second));\
 model[TO_STR(ELE_TYPE##Vec)] = ELE_TYPE##Vec;
+
+#define GET_NEXT_ID(TYPE, ID)\
+int ID = 1;\
+if (TYPE##s.size() > 0)\
+{\
+    auto it = TYPE##s.end();\
+    it--;\
+    ID = it->second->id;\
+    ID++;\
+}

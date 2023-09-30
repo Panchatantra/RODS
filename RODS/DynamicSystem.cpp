@@ -55,7 +55,6 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 	JSON_TO_ELEMENTS(Inerter, m)
 
 	JSON_TO_ELEMENTS_3(SpringBilinear, k0, uy, alpha)
-
 }
 
 void DynamicSystem::saveToJSON(const char *fileName)
@@ -136,6 +135,45 @@ void DynamicSystem::addNode(const int nodeId, const double x, const int dofId)
 	addNode(nd);
 }
 
+void DynamicSystem::addNode(const int nodeId, const int pointId, const int dofId)
+{
+	addNode(nodeId, Points.at(pointId)->x, dofId);
+}
+
+void DynamicSystem::addNode(const int nodeId, const double x)
+{
+	auto dofId = getNextDofId();
+
+	addDOF(dofId, RODS::Direction::X);
+	addNode(nodeId, x, dofId);
+}
+
+void DynamicSystem::addNode(const int nodeId, const int pointId, const RODS::Dimension dim)
+{
+	auto point = Points.at(pointId);
+
+	switch (dim)
+	{
+		case RODS::Dimension::ONE:
+			addNode(nodeId, point->x);
+			break;
+		case RODS::Dimension::TWO:
+			addNode(nodeId, point->x, point->z);
+			break;
+		case RODS::Dimension::THREE:
+			addNode(nodeId, point->x, point->y, point->z);
+			break;
+		case RODS::Dimension::TWO_WITHOUT_ROTATE:
+			addNode(nodeId, point->x, point->z, false);
+			break;
+		case RODS::Dimension::THREE_WITHOUT_ROTATE:
+			addNode(nodeId, point->x, point->y, point->z, false);
+			break;
+		default:
+			break;
+	}
+}
+
 void DynamicSystem::addNode(const int nodeId, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId)
 {
 	DOF *dx = DOFs.at(dofXId);
@@ -154,6 +192,25 @@ void DynamicSystem::addNode(const int nodeId, const double x, const double z, co
 	}
 
 	addNode(nd);
+}
+
+void DynamicSystem::addNode(const int nodeId, const double x, const double z, bool with_rotate_dof)
+{
+	auto dofId = getNextDofId();
+
+	if (with_rotate_dof)
+	{
+		addDOF(dofId, RODS::Direction::X);
+		addDOF(dofId+1, RODS::Direction::Z);
+		addDOF(dofId+2, RODS::Direction::RY);
+		addNode(nodeId, x, z, dofId, dofId+1, dofId+2);
+	}
+	else
+	{
+		addDOF(dofId, RODS::Direction::X);
+		addDOF(dofId+1, RODS::Direction::Z);
+		addNode(nodeId, x, z, dofId, dofId+1, -1);
+	}
 }
 
 void DynamicSystem::addNode(const int nodeId, const double x, const double y, const double z,
@@ -189,15 +246,26 @@ void DynamicSystem::addNode(const int nodeId, const double x, const double y, co
 	addNode(nd);
 }
 
-void DynamicSystem::addNodeWithDof(const int id, const double x, const int dofId)
+void DynamicSystem::addNode(const int nodeId, const double x, const double y, const double z, bool with_rotate_dof)
 {
-	DOF *d = new DOF(dofId, RODS::Direction::X);
-	Node *nd = new Node(id, x, 0.0, 0.0);
-	nd->setDof(d);
-	d->setNodeId(id);
+	auto dofId = getNextDofId();
 
-	addDOF(d);
-	addNode(nd);
+	if (with_rotate_dof)
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			addDOF(dofId+i, RODS::Direction(i));
+		}
+		addNode(nodeId, x, y, z, dofId, dofId+1, dofId+2, dofId+3, dofId+4, dofId+5);
+	}
+	else
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			addDOF(dofId+i, RODS::Direction(i));
+		}
+		addNode(nodeId, x, y, z, dofId, dofId+1, dofId+2, -1, -1, -1);
+	}
 }
 
 void DynamicSystem::addNodePlate2D(const int nodeId, const double x, const double y, const int dofZId,
@@ -535,6 +603,12 @@ void DynamicSystem::removeDOF(const int id)
 {
 	DOFs.erase(id);
 	dofCount = DOFs.size();
+}
+
+int DynamicSystem::getNextDofId()
+{
+    GET_NEXT_ID(DOF, id)
+	return id;
 }
 
 void DynamicSystem::setMass(const int id, const double m)

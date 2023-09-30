@@ -91,7 +91,7 @@ public:
 
 	/**
 	 * @brief Load model from a json file.
-	 * 
+	 *
 	 * @param fileName name of the json file
 	 */
 	void loadFromJSON(const char * fileName);
@@ -99,7 +99,7 @@ public:
 
 	/**
 	 * @brief Save model to a json file.
-	 * 
+	 *
 	 * @param fileName name of the json file
 	 */
 	void saveToJSON(const char * fileName);
@@ -107,14 +107,14 @@ public:
 
 	/**
 	 * @brief Add a Point into the system.
-	 * 
+	 *
 	 * @param p The pointer to a Point
 	 */
 	void addPoint(Point *p);
 
 	/**
 	 * @brief Add a Point into the system.
-	 * 
+	 *
 	 * @param pointId The identifier
 	 * @param x The X coordinate
 	 * @param y The Y coordinate, default value 0.0
@@ -122,10 +122,10 @@ public:
 	 */
 	void addPoint(const int pointId, const double x, const double y=0.0, const double z=0.0);
 
-	
+
 	/**
 	 * @brief Add a Node into the system.
-	 * 
+	 *
 	 * @param nd The pointer to a Node
 	 */
 	void addNode(Node *nd);
@@ -138,6 +138,11 @@ public:
 	 * @param[in]  dofId  The DOF identifier
 	 */
 	void addNode(const int nodeId, const double x, const int dofId);
+	void addNode(const int nodeId, const int pointId, const int dofId);
+	void addNode(const int nodeId, const double x);
+
+	void addNode(const int nodeId, const int pointId,
+				const RODS::Dimension dim);
 
 	/**
 	 * @brief      Add a 2D Node into the system.
@@ -149,7 +154,10 @@ public:
 	 * @param[in]  dofZId   The DOF Z identifier
 	 * @param[in]  dofRYId  The DOF RY identifier, set a negative integer to deactive the rotational DOF
 	 */
-	void addNode(const int nodeId, const double x, const double z, const int dofXId, const int dofZId, const int dofRYId);
+	void addNode(const int nodeId, const double x, const double z,
+				const int dofXId, const int dofZId, const int dofRYId);
+	void addNode(const int nodeId, const double x, const double z,
+				bool with_rotate_dof = true);
 
 	/**
 	 * @brief      Add a 3D Node into the system.
@@ -168,8 +176,8 @@ public:
 	void addNode(const int nodeId, const double x, const double y, const double z,
 				const int dofXId,  const int dofYId,  const int dofZId,
 				const int dofRXId, const int dofRYId, const int dofRZId);
-
-	void addNodeWithDof(const int id, const double x, const int dofId);
+	void addNode(const int nodeId, const double x, const double y, const double z,
+				bool with_rotate_dof = true);
 
 	/**
 	* @brief      Add a 2D Node (for 2D plate elements) into the system.
@@ -264,7 +272,7 @@ public:
      * @param[in]  m      The mass of the DOF
      * @param[in]  fixed  Indicates if the DOF is fixed
      */
-	void addDOF(const int id, const double m, const bool fixed=false);
+	void addDOF(const int id, const double m=0.0, const bool fixed=false);
 
 	/**
 	 * @brief      Add a DOF into the system.
@@ -274,9 +282,10 @@ public:
 	 * @param[in]  m      The mass of the DOF
 	 * @param[in]  fixed  Indicates if the DOF is fixed
 	 */
-	void addDOF(const int id, RODS::Direction dir, const double m, const bool fixed=false);
+	void addDOF(const int id, RODS::Direction dir, const double m=0.0, const bool fixed=false);
 
 	void removeDOF(const int id);
+	int getNextDofId();
 
 	/**
 	 * @brief      Sets the mass of a DOF.
