@@ -580,6 +580,30 @@ void DynamicSystem::addDOF(DOF * d)
 	{
 		DOFs[d->id] = d;
 		dofCount = DOFs.size();
+
+		switch (d->dir)
+		{
+			case RODS::Direction::X:
+				DOFXs[d->id] = d;
+				break;
+			case RODS::Direction::Y:
+				DOFYs[d->id] = d;
+				break;
+			case RODS::Direction::Z:
+				DOFZs[d->id] = d;
+				break;
+			case RODS::Direction::RX:
+				DOFRXs[d->id] = d;
+				break;
+			case RODS::Direction::RY:
+				DOFRYs[d->id] = d;
+				break;
+			case RODS::Direction::RZ:
+				DOFRZs[d->id] = d;
+				break;
+			default:
+				break;
+		}
 	}
 	else
 	{
@@ -601,6 +625,30 @@ void DynamicSystem::addDOF(const int id, RODS::Direction dir, const double m, co
 
 void DynamicSystem::removeDOF(const int id)
 {
+	auto d = DOFs.at(id);
+	switch (d->dir)
+	{
+		case RODS::Direction::X:
+			DOFXs.erase(id);
+			break;
+		case RODS::Direction::Y:
+			DOFYs.erase(id);
+			break;
+		case RODS::Direction::Z:
+			DOFZs.erase(id);
+			break;
+		case RODS::Direction::RX:
+			DOFRXs.erase(id);
+			break;
+		case RODS::Direction::RY:
+			DOFRYs.erase(id);
+			break;
+		case RODS::Direction::RZ:
+			DOFRZs.erase(id);
+			break;
+		default:
+			break;
+	}
 	DOFs.erase(id);
 	dofCount = DOFs.size();
 }

@@ -46,3 +46,31 @@ if (TYPE##s.size() > 0)\
     ID = it->second->id;\
     ID++;\
 }
+
+#define GET_NUM_DEF(type)\
+DLL_API size_t get_num_##type();
+
+#define GET_NUM(TYPE, type)\
+DLL_API size_t get_num_##type()\
+{\
+	return ds->TYPE##s.size();\
+}\
+
+#define GET_IDS_DEF(type)\
+DLL_API size_t get_ids_##type(int *id);
+
+#define GET_IDS(TYPE, type)\
+DLL_API size_t get_ids_##type(int *id)\
+{\
+    auto n = ds->TYPE##s.size();\
+	size_t i = 0;\
+	if (n>0)\
+	{\
+		for (auto it = ds->TYPE##s.begin(); it != ds->TYPE##s.end(); it++)\
+		{\
+			id[i] = it->second->id;\
+			i++;\
+		}\
+	}\
+	return n;\
+}

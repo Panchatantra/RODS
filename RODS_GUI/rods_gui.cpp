@@ -7,8 +7,10 @@
 #include "rods_gui.h"
 #include "rods.h"
 
+#include <string>
 #include <math.h>
 #include <map>
+#include <vector>
 std::map<int, int> pointIdMapIndex;
 std::map<int, int> dofIdMapIndex;
 
@@ -45,6 +47,21 @@ const char** waveStrList = nullptr;
 
 int * element1dList = nullptr;
 
+int *dofs;
+int *dofs_x;
+int *dofs_y;
+int *dofs_z;
+int *dofs_rx;
+int *dofs_ry;
+int *dofs_rz;
+std::string dofs_str;
+std::string dofs_x_str;
+std::string dofs_y_str;
+std::string dofs_z_str;
+std::string dofs_rx_str;
+std::string dofs_ry_str;
+std::string dofs_rz_str;
+
 const int dimension_dof_count[5] = {1, 3, 6, 2, 3};
 const char* dimension[5] = { "1D", "2D", "3D", "2D (W/O Rotate)", "3D (W/O Rotate)" };
 const char* direction[6] = {"X", "Y", "Z", "RX", "RY", "RZ"};
@@ -52,6 +69,14 @@ const char* dofResponse[4] = {"Displacement", "Velocity", "Acceleration", "ALL"}
 const char* eleResponse[3] = {"Force", "Deformation", "Force and Deformation"};
 const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
+
+const int dimension_dof_dir[5][6] = { 
+    {0,0,0,0,0,0},
+    {0,2,4,0,0,0},
+    {0,1,2,3,4,5},
+    {0,2,0,0,0,0},
+    {0,1,2,0,0,0} };
+
 
 void RODS_GUI::createShader()
 {
@@ -720,7 +745,7 @@ void RODS_GUI::nodeWindow()
         ImGui::Begin("Node");
         static int node_id = 1;
         ImGui::InputInt("Node ID", &node_id);
-        static int node_dim = 1;
+        static int node_dim = 0;
         ImGui::Combo("Dimension", &node_dim, dimension, 5);
         ImGui::Text("Method to Link with DOF: "); ImGui::SameLine();
         static int dof_method = 1;
@@ -730,6 +755,11 @@ void RODS_GUI::nodeWindow()
         static int coord_method = 1;
         ImGui::RadioButton("Directly Input", &coord_method, 1); ImGui::SameLine();
         ImGui::RadioButton("From a Point", &coord_method, 2);
+        int dof_count = dimension_dof_count[node_dim];
+        static int* dof_item_index = new int[dof_count]();
+        //std::fill(dof_item_index, dof_item_index + dof_count, 0);
+        static int* dof_id = new int[dof_count]();
+        //std::fill(dof_id, dof_id + dof_count, 0);
 
         if (dof_method == 1)
         {
@@ -737,18 +767,74 @@ void RODS_GUI::nodeWindow()
                 ImGui::OpenPopup("Select DOF");
             if (ImGui::BeginPopup("Select DOF"))
             {
-                updateDOFList();
-                int dof_count = dimension_dof_count[node_dim];
-                int *dof_id = new int[dof_count];
-                
-                for (int i = 0; i < dof_count; i++)
+                genDofList();
+                switch (node_dim)
                 {
-                    static int dof_id_index = 0;
-                    ImGui::Combo(dimension[i], &dof_id_index, dofStrList, 5);
-                    dof_id[i] = dofList[dof_id_index];
+                case 0:
+                    if (num_dof_x > 0)
+                    {
+                        ImGui::Combo("DOF X", &dof_item_index[0], dofs_x_str.c_str());
+                        dof_id[0] = dofs_x[dof_item_index[0]];
+                    }
+                    break;
+                case 1:
+                    if (num_dof_x*num_dof_z*num_dof_ry > 0)
+                    {
+                        ImGui::Combo("DOF X",  &dof_item_index[0], dofs_x_str.c_str(), num_dof_x);
+                        ImGui::Combo("DOF Z",  &dof_item_index[1], dofs_z_str.c_str(), num_dof_z);
+                        ImGui::Combo("DOF RY", &dof_item_index[2], dofs_ry_str.c_str(), num_dof_ry);
+                        dof_id[0] = dofs_x[dof_item_index[0]];
+                        dof_id[1] = dofs_z[dof_item_index[1]];
+                        dof_id[2] = dofs_ry[dof_item_index[2]];
+                    }
+                    break;
+                case 2:
+                    if (num_dof_x*num_dof_y*num_dof_z*num_dof_rx*num_dof_ry*num_dof_rz > 0)
+                    {
+                        ImGui::Combo("DOF X",  &dof_item_index[0], dofs_x_str.c_str(), num_dof_x);
+                        ImGui::Combo("DOF Y",  &dof_item_index[1], dofs_y_str.c_str(), num_dof_y);
+                        ImGui::Combo("DOF Z",  &dof_item_index[2], dofs_z_str.c_str(), num_dof_z);
+                        ImGui::Combo("DOF RX", &dof_item_index[3], dofs_rx_str.c_str(), num_dof_rx);
+                        ImGui::Combo("DOF RY", &dof_item_index[4], dofs_ry_str.c_str(), num_dof_ry);
+                        ImGui::Combo("DOF RZ", &dof_item_index[5], dofs_rz_str.c_str(), num_dof_rz);
+                        dof_id[0] = dofs_x[dof_item_index[0]];
+                        dof_id[1] = dofs_y[dof_item_index[1]];
+                        dof_id[2] = dofs_z[dof_item_index[2]];
+                        dof_id[3] = dofs_rx[dof_item_index[3]];
+                        dof_id[4] = dofs_ry[dof_item_index[4]];
+                        dof_id[5] = dofs_rz[dof_item_index[5]];
+                    }
+                    break;
+                case 3:
+                    if (num_dof_x*num_dof_z > 0)
+                    {
+                        ImGui::Combo("DOF X",  &dof_item_index[0], dofs_x_str.c_str(), num_dof_x);
+                        ImGui::Combo("DOF Z",  &dof_item_index[1], dofs_z_str.c_str(), num_dof_z);
+                        dof_id[0] = dofs_x[dof_item_index[0]];
+                        dof_id[1] = dofs_z[dof_item_index[1]];
+                    }
+                    break;
+                case 4:
+                    if (num_dof_x*num_dof_y*num_dof_z > 0)
+                    {
+                        ImGui::Combo("DOF X",  &dof_item_index[0], dofs_x_str.c_str(), num_dof_x);
+                        ImGui::Combo("DOF Y",  &dof_item_index[1], dofs_y_str.c_str(), num_dof_y);
+                        ImGui::Combo("DOF Z",  &dof_item_index[2], dofs_z_str.c_str(), num_dof_z);
+                        dof_id[0] = dofs_x[dof_item_index[0]];
+                        dof_id[1] = dofs_y[dof_item_index[1]];
+                        dof_id[2] = dofs_z[dof_item_index[2]];
+                    }
+                    break;
+                default:
+                    break;
                 }
-
                 ImGui::EndPopup();
+            }
+            ImGui::Text("Selected DOFs: ");
+            for (int i = 0; i < dof_count; i++)
+            {
+                ImGui::SameLine();
+                ImGui::Text("%d\t", dof_id[i]);
             }
         }
 
@@ -1386,6 +1472,96 @@ void RODS_GUI::updateDOFList()
             auto dof_str = new char[C_STR_LEN_S];
             snprintf(dof_str, C_STR_LEN_S, "%d", dofList[i]);
             dofStrList[i] = dof_str;
+        }
+    }
+}
+
+void RODS_GUI::genDofList()
+{
+    num_dof = get_num_dof();
+    if (num_dof > 0)
+    {
+        num_dof_x = get_num_dof_x();
+        if (num_dof_x > 0)
+        {
+            dofs_x = new int [num_dof_x];
+            get_ids_dof_x(dofs_x);
+            dofs_x_str.clear();
+            for (int i = 0; i < num_dof_x; i++)
+            {
+                dofs_x_str.append(std::to_string(dofs_x[i]));
+                dofs_x_str.push_back('\0');
+            }
+        }
+
+        num_dof_y = get_num_dof_y();
+        if (num_dof_y > 0)
+        {
+            dofs_y = new int [num_dof_y];
+            get_ids_dof_y(dofs_y);
+            dofs_y_str.clear();
+            for (int i = 0; i < num_dof_y-1; i++)
+            {
+                dofs_y_str.append(std::to_string(dofs_y[i]));
+                dofs_y_str.push_back('\0');
+            }
+            dofs_y_str.append(std::to_string(dofs_y[num_dof_y-1]));
+        }
+
+        num_dof_z = get_num_dof_z();
+        if (num_dof_z > 0)
+        {
+            dofs_z = new int [num_dof_z];
+            get_ids_dof_z(dofs_z);
+            dofs_z_str.clear();
+            for (int i = 0; i < num_dof_z-1; i++)
+            {
+                dofs_z_str.append(std::to_string(dofs_z[i]));
+                dofs_z_str.push_back('\0');
+            }
+            dofs_z_str.append(std::to_string(dofs_z[num_dof_z-1]));
+        }
+
+        num_dof_rx = get_num_dof_rx();
+        if (num_dof_rx > 0)
+        {
+            dofs_rx = new int [num_dof_rx];
+            get_ids_dof_rx(dofs_rx);
+            dofs_rx_str.clear();
+            for (int i = 0; i < num_dof_rx-1; i++)
+            {
+                dofs_rx_str.append(std::to_string(dofs_rx[i]));
+                dofs_rx_str.push_back('\0');
+            }
+            dofs_rx_str.append(std::to_string(dofs_rx[num_dof_rx-1]));
+        }
+
+        num_dof_ry = get_num_dof_ry();
+        if (num_dof_ry > 0)
+        {
+            dofs_ry = new int [num_dof_ry];
+            get_ids_dof_ry(dofs_ry);
+            dofs_ry_str.clear();
+            for (int i = 0; i < num_dof_ry-1; i++)
+            {
+                dofs_ry_str.append(std::to_string(dofs_ry[i]));
+                dofs_ry_str.push_back('\0');
+            }
+            dofs_ry_str.append(std::to_string(dofs_ry[num_dof_ry-1]));
+        }
+
+        num_dof_rz = get_num_dof_rz();
+        if (num_dof_rz > 0)
+        {
+            dofs_rz = new int [num_dof_rz];
+            get_ids_dof_rz(dofs_rz);
+            dofs_rz_str.clear();
+            for (int i = 0; i < num_dof_rz-1; i++)
+            {
+                dofs_rz_str.append(std::to_string(dofs_rz[i]));
+                dofs_rz_str.push_back('\0');
+            }
+            dofs_rz_str.append(std::to_string(dofs_rz[num_dof_rz-1]));
         }
     }
 }

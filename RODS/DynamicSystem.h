@@ -1040,6 +1040,13 @@ public:
 	std::map<int, Tri2D *> Tri2Ds;    		///< Tri2Ds
 	std::map<int, ROD3D *> ROD3Ds; 			///< ROD3Ds
 
+	std::map<int, DOF*> DOFXs; 				///< DOFs
+	std::map<int, DOF*> DOFYs; 				///< DOFs
+	std::map<int, DOF*> DOFZs; 				///< DOFs
+	std::map<int, DOF*> DOFRXs; 			///< DOFs
+	std::map<int, DOF*> DOFRYs; 			///< DOFs
+	std::map<int, DOF*> DOFRZs; 			///< DOFs
+
 	/// The elements for assembling #Mp
 	std::map<int, Element *> physicalMassElements;
 	/// The elements for assembling #M other than #Mp

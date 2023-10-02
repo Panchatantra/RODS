@@ -600,6 +600,20 @@ DLL_API size_t get_num_eqn()
 	return ds->eqnCount;
 }
 
+GET_NUM(DOFX, dof_x);
+GET_NUM(DOFY, dof_y);
+GET_NUM(DOFZ, dof_z);
+GET_NUM(DOFRX, dof_rx);
+GET_NUM(DOFRY, dof_ry);
+GET_NUM(DOFRZ, dof_rz);
+
+GET_IDS(DOFX, dof_x);
+GET_IDS(DOFY, dof_y);
+GET_IDS(DOFZ, dof_z);
+GET_IDS(DOFRX, dof_rx);
+GET_IDS(DOFRY, dof_ry);
+GET_IDS(DOFRZ, dof_rz);
+
 DLL_API size_t get_point_coord(float *pt, const bool norm)
 {
     auto np = ds->Points.size();

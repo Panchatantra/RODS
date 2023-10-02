@@ -42,6 +42,13 @@ static int num_wave = 0;
 static int num_dof_recorder = 0;
 static int num_ele_recorder = 0;
 
+static int num_dof_x = 0;
+static int num_dof_y = 0;
+static int num_dof_z = 0;
+static int num_dof_rx = 0;
+static int num_dof_ry = 0;
+static int num_dof_rz = 0;
+
 static int point_index = 0;
 static int dof_index = 0;
 
@@ -55,6 +62,7 @@ const size_t C_STR_LEN_S = 20;
 
 static unsigned int shaderProgram;
 static unsigned int VBO, VAO, EBO;
+
 
 namespace RODS_GUI {
     void createShader();
@@ -85,6 +93,7 @@ namespace RODS_GUI {
     void draw_1d();
 
     void updateDOFList();
+    void genDofList();
     void updateDOFRecorderList();
     void updateEleRecorderList();
     void updateWaveList();

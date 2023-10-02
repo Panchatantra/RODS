@@ -11,6 +11,7 @@
 #endif
 #endif
 
+#include "macro.h"
 
 extern "C" {
 
@@ -106,7 +107,7 @@ extern "C" {
 	DLL_API size_t get_num_dof();
 	DLL_API size_t get_num_point();
 	DLL_API size_t get_point_id(int *id);
-	DLL_API size_t get_dof_id(int *id);
+	DLL_API size_t get_dof_id(int* id);
 	DLL_API size_t get_ele_id(int *id);
 	DLL_API size_t get_wave_id(int *id);
 	DLL_API size_t get_dof_recorder_id(int *id);
@@ -123,6 +124,20 @@ extern "C" {
 	DLL_API size_t get_num_dof_recorder();
 	DLL_API size_t get_num_ele_recorder();
 	DLL_API size_t get_num_eqn();
+
+	GET_NUM_DEF(dof_x);
+	GET_NUM_DEF(dof_y);
+	GET_NUM_DEF(dof_z);
+	GET_NUM_DEF(dof_rx);
+	GET_NUM_DEF(dof_ry);
+	GET_NUM_DEF(dof_rz);
+
+	GET_IDS_DEF(dof_x);
+	GET_IDS_DEF(dof_y);
+	GET_IDS_DEF(dof_z);
+	GET_IDS_DEF(dof_rx);
+	GET_IDS_DEF(dof_ry);
+	GET_IDS_DEF(dof_rz);
 	
 	DLL_API size_t get_point_coord(float* pt, const bool norm=true);
 	DLL_API size_t get_line_point_id(int* id);
