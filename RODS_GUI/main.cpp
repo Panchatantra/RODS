@@ -160,6 +160,7 @@ int main(int, char**)
         RODS_GUI::lineWindow();
         RODS_GUI::basicInfoWindow();
         RODS_GUI::element1dWindow();
+        RODS_GUI::element2dWindow();
         RODS_GUI::nodeWindow();
 
         RODS_GUI::waveWindow();
@@ -197,7 +198,8 @@ int main(int, char**)
         }
 
         // RODS_GUI::draw_geo();
-        RODS_GUI::draw_1d();
+        // RODS_GUI::draw_1d();
+        RODS_GUI::draw_2d();
 
         glfwSwapBuffers(window);
     }

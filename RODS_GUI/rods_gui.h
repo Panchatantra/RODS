@@ -16,6 +16,7 @@ static bool show_point_window = false;
 static bool show_line_window = false;
 static bool show_wave_window = false;
 static bool show_element1d_window = false;
+static bool show_element2d_window = false;
 static bool show_assemble_matrix_window = false;
 static bool show_solve_eigen_window = false;
 static bool show_solve_seismic_window = false;
@@ -41,6 +42,8 @@ static int num_eqn = 0;
 static int num_wave = 0;
 static int num_dof_recorder = 0;
 static int num_ele_recorder = 0;
+
+static int num_node = 0;
 
 static int num_dof_x = 0;
 static int num_dof_y = 0;
@@ -76,6 +79,7 @@ namespace RODS_GUI {
     void lineWindow();
     void waveWindow();
     void element1dWindow();
+    void element2dWindow();
     void nodeWindow();
     void assembleMatrixWindow();
     void solveEigenWindow();
@@ -91,9 +95,12 @@ namespace RODS_GUI {
 
     void draw_geo();
     void draw_1d();
+    void draw_2d();
 
     void updateDOFList();
     void genDofList();
+    void genPointList();
+    void genNodeList();
     void updateDOFRecorderList();
     void updateEleRecorderList();
     void updateWaveList();

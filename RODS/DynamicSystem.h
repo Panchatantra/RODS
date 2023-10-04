@@ -156,6 +156,8 @@ public:
 	 */
 	void addNode(const int nodeId, const double x, const double z,
 				const int dofXId, const int dofZId, const int dofRYId);
+	void addNode(const int nodeId, const int pointId,
+				const int dofXId, const int dofZId, const int dofRYId);
 	void addNode(const int nodeId, const double x, const double z,
 				bool with_rotate_dof = true);
 
@@ -174,6 +176,9 @@ public:
 	 * @param[in]  dofRZId  The DOF RZ identifier, set a negative integer to deactive the rotational DOF
 	 */
 	void addNode(const int nodeId, const double x, const double y, const double z,
+				const int dofXId,  const int dofYId,  const int dofZId,
+				const int dofRXId, const int dofRYId, const int dofRZId);
+	void addNode(const int nodeId, const int pointId,
 				const int dofXId,  const int dofYId,  const int dofZId,
 				const int dofRXId, const int dofRYId, const int dofRZId);
 	void addNode(const int nodeId, const double x, const double y, const double z,

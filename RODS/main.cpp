@@ -2172,7 +2172,7 @@ void example_frame3D()
 int main()
 {
 	//example_sdof();
-	example_sdof_inerter_system();
+	//example_sdof_inerter_system();
 	//example_sdof_inerter_system_nl();
 	//example_sdof_bl();
 	//example_shear_building();

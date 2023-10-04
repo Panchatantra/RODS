@@ -29,15 +29,30 @@ extern "C" {
 	DLL_API size_t add_dof_x(const int id, const double m);
 	DLL_API size_t add_dof(const int id, const int dir, const double m);
 	DLL_API size_t add_node_1d(const int nodeId, const double x, const int dofId);
+	DLL_API size_t add_node_1d_auto_dof(const int nodeId, const double x);
+	DLL_API size_t add_node_1d_via_point(const int nodeId, const int pointId, const int dofId);
+	DLL_API size_t add_node_1d_via_point_auto_dof(const int nodeId, const int pointId);
 	DLL_API size_t add_point(const int pointId, const double x, const double y, const double z);
 	DLL_API size_t add_line(const int lineId, const int i, const int j);
 	DLL_API size_t add_node_2d(const int nodeId, const double x, const double z,
 								const int dofXId, const int dofZId, const int dofRYId);
+	DLL_API size_t add_node_2d_auto_dof(const int nodeId, const double x, const double z, const bool with_rotate_dof=true);
+	DLL_API size_t add_node_2d_via_point(const int nodeId, const int pointId,
+								const int dofXId, const int dofZId, const int dofRYId);
+	DLL_API size_t add_node_2d_via_point_auto_dof(const int nodeId, const int pointId, const bool with_rotate_dof=true);
 	DLL_API size_t add_node_3d(const int nodeId, const double x, const double y, const double z,
 								const int dofXId,  const int dofYId,  const int dofZId,
 								const int dofRXId, const int dofRYId, const int dofRZId);
+	DLL_API size_t add_node_3d_auto_dof(const int nodeId, const double x, const double y, const double z,
+								const bool with_rotate_dof=true);
+	DLL_API size_t add_node_3d_via_point(const int nodeId, const int pointId,
+								const int dofXId,  const int dofYId,  const int dofZId,
+								const int dofRXId, const int dofRYId, const int dofRZId);
+	DLL_API size_t add_node_3d_via_point_auto_dof(const int nodeId, const int pointId,
+								const bool with_rotate_dof=true);
 	DLL_API size_t set_dof_mass(const int id, const double m);
 	DLL_API size_t set_node_mass(const int id, const double m);
+	DLL_API size_t set_node_mass_and_moment_of_inertia(const int id, const double m, const double I);
 	DLL_API size_t set_dof_point_id(const int dof_id, const int point_id);
 	DLL_API size_t set_dof_node_id(const int dof_id, const int node_id);
 
@@ -132,14 +147,24 @@ extern "C" {
 	GET_NUM_DEF(dof_ry);
 	GET_NUM_DEF(dof_rz);
 
+	GET_IDS_DEF(dof);
 	GET_IDS_DEF(dof_x);
 	GET_IDS_DEF(dof_y);
 	GET_IDS_DEF(dof_z);
 	GET_IDS_DEF(dof_rx);
 	GET_IDS_DEF(dof_ry);
 	GET_IDS_DEF(dof_rz);
-	
+
+	GET_IDS_DEF(point);
+
+	GET_IDS_DEF(node);
+	GET_NUM_DEF(node);
+
+	DLL_API bool check_node_dof(const int node_id, const int dir);
+	DLL_API int get_id_node_dof(const int node_id, const int dir);
+
 	DLL_API size_t get_point_coord(float* pt, const bool norm=true);
+	DLL_API size_t get_node_coords(float* coords, const bool norm=true);
 	DLL_API size_t get_line_point_id(int* id);
 	DLL_API size_t get_rod1d_dof_id(int* id);
 	DLL_API void get_dof_modal_response(double *res, const int order=1);

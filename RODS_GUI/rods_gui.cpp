@@ -62,6 +62,12 @@ std::string dofs_rx_str;
 std::string dofs_ry_str;
 std::string dofs_rz_str;
 
+int* points;
+std::string points_str;
+int* nodes;
+std::string nodes_str;
+
+
 const int dimension_dof_count[5] = {1, 3, 6, 2, 3};
 const char* dimension[5] = { "1D", "2D", "3D", "2D (W/O Rotate)", "3D (W/O Rotate)" };
 const char* direction[6] = {"X", "Y", "Z", "RX", "RY", "RZ"};
@@ -201,7 +207,8 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             if (ImGui::MenuItem("Element1D"))
                 show_element1d_window = true;
 
-            if (ImGui::MenuItem("Element2D")) {}
+            if (ImGui::MenuItem("Element2D"))
+                show_element2d_window = true;
 
             if (ImGui::MenuItem("Element3D")) {}
 
@@ -613,7 +620,7 @@ void RODS_GUI::element1dWindow()
         static int ele_id = 1;
         ImGui::InputInt("Element ID", &ele_id);
         static int ele_type = 0;
-        const char * Element1DTypes[3] = {"Spring1D", "Dashpot1D", "Inerter1D"};
+        const char * Element1DTypes[3] = {"Spring", "Dashpot", "Inerter"};
         ImGui::Combo("Element Type", &ele_type, Element1DTypes, 3);
 
         static int dof_index_i = 0;
@@ -623,21 +630,83 @@ void RODS_GUI::element1dWindow()
         static int dof_id_i = 0;
         static int dof_id_j = 0;
 
-        if (num_dof > 1)
-        {
-            if (ImGui::Button("Select DOFs"))
-                ImGui::OpenPopup("Select DOFs for Element1D");
-            if (ImGui::BeginPopup("Select DOFs for Element1D"))
-            {
-                updateDOFList();
-                ImGui::Combo("dof I", &dof_index_i, dofStrList, num_dof);
-                ImGui::Combo("dof J", &dof_index_j, dofStrList, num_dof);
-                dof_id_i = dofList[dof_index_i];
-                dof_id_j = dofList[dof_index_j];
-                ImGui::EndPopup();
-            }
-            ImGui::Text("Selected DOFs: I: %d, J: %d", dof_id_i, dof_id_j);
+        static int node_index_i = 0;
+        static int node_index_j = 0;
 
+        static int node_id_i = 0;
+        static int node_id_j = 0;
+
+        static int ele_1d_ends_type = 1;
+        ImGui::Text("Type of Ends: ");
+        ImGui::RadioButton("DOF", &ele_1d_ends_type, 1); ImGui::SameLine();
+        ImGui::RadioButton("Node", &ele_1d_ends_type, 2);
+
+        if (ele_1d_ends_type == 1)
+        {
+            if (num_dof > 1)
+            {
+                if (ImGui::Button("Select DOFs"))
+                    ImGui::OpenPopup("Select DOFs for Element1D");
+                if (ImGui::BeginPopup("Select DOFs for Element1D"))
+                {
+                    genDofList();
+                    ImGui::Combo("dof I", &dof_index_i, dofs_str.c_str());
+                    ImGui::Combo("dof J", &dof_index_j, dofs_str.c_str());
+                    dof_id_i = dofs[dof_index_i];
+                    dof_id_j = dofs[dof_index_j];
+                    ImGui::EndPopup();
+                }
+                ImGui::Text("Selected DOFs: I: %d, J: %d", dof_id_i, dof_id_j);
+            }
+        }
+        else
+        {
+            std::string node_dirs_str_i, node_dirs_str_j;
+            static int node_dof_index_i = 0;
+            static int node_dof_index_j = 0;
+            if (num_node > 1)
+            {
+                if (ImGui::Button("Select Nodes"))
+                    ImGui::OpenPopup("Select Nodes for Element1D");
+                if (ImGui::BeginPopup("Select Nodes for Element1D"))
+                {
+                    genNodeList();
+                    ImGui::Combo("node I", &node_index_i, nodes_str.c_str()); ImGui::SameLine();
+                    node_id_i = nodes[node_index_i];
+                    node_dirs_str_i.clear();
+                    for (int i = 0; i < 6; i++)
+                    {
+                        if (check_node_dof(node_id_i, i))
+                        {
+                            node_dirs_str_i.append(direction[i]);
+                            node_dirs_str_i.push_back('\0');
+                        }
+                    }
+                    ImGui::Combo("DOF I", &node_dof_index_i, node_dirs_str_i.c_str());
+                    dof_id_i = get_id_node_dof(node_id_i, node_dof_index_i);
+
+                    ImGui::Combo("node J", &node_index_j, nodes_str.c_str()); ImGui::SameLine();
+                    node_id_j = nodes[node_index_j];
+                    node_dirs_str_j.clear();
+                    for (int i = 0; i < 6; i++)
+                    {
+                        if (check_node_dof(node_id_j, i))
+                        {
+                            node_dirs_str_j.append(direction[i]);
+                            node_dirs_str_j.push_back('\0');
+                        }
+                    }
+                    ImGui::Combo("DOF J", &node_dof_index_j, node_dirs_str_j.c_str());
+                    dof_id_j = get_id_node_dof(node_id_j, node_dof_index_j);
+                    ImGui::EndPopup();
+                }
+                ImGui::Text("Selected Nodes: I: %d, J: %d", node_id_i, node_id_j);
+                ImGui::Text("Selected DOFs: I: %d, J: %d", dof_id_i, dof_id_j);
+            }
+        }
+
+        if ((ele_1d_ends_type==1 && num_dof>1) || (ele_1d_ends_type==2 && num_node>1))
+        {
             switch (ele_type)
             {
             case 0:
@@ -694,45 +763,62 @@ void RODS_GUI::element1dWindow()
                 ImGui::EndPopup();
             }
 
-            static int ele_id_bat[3] = {1,10,1};
-            static int dof_i_id_bat[2] = {1,1};
-            static int dof_j_id_bat[2] = {2,1};
-            ImGui::InputInt3("Element ID (Start, Stop, Step)", ele_id_bat);
-            ImGui::InputInt2("DOF I ID (Start, Step)", dof_i_id_bat);
-            ImGui::InputInt2("DOF J ID (Start, Step)", dof_j_id_bat);
-
-            if (ImGui::Button("Batch Add Element1D"))
+            if (ele_1d_ends_type == 1)
             {
-                auto dof_i_id = dof_i_id_bat[0];
-                auto dof_j_id = dof_j_id_bat[0];
-                for (auto id = ele_id_bat[0]; id <= ele_id_bat[1]; id+=ele_id_bat[2])
+                static int ele_id_bat[3] = {1,10,1};
+                static int dof_i_id_bat[2] = {1,1};
+                static int dof_j_id_bat[2] = {2,1};
+                ImGui::InputInt3("Element ID (Start, Stop, Step)", ele_id_bat);
+                ImGui::InputInt2("DOF I ID (Start, Step)", dof_i_id_bat);
+                ImGui::InputInt2("DOF J ID (Start, Step)", dof_j_id_bat);
+
+                if (ImGui::Button("Batch Add Element1D"))
                 {
-                    switch (ele_type)
+                    auto dof_i_id = dof_i_id_bat[0];
+                    auto dof_j_id = dof_j_id_bat[0];
+                    for (auto id = ele_id_bat[0]; id <= ele_id_bat[1]; id+=ele_id_bat[2])
                     {
-                    case 0:
-                        num_spring = add_spring(id, dof_i_id, dof_j_id, param[0]);
-                        num_ele = get_num_ele();
-                        break;
-                    case 1:
-                        num_dashpot = add_dashpot(id, dof_i_id, dof_j_id, param[0]);
-                        num_ele = get_num_ele();
-                        break;
-                    case 2:
-                        num_inerter = add_inerter(id, dof_i_id, dof_j_id, param[0]);
-                        num_ele = get_num_ele();
-                        break;
-                    default:
-                        break;
+                        switch (ele_type)
+                        {
+                        case 0:
+                            num_spring = add_spring(id, dof_i_id, dof_j_id, param[0]);
+                            num_ele = get_num_ele();
+                            break;
+                        case 1:
+                            num_dashpot = add_dashpot(id, dof_i_id, dof_j_id, param[0]);
+                            num_ele = get_num_ele();
+                            break;
+                        case 2:
+                            num_inerter = add_inerter(id, dof_i_id, dof_j_id, param[0]);
+                            num_ele = get_num_ele();
+                            break;
+                        default:
+                            break;
+                        }
+                        dof_i_id += dof_i_id_bat[1];
+                        dof_j_id += dof_j_id_bat[1];
                     }
-                    dof_i_id += dof_i_id_bat[1];
-                    dof_j_id += dof_j_id_bat[1];
                 }
             }
         }
 
-        ImGui::SameLine();
         if (ImGui::Button("Close"))
             show_element1d_window = false;
+
+        ImGui::End();
+    }
+}
+
+void RODS_GUI::element2dWindow()
+{
+    if (show_element2d_window)
+    {
+        ImGui::Begin("Element 2D");
+        static int ele_id = 1;
+        ImGui::InputInt("Element ID", &ele_id);
+        static int ele_type = 0;
+        const char * Element2DTypes[2] = {"TrussElastic2D", "FrameElastic2D"};
+        ImGui::Combo("Element Type", &ele_type, Element2DTypes, 2);
 
         ImGui::End();
     }
@@ -756,10 +842,23 @@ void RODS_GUI::nodeWindow()
         ImGui::RadioButton("Directly Input", &coord_method, 1); ImGui::SameLine();
         ImGui::RadioButton("From a Point", &coord_method, 2);
         int dof_count = dimension_dof_count[node_dim];
-        static int* dof_item_index = new int[dof_count]();
+        static int* dof_item_index = new int[dof_count] {0};
+        static int dof_item_index_x = 0;
+        static int dof_item_index_y = 0;
+        static int dof_item_index_z = 0;
+        static int dof_item_index_rx = 0;
+        static int dof_item_index_ry = 0;
+        static int dof_item_index_rz = 0;
         //std::fill(dof_item_index, dof_item_index + dof_count, 0);
-        static int* dof_id = new int[dof_count]();
+        static int* dof_id = new int[dof_count]{0};
         //std::fill(dof_id, dof_id + dof_count, 0);
+        static int point_item_index = 0;
+        static int point_id = 0;
+        static double mass = 1e-6;
+        ImGui::InputDouble("Mass", &mass);
+        static double I = 1e-6;
+        if (node_dim == 1 || node_dim == 2)
+            ImGui::InputDouble("Moment of Inertia", &I);
 
         if (dof_method == 1)
         {
@@ -773,56 +872,56 @@ void RODS_GUI::nodeWindow()
                 case 0:
                     if (num_dof_x > 0)
                     {
-                        ImGui::Combo("DOF X", &dof_item_index[0], dofs_x_str.c_str());
-                        dof_id[0] = dofs_x[dof_item_index[0]];
+                        ImGui::Combo("DOF X", &dof_item_index_x, dofs_x_str.c_str());
+                        dof_id[0] = dofs_x[dof_item_index_x];
                     }
                     break;
                 case 1:
                     if (num_dof_x*num_dof_z*num_dof_ry > 0)
                     {
-                        ImGui::Combo("DOF X",  &dof_item_index[0], dofs_x_str.c_str(), num_dof_x);
-                        ImGui::Combo("DOF Z",  &dof_item_index[1], dofs_z_str.c_str(), num_dof_z);
-                        ImGui::Combo("DOF RY", &dof_item_index[2], dofs_ry_str.c_str(), num_dof_ry);
-                        dof_id[0] = dofs_x[dof_item_index[0]];
-                        dof_id[1] = dofs_z[dof_item_index[1]];
-                        dof_id[2] = dofs_ry[dof_item_index[2]];
+                        ImGui::Combo("DOF X",  &dof_item_index_x, dofs_x_str.c_str(), num_dof_x);
+                        ImGui::Combo("DOF Z",  &dof_item_index_z, dofs_z_str.c_str(), num_dof_z);
+                        ImGui::Combo("DOF RY", &dof_item_index_ry, dofs_ry_str.c_str(), num_dof_ry);
+                        dof_id[0] = dofs_x[dof_item_index_x];
+                        dof_id[1] = dofs_z[dof_item_index_z];
+                        dof_id[2] = dofs_ry[dof_item_index_ry];
                     }
                     break;
                 case 2:
                     if (num_dof_x*num_dof_y*num_dof_z*num_dof_rx*num_dof_ry*num_dof_rz > 0)
                     {
-                        ImGui::Combo("DOF X",  &dof_item_index[0], dofs_x_str.c_str(), num_dof_x);
-                        ImGui::Combo("DOF Y",  &dof_item_index[1], dofs_y_str.c_str(), num_dof_y);
-                        ImGui::Combo("DOF Z",  &dof_item_index[2], dofs_z_str.c_str(), num_dof_z);
-                        ImGui::Combo("DOF RX", &dof_item_index[3], dofs_rx_str.c_str(), num_dof_rx);
-                        ImGui::Combo("DOF RY", &dof_item_index[4], dofs_ry_str.c_str(), num_dof_ry);
-                        ImGui::Combo("DOF RZ", &dof_item_index[5], dofs_rz_str.c_str(), num_dof_rz);
-                        dof_id[0] = dofs_x[dof_item_index[0]];
-                        dof_id[1] = dofs_y[dof_item_index[1]];
-                        dof_id[2] = dofs_z[dof_item_index[2]];
-                        dof_id[3] = dofs_rx[dof_item_index[3]];
-                        dof_id[4] = dofs_ry[dof_item_index[4]];
-                        dof_id[5] = dofs_rz[dof_item_index[5]];
+                        ImGui::Combo("DOF X",  &dof_item_index_x, dofs_x_str.c_str(), num_dof_x);
+                        ImGui::Combo("DOF Y",  &dof_item_index_y, dofs_y_str.c_str(), num_dof_y);
+                        ImGui::Combo("DOF Z",  &dof_item_index_z, dofs_z_str.c_str(), num_dof_z);
+                        ImGui::Combo("DOF RX", &dof_item_index_rx, dofs_rx_str.c_str(), num_dof_rx);
+                        ImGui::Combo("DOF RY", &dof_item_index_ry, dofs_ry_str.c_str(), num_dof_ry);
+                        ImGui::Combo("DOF RZ", &dof_item_index_rz, dofs_rz_str.c_str(), num_dof_rz);
+                        dof_id[0] = dofs_x[dof_item_index_x];
+                        dof_id[1] = dofs_y[dof_item_index_y];
+                        dof_id[2] = dofs_z[dof_item_index_z];
+                        dof_id[3] = dofs_rx[dof_item_index_rx];
+                        dof_id[4] = dofs_ry[dof_item_index_ry];
+                        dof_id[5] = dofs_rz[dof_item_index_rz];
                     }
                     break;
                 case 3:
                     if (num_dof_x*num_dof_z > 0)
                     {
-                        ImGui::Combo("DOF X",  &dof_item_index[0], dofs_x_str.c_str(), num_dof_x);
-                        ImGui::Combo("DOF Z",  &dof_item_index[1], dofs_z_str.c_str(), num_dof_z);
-                        dof_id[0] = dofs_x[dof_item_index[0]];
-                        dof_id[1] = dofs_z[dof_item_index[1]];
+                        ImGui::Combo("DOF X",  &dof_item_index_x, dofs_x_str.c_str(), num_dof_x);
+                        ImGui::Combo("DOF Z",  &dof_item_index_z, dofs_z_str.c_str(), num_dof_z);
+                        dof_id[0] = dofs_x[dof_item_index_x];
+                        dof_id[1] = dofs_z[dof_item_index_z];
                     }
                     break;
                 case 4:
                     if (num_dof_x*num_dof_y*num_dof_z > 0)
                     {
-                        ImGui::Combo("DOF X",  &dof_item_index[0], dofs_x_str.c_str(), num_dof_x);
-                        ImGui::Combo("DOF Y",  &dof_item_index[1], dofs_y_str.c_str(), num_dof_y);
-                        ImGui::Combo("DOF Z",  &dof_item_index[2], dofs_z_str.c_str(), num_dof_z);
-                        dof_id[0] = dofs_x[dof_item_index[0]];
-                        dof_id[1] = dofs_y[dof_item_index[1]];
-                        dof_id[2] = dofs_z[dof_item_index[2]];
+                        ImGui::Combo("DOF X",  &dof_item_index_x, dofs_x_str.c_str(), num_dof_x);
+                        ImGui::Combo("DOF Y",  &dof_item_index_y, dofs_y_str.c_str(), num_dof_y);
+                        ImGui::Combo("DOF Z",  &dof_item_index_z, dofs_z_str.c_str(), num_dof_z);
+                        dof_id[0] = dofs_x[dof_item_index_x];
+                        dof_id[1] = dofs_y[dof_item_index_y];
+                        dof_id[2] = dofs_z[dof_item_index_z];
                     }
                     break;
                 default:
@@ -836,13 +935,180 @@ void RODS_GUI::nodeWindow()
                 ImGui::SameLine();
                 ImGui::Text("%d\t", dof_id[i]);
             }
+
+            if (coord_method == 1)
+            {
+                static float coord[3] = {0.0, 0.0, 0.0};
+                ImGui::InputFloat3("Coords (X,Y,Z)", coord);
+                if (ImGui::Button("Add Node"))
+                {
+                    switch (node_dim)
+                    {
+                    case 0:
+                        num_node = add_node_1d(node_id, coord[0], dof_id[0]);
+                        set_node_mass(node_id, mass);
+                        break;
+                    case 1:
+                        num_node = add_node_2d(node_id, coord[0], coord[2], dof_id[0], dof_id[1], dof_id[2]);
+                        set_node_mass_and_moment_of_inertia(node_id, mass, I);
+                        break;
+                    case 2:
+                        num_node = add_node_3d(node_id, coord[0], coord[1], coord[2],
+                                                dof_id[0], dof_id[1], dof_id[2],
+                                                dof_id[3], dof_id[4], dof_id[5]);
+                        set_node_mass_and_moment_of_inertia(node_id, mass, I);
+                        break;
+                    case 3:
+                        num_node = add_node_2d(node_id, coord[0], coord[2], dof_id[0], dof_id[1], -1);
+                        set_node_mass(node_id, mass);
+                        break;
+                    case 4:
+                        num_node = add_node_3d(node_id, coord[0], coord[1], coord[2],
+                                                dof_id[0], dof_id[1], dof_id[2],
+                                                -1, -1, -1);
+                        set_node_mass(node_id, mass);
+                        break;
+                    default:
+                        break;
+                    }
+                    node_id++;
+                }
+            }
+            else
+            {
+                if (num_point>0)
+                {
+                    if (ImGui::Button("Select Point"))
+                        ImGui::OpenPopup("Select Point");
+
+                    if (ImGui::BeginPopup("Select Point"))
+                    {
+                        genPointList();
+                        ImGui::Combo("Point",  &point_item_index, points_str.c_str(), num_point);
+                        point_id = points[point_item_index];
+                        ImGui::EndPopup();
+                    }
+                    ImGui::Text("Selected Point: %d", point_id);
+                    if (ImGui::Button("Add Node"))
+                    {
+                        switch (node_dim)
+                        {
+                        case 0:
+                            num_node = add_node_1d_via_point(node_id, point_id, dof_id[0]);
+                            set_node_mass(node_id, mass);
+                            break;
+                        case 1:
+                            num_node = add_node_2d_via_point(node_id, point_id, dof_id[0], dof_id[1], dof_id[2]);
+                            set_node_mass_and_moment_of_inertia(node_id, mass, I);
+                            break;
+                        case 2:
+                            num_node = add_node_3d_via_point(node_id, point_id,
+                                dof_id[0], dof_id[1], dof_id[2],
+                                dof_id[3], dof_id[4], dof_id[5]);
+                            set_node_mass_and_moment_of_inertia(node_id, mass, I);
+                            break;
+                        case 3:
+                            num_node = add_node_2d_via_point(node_id, point_id, dof_id[0], dof_id[1], -1);
+                            set_node_mass(node_id, mass);
+                            break;
+                        case 4:
+                            num_node = add_node_3d_via_point(node_id, point_id,
+                                dof_id[0], dof_id[1], dof_id[2],
+                                -1, -1, -1);
+                            set_node_mass(node_id, mass);
+                            break;
+                        default:
+                            break;
+                        }
+                        node_id++;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (coord_method == 1)
+            {
+                static float coord[3] = {0.0, 0.0, 0.0};
+                ImGui::InputFloat3("Coords (X,Y,Z)", coord);
+                if (ImGui::Button("Add Node"))
+                {
+                    switch (node_dim)
+                    {
+                    case 0:
+                        num_node = add_node_1d_auto_dof(node_id, coord[0]);
+                        set_node_mass(node_id, mass);
+                        break;
+                    case 1:
+                        num_node = add_node_2d_auto_dof(node_id, coord[0], coord[2]);
+                        set_node_mass_and_moment_of_inertia(node_id, mass, I);
+                        break;
+                    case 2:
+                        num_node = add_node_3d_auto_dof(node_id, coord[0], coord[1], coord[2]);
+                        set_node_mass_and_moment_of_inertia(node_id, mass, I);
+                        break;
+                    case 3:
+                        num_node = add_node_2d_auto_dof(node_id, coord[0], coord[2], false);
+                        set_node_mass(node_id, mass);
+                        break;
+                    case 4:
+                        num_node = add_node_3d_auto_dof(node_id, coord[0], coord[1], coord[2], false);
+                        set_node_mass(node_id, mass);
+                        break;
+                    default:
+                        break;
+                    }
+                node_id++;
+                }
+            }
+            else
+            {
+                if (num_point>0)
+                {
+                    if (ImGui::Button("Select Point"))
+                        ImGui::OpenPopup("Select Point");
+
+                    if (ImGui::BeginPopup("Select Point"))
+                    {
+                        genPointList();
+                        ImGui::Combo("Point",  &point_item_index, points_str.c_str(), num_point);
+                        point_id = points[point_item_index];
+                        ImGui::EndPopup();
+                    }
+                    ImGui::Text("Selected Point: %d", point_id);
+                    if (ImGui::Button("Add Node"))
+                    {
+                        switch (node_dim)
+                        {
+                        case 0:
+                            num_node = add_node_1d_via_point_auto_dof(node_id, point_id);
+                            set_node_mass(node_id, mass);
+                            break;
+                        case 1:
+                            num_node = add_node_2d_via_point_auto_dof(node_id, point_id);
+                            set_node_mass_and_moment_of_inertia(node_id, mass, I);
+                            break;
+                        case 2:
+                            num_node = add_node_3d_via_point_auto_dof(node_id, point_id);
+                            set_node_mass_and_moment_of_inertia(node_id, mass, I);
+                            break;
+                        case 3:
+                            num_node = add_node_2d_via_point_auto_dof(node_id, point_id, false);
+                            set_node_mass(node_id, mass);
+                            break;
+                        case 4:
+                            num_node = add_node_3d_via_point_auto_dof(node_id, point_id, false);
+                            set_node_mass(node_id, mass);
+                            break;
+                        default:
+                            break;
+                        }
+                        node_id++;
+                    }
+                }
+            }
         }
 
-        static float coord[3] = {0.0, 0.0, 0.0};
-        ImGui::InputFloat3("Coords (X,Y,Z)", coord);
-
-        if (ImGui::Button("Add Node")) {}
-        ImGui::SameLine();
         if (ImGui::Button("Close"))
             show_node_window = false;
 
@@ -1346,17 +1612,19 @@ void RODS_GUI::drawModeWindow()
         ImGui::Begin("Drawing Mode");
 
         ImGui::Text("Dimension: "); ImGui::SameLine();
-        ImGui::RadioButton("1D", &draw_dim, 1); ImGui::SameLine();
-        ImGui::RadioButton("1D (dof with bonded point)", &draw_dim, 11);
+        ImGui::RadioButton("1D (Serial DOFs)", &draw_dim, 1); ImGui::SameLine();
+        ImGui::RadioButton("1D", &draw_dim, 11); ImGui::SameLine();
         ImGui::RadioButton("2D", &draw_dim, 2); ImGui::SameLine();
         ImGui::RadioButton("3D", &draw_dim, 3);
 
         ImGui::Text("Draw: "); ImGui::SameLine();
-        ImGui::RadioButton("Model", &draw_type, 1); ImGui::SameLine();
+        ImGui::RadioButton("Geometry", &draw_type, 0); ImGui::SameLine();
+        ImGui::RadioButton("Model", &draw_type, 1);
         ImGui::RadioButton("Mode Shape", &draw_type, 2); ImGui::SameLine();
         ImGui::RadioButton("Mode Shape (Animated)", &draw_type, 22);
-        ImGui::RadioButton("Static Response", &draw_type, 3);ImGui::SameLine();
-        ImGui::RadioButton("Dynamic Response", &draw_type, 4);
+        ImGui::RadioButton("Static Response", &draw_type, 3);
+        ImGui::RadioButton("Dynamic Response", &draw_type, 4);ImGui::SameLine();
+        ImGui::RadioButton("Dynamic Response", &draw_type, 44);
 
         if (ImGui::Button("Close"))
             show_draw_mode_window = false;
@@ -1404,58 +1672,114 @@ void RODS_GUI::draw_geo()
 
 void RODS_GUI::draw_1d()
 {
-    if (num_dof > 0) {
-
-        float H = 1.6f;
-        float h = 0.0f;
-        float H_0 = -0.8f;
-
-        if (num_dof>1)
-            h = H/(num_dof - 1);
-
-        float* vertices = new float[(size_t)num_dof*3];
-
-        if (draw_type == 2 || draw_type == 22)
+    if (draw_dim == 1)
+    {
+        if (num_dof > 0)
         {
-            dof_response = new double[(size_t)num_dof];
-            get_dof_modal_response(dof_response, mode_order);
-        }
+            float H = 1.6f;
+            float h = 0.0f;
+            float H_0 = -0.8f;
 
-        for (int i = 0; i < num_dof; i++)
-        {
-            vertices[3*i] = 0.0f;
-            if (draw_type == 2) vertices[3*i] += dof_response[i];
-            else if (draw_type == 22) vertices[3*i] += dof_response[i]*sinf(2.0*3.142/5.0*glfwGetTime());
-            vertices[3*i+1] = H_0 + h*i;
-            vertices[3*i+2] = 0.0f;
-        }
+            if (num_dof>1)
+                h = H/(num_dof - 1);
 
-        // glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
+            float* vertices = new float[(size_t)num_dof*3];
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, (size_t)num_dof*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
-
-        glDrawArrays(GL_POINTS, 0, num_dof);
-
-        if (num_ele > 0) {
-            updatedofIdMapIndex();
-            int* indices = new int[(size_t)num_ele*2];
-            get_rod1d_dof_id(indices);
-
-            for (int i = 0; i < num_ele * 2; i++)
+            if (draw_type == 2 || draw_type == 22)
             {
-                indices[i] = dofIdMapIndex.at(indices[i]);
+                dof_response = new double[(size_t)num_dof];
+                get_dof_modal_response(dof_response, mode_order);
             }
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
+            for (int i = 0; i < num_dof; i++)
+            {
+                vertices[3*i] = 0.0f;
+                if (draw_type == 2) vertices[3*i] += dof_response[i];
+                else if (draw_type == 22) vertices[3*i] += dof_response[i]*sinf(2.0*3.142/5.0*glfwGetTime());
+                vertices[3*i+1] = H_0 + h*i;
+                vertices[3*i+2] = 0.0f;
+            }
 
-            glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
+            // glUseProgram(shaderProgram);
+            glBindVertexArray(VAO);
 
-            delete[] indices;
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, (size_t)num_dof*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
+
+            glDrawArrays(GL_POINTS, 0, num_dof);
+
+            if (num_ele > 0) {
+                updatedofIdMapIndex();
+                int* indices = new int[(size_t)num_ele*2];
+                get_rod1d_dof_id(indices);
+
+                for (int i = 0; i < num_ele * 2; i++)
+                {
+                    indices[i] = dofIdMapIndex.at(indices[i]);
+                }
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
+
+                glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
+
+                delete[] indices;
+            }
+            delete[] vertices;
         }
-        delete[] vertices;
+    }
+}
+
+void RODS_GUI::draw_2d()
+{
+    if (draw_dim == 2)
+    {
+        if (num_node > 0)
+        {
+            float* vertices = new float[(size_t)num_node*3];
+
+            // if (draw_type == 2 || draw_type == 22)
+            // {
+            //     dof_response = new double[(size_t)num_node];
+            //     get_dof_modal_response(dof_response, mode_order);
+            // }
+
+            get_node_coords(vertices);
+            // for (size_t i = 0; i < num_node; i++)
+            // {
+            //     printf("%.3f, %.3f, %.3f\n",
+            //         vertices[3*i],
+            //         vertices[3*i+1],
+            //         vertices[3*i+2] );
+            // }
+
+            // glUseProgram(shaderProgram);
+            glBindVertexArray(VAO);
+
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, (size_t)num_node*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
+
+            glDrawArrays(GL_POINTS, 0, num_node);
+
+            if (num_ele > 0) {
+                updatedofIdMapIndex();
+                int* indices = new int[(size_t)num_ele*2];
+                get_rod1d_dof_id(indices);
+
+                for (int i = 0; i < num_ele * 2; i++)
+                {
+                    indices[i] = dofIdMapIndex.at(indices[i]);
+                }
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
+
+                glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
+
+                delete[] indices;
+            }
+            delete[] vertices;
+        }
     }
 }
 
@@ -1481,6 +1805,15 @@ void RODS_GUI::genDofList()
     num_dof = get_num_dof();
     if (num_dof > 0)
     {
+        dofs = new int[num_dof];
+        get_ids_dof(dofs);
+        dofs_str.clear();
+        for (int i = 0; i < num_dof; i++)
+        {
+            dofs_str.append(std::to_string(dofs[i]));
+            dofs_str.push_back('\0');
+        }
+
         num_dof_x = get_num_dof_x();
         if (num_dof_x > 0)
         {
@@ -1500,12 +1833,11 @@ void RODS_GUI::genDofList()
             dofs_y = new int [num_dof_y];
             get_ids_dof_y(dofs_y);
             dofs_y_str.clear();
-            for (int i = 0; i < num_dof_y-1; i++)
+            for (int i = 0; i < num_dof_y; i++)
             {
                 dofs_y_str.append(std::to_string(dofs_y[i]));
                 dofs_y_str.push_back('\0');
             }
-            dofs_y_str.append(std::to_string(dofs_y[num_dof_y-1]));
         }
 
         num_dof_z = get_num_dof_z();
@@ -1514,12 +1846,11 @@ void RODS_GUI::genDofList()
             dofs_z = new int [num_dof_z];
             get_ids_dof_z(dofs_z);
             dofs_z_str.clear();
-            for (int i = 0; i < num_dof_z-1; i++)
+            for (int i = 0; i < num_dof_z; i++)
             {
                 dofs_z_str.append(std::to_string(dofs_z[i]));
                 dofs_z_str.push_back('\0');
             }
-            dofs_z_str.append(std::to_string(dofs_z[num_dof_z-1]));
         }
 
         num_dof_rx = get_num_dof_rx();
@@ -1528,12 +1859,11 @@ void RODS_GUI::genDofList()
             dofs_rx = new int [num_dof_rx];
             get_ids_dof_rx(dofs_rx);
             dofs_rx_str.clear();
-            for (int i = 0; i < num_dof_rx-1; i++)
+            for (int i = 0; i < num_dof_rx; i++)
             {
                 dofs_rx_str.append(std::to_string(dofs_rx[i]));
                 dofs_rx_str.push_back('\0');
             }
-            dofs_rx_str.append(std::to_string(dofs_rx[num_dof_rx-1]));
         }
 
         num_dof_ry = get_num_dof_ry();
@@ -1542,12 +1872,11 @@ void RODS_GUI::genDofList()
             dofs_ry = new int [num_dof_ry];
             get_ids_dof_ry(dofs_ry);
             dofs_ry_str.clear();
-            for (int i = 0; i < num_dof_ry-1; i++)
+            for (int i = 0; i < num_dof_ry; i++)
             {
                 dofs_ry_str.append(std::to_string(dofs_ry[i]));
                 dofs_ry_str.push_back('\0');
             }
-            dofs_ry_str.append(std::to_string(dofs_ry[num_dof_ry-1]));
         }
 
         num_dof_rz = get_num_dof_rz();
@@ -1556,12 +1885,43 @@ void RODS_GUI::genDofList()
             dofs_rz = new int [num_dof_rz];
             get_ids_dof_rz(dofs_rz);
             dofs_rz_str.clear();
-            for (int i = 0; i < num_dof_rz-1; i++)
+            for (int i = 0; i < num_dof_rz; i++)
             {
                 dofs_rz_str.append(std::to_string(dofs_rz[i]));
                 dofs_rz_str.push_back('\0');
             }
-            dofs_rz_str.append(std::to_string(dofs_rz[num_dof_rz-1]));
+        }
+    }
+}
+
+void RODS_GUI::genPointList()
+{
+    num_point = get_num_point();
+    if (num_point > 0)
+    {
+        points = new int[num_point];
+        get_ids_point(points);
+        points_str.clear();
+        for (int i = 0; i < num_point; i++)
+        {
+            points_str.append(std::to_string(points[i]));
+            points_str.push_back('\0');
+        }
+    }
+}
+
+void RODS_GUI::genNodeList()
+{
+    num_node = get_num_node();
+    if (num_node > 0)
+    {
+        nodes = new int[num_node];
+        get_ids_node(nodes);
+        nodes_str.clear();
+        for (int i = 0; i < num_node; i++)
+        {
+            nodes_str.append(std::to_string(nodes[i]));
+            nodes_str.push_back('\0');
         }
     }
 }

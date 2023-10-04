@@ -115,6 +115,24 @@ DLL_API size_t add_node_1d(const int nodeId, const double x, const int dofId)
 	return ds->Nodes.size();
 }
 
+DLL_API size_t add_node_1d_auto_dof(const int nodeId, const double x)
+{
+	ds->addNode(nodeId, x);
+	return ds->Nodes.size();
+}
+
+DLL_API size_t add_node_1d_via_point(const int nodeId, const int pointId, const int dofId)
+{
+	ds->addNode(nodeId, pointId, dofId);
+	return ds->Nodes.size();
+}
+
+DLL_API size_t add_node_1d_via_point_auto_dof(const int nodeId, const int pointId)
+{
+	ds->addNode(nodeId, pointId, RODS::Dimension::ONE);
+	return ds->Nodes.size();
+}
+
 DLL_API size_t add_point(const int pointId, const double x, const double y, const double z)
 {
 	ds->addPoint(pointId, x, y, z);
@@ -134,10 +152,52 @@ DLL_API size_t add_node_2d(const int nodeId, const double x, const double z, con
 	return ds->Nodes.size();
 }
 
+DLL_API size_t add_node_2d_auto_dof(const int nodeId, const double x, const double z, const bool with_rotate_dof)
+{
+	ds->addNode(nodeId, x, z, with_rotate_dof);
+	return ds->Nodes.size();
+}
+
+DLL_API size_t add_node_2d_via_point(const int nodeId, const int pointId, const int dofXId, const int dofZId, const int dofRYId)
+{
+	ds->addNode(nodeId, pointId, dofXId, dofZId, dofRYId);
+	return ds->Nodes.size();
+}
+
+DLL_API size_t add_node_2d_via_point_auto_dof(const int nodeId, const int pointId, const bool with_rotate_dof)
+{
+	if (with_rotate_dof)
+		ds->addNode(nodeId, pointId, RODS::Dimension::TWO);
+	else
+		ds->addNode(nodeId, pointId, RODS::Dimension::TWO_WITHOUT_ROTATE);
+	return ds->Nodes.size();
+}
+
 DLL_API size_t add_node_3d(const int nodeId, const double x, const double y, const double z, const int dofXId, const int dofYId,
 	const int dofZId, const int dofRXId, const int dofRYId, const int dofRZId)
 {
 	ds->addNode(nodeId, x, y, z, dofXId,  dofYId,  dofZId, dofRXId, dofRYId, dofRZId);
+	return ds->Nodes.size();
+}
+
+DLL_API size_t add_node_3d_auto_dof(const int nodeId, const double x, const double y, const double z, const bool with_rotate_dof)
+{
+	ds->addNode(nodeId, x, y, z, with_rotate_dof);
+	return ds->Nodes.size();
+}
+
+DLL_API size_t add_node_3d_via_point(const int nodeId, const int pointId, const int dofXId, const int dofYId, const int dofZId, const int dofRXId, const int dofRYId, const int dofRZId)
+{
+	ds->addNode(nodeId, pointId, dofXId,  dofYId,  dofZId, dofRXId, dofRYId, dofRZId);
+	return ds->Nodes.size();
+}
+
+DLL_API size_t add_node_3d_via_point_auto_dof(const int nodeId, const int pointId, const bool with_rotate_dof)
+{
+	if (with_rotate_dof)
+		ds->addNode(nodeId, pointId, RODS::Dimension::THREE);
+	else
+		ds->addNode(nodeId, pointId, RODS::Dimension::THREE_WITHOUT_ROTATE);
 	return ds->Nodes.size();
 }
 
@@ -390,6 +450,12 @@ DLL_API size_t set_node_mass(const int id, const double m)
 	return ds->Nodes.size();
 }
 
+DLL_API size_t set_node_mass_and_moment_of_inertia(const int id, const double m, const double I)
+{
+	ds->Nodes.at(id)->setMass(m, I);
+	return ds->Nodes.size();
+}
+
 DLL_API size_t set_dof_point_id(const int dof_id, const int point_id)
 {
     ds->DOFs.at(dof_id)->setPointId(point_id);
@@ -607,12 +673,29 @@ GET_NUM(DOFRX, dof_rx);
 GET_NUM(DOFRY, dof_ry);
 GET_NUM(DOFRZ, dof_rz);
 
+GET_IDS(DOF, dof);
 GET_IDS(DOFX, dof_x);
 GET_IDS(DOFY, dof_y);
 GET_IDS(DOFZ, dof_z);
 GET_IDS(DOFRX, dof_rx);
 GET_IDS(DOFRY, dof_ry);
 GET_IDS(DOFRZ, dof_rz);
+
+GET_IDS(Point, point);
+
+GET_IDS(Node, node);
+GET_NUM(Node, node);
+
+DLL_API bool check_node_dof(const int node_id, const int dir)
+{
+	auto node = ds->Nodes.at(node_id);
+	return node->isActivated(RODS::Direction(dir));
+}
+
+DLL_API int get_id_node_dof(const int node_id, const int dir)
+{
+	return ds->Nodes.at(node_id)->getIdDof(RODS::Direction(dir));
+}
 
 DLL_API size_t get_point_coord(float *pt, const bool norm)
 {
@@ -646,6 +729,40 @@ DLL_API size_t get_point_coord(float *pt, const bool norm)
 		}
 	}
 	return np*3;
+}
+
+DLL_API size_t get_node_coords(float * coords, const bool norm)
+{
+	auto n = ds->Nodes.size();
+	size_t i = 0;
+	if (n>0)
+	{
+		for (auto it = ds->Nodes.begin(); it != ds->Nodes.end(); it++)
+		{
+			auto x = it->second->x;
+			auto y = it->second->y;
+			auto z = it->second->z;
+			if (norm) {
+				if (ds->xMax > 0.0 || ds->xMin < 0.0) {
+					x /= ds->xMax > -ds->xMin ? ds->xMax : -ds->xMin ;
+					x *= 0.9;
+				}
+				if (ds->yMax > 0.0 || ds->yMin < 0.0) {
+					y /= ds->yMax > -ds->yMin ? ds->yMax : -ds->yMin ;
+					y *= 0.9;
+				}
+				if (ds->zMax > 0.0 || ds->zMin < 0.0) {
+					z /= ds->zMax > -ds->zMin ? ds->zMax : -ds->zMin ;
+					z *= 0.9;
+				}
+			}
+			coords[3*i] = (float)x;
+			coords[3*i+1] = (float)y;
+			coords[3*i+2] = (float)z;
+			i++;
+		}
+	}
+	return n*3;
 }
 
 DLL_API size_t get_line_point_id(int* id)

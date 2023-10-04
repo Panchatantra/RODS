@@ -3,14 +3,16 @@
 Node::Node() :
 	Basis(0), x(0.0), y(0.0), z(0.0), x0(0.0), y0(0.0), z0(0.0),
 	dofX(nullptr), dofY(nullptr), dofZ(nullptr),
-	dofRX(nullptr), dofRY(nullptr), dofRZ(nullptr)
+	dofRX(nullptr), dofRY(nullptr), dofRZ(nullptr),
+	dim(RODS::Dimension::ONE)
 {
 }
 
 Node::Node(const int id, const double x, const double y, const double z) :
 	Basis(id), x(x), y(y), z(z), x0(x), y0(y), z0(z),
 	dofX(nullptr), dofY(nullptr), dofZ(nullptr),
-	dofRX(nullptr), dofRY(nullptr), dofRZ(nullptr)
+	dofRX(nullptr), dofRY(nullptr), dofRZ(nullptr),
+	dim(RODS::Dimension::ONE)
 {
 }
 
@@ -146,6 +148,11 @@ void Node::Deactivate(RODS::Direction dir)
 	}
 }
 
+void Node::setDim(RODS::Dimension dim)
+{
+	this->dim = dim;
+}
+
 void Node::setMass(const double m)
 {
 	if (dofX != nullptr) dofX->setMass(m);
@@ -183,5 +190,42 @@ void Node::setMass(const double m, RODS::Direction dir)
 		default:
 			break;
 		}
+	}
+}
+
+void Node::setMass(const double m, const double I)
+{
+	if (dofX != nullptr) dofX->setMass(m);
+	if (dofY != nullptr) dofY->setMass(m);
+	if (dofZ != nullptr) dofZ->setMass(m);
+	if (dofRX != nullptr) dofRX->setMass(I);
+	if (dofRY != nullptr) dofRY->setMass(I);
+	if (dofRZ != nullptr) dofRZ->setMass(I);
+}
+
+int Node::getIdDof(RODS::Direction dir)
+{
+	switch (dir)
+	{
+	case RODS::Direction::X:
+		return dofX->id;
+		break;
+	case RODS::Direction::Y:
+		return dofY->id;
+		break;
+	case RODS::Direction::Z:
+		return dofZ->id;
+		break;
+	case RODS::Direction::RX:
+		return dofRX->id;
+		break;
+	case RODS::Direction::RY:
+		return dofRY->id;
+		break;
+	case RODS::Direction::RZ:
+		return dofRZ->id;
+		break;
+	default:
+		break;
 	}
 }

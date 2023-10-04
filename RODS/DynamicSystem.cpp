@@ -50,6 +50,36 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 		addDOF(dof.id, dof.dir, dof.mass, dof.isFixed);
 	}
 
+	auto j_array_Node = model.at("NodeVec");
+	Node NodeObj;
+	for (auto i = 0; i<model.at("NodeCount"); i++)
+	{
+		j_array_Node[i].get_to(NodeObj);
+		switch (NodeObj.dim)
+		{
+		case RODS::Dimension::ONE:
+			addNode(NodeObj.id, NodeObj.x, NodeObj.IdDofX);
+			break;
+		case RODS::Dimension::TWO:
+			addNode(NodeObj.id, NodeObj.x, NodeObj.z,
+					NodeObj.IdDofX, NodeObj.IdDofZ, NodeObj.IdDofRY);
+		case RODS::Dimension::THREE:
+			addNode(NodeObj.id, NodeObj.x, NodeObj.y, NodeObj.z,
+					NodeObj.IdDofX, NodeObj.IdDofY, NodeObj.IdDofZ,
+					NodeObj.IdDofRX, NodeObj.IdDofRY, NodeObj.IdDofRZ);
+		case RODS::Dimension::TWO_WITHOUT_ROTATE:
+			addNode(NodeObj.id, NodeObj.x, NodeObj.z,
+					NodeObj.IdDofX, NodeObj.IdDofZ, NodeObj.IdDofRY);
+		case RODS::Dimension::THREE_WITHOUT_ROTATE:
+			addNode(NodeObj.id, NodeObj.x, NodeObj.y, NodeObj.z,
+					NodeObj.IdDofX, NodeObj.IdDofY, NodeObj.IdDofZ,
+					NodeObj.IdDofRX, NodeObj.IdDofRY, NodeObj.IdDofRZ);
+			break;
+		default:
+			break;
+		}
+	}
+
 	JSON_TO_ELEMENTS(Spring, k)
 	JSON_TO_ELEMENTS(Dashpot, c)
 	JSON_TO_ELEMENTS(Inerter, m)
@@ -62,13 +92,21 @@ void DynamicSystem::saveToJSON(const char *fileName)
 	json model;
 	to_json(model, *this);
 
-	model["dofCount"] = dofCount;
-	vector<DOF> dofVec;
+	model["DOFCount"] = dofCount;
+	vector<DOF> DOFVec;
 	for (auto it = DOFs.begin(); it != DOFs.end(); it++)
 	{
-		dofVec.push_back(*(it->second));
+		DOFVec.push_back(*(it->second));
 	}
-	model["dofVec"] = dofVec;
+	model["DOFVec"] = DOFVec;
+
+	model["NodeCount"] = Nodes.size();
+	vector<Node> NodeVec;
+	for (auto it = Nodes.begin(); it != Nodes.end(); it++)
+	{
+		NodeVec.push_back(*(it->second));
+	}
+	model["NodeVec"] = NodeVec;
 
 	ELEMENTS_TO_JSON(Spring)
 	ELEMENTS_TO_JSON(Dashpot)
@@ -131,6 +169,7 @@ void DynamicSystem::addNode(const int nodeId, const double x, const int dofId)
 	DOF *d = DOFs.at(dofId);
 	Node *nd = new Node(nodeId, x);
 	nd->setDof(d);
+	nd->setDim(RODS::Dimension::ONE);
 	d->setNodeId(nodeId);
 	addNode(nd);
 }
@@ -185,13 +224,21 @@ void DynamicSystem::addNode(const int nodeId, const double x, const double z, co
 	Node *nd = new Node(nodeId, x, 0.0, z);
 	nd->setDof(dx);
 	nd->setDof(dz);
+	nd->setDim(RODS::Dimension::TWO_WITHOUT_ROTATE);
 
 	if (dofRYId >= 0)
 	{
 		nd->setDof(DOFs.at(dofRYId));
+		nd->setDim(RODS::Dimension::TWO);
 	}
 
 	addNode(nd);
+}
+
+void DynamicSystem::addNode(const int nodeId, const int pointId, const int dofXId, const int dofZId, const int dofRYId)
+{
+	auto point = Points.at(pointId);
+	addNode(nodeId, point->x, point->z, dofXId, dofZId, dofRYId);
 }
 
 void DynamicSystem::addNode(const int nodeId, const double x, const double z, bool with_rotate_dof)
@@ -227,6 +274,8 @@ void DynamicSystem::addNode(const int nodeId, const double x, const double y, co
 	DOFs.at(dofYId)->setNodeId(nodeId);
 	DOFs.at(dofZId)->setNodeId(nodeId);
 
+	nd->setDim(RODS::Dimension::THREE_WITHOUT_ROTATE);
+
 	if (dofRXId >= 0) {
 		auto d = DOFs.at(dofRXId);
 		nd->setDof(d);
@@ -243,7 +292,15 @@ void DynamicSystem::addNode(const int nodeId, const double x, const double y, co
 		d->setNodeId(nodeId);
 	}
 
+	if (dofRXId >= 0 && dofRYId >= 0 && dofRZId >= 0)
+		nd->setDim(RODS::Dimension::THREE);
 	addNode(nd);
+}
+
+void DynamicSystem::addNode(const int nodeId, const int pointId, const int dofXId, const int dofYId, const int dofZId, const int dofRXId, const int dofRYId, const int dofRZId)
+{
+	auto point = Points.at(pointId);
+	addNode(nodeId, point->x, point->y, point->z, dofXId, dofYId, dofZId, dofRXId, dofRYId, dofRZId);
 }
 
 void DynamicSystem::addNode(const int nodeId, const double x, const double y, const double z, bool with_rotate_dof)
