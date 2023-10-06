@@ -8,6 +8,7 @@
                 "../glad/include",
                 "../glfw/include",
                 "../armadillo/include",
+                "../glm",
                 "${workspaceFolder}/RODS",
                 "C:/Program Files (x86)/Intel/oneAPI/mkl/2023.1.0/include"
             ],

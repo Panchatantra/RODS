@@ -164,6 +164,11 @@ void DynamicSystem::addNode(Node * nd)
 	}
 }
 
+void DynamicSystem::removeNode(const int id)
+{
+	Nodes.erase(id);
+}
+
 void DynamicSystem::addNode(const int nodeId, const double x, const int dofId)
 {
 	DOF *d = DOFs.at(dofId);

@@ -13,6 +13,7 @@
 #include <vector>
 std::map<int, int> pointIdMapIndex;
 std::map<int, int> dofIdMapIndex;
+std::map<int, int> nodeIdMapIndex;
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -66,7 +67,10 @@ int* points;
 std::string points_str;
 int* nodes;
 std::string nodes_str;
-
+int* dof_recorders;
+std::string dof_recorders_str;
+int* ele_recorders;
+std::string ele_recorders_str;
 
 const int dimension_dof_count[5] = {1, 3, 6, 2, 3};
 const char* dimension[5] = { "1D", "2D", "3D", "2D (W/O Rotate)", "3D (W/O Rotate)" };
@@ -76,7 +80,7 @@ const char* eleResponse[3] = {"Force", "Deformation", "Force and Deformation"};
 const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
 
-const int dimension_dof_dir[5][6] = { 
+const int dimension_dof_dir[5][6] = {
     {0,0,0,0,0,0},
     {0,2,4,0,0,0},
     {0,1,2,3,4,5},
@@ -88,10 +92,13 @@ void RODS_GUI::createShader()
 {
     const char* vertexShaderSource = "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
+        "uniform mat4 model;\n"
+        "uniform mat4 view;\n"
+        "uniform mat4 projection;\n"
         "out vec4 vertexColor;\n"
         "void main()\n"
         "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0f);\n"
+        "   gl_Position = projection * view * model * vec4(aPos, 1.0f);\n"
         "   vertexColor = gl_Position;\n"
         "}\0";
 
@@ -138,6 +145,21 @@ void RODS_GUI::buildVertex()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+void RODS_GUI::setCamera(GLFWwindow* window)
+{
+    glfwGetFramebufferSize(window, &buffer_width, &buffer_height);
+    // glm::mat4 projection = glm::mat4(1.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)buffer_width / (float)buffer_height, 0.1f, 100.0f);
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::lookAt( glm::vec3(0.0f, -2.0f, 0.0f),
+                        glm::vec3(0.0f, 0.0f, 0.0f),
+                        glm::vec3(0.0f, 0.0f, 1.0f) );
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
+    glm::mat4 model = glm::mat4(1.0f);
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
 }
 
 void RODS_GUI::mainMenu(GLFWwindow* window)
@@ -462,6 +484,7 @@ void RODS_GUI::basicInfoWindow()
         ImGui::Text("Number of Lines: %d", num_line);
         ImGui::Separator();
         ImGui::Text("Number of DOFs: %d", num_dof);
+        ImGui::Text("Number of Nodes: %d", num_node);
         ImGui::Text("Number of Elements: %d", num_ele);
         ImGui::Text("Number of Equations: %d", num_eqn);
         ImGui::Separator();
@@ -820,6 +843,51 @@ void RODS_GUI::element2dWindow()
         const char * Element2DTypes[2] = {"TrussElastic2D", "FrameElastic2D"};
         ImGui::Combo("Element Type", &ele_type, Element2DTypes, 2);
 
+        static int node_item_index_i = 0;
+        static int node_item_index_j = 0;
+        static int node_id_i = 0;
+        static int node_id_j = 0;
+        if (ImGui::Button("Select Nodes"))
+            ImGui::OpenPopup("Select Nodes");
+        if (ImGui::BeginPopup("Select Nodes"))
+        {
+            genNodeList();
+            if (num_node > 1)
+            {
+                ImGui::Combo("Node I", &node_item_index_i, nodes_str.c_str());
+                ImGui::Combo("Node J", &node_item_index_j, nodes_str.c_str());
+                node_id_i = nodes[node_item_index_i];
+                node_id_j = nodes[node_item_index_j];
+            }
+            ImGui::EndPopup();
+        }
+        ImGui::Text("Selected Nodes: %d, %d", node_id_i, node_id_j);
+
+        static float * params = new float[3]();
+
+        if (ele_type == 0)
+        {
+            ImGui::InputFloat("EA", params);
+            if (ImGui::Button("Add Element"))
+            {
+                num_truss_elastic_2d = add_truss_elastic_2d(ele_id, node_id_i, node_id_j, params[0]);
+                num_ele = get_num_ele();
+            }
+        }
+
+        if (ele_type == 1)
+        {
+            ImGui::InputFloat2("EA and EI", params);
+            if (ImGui::Button("Add Element"))
+            {
+                num_frame_elastic_2d = add_frame_elastic_2d(ele_id, node_id_i, node_id_j, params[0], params[1]);
+                num_ele = get_num_ele();
+            }
+        }
+
+        if (ImGui::Button("Close"))
+            show_element2d_window = false;
+
         ImGui::End();
     }
 }
@@ -849,9 +917,7 @@ void RODS_GUI::nodeWindow()
         static int dof_item_index_rx = 0;
         static int dof_item_index_ry = 0;
         static int dof_item_index_rz = 0;
-        //std::fill(dof_item_index, dof_item_index + dof_count, 0);
-        static int* dof_id = new int[dof_count]{0};
-        //std::fill(dof_id, dof_id + dof_count, 0);
+        static int* dof_id = new int[dof_count] {0};
         static int point_item_index = 0;
         static int point_id = 0;
         static double mass = 1e-6;
@@ -939,7 +1005,26 @@ void RODS_GUI::nodeWindow()
             if (coord_method == 1)
             {
                 static float coord[3] = {0.0, 0.0, 0.0};
-                ImGui::InputFloat3("Coords (X,Y,Z)", coord);
+                switch (node_dim)
+                {
+                    case 0:
+                        ImGui::InputFloat("Coords (X)", coord);
+                        break;
+                    case 1:
+                        ImGui::InputFloat2("Coords (X,Z)", coord);
+                        break;
+                    case 2:
+                        ImGui::InputFloat3("Coords (X,Y,Z)", coord);
+                        break;
+                    case 3:
+                        ImGui::InputFloat2("Coords (X,Z)", coord);
+                        break;
+                    case 4:
+                        ImGui::InputFloat3("Coords (X,Y,Z)", coord);
+                        break;
+                    default:
+                        break;
+                }
                 if (ImGui::Button("Add Node"))
                 {
                     switch (node_dim)
@@ -949,7 +1034,7 @@ void RODS_GUI::nodeWindow()
                         set_node_mass(node_id, mass);
                         break;
                     case 1:
-                        num_node = add_node_2d(node_id, coord[0], coord[2], dof_id[0], dof_id[1], dof_id[2]);
+                        num_node = add_node_2d(node_id, coord[0], coord[1], dof_id[0], dof_id[1], dof_id[2]);
                         set_node_mass_and_moment_of_inertia(node_id, mass, I);
                         break;
                     case 2:
@@ -959,7 +1044,7 @@ void RODS_GUI::nodeWindow()
                         set_node_mass_and_moment_of_inertia(node_id, mass, I);
                         break;
                     case 3:
-                        num_node = add_node_2d(node_id, coord[0], coord[2], dof_id[0], dof_id[1], -1);
+                        num_node = add_node_2d(node_id, coord[0], coord[1], dof_id[0], dof_id[1], -1);
                         set_node_mass(node_id, mass);
                         break;
                     case 4:
@@ -1030,7 +1115,26 @@ void RODS_GUI::nodeWindow()
             if (coord_method == 1)
             {
                 static float coord[3] = {0.0, 0.0, 0.0};
-                ImGui::InputFloat3("Coords (X,Y,Z)", coord);
+                switch (node_dim)
+                {
+                    case 0:
+                        ImGui::InputFloat("Coords (X)", coord);
+                        break;
+                    case 1:
+                        ImGui::InputFloat2("Coords (X,Z)", coord);
+                        break;
+                    case 2:
+                        ImGui::InputFloat3("Coords (X,Y,Z)", coord);
+                        break;
+                    case 3:
+                        ImGui::InputFloat2("Coords (X,Z)", coord);
+                        break;
+                    case 4:
+                        ImGui::InputFloat3("Coords (X,Y,Z)", coord);
+                        break;
+                    default:
+                        break;
+                }
                 if (ImGui::Button("Add Node"))
                 {
                     switch (node_dim)
@@ -1040,7 +1144,7 @@ void RODS_GUI::nodeWindow()
                         set_node_mass(node_id, mass);
                         break;
                     case 1:
-                        num_node = add_node_2d_auto_dof(node_id, coord[0], coord[2]);
+                        num_node = add_node_2d_auto_dof(node_id, coord[0], coord[1]);
                         set_node_mass_and_moment_of_inertia(node_id, mass, I);
                         break;
                     case 2:
@@ -1048,7 +1152,7 @@ void RODS_GUI::nodeWindow()
                         set_node_mass_and_moment_of_inertia(node_id, mass, I);
                         break;
                     case 3:
-                        num_node = add_node_2d_auto_dof(node_id, coord[0], coord[2], false);
+                        num_node = add_node_2d_auto_dof(node_id, coord[0], coord[1], false);
                         set_node_mass(node_id, mass);
                         break;
                     case 4:
@@ -1109,6 +1213,26 @@ void RODS_GUI::nodeWindow()
             }
         }
 
+        ImGui::SameLine();
+        if (ImGui::Button("Edit"))
+            ImGui::OpenPopup("Edit Node");
+
+        if (ImGui::BeginPopup("Edit Node"))
+        {
+            genNodeList();
+            if (num_node > 0)
+            {
+                static int node_item_index = 0;
+                ImGui::Combo("Node", &node_item_index, nodes_str.c_str());
+                if (ImGui::Button("Remove"))
+                {
+                    num_node = remove_node(nodes[node_item_index]);
+                    node_item_index--;
+                }
+            }
+            ImGui::EndPopup();
+        }
+
         if (ImGui::Button("Close"))
             show_node_window = false;
 
@@ -1125,7 +1249,7 @@ void RODS_GUI::assembleMatrixWindow()
 
         if (ImGui::Button("Assemble Matrix"))
         {
-            if (num_dof>0 && num_ele>0)
+            if (num_ele>0)
             {
                 num_eqn = assemble_matrix();
                 is_assembled = true;
@@ -1295,11 +1419,11 @@ void RODS_GUI::recorderWindow()
 
                     if (ImGui::BeginPopup("Select DOF"))
                     {
-                        updateDOFList();
+                        genDofList();
                         updateDOFRecorderList();
                         static int dof_index = 0;
                         static int dof_recorder_index = 0;
-                        ImGui::Combo("DOF", &dof_index, dofStrList, num_dof);
+                        ImGui::Combo("DOF", &dof_index, dofs_str.c_str());
                         ImGui::Combo("DOF Recorder", &dof_recorder_index, dofRecorderStrList, num_dof_recorder);
                         if (ImGui::Button("Add"))
                             add_dof_to_recorder(dofList[dof_index], dofRecorderList[dof_recorder_index]);
@@ -1745,13 +1869,6 @@ void RODS_GUI::draw_2d()
             // }
 
             get_node_coords(vertices);
-            // for (size_t i = 0; i < num_node; i++)
-            // {
-            //     printf("%.3f, %.3f, %.3f\n",
-            //         vertices[3*i],
-            //         vertices[3*i+1],
-            //         vertices[3*i+2] );
-            // }
 
             // glUseProgram(shaderProgram);
             glBindVertexArray(VAO);
@@ -1762,13 +1879,13 @@ void RODS_GUI::draw_2d()
             glDrawArrays(GL_POINTS, 0, num_node);
 
             if (num_ele > 0) {
-                updatedofIdMapIndex();
+                updateNodeIdMapIndex();
                 int* indices = new int[(size_t)num_ele*2];
-                get_rod1d_dof_id(indices);
+                get_rod2d_node_id(indices);
 
                 for (int i = 0; i < num_ele * 2; i++)
                 {
-                    indices[i] = dofIdMapIndex.at(indices[i]);
+                    indices[i] = nodeIdMapIndex.at(indices[i]);
                 }
 
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -1939,6 +2056,22 @@ void RODS_GUI::updateDOFRecorderList()
     }
 }
 
+void RODS_GUI::genDofRecorderList()
+{
+    num_dof_recorder = get_num_dof_recorder();
+    if (num_dof_recorder > 0)
+    {
+        dof_recorders = new int[num_dof_recorder];
+        get_ids_dof_recorder(dof_recorders);
+        dof_recorders_str.clear();
+        for (int i = 0; i < num_dof_recorder; i++)
+        {
+            dof_recorders_str.append(std::to_string(dof_recorders[i]));
+            dof_recorders_str.push_back('\0');
+        }
+    }
+}
+
 void RODS_GUI::updateEleRecorderList()
 {
     eleRecorderList = new int [num_ele_recorder];
@@ -1949,6 +2082,22 @@ void RODS_GUI::updateEleRecorderList()
         auto ele_recorder_str = new char[C_STR_LEN_S];
         snprintf(ele_recorder_str, C_STR_LEN_S, "%d", eleRecorderList[i]);
         eleRecorderStrList[i] = ele_recorder_str;
+    }
+}
+
+void RODS_GUI::genEleRecorderList()
+{
+    num_ele_recorder = get_num_ele_recorder();
+    if (num_ele_recorder > 0)
+    {
+        ele_recorders = new int[num_ele_recorder];
+        get_ids_ele_recorder(ele_recorders);
+        ele_recorders_str.clear();
+        for (int i = 0; i < num_ele_recorder; i++)
+        {
+            ele_recorders_str.append(std::to_string(ele_recorders[i]));
+            ele_recorders_str.push_back('\0');
+        }
     }
 }
 
@@ -1987,6 +2136,17 @@ void RODS_GUI::updatedofIdMapIndex()
     for (auto index = 0; index < num_dof; index++)
     {
         dofIdMapIndex[dofList[index]] = index;
+    }
+}
+
+void RODS_GUI::updateNodeIdMapIndex()
+{
+    genNodeList();
+
+    nodeIdMapIndex.clear();
+    for (auto index = 0; index < num_node; index++)
+    {
+        nodeIdMapIndex[nodes[index]] = index;
     }
 }
 
@@ -2035,6 +2195,7 @@ void RODS_GUI::sdof_model()
 void RODS_GUI::initVars()
 {
     num_dof = 0;
+    num_node = 0;
     num_point = 0;
     num_line = 0;
     num_ele = 0;
@@ -2053,6 +2214,7 @@ void RODS_GUI::initVars()
 void RODS_GUI::updateVars()
 {
     num_dof = get_num_dof();
+    num_node = get_num_node();
     num_point = get_num_point();
     num_line = get_num_line();
     num_ele = get_num_ele();

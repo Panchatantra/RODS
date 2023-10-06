@@ -160,6 +160,9 @@ extern "C" {
 	GET_IDS_DEF(node);
 	GET_NUM_DEF(node);
 
+	GET_IDS_DEF(dof_recorder);
+	GET_IDS_DEF(ele_recorder);
+
 	DLL_API bool check_node_dof(const int node_id, const int dir);
 	DLL_API int get_id_node_dof(const int node_id, const int dir);
 
@@ -167,6 +170,7 @@ extern "C" {
 	DLL_API size_t get_node_coords(float* coords, const bool norm=true);
 	DLL_API size_t get_line_point_id(int* id);
 	DLL_API size_t get_rod1d_dof_id(int* id);
+	DLL_API size_t get_rod2d_node_id(int* id);
 	DLL_API void get_dof_modal_response(double *res, const int order=1);
 
 	DLL_API size_t get_period(double* P);
@@ -179,6 +183,7 @@ extern "C" {
 	DLL_API bool get_use_rayleigh_damping();
 
 	DLL_API size_t remove_dof(const int id);
+	DLL_API size_t remove_node(const int id);
 	DLL_API size_t remove_spring(const int id);
 	DLL_API size_t remove_dashpot(const int id);
 	DLL_API size_t remove_inerter(const int id);

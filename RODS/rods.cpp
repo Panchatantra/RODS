@@ -686,6 +686,9 @@ GET_IDS(Point, point);
 GET_IDS(Node, node);
 GET_NUM(Node, node);
 
+GET_IDS(DOFRecorder, dof_recorder);
+GET_IDS(ElementRecorder, ele_recorder);
+
 DLL_API bool check_node_dof(const int node_id, const int dir)
 {
 	auto node = ds->Nodes.at(node_id);
@@ -742,19 +745,24 @@ DLL_API size_t get_node_coords(float * coords, const bool norm)
 			auto x = it->second->x;
 			auto y = it->second->y;
 			auto z = it->second->z;
+			double max_val = 1.0;
+			double max_val_ = 1.0;
 			if (norm) {
 				if (ds->xMax > 0.0 || ds->xMin < 0.0) {
-					x /= ds->xMax > -ds->xMin ? ds->xMax : -ds->xMin ;
-					x *= 0.9;
+					max_val_ = ds->xMax > -ds->xMin ? ds->xMax : -ds->xMin;
+					if (max_val_ > max_val) max_val = max_val_;
 				}
 				if (ds->yMax > 0.0 || ds->yMin < 0.0) {
-					y /= ds->yMax > -ds->yMin ? ds->yMax : -ds->yMin ;
-					y *= 0.9;
+					max_val_ = ds->yMax > -ds->yMin ? ds->yMax : -ds->yMin;
+					if (max_val_ > max_val) max_val = max_val_;
 				}
 				if (ds->zMax > 0.0 || ds->zMin < 0.0) {
-					z /= ds->zMax > -ds->zMin ? ds->zMax : -ds->zMin ;
-					z *= 0.9;
+					max_val_ = ds->zMax > -ds->zMin ? ds->zMax : -ds->zMin;
+					if (max_val_ > max_val) max_val = max_val_;
 				}
+				x /= max_val;
+				y /= max_val;
+				z /= max_val;
 			}
 			coords[3*i] = (float)x;
 			coords[3*i+1] = (float)y;
@@ -791,6 +799,22 @@ DLL_API size_t get_rod1d_dof_id(int * id)
 		{
 			id[i*2] = it->second->dofI->id;
 			id[i*2+1] = it->second->dofJ->id;
+			i++;
+		}
+	}
+	return n*2;
+}
+
+DLL_API size_t get_rod2d_node_id(int * id)
+{
+	auto n = ds->ROD2Ds.size();
+	size_t i = 0;
+	if (n > 0)
+	{
+		for (auto it = ds->ROD2Ds.begin(); it != ds->ROD2Ds.end(); it++)
+		{
+			id[i*2] = it->second->nodeI->id;
+			id[i*2+1] = it->second->nodeJ->id;
 			i++;
 		}
 	}
@@ -852,6 +876,12 @@ DLL_API size_t remove_dof(const int id)
 {
     ds->removeDOF(id);
 	return ds->DOFs.size();
+}
+
+DLL_API size_t remove_node(const int id)
+{
+	ds->removeNode(id);
+	return ds->Nodes.size();
 }
 
 DLL_API size_t remove_spring(const int id)

@@ -129,6 +129,7 @@ public:
 	 * @param nd The pointer to a Node
 	 */
 	void addNode(Node *nd);
+	void removeNode(const int id);
 
 	/**
 	 * @brief      Add a 1D Node into the system.

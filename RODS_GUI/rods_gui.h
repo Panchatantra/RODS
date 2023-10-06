@@ -38,6 +38,10 @@ static int num_ele = 0;
 static int num_spring = 0;
 static int num_dashpot = 0;
 static int num_inerter = 0;
+static int num_truss_elastic_2d = 0;
+static int num_frame_elastic_2d = 0;
+
+
 static int num_eqn = 0;
 static int num_wave = 0;
 static int num_dof_recorder = 0;
@@ -55,7 +59,7 @@ static int num_dof_rz = 0;
 static int point_index = 0;
 static int dof_index = 0;
 
-static int draw_dim = 1;
+static int draw_dim = 2;
 static int draw_type = 1;
 
 static int mode_order = 1;
@@ -66,10 +70,12 @@ const size_t C_STR_LEN_S = 20;
 static unsigned int shaderProgram;
 static unsigned int VBO, VAO, EBO;
 
+static int buffer_width, buffer_height;
 
 namespace RODS_GUI {
     void createShader();
     void buildVertex();
+    void setCamera(GLFWwindow* window);
     void mainMenu(GLFWwindow* window);
     void dirWindow();
     void dampingWindow();
@@ -102,10 +108,13 @@ namespace RODS_GUI {
     void genPointList();
     void genNodeList();
     void updateDOFRecorderList();
+    void genDofRecorderList();
     void updateEleRecorderList();
+    void genEleRecorderList();
     void updateWaveList();
     void updateEleList();
     void updatedofIdMapIndex();
+    void updateNodeIdMapIndex();
 
     void glDeleteAll();
 

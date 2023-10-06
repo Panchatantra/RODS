@@ -134,6 +134,7 @@ int main(int, char**)
 
     RODS_GUI::createShader();
     RODS_GUI::buildVertex();
+    RODS_GUI::setCamera(window);
 
     // Main loop
     while (!glfwWindowShouldClose(window))
