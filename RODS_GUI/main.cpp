@@ -199,7 +199,8 @@ int main(int, char**)
         }
 
         // RODS_GUI::draw_geo();
-        // RODS_GUI::draw_1d();
+        RODS_GUI::draw_1d_s();
+        RODS_GUI::draw_1d();
         RODS_GUI::draw_2d();
 
         glfwSwapBuffers(window);

@@ -674,9 +674,40 @@ void DynamicSystem::getNodeModalResponse(double *res, const int order)
 	auto i = 0;
 	for (auto it = Nodes.begin(); it != Nodes.end(); it++)
 	{
-		res[3*i] = it->second->dofX->dsp;
-		res[3*i+1] = it->second->dofY->dsp;
-		res[3*i+2] = it->second->dofZ->dsp;
+		auto node = it->second;
+		switch (node->dim)
+		{
+		case RODS::Dimension::ONE:
+			res[3*i] = it->second->dofX->dsp;
+			res[3*i+1] = 0.0;
+			res[3*i+2] = 0.0;
+			break;
+		case RODS::Dimension::TWO:
+			res[3*i] = it->second->dofX->dsp;
+			res[3*i+1] = 0.0;
+			res[3*i+2] = it->second->dofZ->dsp;
+			break;
+		case RODS::Dimension::THREE:
+			res[3*i] = it->second->dofX->dsp;
+			res[3*i+1] = it->second->dofY->dsp;
+			res[3*i+2] = it->second->dofZ->dsp;
+			break;
+		case RODS::Dimension::TWO_WITHOUT_ROTATE:
+			res[3*i] = it->second->dofX->dsp;
+			res[3*i+1] = 0.0;
+			res[3*i+2] = it->second->dofZ->dsp;
+			break;
+		case RODS::Dimension::THREE_WITHOUT_ROTATE:
+			res[3*i] = it->second->dofX->dsp;
+			res[3*i+1] = it->second->dofY->dsp;
+			res[3*i+2] = it->second->dofZ->dsp;
+			break;
+		default:
+			res[3*i] = 0.0;
+			res[3*i+1] = 0.0;
+			res[3*i+2] = 0.0;
+			break;
+		}
 		i++;
 	}
 }

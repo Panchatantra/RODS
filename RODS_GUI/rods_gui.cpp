@@ -74,19 +74,12 @@ int* ele_recorders;
 std::string ele_recorders_str;
 
 const int dimension_dof_count[5] = {1, 3, 6, 2, 3};
-const char* dimension[5] = { "1D", "2D", "3D", "2D (W/O Rotate)", "3D (W/O Rotate)" };
+const char* dimension[5] = {"1D", "2D", "3D", "2D (W/O Rotate)", "3D (W/O Rotate)" };
 const char* direction[6] = {"X", "Y", "Z", "RX", "RY", "RZ"};
 const char* dofResponse[4] = {"Displacement", "Velocity", "Acceleration", "ALL"};
 const char* eleResponse[3] = {"Force", "Deformation", "Force and Deformation"};
 const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
-
-const int dimension_dof_dir[5][6] = {
-    {0,0,0,0,0,0},
-    {0,2,4,0,0,0},
-    {0,1,2,3,4,5},
-    {0,2,0,0,0,0},
-    {0,1,2,0,0,0} };
 
 
 void RODS_GUI::createShader()
@@ -155,9 +148,12 @@ void RODS_GUI::setCamera(GLFWwindow* window)
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)buffer_width / (float)buffer_height, 0.1f, 100.0f);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
     glm::mat4 view = glm::mat4(1.0f);
-    view = glm::lookAt( glm::vec3(0.0f, -2.0f, 0.0f),
-                        glm::vec3(0.0f, 0.0f, 0.0f),
-                        glm::vec3(0.0f, 0.0f, 1.0f) );
+    if (draw_dim == 2)
+    {
+        view = glm::lookAt( glm::vec3(0.0f, -2.0f, 0.0f),
+                            glm::vec3(0.0f, 0.0f, 0.0f),
+                            glm::vec3(0.0f, 0.0f, 1.0f) );
+    }
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
     glm::mat4 model = glm::mat4(1.0f);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
@@ -192,6 +188,7 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
 
             if (ImGui::MenuItem("Exit"))
                 glfwSetWindowShouldClose(window, true);
+
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Set"))
@@ -1771,42 +1768,46 @@ void RODS_GUI::drawModeWindow()
 
 void RODS_GUI::draw_geo()
 {
-    if (num_point > 0) {
+    if (draw_type == 0)
+    {
+        if (num_point > 0) {
 
-        float* vertices = new float[(size_t)num_point*3];
-        get_point_coord(vertices, true);
+            float* vertices = new float[(size_t)num_point*3];
+            get_point_coord(vertices, true);
 
-        // glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
+            // glUseProgram(shaderProgram);
+            glBindVertexArray(VAO);
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, (size_t)num_point*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, (size_t)num_point*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
 
-        glDrawArrays(GL_POINTS, 0, num_point);
+            glDrawArrays(GL_POINTS, 0, num_point);
 
-        if (num_line > 0) {
+            if (num_line > 0) {
 
-            int* indices = new int[(size_t)num_line*2];
-            get_line_point_id(indices);
+                int* indices = new int[(size_t)num_line*2];
+                get_line_point_id(indices);
 
-            for (int i = 0; i < num_line * 2; i++)
-            {
-                //--indices[i];
-                indices[i] = pointIdMapIndex.at(indices[i]);
+                for (int i = 0; i < num_line * 2; i++)
+                {
+                    //--indices[i];
+                    indices[i] = pointIdMapIndex.at(indices[i]);
+                }
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_line*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
+
+                glDrawElements(GL_LINES, 2*num_line, GL_UNSIGNED_INT, (void*)0);
+
+                delete[] indices;
             }
-
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_line*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
-
-            glDrawElements(GL_LINES, 2*num_line, GL_UNSIGNED_INT, (void*)0);
-
-            delete[] indices;
+            delete[] vertices;
         }
-        delete[] vertices;
     }
+    
 }
 
-void RODS_GUI::draw_1d()
+void RODS_GUI::draw_1d_s()
 {
     if (draw_dim == 1)
     {
@@ -1852,6 +1853,57 @@ void RODS_GUI::draw_1d()
                 for (int i = 0; i < num_ele * 2; i++)
                 {
                     indices[i] = dofIdMapIndex.at(indices[i]);
+                }
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
+
+                glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
+
+                delete[] indices;
+            }
+            delete[] vertices;
+        }
+    }
+}
+
+void RODS_GUI::draw_1d()
+{
+    if (draw_dim == 11)
+    {
+        if (num_dof > 0)
+        {
+            float* vertices = new float[(size_t)num_node*3];
+            get_node_coords(vertices);
+
+            if (draw_type == 2 || draw_type == 22)
+            {
+                node_response = new double[(size_t)num_node*3];
+                get_node_modal_response(node_response, mode_order);
+            }
+
+            for (size_t i = 0; i < (size_t)num_node*3; i++)
+            {
+                if (draw_type == 2) vertices[i] += node_response[i]*scale_factor_dsp;
+                else if (draw_type == 22) vertices[i] += node_response[i]*scale_factor_dsp*sinf(2.0*3.142/5.0*glfwGetTime());
+            }
+
+            // glUseProgram(shaderProgram);
+            glBindVertexArray(VAO);
+
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, (size_t)num_dof*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
+
+            glDrawArrays(GL_POINTS, 0, num_node);
+
+            if (num_ele > 0) {
+                updateNodeIdMapIndex();
+                int* indices = new int[(size_t)num_ele*2];
+                get_rod2d_node_id(indices);
+
+                for (int i = 0; i < num_ele * 2; i++)
+                {
+                    indices[i] = nodeIdMapIndex.at(indices[i]);
                 }
 
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

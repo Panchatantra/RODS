@@ -286,7 +286,12 @@ public:
 
 	void getNodeModalResponse(double *res, const int order=1);
 
-    void addDOF(DOF *d);
+    /**
+     * @brief Add a DOF into the system.
+     * 
+     * @param d The pointer to the DOF
+     */
+	void addDOF(DOF *d);
 
     /**
      * @brief      Add a DOF (X Direction) into the system.
