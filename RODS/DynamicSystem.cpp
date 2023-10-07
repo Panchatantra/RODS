@@ -63,13 +63,16 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 		case RODS::Dimension::TWO:
 			addNode(NodeObj.id, NodeObj.x, NodeObj.z,
 					NodeObj.IdDofX, NodeObj.IdDofZ, NodeObj.IdDofRY);
+			break;
 		case RODS::Dimension::THREE:
 			addNode(NodeObj.id, NodeObj.x, NodeObj.y, NodeObj.z,
 					NodeObj.IdDofX, NodeObj.IdDofY, NodeObj.IdDofZ,
 					NodeObj.IdDofRX, NodeObj.IdDofRY, NodeObj.IdDofRZ);
+			break;
 		case RODS::Dimension::TWO_WITHOUT_ROTATE:
 			addNode(NodeObj.id, NodeObj.x, NodeObj.z,
 					NodeObj.IdDofX, NodeObj.IdDofZ, NodeObj.IdDofRY);
+			break;
 		case RODS::Dimension::THREE_WITHOUT_ROTATE:
 			addNode(NodeObj.id, NodeObj.x, NodeObj.y, NodeObj.z,
 					NodeObj.IdDofX, NodeObj.IdDofY, NodeObj.IdDofZ,

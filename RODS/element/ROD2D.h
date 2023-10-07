@@ -9,6 +9,7 @@ class ROD2D :
 	public Element
 {
 public:
+	ROD2D();
 	ROD2D(const int id, Node * nodeI, Node * nodeJ);
 	~ROD2D();
 

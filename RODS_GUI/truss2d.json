@@ -1,5 +1,5 @@
 {
-    "DOFCount": 6,
+    "DOFCount": 16,
     "DOFVec": [
         {
             "dir": 0,
@@ -36,13 +36,73 @@
             "id": 6,
             "isFixed": false,
             "mass": 0.01
+        },
+        {
+            "dir": 0,
+            "id": 7,
+            "isFixed": false,
+            "mass": 0.0
+        },
+        {
+            "dir": 2,
+            "id": 8,
+            "isFixed": false,
+            "mass": 0.0
+        },
+        {
+            "dir": 0,
+            "id": 9,
+            "isFixed": false,
+            "mass": 0.01
+        },
+        {
+            "dir": 2,
+            "id": 10,
+            "isFixed": false,
+            "mass": 0.01
+        },
+        {
+            "dir": 0,
+            "id": 11,
+            "isFixed": false,
+            "mass": 0.01
+        },
+        {
+            "dir": 2,
+            "id": 12,
+            "isFixed": false,
+            "mass": 0.01
+        },
+        {
+            "dir": 0,
+            "id": 13,
+            "isFixed": false,
+            "mass": 0.01
+        },
+        {
+            "dir": 2,
+            "id": 14,
+            "isFixed": false,
+            "mass": 0.01
+        },
+        {
+            "dir": 0,
+            "id": 15,
+            "isFixed": false,
+            "mass": 0.01
+        },
+        {
+            "dir": 2,
+            "id": 16,
+            "isFixed": false,
+            "mass": 0.01
         }
     ],
     "DashpotCount": 0,
     "DashpotVec": [],
     "InerterCount": 0,
     "InerterVec": [],
-    "NodeCount": 3,
+    "NodeCount": 7,
     "NodeVec": [
         {
             "IdDofRX": -1,
@@ -80,6 +140,58 @@
             "dim": 20,
             "id": 3,
             "x": -3000.0,
+            "y": 0.0,
+            "z": 3000.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": -1,
+            "IdDofRZ": -1,
+            "IdDofX": 9,
+            "IdDofY": -1,
+            "IdDofZ": 10,
+            "dim": 20,
+            "id": 4,
+            "x": 1500.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": -1,
+            "IdDofRZ": -1,
+            "IdDofX": 11,
+            "IdDofY": -1,
+            "IdDofZ": 12,
+            "dim": 20,
+            "id": 5,
+            "x": 4500.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": -1,
+            "IdDofRZ": -1,
+            "IdDofX": 13,
+            "IdDofY": -1,
+            "IdDofZ": 14,
+            "dim": 20,
+            "id": 6,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 3000.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": -1,
+            "IdDofRZ": -1,
+            "IdDofX": 15,
+            "IdDofY": -1,
+            "IdDofZ": 16,
+            "dim": 20,
+            "id": 7,
+            "x": 3000.0,
             "y": 0.0,
             "z": 3000.0
         }
@@ -124,7 +236,7 @@
     "dispControlDOFId": -1,
     "dispControlEqn": -1,
     "dispControlLoadId": -1,
-    "dofCount": 6,
+    "dofCount": 16,
     "dt": 0.02,
     "dynamicSolver": 2,
     "eigenVectorNormed": false,
@@ -132,12 +244,12 @@
     "exportGmshInterval": -1,
     "fixedDofCount": 0,
     "maxIter": 20,
-    "name": "RODS",
+    "name": "truss_2d",
     "nsteps": 0,
     "tol": 1e-06,
     "useRayleighDamping": true,
     "workDir": "./",
-    "xMax": 0.0,
+    "xMax": 4500.0,
     "xMin": -4500.0,
     "yMax": 0.0,
     "yMin": 0.0,

@@ -1,7 +1,7 @@
 #include "TrussElastic2D.h"
 
 TrussElastic2D::TrussElastic2D() :
-	ROD2D(0, nullptr, nullptr), EA(0.0), ue(0.0), f(0.0)
+	ROD2D(), EA(0.0), ue(0.0), f(0.0)
 {
 }
 
