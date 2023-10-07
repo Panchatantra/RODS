@@ -100,6 +100,7 @@ namespace RODS_GUI {
 
     void drawModeWindow();
 
+    void updateViewMatrix();
     void draw_geo();
     void draw_1d_s();
     void draw_1d();

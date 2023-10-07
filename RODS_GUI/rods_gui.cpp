@@ -148,12 +148,12 @@ void RODS_GUI::setCamera(GLFWwindow* window)
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)buffer_width / (float)buffer_height, 0.1f, 100.0f);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
     glm::mat4 view = glm::mat4(1.0f);
-    if (draw_dim == 2)
-    {
-        view = glm::lookAt( glm::vec3(0.0f, -2.0f, 0.0f),
-                            glm::vec3(0.0f, 0.0f, 0.0f),
-                            glm::vec3(0.0f, 0.0f, 1.0f) );
-    }
+    // view = glm::lookAt( glm::vec3(0.0f, 0.0f, 2.5f),
+    //                     glm::vec3(0.0f, 0.0f, 0.0f),
+    //                     glm::vec3(0.0f, 1.0f, 0.0f) );
+    view = glm::lookAt( glm::vec3(0.0f, -2.5f, 0.0f),
+                        glm::vec3(0.0f, 0.0f, 0.0f),
+                        glm::vec3(0.0f, 0.0f, 1.0f) );
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
     glm::mat4 model = glm::mat4(1.0f);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
@@ -1749,6 +1749,8 @@ void RODS_GUI::drawModeWindow()
         ImGui::RadioButton("1D", &draw_dim, 11); ImGui::SameLine();
         ImGui::RadioButton("2D", &draw_dim, 2); ImGui::SameLine();
         ImGui::RadioButton("3D", &draw_dim, 3);
+        if (ImGui::Button("Update View"))
+            updateViewMatrix();
 
         ImGui::Text("Draw: "); ImGui::SameLine();
         ImGui::RadioButton("Geometry", &draw_type, 0); ImGui::SameLine();
@@ -1764,6 +1766,24 @@ void RODS_GUI::drawModeWindow()
 
         ImGui::End();
     }
+}
+
+void RODS_GUI::updateViewMatrix()
+{
+    glm::mat4 view = glm::mat4(1.0f);
+    if (draw_dim == 1)
+    {
+        view = glm::lookAt( glm::vec3(0.0f, 0.0f, 2.5f),
+                        glm::vec3(0.0f, 0.0f, 0.0f),
+                        glm::vec3(0.0f, 1.0f, 0.0f) );
+    }
+    else if (draw_dim == 11 || draw_dim == 2)
+    {
+        view = glm::lookAt( glm::vec3(0.0f, -2.0f, 0.0f),
+                        glm::vec3(0.0f, 0.0f, 0.0f),
+                        glm::vec3(0.0f, 0.0f, 1.0f) );
+    }
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
 }
 
 void RODS_GUI::draw_geo()
@@ -1804,7 +1824,6 @@ void RODS_GUI::draw_geo()
             delete[] vertices;
         }
     }
-    
 }
 
 void RODS_GUI::draw_1d_s()
