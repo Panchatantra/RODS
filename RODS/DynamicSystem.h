@@ -223,12 +223,27 @@ public:
 	void fixNode(const int nodeId);
 
 	/**
+	 * @brief Free all the DOFs of a Node.
+	 * 
+	 * @param nodeId    The Node identifier
+	 */
+	void freeNode(const int nodeId);
+
+	/**
 	 * @brief      Fix a DOF of a Node.
 	 *
 	 * @param[in]  nodeId  The node identifier
 	 * @param[in]  dir     The Direction to be fixed
 	 */
 	void fixNode(const int nodeId, RODS::Direction dir);
+
+	/**
+	 * @brief      Free a DOF of a Node.
+	 * 
+	 * @param nodeId  The node identifier
+	 * @param dir     The Direction to be free
+	 */
+	void freeNode(const int nodeId, RODS::Direction dir);
 
 	/**
 	 * @brief      Add a load into the system.
@@ -268,6 +283,8 @@ public:
 	void setResponseGmsh(char * fileName, const int interval);
 
 	void getDofModalResponse(double *res, const int order=1);
+
+	void getNodeModalResponse(double *res, const int order=1);
 
     void addDOF(DOF *d);
 

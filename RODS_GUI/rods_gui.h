@@ -71,6 +71,7 @@ static unsigned int shaderProgram;
 static unsigned int VBO, VAO, EBO;
 
 static int buffer_width, buffer_height;
+static float scale_factor_dsp = 1.0f;
 
 namespace RODS_GUI {
     void createShader();

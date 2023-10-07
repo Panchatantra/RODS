@@ -28,6 +28,8 @@ public:
 	void setDof(DOF *d);
 	void fixDOF();
 	void fixDOF(RODS::Direction dir);
+	void freeDOF();
+	void freeDOF(RODS::Direction dir);
 	bool isActivated(RODS::Direction dir);
 	void Deactivate(RODS::Direction dir);
 

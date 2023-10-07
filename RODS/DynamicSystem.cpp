@@ -256,19 +256,21 @@ void DynamicSystem::addNode(const int nodeId, const int pointId, const int dofXI
 void DynamicSystem::addNode(const int nodeId, const double x, const double z, bool with_rotate_dof)
 {
 	auto dofId = getNextDofId();
-
-	if (with_rotate_dof)
+	if (Nodes.count(nodeId) == 0)
 	{
-		addDOF(dofId, RODS::Direction::X);
-		addDOF(dofId+1, RODS::Direction::Z);
-		addDOF(dofId+2, RODS::Direction::RY);
-		addNode(nodeId, x, z, dofId, dofId+1, dofId+2);
-	}
-	else
-	{
-		addDOF(dofId, RODS::Direction::X);
-		addDOF(dofId+1, RODS::Direction::Z);
-		addNode(nodeId, x, z, dofId, dofId+1, -1);
+		if (with_rotate_dof)
+		{
+			addDOF(dofId, RODS::Direction::X);
+			addDOF(dofId+1, RODS::Direction::Z);
+			addDOF(dofId+2, RODS::Direction::RY);
+			addNode(nodeId, x, z, dofId, dofId+1, dofId+2);
+		}
+		else
+		{
+			addDOF(dofId, RODS::Direction::X);
+			addDOF(dofId+1, RODS::Direction::Z);
+			addNode(nodeId, x, z, dofId, dofId+1, -1);
+		}
 	}
 }
 
@@ -318,23 +320,26 @@ void DynamicSystem::addNode(const int nodeId, const int pointId, const int dofXI
 void DynamicSystem::addNode(const int nodeId, const double x, const double y, const double z, bool with_rotate_dof)
 {
 	auto dofId = getNextDofId();
+	if (Nodes.count(nodeId) == 0)
+	{
+		if (with_rotate_dof)
+		{
+			for (int i = 0; i < 6; i++)
+			{
+				addDOF(dofId+i, RODS::Direction(i));
+			}
+			addNode(nodeId, x, y, z, dofId, dofId+1, dofId+2, dofId+3, dofId+4, dofId+5);
+		}
+		else
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				addDOF(dofId+i, RODS::Direction(i));
+			}
+			addNode(nodeId, x, y, z, dofId, dofId+1, dofId+2, -1, -1, -1);
+		}
+	}
 
-	if (with_rotate_dof)
-	{
-		for (int i = 0; i < 6; i++)
-		{
-			addDOF(dofId+i, RODS::Direction(i));
-		}
-		addNode(nodeId, x, y, z, dofId, dofId+1, dofId+2, dofId+3, dofId+4, dofId+5);
-	}
-	else
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			addDOF(dofId+i, RODS::Direction(i));
-		}
-		addNode(nodeId, x, y, z, dofId, dofId+1, dofId+2, -1, -1, -1);
-	}
 }
 
 void DynamicSystem::addNodePlate2D(const int nodeId, const double x, const double y, const int dofZId,
@@ -379,9 +384,19 @@ void DynamicSystem::fixNode(const int nodeId)
 	Nodes.at(nodeId)->fixDOF();
 }
 
+void DynamicSystem::freeNode(const int nodeId)
+{
+	Nodes.at(nodeId)->freeDOF();
+}
+
 void DynamicSystem::fixNode(const int nodeId, RODS::Direction dir)
 {
 	Nodes.at(nodeId)->fixDOF(dir);
+}
+
+void DynamicSystem::freeNode(const int nodeId, RODS::Direction dir)
+{
+	Nodes.at(nodeId)->freeDOF(dir);
 }
 
 void DynamicSystem::addLoad(const int id, double* t, double* p, const int nP, const double arriveTime,
@@ -626,7 +641,7 @@ void DynamicSystem::setResponseGmsh(char* fileName, const int interval)
 void DynamicSystem::getDofModalResponse(double *res, const int order)
 {
 	int od = order-1;
-	if (order > eqnCount) od = 1;
+	if (order > eqnCount) od = 0;
 
 	vec modeshape = Phi.col(od);
 
@@ -640,6 +655,29 @@ void DynamicSystem::getDofModalResponse(double *res, const int order)
 	for (auto it = DOFs.begin(); it != DOFs.end(); it++)
 	{
 		res[i++] = it->second->dsp;
+	}
+}
+
+void DynamicSystem::getNodeModalResponse(double *res, const int order)
+{
+	int od = order-1;
+	if (order > eqnCount) od = 0;
+
+	vec modeshape = Phi.col(od);
+
+	for (int i = 0; i < eqnCount; i++)
+	{
+		DOF *d = DOFs.at(eqnMapDof.at(i));
+		d->dsp = modeshape(i);
+	}
+
+	auto i = 0;
+	for (auto it = Nodes.begin(); it != Nodes.end(); it++)
+	{
+		res[3*i] = it->second->dofX->dsp;
+		res[3*i+1] = it->second->dofY->dsp;
+		res[3*i+2] = it->second->dofZ->dsp;
+		i++;
 	}
 }
 

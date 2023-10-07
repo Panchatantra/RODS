@@ -89,31 +89,68 @@ void Node::fixDOF(RODS::Direction dir)
 	}
 }
 
+void Node::freeDOF()
+{
+	if (dofX != nullptr)  dofX->isFixed  = false;
+	if (dofY != nullptr)  dofY->isFixed  = false;
+	if (dofZ != nullptr)  dofZ->isFixed  = false;
+	if (dofRX != nullptr) dofRX->isFixed = false;
+	if (dofRY != nullptr) dofRY->isFixed = false;
+	if (dofRZ != nullptr) dofRZ->isFixed = false;
+}
+
+void Node::freeDOF(RODS::Direction dir)
+{
+	switch (dir)
+	{
+		case RODS::Direction::X:
+			if (dofX != nullptr)  dofX->isFixed  = false;
+			break;
+		case RODS::Direction::Y:
+			if (dofY != nullptr)  dofY->isFixed  = false;
+			break;
+		case RODS::Direction::Z:
+			if (dofZ != nullptr)  dofZ->isFixed  = false;
+			break;
+		case RODS::Direction::RX:
+			if (dofRX != nullptr) dofRX->isFixed = false;
+			break;
+		case RODS::Direction::RY:
+			if (dofRY != nullptr) dofRY->isFixed = false;
+			break;
+		case RODS::Direction::RZ:
+			if (dofRZ != nullptr) dofRZ->isFixed = false;
+			break;
+		default:
+			break;
+	}
+}
+
 bool Node::isActivated(RODS::Direction dir)
 {
 	DOF *d = nullptr;
 	switch (dir)
 	{
-	case RODS::Direction::X:
-		d = dofX;
-		break;
-	case RODS::Direction::Y:
-		d = dofY;
-		break;
-	case RODS::Direction::Z:
-		d = dofZ;
-		break;
-	case RODS::Direction::RX:
-		d = dofRX;
-		break;
-	case RODS::Direction::RY:
-		d = dofRY;
-		break;
-	case RODS::Direction::RZ:
-		d = dofRZ;
-		break;
-	default:
-		break;
+		case RODS::Direction::X:
+			d = dofX;
+			break;
+		case RODS::Direction::Y:
+			d = dofY;
+			break;
+		case RODS::Direction::Z:
+			d = dofZ;
+			break;
+		case RODS::Direction::RX:
+			d = dofRX;
+			break;
+		case RODS::Direction::RY:
+			d = dofRY;
+			break;
+		case RODS::Direction::RZ:
+			d = dofRZ;
+			break;
+		default:
+			break;
 	}
 
 	if (d == nullptr) return false;
@@ -125,26 +162,26 @@ void Node::Deactivate(RODS::Direction dir)
 {
 	switch (dir)
 	{
-	case RODS::Direction::X:
-		dofX = nullptr;
-		break;
-	case RODS::Direction::Y:
-		dofY = nullptr;
-		break;
-	case RODS::Direction::Z:
-		dofZ = nullptr;
-		break;
-	case RODS::Direction::RX:
-		dofRX = nullptr;
-		break;
-	case RODS::Direction::RY:
-		dofRY = nullptr;
-		break;
-	case RODS::Direction::RZ:
-		dofRZ = nullptr;
-		break;
-	default:
-		break;
+		case RODS::Direction::X:
+			dofX = nullptr;
+			break;
+		case RODS::Direction::Y:
+			dofY = nullptr;
+			break;
+		case RODS::Direction::Z:
+			dofZ = nullptr;
+			break;
+		case RODS::Direction::RX:
+			dofRX = nullptr;
+			break;
+		case RODS::Direction::RY:
+			dofRY = nullptr;
+			break;
+		case RODS::Direction::RZ:
+			dofRZ = nullptr;
+			break;
+		default:
+			break;
 	}
 }
 
@@ -226,6 +263,7 @@ int Node::getIdDof(RODS::Direction dir)
 		return dofRZ->id;
 		break;
 	default:
+		return -1;
 		break;
 	}
 }

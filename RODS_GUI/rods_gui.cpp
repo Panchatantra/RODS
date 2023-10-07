@@ -26,6 +26,7 @@ float* t_data = nullptr;
 float* r_data = nullptr;
 
 double* dof_response = nullptr;
+double* node_response = nullptr;
 
 double * period = nullptr;
 
@@ -870,7 +871,7 @@ void RODS_GUI::element2dWindow()
             ImGui::InputFloat("EA", params);
             if (ImGui::Button("Add Element"))
             {
-                num_truss_elastic_2d = add_truss_elastic_2d(ele_id, node_id_i, node_id_j, params[0]);
+                num_truss_elastic_2d = add_truss_elastic_2d(ele_id++, node_id_i, node_id_j, params[0]);
                 num_ele = get_num_ele();
             }
         }
@@ -880,7 +881,7 @@ void RODS_GUI::element2dWindow()
             ImGui::InputFloat2("EA and EI", params);
             if (ImGui::Button("Add Element"))
             {
-                num_frame_elastic_2d = add_frame_elastic_2d(ele_id, node_id_i, node_id_j, params[0], params[1]);
+                num_frame_elastic_2d = add_frame_elastic_2d(ele_id++, node_id_i, node_id_j, params[0], params[1]);
                 num_ele = get_num_ele();
             }
         }
@@ -1229,6 +1230,16 @@ void RODS_GUI::nodeWindow()
                     num_node = remove_node(nodes[node_item_index]);
                     node_item_index--;
                 }
+                ImGui::SameLine();
+                if (ImGui::Button("Fix"))
+                {
+                    fix_node(nodes[node_item_index]);
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Free"))
+                {
+                    free_node(nodes[node_item_index]);
+                }
             }
             ImGui::EndPopup();
         }
@@ -1321,6 +1332,7 @@ void RODS_GUI::solveEigenWindow()
             }
 
             ImGui::SliderInt("Order", &mode_order, 1, num_eqn);
+            ImGui::InputFloat("Scale Factor", &scale_factor_dsp);
 
             if (ImGui::Button("Draw Mode"))
             {
@@ -1861,15 +1873,20 @@ void RODS_GUI::draw_2d()
         if (num_node > 0)
         {
             float* vertices = new float[(size_t)num_node*3];
-
-            // if (draw_type == 2 || draw_type == 22)
-            // {
-            //     dof_response = new double[(size_t)num_node];
-            //     get_dof_modal_response(dof_response, mode_order);
-            // }
-
             get_node_coords(vertices);
 
+            if (draw_type == 2 || draw_type == 22)
+            {
+                node_response = new double[(size_t)num_node*3];
+                get_node_modal_response(node_response, mode_order);
+            }
+
+            for (size_t i = 0; i < (size_t)num_node*3; i++)
+            {
+                if (draw_type == 2) vertices[i] += node_response[i]*scale_factor_dsp;
+                else if (draw_type == 22) vertices[i] += node_response[i]*scale_factor_dsp*sinf(2.0*3.142/5.0*glfwGetTime());
+            }
+            
             // glUseProgram(shaderProgram);
             glBindVertexArray(VAO);
 

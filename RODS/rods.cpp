@@ -104,9 +104,19 @@ DLL_API void fix_node(const int id)
 	ds->fixNode(id);
 }
 
+DLL_API void free_node(const int id)
+{
+    ds->freeNode(id);
+}
+
 DLL_API void fix_node_dof(const int nodeId, const int dir)
 {
 	ds->fixNode(nodeId, RODS::Direction(dir));
+}
+
+DLL_API void free_node_dof(const int nodeId, const int dir)
+{
+    ds->freeNode(nodeId, RODS::Direction(dir));
 }
 
 DLL_API size_t add_node_1d(const int nodeId, const double x, const int dofId)
@@ -824,6 +834,11 @@ DLL_API size_t get_rod2d_node_id(int * id)
 DLL_API void get_dof_modal_response(double * res, const int order)
 {
 	ds->getDofModalResponse(res, order);
+}
+
+DLL_API void get_node_modal_response(double *res, const int order)
+{
+    ds->getNodeModalResponse(res, order);
 }
 
 DLL_API size_t get_period(double* P)

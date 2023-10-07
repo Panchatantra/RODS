@@ -1,16 +1,16 @@
 {
-    "DOFCount": 16,
+    "DOFCount": 14,
     "DOFVec": [
         {
             "dir": 0,
             "id": 1,
-            "isFixed": false,
+            "isFixed": true,
             "mass": 0.01
         },
         {
             "dir": 2,
             "id": 2,
-            "isFixed": false,
+            "isFixed": true,
             "mass": 0.01
         },
         {
@@ -39,18 +39,6 @@
         },
         {
             "dir": 0,
-            "id": 7,
-            "isFixed": false,
-            "mass": 0.0
-        },
-        {
-            "dir": 2,
-            "id": 8,
-            "isFixed": false,
-            "mass": 0.0
-        },
-        {
-            "dir": 0,
             "id": 9,
             "isFixed": false,
             "mass": 0.01
@@ -64,13 +52,13 @@
         {
             "dir": 0,
             "id": 11,
-            "isFixed": false,
+            "isFixed": true,
             "mass": 0.01
         },
         {
             "dir": 2,
             "id": 12,
-            "isFixed": false,
+            "isFixed": true,
             "mass": 0.01
         },
         {
@@ -204,7 +192,7 @@
     "SpringBilinearVec": [],
     "SpringCount": 0,
     "SpringVec": [],
-    "TrussElastic2DCount": 3,
+    "TrussElastic2DCount": 11,
     "TrussElastic2DVec": [
         {
             "EA": 442662.96875,
@@ -223,6 +211,54 @@
             "IdNodeI": 2,
             "IdNodeJ": 3,
             "id": 3
+        },
+        {
+            "EA": 442662.96875,
+            "IdNodeI": 2,
+            "IdNodeJ": 4,
+            "id": 4
+        },
+        {
+            "EA": 442662.96875,
+            "IdNodeI": 4,
+            "IdNodeJ": 5,
+            "id": 5
+        },
+        {
+            "EA": 442662.96875,
+            "IdNodeI": 5,
+            "IdNodeJ": 7,
+            "id": 6
+        },
+        {
+            "EA": 442662.96875,
+            "IdNodeI": 4,
+            "IdNodeJ": 7,
+            "id": 7
+        },
+        {
+            "EA": 442662.96875,
+            "IdNodeI": 2,
+            "IdNodeJ": 6,
+            "id": 8
+        },
+        {
+            "EA": 442662.96875,
+            "IdNodeI": 4,
+            "IdNodeJ": 6,
+            "id": 9
+        },
+        {
+            "EA": 442662.96875,
+            "IdNodeI": 3,
+            "IdNodeJ": 6,
+            "id": 10
+        },
+        {
+            "EA": 442662.96875,
+            "IdNodeI": 6,
+            "IdNodeJ": 7,
+            "id": 11
         }
     ],
     "XSeismicWaveId": -1,
@@ -236,13 +272,13 @@
     "dispControlDOFId": -1,
     "dispControlEqn": -1,
     "dispControlLoadId": -1,
-    "dofCount": 16,
+    "dofCount": 14,
     "dt": 0.02,
     "dynamicSolver": 2,
-    "eigenVectorNormed": false,
-    "eqnCount": 0,
+    "eigenVectorNormed": true,
+    "eqnCount": 10,
     "exportGmshInterval": -1,
-    "fixedDofCount": 0,
+    "fixedDofCount": 4,
     "maxIter": 20,
     "name": "truss_2d",
     "nsteps": 0,

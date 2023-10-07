@@ -25,7 +25,9 @@ extern "C" {
 	DLL_API void fix_dof(const int id);
 	DLL_API void free_dof(const int id);
 	DLL_API void fix_node(const int id);
+	DLL_API void free_node(const int id);
 	DLL_API void fix_node_dof(const int nodeId, const int dir);
+	DLL_API void free_node_dof(const int nodeId, const int dir);
 	DLL_API size_t add_dof_x(const int id, const double m);
 	DLL_API size_t add_dof(const int id, const int dir, const double m);
 	DLL_API size_t add_node_1d(const int nodeId, const double x, const int dofId);
@@ -172,6 +174,7 @@ extern "C" {
 	DLL_API size_t get_rod1d_dof_id(int* id);
 	DLL_API size_t get_rod2d_node_id(int* id);
 	DLL_API void get_dof_modal_response(double *res, const int order=1);
+	DLL_API void get_node_modal_response(double *res, const int order=1);
 
 	DLL_API size_t get_period(double* P);
 
