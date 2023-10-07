@@ -1,6 +1,11 @@
 #include "TrussElastic2D.h"
 
-TrussElastic2D::TrussElastic2D(const int id, Node * nodeI, Node * nodeJ, const double EA):
+TrussElastic2D::TrussElastic2D() :
+	ROD2D(0, nullptr, nullptr), EA(0.0), ue(0.0), f(0.0)
+{
+}
+
+TrussElastic2D::TrussElastic2D(const int id, Node *nodeI, Node *nodeJ, const double EA) :
 	ROD2D(id, nodeI, nodeJ), EA(EA), ue(0.0), f(0.0)
 {
 	T = rowvec( {-lxx, -lxz, lxx, lxz} );
@@ -10,6 +15,7 @@ TrussElastic2D::TrussElastic2D(const int id, Node * nodeI, Node * nodeJ, const d
 
 TrussElastic2D::~TrussElastic2D()
 {
+
 }
 
 void TrussElastic2D::buildMatrix()

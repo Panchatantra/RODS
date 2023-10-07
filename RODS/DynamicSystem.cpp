@@ -42,12 +42,12 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 	ifs.close();
 	from_json(model, *this);
 
-	auto j_array_dof = model.at("dofVec");
-	DOF dof;
-	for (auto i = 0; i<model.at("dofCount"); i++)
+	auto j_array_DOF = model.at("DOFVec");
+	DOF DOFObj;
+	for (auto i = 0; i<model.at("DOFCount"); i++)
 	{
-		j_array_dof[i].get_to(dof);
-		addDOF(dof.id, dof.dir, dof.mass, dof.isFixed);
+		j_array_DOF[i].get_to(DOFObj);
+		addDOF(DOFObj.id, DOFObj.dir, DOFObj.mass, DOFObj.isFixed);
 	}
 
 	auto j_array_Node = model.at("NodeVec");
@@ -85,6 +85,8 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 	JSON_TO_ELEMENTS(Inerter, m)
 
 	JSON_TO_ELEMENTS_3(SpringBilinear, k0, uy, alpha)
+
+	JSON_TO_ELEMENTS_NODE(TrussElastic2D, EA)
 }
 
 void DynamicSystem::saveToJSON(const char *fileName)
@@ -112,6 +114,8 @@ void DynamicSystem::saveToJSON(const char *fileName)
 	ELEMENTS_TO_JSON(Dashpot)
 	ELEMENTS_TO_JSON(Inerter)
 	ELEMENTS_TO_JSON(SpringBilinear)
+
+	ELEMENTS_TO_JSON(TrussElastic2D)
 
 	std::ofstream ofs(fileName);
 	ofs << std::setw(4) << model;

@@ -30,6 +30,15 @@ for (auto i = 0; i<model.at(TO_STR(ELE_TYPE##Count)); i++)\
         ELE_TYPE##Obj.PARA1, ELE_TYPE##Obj.PARA2, ELE_TYPE##Obj.PARA3);\
 }
 
+#define JSON_TO_ELEMENTS_NODE(ELE_TYPE, PARA)\
+auto j_array_##ELE_TYPE = model.at(TO_STR(ELE_TYPE##Vec));\
+ELE_TYPE ELE_TYPE##Obj;\
+for (auto i = 0; i<model.at(TO_STR(ELE_TYPE##Count)); i++)\
+{\
+    j_array_##ELE_TYPE[i].get_to(ELE_TYPE##Obj);\
+    add##ELE_TYPE(ELE_TYPE##Obj.id, ELE_TYPE##Obj.IdNodeI, ELE_TYPE##Obj.IdNodeJ, ELE_TYPE##Obj.PARA);\
+}
+
 #define ELEMENTS_TO_JSON(ELE_TYPE)\
 model[TO_STR(ELE_TYPE##Count)] = ELE_TYPE##s.size();\
 vector<ELE_TYPE> ELE_TYPE##Vec;\

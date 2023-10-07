@@ -24,4 +24,5 @@ public:
 
 	double L;
 	double lxx, lxz, lzx, lzz;
+	int IdNodeI, IdNodeJ;
 };

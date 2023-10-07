@@ -9,6 +9,7 @@ class TrussElastic2D :
 	public ROD2D
 {
 public:
+	TrussElastic2D();
 	TrussElastic2D(const int id, Node * nodeI, Node * nodeJ, const double EA);
 	~TrussElastic2D();
 
@@ -23,4 +24,17 @@ public:
 
 	rowvec::fixed<4> T;
 	mat::fixed<4, 4> K;
+
+	friend void to_json(json& jsonObj, const TrussElastic2D& TrussElastic2DObj) {
+		jsonObj["id"] = TrussElastic2DObj.id;
+		jsonObj["IdNodeI"] = TrussElastic2DObj.nodeI->id;
+		jsonObj["IdNodeJ"] = TrussElastic2DObj.nodeJ->id;
+		jsonObj["EA"] = TrussElastic2DObj.EA;
+	}
+	friend void from_json(const json& jsonObj, TrussElastic2D& TrussElastic2DObj) {
+		jsonObj.at("id").get_to(TrussElastic2DObj.id);
+		jsonObj.at("IdNodeI").get_to(TrussElastic2DObj.IdNodeI);
+		jsonObj.at("IdNodeJ").get_to(TrussElastic2DObj.IdNodeJ);
+		jsonObj.at("EA").get_to(TrussElastic2DObj.EA);
+	};
 };
