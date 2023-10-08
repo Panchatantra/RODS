@@ -25,6 +25,7 @@ for x, z in nodeCoord:
 
 RODS.fix_node(1)
 RODS.fix_node(4)
+# RODS.fix_node_dof(4,RODS.Direction.Z.value)
 
 elementConnect = [
 		[1, 2],
@@ -49,7 +50,7 @@ RODS.assemble_matrix()
 RODS.solve_eigen()
 RODS.print_info()
 
-gmsh_file = "truss2d.msh".encode()
+gmsh_file = b"truss2d.msh"
 RODS.export_gmsh(gmsh_file)
 RODS.export_modal_gmsh(gmsh_file, 1)
 RODS.export_modal_gmsh(gmsh_file, 2)

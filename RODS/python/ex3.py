@@ -15,6 +15,9 @@ EA_c = E * A_c
 EI_b = E * I_b
 EI_c = E * I_c
 
+print("%e, %e"%(EA_b, EI_b))
+print("%e, %e"%(EA_c, EI_c))
+
 # 设置固有阻尼比
 RODS.set_damping_ratio(0.05)
 

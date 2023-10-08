@@ -90,6 +90,7 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 	JSON_TO_ELEMENTS_3(SpringBilinear, k0, uy, alpha)
 
 	JSON_TO_ELEMENTS_NODE(TrussElastic2D, EA)
+	JSON_TO_ELEMENTS_NODE_2(FrameElastic2D, EA, EI)
 }
 
 void DynamicSystem::saveToJSON(const char *fileName)
@@ -119,6 +120,7 @@ void DynamicSystem::saveToJSON(const char *fileName)
 	ELEMENTS_TO_JSON(SpringBilinear)
 
 	ELEMENTS_TO_JSON(TrussElastic2D)
+	ELEMENTS_TO_JSON(FrameElastic2D)
 
 	std::ofstream ofs(fileName);
 	ofs << std::setw(4) << model;

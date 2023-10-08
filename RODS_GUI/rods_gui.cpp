@@ -899,11 +899,11 @@ void RODS_GUI::nodeWindow()
         ImGui::InputInt("Node ID", &node_id);
         static int node_dim = 0;
         ImGui::Combo("Dimension", &node_dim, dimension, 5);
-        ImGui::Text("Method to Link with DOF: "); ImGui::SameLine();
-        static int dof_method = 1;
+        ImGui::Text("DOFs: "); ImGui::SameLine();
+        static int dof_method = 2;
         ImGui::RadioButton("Select", &dof_method, 1); ImGui::SameLine();
         ImGui::RadioButton("Auto Generate", &dof_method, 2);
-        ImGui::Text("Method to define Coordinates: "); ImGui::SameLine();
+        ImGui::Text("Coordinates: "); ImGui::SameLine();
         static int coord_method = 1;
         ImGui::RadioButton("Directly Input", &coord_method, 1); ImGui::SameLine();
         ImGui::RadioButton("From a Point", &coord_method, 2);
@@ -1156,6 +1156,126 @@ void RODS_GUI::nodeWindow()
                     case 4:
                         num_node = add_node_3d_auto_dof(node_id, coord[0], coord[1], coord[2], false);
                         set_node_mass(node_id, mass);
+                        break;
+                    default:
+                        break;
+                    }
+                node_id++;
+                }
+
+                ImGui::Separator();
+
+                static float x_grid[3] = {0.0, 0.0, 1.0};
+                static float y_grid[3] = {0.0, 0.0, 1.0};
+                static float z_grid[3] = {0.0, 0.0, 1.0};
+                ImGui::Text("Init, Incr, Count of Coords:");
+                switch (node_dim)
+                {
+                    case 0:
+                        ImGui::InputFloat3("X", x_grid);
+                        break;
+                    case 1:
+                        ImGui::InputFloat3("X", x_grid);
+                        ImGui::InputFloat3("Z", z_grid);
+                        break;
+                    case 2:
+                        ImGui::InputFloat3("X", x_grid);
+                        ImGui::InputFloat3("Y", y_grid);
+                        ImGui::InputFloat3("Z", z_grid);
+                        break;
+                    case 3:
+                        ImGui::InputFloat3("X", x_grid);
+                        ImGui::InputFloat3("Z", z_grid);
+                        break;
+                    case 4:
+                        ImGui::InputFloat3("X", x_grid);
+                        ImGui::InputFloat3("Y", y_grid);
+                        ImGui::InputFloat3("Z", z_grid);
+                        break;
+                    default:
+                        break;
+                }
+
+                if (ImGui::Button("Batch Add Node"))
+                {   
+                    int x_grid_count = (int)x_grid[2];
+                    int y_grid_count = (int)y_grid[2];
+                    int z_grid_count = (int)z_grid[2];
+                    int id;
+                    switch (node_dim)
+                    {
+                    case 0:
+                        for (int i = 0; i < x_grid_count; i++)
+                        {
+                            id = node_id+i;
+                            num_node = add_node_1d_auto_dof(id, x_grid[0]+x_grid[1]*i);
+                            set_node_mass(id, mass);
+                        }
+                        node_id += x_grid_count;
+                        break;
+                    case 1:
+                        id = node_id;
+                        for (int i = 0; i < x_grid_count; i++)
+                        {
+                            for (int j = 0; j < z_grid_count; j++)
+                            {
+                                auto coord_x = x_grid[0]+x_grid[1]*i;
+                                auto coord_z = z_grid[0]+z_grid[1]*j;
+                                num_node = add_node_2d_auto_dof(id, coord_x, coord_z);
+                                set_node_mass_and_moment_of_inertia(id++, mass, I);
+                            }
+                        }
+                        node_id = id;
+                        break;
+                    case 2:
+                        id = node_id;
+                        for (int i = 0; i < x_grid_count; i++)
+                        {
+                            for (int j = 0; j < y_grid_count; j++)
+                            {
+                                for (int k = 0; k < z_grid_count; k++)
+                                {
+                                    auto coord_x = x_grid[0]+x_grid[1]*i;
+                                    auto coord_y = y_grid[0]+y_grid[1]*j;
+                                    auto coord_z = z_grid[0]+z_grid[1]*k;
+                                    num_node = add_node_3d_auto_dof(id, coord_x, coord_y, coord_z);
+                                    set_node_mass_and_moment_of_inertia(id++, mass, I);
+                                }
+                            }
+                        }
+                        node_id = id;
+                        break;
+                    case 3:
+                        id = node_id;
+                        for (int i = 0; i < x_grid_count; i++)
+                        {
+                            for (int j = 0; j < z_grid_count; j++)
+                            {
+                                auto coord_x = x_grid[0]+x_grid[1]*i;
+                                auto coord_z = z_grid[0]+z_grid[1]*j;
+                                num_node = add_node_2d_auto_dof(id, coord_x, coord_z);
+                                set_node_mass_and_moment_of_inertia(id++, mass, I);
+                            }
+                        }
+                        node_id = id;
+                        break;
+                    case 4:
+                        id = node_id;
+                        for (int i = 0; i < x_grid_count; i++)
+                        {
+                            for (int j = 0; j < y_grid_count; j++)
+                            {
+                                for (int k = 0; k < z_grid_count; k++)
+                                {
+                                    auto coord_x = x_grid[0]+x_grid[1]*i;
+                                    auto coord_y = y_grid[0]+y_grid[1]*j;
+                                    auto coord_z = z_grid[0]+z_grid[1]*k;
+                                    num_node = add_node_3d_auto_dof(id, coord_x, coord_y, coord_z);
+                                    set_node_mass_and_moment_of_inertia(id++, mass, I);
+                                }
+                            }
+                        }
+                        node_id = id;
                         break;
                     default:
                         break;

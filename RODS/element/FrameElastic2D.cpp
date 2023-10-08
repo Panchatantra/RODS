@@ -1,9 +1,17 @@
 #include "FrameElastic2D.h"
 
-FrameElastic2D::FrameElastic2D(const int id, Node * nodeI, Node * nodeJ, const double EA, const double EI):
+FrameElastic2D::FrameElastic2D() :
+	ROD2D(), EA(0.0), EI(0.0),
+	ue(new double[3]{0.0, 0.0, 0.0}),
+	f(new double[3]{0.0, 0.0, 0.0})
+{
+}
+
+FrameElastic2D::FrameElastic2D(const int id, Node *nodeI, Node *nodeJ,
+								const double EA, const double EI) :
 	ROD2D(id, nodeI, nodeJ), EA(EA), EI(EI),
-	ue(new double[3]{ 0.0, 0.0, 0.0 }),
-	f(new double[3]{ 0.0, 0.0, 0.0 })
+	ue(new double[3]{0.0, 0.0, 0.0}),
+	f(new double[3]{0.0, 0.0, 0.0})
 {
 	k = mat({
 				{EA/L, 0.0,    0.0},
