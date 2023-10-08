@@ -1,0 +1,533 @@
+{
+    "DOFCount": 36,
+    "DOFVec": [
+        {
+            "dir": 0,
+            "id": 1,
+            "isFixed": true,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 2,
+            "isFixed": true,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 3,
+            "isFixed": true,
+            "mass": 0.005
+        },
+        {
+            "dir": 0,
+            "id": 4,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 5,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 6,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 0,
+            "id": 7,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 8,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 9,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 0,
+            "id": 10,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 11,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 12,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 0,
+            "id": 13,
+            "isFixed": true,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 14,
+            "isFixed": true,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 15,
+            "isFixed": true,
+            "mass": 0.005
+        },
+        {
+            "dir": 0,
+            "id": 16,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 17,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 18,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 0,
+            "id": 19,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 20,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 21,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 0,
+            "id": 22,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 23,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 24,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 0,
+            "id": 25,
+            "isFixed": true,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 26,
+            "isFixed": true,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 27,
+            "isFixed": true,
+            "mass": 0.005
+        },
+        {
+            "dir": 0,
+            "id": 28,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 29,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 30,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 0,
+            "id": 31,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 32,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 33,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 0,
+            "id": 34,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 2,
+            "id": 35,
+            "isFixed": false,
+            "mass": 0.005
+        },
+        {
+            "dir": 4,
+            "id": 36,
+            "isFixed": false,
+            "mass": 0.005
+        }
+    ],
+    "DashpotCount": 0,
+    "DashpotVec": [],
+    "FrameElastic2DCount": 15,
+    "FrameElastic2DVec": [
+        {
+            "EA": 5200000.0,
+            "EI": 69333327872.0,
+            "IdNodeI": 1,
+            "IdNodeJ": 2,
+            "id": 1
+        },
+        {
+            "EA": 5200000.0,
+            "EI": 69333327872.0,
+            "IdNodeI": 2,
+            "IdNodeJ": 3,
+            "id": 2
+        },
+        {
+            "EA": 5200000.0,
+            "EI": 69333327872.0,
+            "IdNodeI": 3,
+            "IdNodeJ": 4,
+            "id": 3
+        },
+        {
+            "EA": 5200000.0,
+            "EI": 69333327872.0,
+            "IdNodeI": 5,
+            "IdNodeJ": 6,
+            "id": 4
+        },
+        {
+            "EA": 5200000.0,
+            "EI": 69333327872.0,
+            "IdNodeI": 6,
+            "IdNodeJ": 7,
+            "id": 5
+        },
+        {
+            "EA": 5200000.0,
+            "EI": 69333327872.0,
+            "IdNodeI": 7,
+            "IdNodeJ": 8,
+            "id": 6
+        },
+        {
+            "EA": 5200000.0,
+            "EI": 69333327872.0,
+            "IdNodeI": 9,
+            "IdNodeJ": 10,
+            "id": 7
+        },
+        {
+            "EA": 5200000.0,
+            "EI": 69333327872.0,
+            "IdNodeI": 10,
+            "IdNodeJ": 11,
+            "id": 8
+        },
+        {
+            "EA": 5200000.0,
+            "EI": 69333327872.0,
+            "IdNodeI": 11,
+            "IdNodeJ": 12,
+            "id": 9
+        },
+        {
+            "EA": 2600000.0,
+            "EI": 34666668032.0,
+            "IdNodeI": 2,
+            "IdNodeJ": 6,
+            "id": 10
+        },
+        {
+            "EA": 2600000.0,
+            "EI": 34666668032.0,
+            "IdNodeI": 6,
+            "IdNodeJ": 10,
+            "id": 11
+        },
+        {
+            "EA": 2600000.0,
+            "EI": 34666668032.0,
+            "IdNodeI": 3,
+            "IdNodeJ": 7,
+            "id": 12
+        },
+        {
+            "EA": 2600000.0,
+            "EI": 34666668032.0,
+            "IdNodeI": 7,
+            "IdNodeJ": 11,
+            "id": 13
+        },
+        {
+            "EA": 2600000.0,
+            "EI": 34666668032.0,
+            "IdNodeI": 4,
+            "IdNodeJ": 8,
+            "id": 14
+        },
+        {
+            "EA": 2600000.0,
+            "EI": 34666668032.0,
+            "IdNodeI": 8,
+            "IdNodeJ": 12,
+            "id": 15
+        }
+    ],
+    "InerterCount": 0,
+    "InerterVec": [],
+    "NodeCount": 12,
+    "NodeVec": [
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 3,
+            "IdDofRZ": -1,
+            "IdDofX": 1,
+            "IdDofY": -1,
+            "IdDofZ": 2,
+            "dim": 2,
+            "id": 1,
+            "x": -6000.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 6,
+            "IdDofRZ": -1,
+            "IdDofX": 4,
+            "IdDofY": -1,
+            "IdDofZ": 5,
+            "dim": 2,
+            "id": 2,
+            "x": -6000.0,
+            "y": 0.0,
+            "z": 3000.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 9,
+            "IdDofRZ": -1,
+            "IdDofX": 7,
+            "IdDofY": -1,
+            "IdDofZ": 8,
+            "dim": 2,
+            "id": 3,
+            "x": -6000.0,
+            "y": 0.0,
+            "z": 6000.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 12,
+            "IdDofRZ": -1,
+            "IdDofX": 10,
+            "IdDofY": -1,
+            "IdDofZ": 11,
+            "dim": 2,
+            "id": 4,
+            "x": -6000.0,
+            "y": 0.0,
+            "z": 9000.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 15,
+            "IdDofRZ": -1,
+            "IdDofX": 13,
+            "IdDofY": -1,
+            "IdDofZ": 14,
+            "dim": 2,
+            "id": 5,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 18,
+            "IdDofRZ": -1,
+            "IdDofX": 16,
+            "IdDofY": -1,
+            "IdDofZ": 17,
+            "dim": 2,
+            "id": 6,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 3000.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 21,
+            "IdDofRZ": -1,
+            "IdDofX": 19,
+            "IdDofY": -1,
+            "IdDofZ": 20,
+            "dim": 2,
+            "id": 7,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 6000.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 24,
+            "IdDofRZ": -1,
+            "IdDofX": 22,
+            "IdDofY": -1,
+            "IdDofZ": 23,
+            "dim": 2,
+            "id": 8,
+            "x": 0.0,
+            "y": 0.0,
+            "z": 9000.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 27,
+            "IdDofRZ": -1,
+            "IdDofX": 25,
+            "IdDofY": -1,
+            "IdDofZ": 26,
+            "dim": 2,
+            "id": 9,
+            "x": 6000.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 30,
+            "IdDofRZ": -1,
+            "IdDofX": 28,
+            "IdDofY": -1,
+            "IdDofZ": 29,
+            "dim": 2,
+            "id": 10,
+            "x": 6000.0,
+            "y": 0.0,
+            "z": 3000.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 33,
+            "IdDofRZ": -1,
+            "IdDofX": 31,
+            "IdDofY": -1,
+            "IdDofZ": 32,
+            "dim": 2,
+            "id": 11,
+            "x": 6000.0,
+            "y": 0.0,
+            "z": 6000.0
+        },
+        {
+            "IdDofRX": -1,
+            "IdDofRY": 36,
+            "IdDofRZ": -1,
+            "IdDofX": 34,
+            "IdDofY": -1,
+            "IdDofZ": 35,
+            "dim": 2,
+            "id": 12,
+            "x": 6000.0,
+            "y": 0.0,
+            "z": 9000.0
+        }
+    ],
+    "NumDynamicSubSteps": 1,
+    "NumModesInherentDamping": -1,
+    "RayleighOmg1": 20.943951000000002,
+    "RayleighOmg2": 62.831853,
+    "SpringBilinearCount": 0,
+    "SpringBilinearVec": [],
+    "SpringCount": 0,
+    "SpringVec": [],
+    "TrussElastic2DCount": 0,
+    "TrussElastic2DVec": [],
+    "XSeismicWaveId": -1,
+    "XSeismicWaveScale": 0.0,
+    "YSeismicWaveId": -1,
+    "YSeismicWaveScale": 0.0,
+    "ZSeismicWaveId": -1,
+    "ZSeismicWaveScale": 0.0,
+    "cstep": 0,
+    "ctime": 0.0,
+    "dispControlDOFId": -1,
+    "dispControlEqn": -1,
+    "dispControlLoadId": -1,
+    "dofCount": 36,
+    "dt": 0.02,
+    "dynamicSolver": 2,
+    "eigenVectorNormed": true,
+    "eqnCount": 27,
+    "exportGmshInterval": -1,
+    "fixedDofCount": 9,
+    "maxIter": 20,
+    "name": "RODS",
+    "nsteps": 0,
+    "tol": 1e-06,
+    "useRayleighDamping": true,
+    "workDir": "./",
+    "xMax": 6000.0,
+    "xMin": -6000.0,
+    "yMax": 0.0,
+    "yMin": 0.0,
+    "zMax": 9000.0,
+    "zMin": 0.0,
+    "zeta": 0.05
+}

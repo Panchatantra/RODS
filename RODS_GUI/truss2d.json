@@ -88,6 +88,8 @@
     ],
     "DashpotCount": 0,
     "DashpotVec": [],
+    "FrameElastic2DCount": 0,
+    "FrameElastic2DVec": [],
     "InerterCount": 0,
     "InerterVec": [],
     "NodeCount": 7,

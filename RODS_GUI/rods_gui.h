@@ -69,6 +69,7 @@ const size_t C_STR_LEN_S = 20;
 
 static unsigned int shaderProgram;
 static unsigned int VBO, VAO, EBO;
+static unsigned int VBO_COLOR;
 
 static int buffer_width, buffer_height;
 static float scale_factor_dsp = 1.0f;

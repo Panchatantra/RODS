@@ -9,6 +9,7 @@
 
 #include <string>
 #include <math.h>
+#include <algorithm>
 #include <map>
 #include <vector>
 std::map<int, int> pointIdMapIndex;
@@ -85,23 +86,24 @@ const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
 void RODS_GUI::createShader()
 {
     const char* vertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
+        "layout (location = 0) in vec3 position;\n"
+        "layout (location = 1) in vec3 color;\n"
         "uniform mat4 model;\n"
         "uniform mat4 view;\n"
         "uniform mat4 projection;\n"
         "out vec4 vertexColor;\n"
         "void main()\n"
         "{\n"
-        "   gl_Position = projection * view * model * vec4(aPos, 1.0f);\n"
-        "   vertexColor = gl_Position;\n"
+        "   gl_Position = projection * view * model * vec4(position, 1.0f);\n"
+        "   vertexColor = vec4(color, 1.0f);\n"
         "}\0";
 
     const char* fragmentShaderSource = "#version 330 core\n"
-        "out vec4 FragColor;\n"
+        "out vec4 fragColor;\n"
         "in vec4 vertexColor;\n"
         "void main()\n"
         "{\n"
-        "   FragColor = vertexColor;\n"
+        "   fragColor = vertexColor;\n"
         "}\n\0";
 
     // vertex shader
@@ -127,14 +129,19 @@ void RODS_GUI::buildVertex()
 {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &VBO_COLOR);
     glGenBuffers(1, &EBO);
 
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_COLOR);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -156,6 +163,7 @@ void RODS_GUI::setCamera(GLFWwindow* window)
                         glm::vec3(0.0f, 0.0f, 1.0f) );
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
     glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f,0.0f,-0.5f));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
 }
 
@@ -1163,6 +1171,36 @@ void RODS_GUI::nodeWindow()
                 node_id++;
                 }
 
+                ImGui::SameLine();
+                if (ImGui::Button("Edit"))
+                    ImGui::OpenPopup("Edit Node");
+
+                if (ImGui::BeginPopup("Edit Node"))
+                {
+                    genNodeList();
+                    if (num_node > 0)
+                    {
+                        static int node_item_index = 0;
+                        ImGui::Combo("Node", &node_item_index, nodes_str.c_str());
+                        if (ImGui::Button("Remove"))
+                        {
+                            num_node = remove_node(nodes[node_item_index]);
+                            node_item_index--;
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::Button("Fix"))
+                        {
+                            fix_node(nodes[node_item_index]);
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::Button("Free"))
+                        {
+                            free_node(nodes[node_item_index]);
+                        }
+                    }
+                    ImGui::EndPopup();
+                }
+
                 ImGui::Separator();
 
                 static float x_grid[3] = {0.0, 0.0, 1.0};
@@ -1197,7 +1235,7 @@ void RODS_GUI::nodeWindow()
                 }
 
                 if (ImGui::Button("Batch Add Node"))
-                {   
+                {
                     int x_grid_count = (int)x_grid[2];
                     int y_grid_count = (int)y_grid[2];
                     int z_grid_count = (int)z_grid[2];
@@ -1280,7 +1318,6 @@ void RODS_GUI::nodeWindow()
                     default:
                         break;
                     }
-                node_id++;
                 }
             }
             else
@@ -1327,38 +1364,38 @@ void RODS_GUI::nodeWindow()
                         }
                         node_id++;
                     }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("Edit"))
+                        ImGui::OpenPopup("Edit Node");
+
+                    if (ImGui::BeginPopup("Edit Node"))
+                    {
+                        genNodeList();
+                        if (num_node > 0)
+                        {
+                            static int node_item_index = 0;
+                            ImGui::Combo("Node", &node_item_index, nodes_str.c_str());
+                            if (ImGui::Button("Remove"))
+                            {
+                                num_node = remove_node(nodes[node_item_index]);
+                                node_item_index--;
+                            }
+                            ImGui::SameLine();
+                            if (ImGui::Button("Fix"))
+                            {
+                                fix_node(nodes[node_item_index]);
+                            }
+                            ImGui::SameLine();
+                            if (ImGui::Button("Free"))
+                            {
+                                free_node(nodes[node_item_index]);
+                            }
+                        }
+                        ImGui::EndPopup();
+                    }
                 }
             }
-        }
-
-        ImGui::SameLine();
-        if (ImGui::Button("Edit"))
-            ImGui::OpenPopup("Edit Node");
-
-        if (ImGui::BeginPopup("Edit Node"))
-        {
-            genNodeList();
-            if (num_node > 0)
-            {
-                static int node_item_index = 0;
-                ImGui::Combo("Node", &node_item_index, nodes_str.c_str());
-                if (ImGui::Button("Remove"))
-                {
-                    num_node = remove_node(nodes[node_item_index]);
-                    node_item_index--;
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Fix"))
-                {
-                    fix_node(nodes[node_item_index]);
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Free"))
-                {
-                    free_node(nodes[node_item_index]);
-                }
-            }
-            ImGui::EndPopup();
         }
 
         if (ImGui::Button("Close"))
@@ -2065,22 +2102,44 @@ void RODS_GUI::draw_2d()
         {
             float* vertices = new float[(size_t)num_node*3];
             get_node_coords(vertices);
+            float* colors = new float[(size_t)num_node*3];
+
+            double max_res = 0.0;
+            double min_res = 0.0;
+            double peak_res = 1.0;
 
             if (draw_type == 2 || draw_type == 22)
             {
                 node_response = new double[(size_t)num_node*3];
                 get_node_modal_response(node_response, mode_order);
+                max_res = *std::max_element(node_response, node_response+num_node*3);
+                min_res = *std::min_element(node_response, node_response+num_node*3);
+                peak_res = max_res > -min_res ? max_res : -min_res;
             }
 
             for (size_t i = 0; i < (size_t)num_node*3; i++)
             {
-                if (draw_type == 2) vertices[i] += node_response[i]*scale_factor_dsp;
-                else if (draw_type == 22) vertices[i] += node_response[i]*scale_factor_dsp*sinf(2.0*3.142/5.0*glfwGetTime());
+                if (draw_type == 2)
+                {
+                    vertices[i] += node_response[i]*scale_factor_dsp;
+                    colors[i] = fabsf(node_response[i]/peak_res);
+                }
+                else if (draw_type == 22)
+                {
+                    vertices[i] += node_response[i]*scale_factor_dsp*sinf(2.0*3.142/5.0*glfwGetTime());
+                    colors[i] = fabsf(node_response[i]/peak_res*sinf(2.0*3.142/5.0*glfwGetTime()));
+                }
+                else
+                {
+                    colors[i] = vertices[i];
+                }
             }
-            
+
             // glUseProgram(shaderProgram);
             glBindVertexArray(VAO);
 
+            glBindBuffer(GL_ARRAY_BUFFER, VBO_COLOR);
+            glBufferData(GL_ARRAY_BUFFER, (size_t)num_node*3*sizeof(float), colors, GL_DYNAMIC_DRAW);
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
             glBufferData(GL_ARRAY_BUFFER, (size_t)num_node*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
 
