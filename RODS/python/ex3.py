@@ -1,7 +1,7 @@
 import RODS
 import numpy as np
 import matplotlib.pyplot as plt
-plt.rcParams['font.sans-serif'] = ['Microsoft Yahei']  # 用来正常显示中文标签
+plt.rcParams['font.sans-serif'] = ['Microsoft Yahei', 'WenQuanYi Micro Hei']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
 mass = 0.005
@@ -17,6 +17,8 @@ EI_c = E * I_c
 
 print("%e, %e"%(EA_b, EI_b))
 print("%e, %e"%(EA_c, EI_c))
+
+RODS.set_name(b"Frame2D")
 
 # 设置固有阻尼比
 RODS.set_damping_ratio(0.05)
@@ -103,6 +105,9 @@ RODS.add_dof_recorder(dof_recorder_id, RODS.Response.DISP.value, 'top_disp_frame
 # 将节点4的X方向自由度加入记录器
 node_id = 4
 RODS.add_dof_to_recorder(3*(node_id-1)+1, dof_recorder_id)
+
+all_dof_recorder_id = 1
+RODS.record_all_dof_response(all_dof_recorder_id)
 
 # 设置动力分析方法
 RODS.set_dynamic_solver(RODS.DynamicSolver.Newmark.value)

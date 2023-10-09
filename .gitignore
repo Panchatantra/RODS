@@ -361,3 +361,6 @@ RODS_GUI/RODS_GUI
 
 # docs
 RODS/html/
+
+RODS/python/*_dof_response.txt
+RODS/python/*_ele_response.txt

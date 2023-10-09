@@ -43,6 +43,9 @@ class LocalAxis(enum.Enum):
 set_name = RODSDLL.set_name
 set_name.argtypes = [c_char_p]
 
+set_work_dir = RODSDLL.set_work_dir
+set_work_dir.argtypes = [c_char_p]
+
 set_damping_ratio = RODSDLL.set_damping_ratio
 set_damping_ratio.argtypes = [c_double]
 
@@ -258,6 +261,12 @@ def add_ele_recorder_with_eles(id, dofIds_, rt, fn):
     dofIds_ = np.array(dofIds_, dtype=np.int32)
     dofIds = dofIds_.ctypes.data_as(POINTER(c_int))
     return add_ele_recorder_with_eles_(id, dofIds, n, rt, c_char_p(fn))
+
+record_all_dof_response = RODSDLL.record_all_dof_response
+record_all_dof_response.argtypes = [c_int]
+
+record_all_ele_response = RODSDLL.record_all_ele_response
+record_all_ele_response.argtypes = [c_int]
 
 set_dynamic_solver = RODSDLL.set_dynamic_solver
 set_dynamic_solver.argtypes = [c_int]
