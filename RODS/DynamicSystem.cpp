@@ -1581,7 +1581,7 @@ void DynamicSystem::activeGroundMotion(RODS::Direction dir, const int waveId, co
 		cout << "Wave " << waveId << "do not exist! The groud motion is not activated." << endl;
 		return;
 	}
-
+	
 	DOF *dof = nullptr;
 	switch (dir)
 	{

@@ -8,6 +8,7 @@
 #include "rods.h"
 
 #include <string>
+#include <sstream>
 #include <math.h>
 #include <algorithm>
 #include <map>
@@ -1837,6 +1838,25 @@ void RODS_GUI::timeHistoryPlotWindow()
         static std::string resFilePathName;
         static std::string resFileName;
 
+        static int dof_response_type = 0;
+        ImGui::Combo("Response Type", &dof_response_type, dofResponse, 3);
+
+        if (ImGui::Button("Select DOF"))
+            ImGui::OpenPopup("Select DOF");
+
+        static int dof_item_index = 0;
+        static int dof_id = 0;
+        static int dof_id_ = 0;
+        if (ImGui::BeginPopup("Select DOF"))
+        {
+            genDofList();
+            ImGui::Combo("DOF", &dof_item_index, dofs_str.c_str());
+            dof_id = dofs[dof_item_index];
+            ImGui::EndPopup();
+        }
+        ImGui::SameLine();
+        ImGui::Text("Selected DOF: %d", dof_id);
+
         char workDir[C_STR_LEN];
         get_work_dir(workDir, C_STR_LEN);
 #ifdef __GNUC__
@@ -1865,25 +1885,89 @@ void RODS_GUI::timeHistoryPlotWindow()
                 wf.open(resFilePathName);
                 t_data = new float[num_res_steps];
                 r_data = new float[num_res_steps];
+                float tmp;
 
                 for (int i = 0; i < num_res_steps; i++)
                 {
-                    wf >> t_data[i] >> r_data[i];
-                    printf("%.3f %.3f\n", t_data[i], r_data[i]);
+                    wf >> t_data[i];
+                    for (int j = 0; j < dof_item_index*3; j++)
+                        wf >> tmp;
+                    if (dof_response_type == 0)
+                    {
+                        wf >> r_data[i];
+                        wf >> tmp;
+                        wf >> tmp;
+                    }
+                    else if (dof_response_type == 1)
+                    {
+                        wf >> tmp;
+                        wf >> r_data[i];
+                        wf >> tmp;
+                    }
+                    else
+                    {
+                        wf >> tmp;
+                        wf >> tmp;
+                        wf >> r_data[i];
+                    }
+                    for (int j = dof_item_index*3+3; j < num_dof*3; j++)
+                        wf >> tmp;
                 }
                 wf.close();
+                dof_id_ = dof_id;
             }
             ImGuiFileDialog::Instance()->Close();
         }
+
         ImGui::SameLine();
         ImGui::Text("Response File: %s", resFileName.c_str());
 
+        if (ImGui::Button("Update Plot"))
+        {
+            std::ifstream wf;
+            wf.open(resFilePathName);
+            float tmp;
+
+            for (int i = 0; i < num_res_steps; i++)
+            {
+                wf >> t_data[i];
+                for (int j = 0; j < dof_item_index*3; j++)
+                    wf >> tmp;
+                if (dof_response_type == 0)
+                {
+                    wf >> r_data[i];
+                    wf >> tmp;
+                    wf >> tmp;
+                }
+                else if (dof_response_type == 1)
+                {
+                    wf >> tmp;
+                    wf >> r_data[i];
+                    wf >> tmp;
+                }
+                else
+                {
+                    wf >> tmp;
+                    wf >> tmp;
+                    wf >> r_data[i];
+                }
+                for (int j = dof_item_index*3+3; j < num_dof*3; j++)
+                    wf >> tmp;
+            }
+            wf.close();
+            dof_id_ = dof_id;
+        }
+        
+        std::stringstream title;
+        title << dofResponse[dof_response_type] << " response of DOF";
+        std::stringstream legend;
+        legend << "DOF " << dof_id_;
         if (num_res_steps > 0)
         {
-            if (ImPlot::BeginPlot("Response", ImVec2(-1,500)))
+            if (ImPlot::BeginPlot(title.str().c_str(), ImVec2(-1,500)))
             {
                 ImPlot::SetupAxes("Time", "Response", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-                ImPlot::PlotLine(resFileName.c_str(), t_data, r_data, num_res_steps);
+                ImPlot::PlotLine(legend.str().c_str(), t_data, r_data, num_res_steps);
                 ImPlot::EndPlot();
             }
         }
