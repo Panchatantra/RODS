@@ -1,8 +1,13 @@
 #include "Inerter2D.h"
 
-Inerter2D::Inerter2D(const int id, Node * nodeI, Node * nodeJ, double m, RODS::LocalAxis axis) :
-	ROD2D(id, nodeI, nodeJ), m(m),
-	ue(0.0), f(0.0)
+Inerter2D::Inerter2D() :
+	ROD2D(), m(0.0), ue(0.0), f(0.0)
+{
+}
+
+Inerter2D::Inerter2D(const int id, Node *nodeI, Node *nodeJ,
+						double m, RODS::LocalAxis axis) :
+	ROD2D(id, nodeI, nodeJ, axis), m(m), ue(0.0), f(0.0)
 {
 	if (axis == RODS::LocalAxis::U1)
 	{

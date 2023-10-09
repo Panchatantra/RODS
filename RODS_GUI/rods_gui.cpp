@@ -8,6 +8,7 @@
 #include "rods.h"
 
 #include <string>
+#include <iostream>
 #include <sstream>
 #include <math.h>
 #include <algorithm>
@@ -84,37 +85,48 @@ const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
 
 
+std::string readShader(const char* filePath)
+{
+    std::string source;
+    std::ifstream file;
+    std::string line;
+
+    file.open(filePath);
+
+    while (std::getline(file, line))
+        source.append(line + "\r\n");
+
+    file.close();
+    return source;
+}
+
 void RODS_GUI::createShader()
 {
-    const char* vertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec3 position;\n"
-        "layout (location = 1) in vec3 color;\n"
-        "uniform mat4 model;\n"
-        "uniform mat4 view;\n"
-        "uniform mat4 projection;\n"
-        "out vec4 vertexColor;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = projection * view * model * vec4(position, 1.0f);\n"
-        "   vertexColor = vec4(color, 1.0f);\n"
-        "}\0";
+    const char* vertexShaderSource = readShader("vert.glsl").c_str();
+    const char* fragmentShaderSource = readShader("frag.glsl").c_str();
 
-    const char* fragmentShaderSource = "#version 330 core\n"
-        "out vec4 fragColor;\n"
-        "in vec4 vertexColor;\n"
-        "void main()\n"
-        "{\n"
-        "   fragColor = vertexColor;\n"
-        "}\n\0";
-
+    int success;
+    char infoLog[512];
     // vertex shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
     // fragment shader
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
     // link shaders
     shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
@@ -847,8 +859,14 @@ void RODS_GUI::element2dWindow()
         static int ele_id = 1;
         ImGui::InputInt("Element ID", &ele_id);
         static int ele_type = 0;
-        const char * Element2DTypes[2] = {"TrussElastic2D", "FrameElastic2D"};
-        ImGui::Combo("Element Type", &ele_type, Element2DTypes, 2);
+        const char * Element2DTypes[5] = {
+                    "TrussElastic2D",
+                    "FrameElastic2D",
+                    "Spring2D",
+                    "Dashpot2D",
+                    "Inerter2D",
+                    };
+        ImGui::Combo("Element Type", &ele_type, Element2DTypes, 5);
 
         static int node_item_index_i = 0;
         static int node_item_index_j = 0;
@@ -2198,7 +2216,7 @@ void RODS_GUI::draw_2d()
                 get_node_modal_response(node_response, mode_order);
                 max_res = *std::max_element(node_response, node_response+num_node*3);
                 min_res = *std::min_element(node_response, node_response+num_node*3);
-                peak_res = max_res > -min_res ? max_res : -min_res;
+                peak_res = fmax(max_res, -min_res);
             }
 
             for (size_t i = 0; i < (size_t)num_node*3; i++)
@@ -2206,12 +2224,12 @@ void RODS_GUI::draw_2d()
                 if (draw_type == 2)
                 {
                     vertices[i] += node_response[i]*scale_factor_dsp;
-                    colors[i] = fabsf(node_response[i]/peak_res);
+                    colors[i] = node_response[i]/peak_res;
                 }
                 else if (draw_type == 22)
                 {
                     vertices[i] += node_response[i]*scale_factor_dsp*sinf(2.0*3.142/5.0*glfwGetTime());
-                    colors[i] = fabsf(node_response[i]/peak_res*sinf(2.0*3.142/5.0*glfwGetTime()));
+                    colors[i] = node_response[i]/peak_res*sinf(2.0*3.142/5.0*glfwGetTime());
                 }
                 else
                 {

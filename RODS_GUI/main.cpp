@@ -130,7 +130,7 @@ int main(int, char**)
     }
 
     glPointSize(20);
-    glLineWidth(5);
+    glLineWidth(10);
 
     RODS_GUI::createShader();
     RODS_GUI::buildVertex();

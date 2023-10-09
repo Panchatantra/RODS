@@ -11,6 +11,7 @@ class ROD2D :
 public:
 	ROD2D();
 	ROD2D(const int id, Node * nodeI, Node * nodeJ);
+	ROD2D(const int id, Node * nodeI, Node * nodeJ, RODS::LocalAxis axis);
 	~ROD2D();
 
 	virtual void buildMatrix() {}
@@ -26,4 +27,5 @@ public:
 	double L;
 	double lxx, lxz, lzx, lzz;
 	int IdNodeI, IdNodeJ;
+	RODS::LocalAxis axis;
 };
