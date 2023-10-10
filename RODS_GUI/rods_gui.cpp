@@ -2220,26 +2220,26 @@ void RODS_GUI::draw_1d_s()
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
             glBufferData(GL_ARRAY_BUFFER, (size_t)num_dof*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
 
-            glDrawArrays(GL_POINTS, 0, num_dof);
+            // glDrawArrays(GL_POINTS, 0, num_dof);
 
-            if (num_ele > 0) {
-                updatedofIdMapIndex();
-                int* indices = new int[(size_t)num_ele*2];
-                get_rod1d_dof_id(indices);
+            // if (num_ele > 0) {
+            //     updatedofIdMapIndex();
+            //     int* indices = new int[(size_t)num_ele*2];
+            //     get_rod1d_dof_id(indices);
 
-                for (int i = 0; i < num_ele * 2; i++)
-                {
-                    indices[i] = dofIdMapIndex.at(indices[i]);
-                }
+            //     for (int i = 0; i < num_ele * 2; i++)
+            //     {
+            //         indices[i] = dofIdMapIndex.at(indices[i]);
+            //     }
 
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
+            //     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+            //     glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
 
-                glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
+            //     glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
 
-                delete[] indices;
-            }
-            delete[] vertices;
+            //     delete[] indices;
+            // }
+            // delete[] vertices;
         }
     }
 }

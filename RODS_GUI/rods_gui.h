@@ -61,7 +61,7 @@ static int num_dof_rz = 0;
 static int point_index = 0;
 static int dof_index = 0;
 
-static int draw_dim = 2;
+static int draw_dim = 1;
 static int draw_type = 1;
 
 static int mode_order = 1;
