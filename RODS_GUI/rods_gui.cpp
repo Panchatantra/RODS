@@ -85,25 +85,24 @@ const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
 
 
-std::string readShader(const char* filePath)
-{
-    std::string source;
-    std::ifstream file;
-    std::string line;
-
-    file.open(filePath);
-
-    while (std::getline(file, line))
-        source.append(line + "\r\n");
-
-    file.close();
-    return source;
-}
-
 void RODS_GUI::createShader()
 {
-    const char* vertexShaderSource = readShader("vert.glsl").c_str();
-    const char* fragmentShaderSource = readShader("frag.glsl").c_str();
+    std::ifstream vFile, fFile;
+    std::stringstream vShaderStream, fShaderStream;
+
+    vFile.open("vert.glsl");
+    vShaderStream << vFile.rdbuf();
+    vFile.close();
+
+    fFile.open("frag.glsl");
+    fShaderStream << fFile.rdbuf();
+    fFile.close();
+
+    std::string vertexShaderSource_ = vShaderStream.str();
+    std::string fragmentShaderSource_ = fShaderStream.str();
+    
+    const char* vertexShaderSource = vertexShaderSource_.c_str();
+    const char* fragmentShaderSource = fragmentShaderSource_.c_str();
 
     int success;
     char infoLog[512];

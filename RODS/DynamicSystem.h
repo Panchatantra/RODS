@@ -1217,7 +1217,6 @@ public:
 		workDir,
 		zeta,
 		eqnCount,
-		dofCount,
 		fixedDofCount,
 		eigenVectorNormed,
 		dynamicSolver,

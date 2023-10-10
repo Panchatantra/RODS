@@ -1,90 +1,6 @@
 {
-    "DashpotCount": 0,
-    "DashpotVec": [],
-    "InerterCount": 0,
-    "InerterVec": [],
-    "NumDynamicSubSteps": 1,
-    "NumModesInherentDamping": -1,
-    "RayleighOmg1": 10.0,
-    "RayleighOmg2": 20.0,
-    "SpringBilinearCount": 0,
-    "SpringBilinearVec": [],
-    "SpringCount": 10,
-    "SpringVec": [
-        {
-            "IdDofI": 1,
-            "IdDofJ": 2,
-            "id": 1,
-            "k": 1600.0
-        },
-        {
-            "IdDofI": 2,
-            "IdDofJ": 3,
-            "id": 2,
-            "k": 1600.0
-        },
-        {
-            "IdDofI": 3,
-            "IdDofJ": 4,
-            "id": 3,
-            "k": 1600.0
-        },
-        {
-            "IdDofI": 4,
-            "IdDofJ": 5,
-            "id": 4,
-            "k": 1600.0
-        },
-        {
-            "IdDofI": 5,
-            "IdDofJ": 6,
-            "id": 5,
-            "k": 1600.0
-        },
-        {
-            "IdDofI": 6,
-            "IdDofJ": 7,
-            "id": 6,
-            "k": 1600.0
-        },
-        {
-            "IdDofI": 7,
-            "IdDofJ": 8,
-            "id": 7,
-            "k": 1600.0
-        },
-        {
-            "IdDofI": 8,
-            "IdDofJ": 9,
-            "id": 8,
-            "k": 1600.0
-        },
-        {
-            "IdDofI": 9,
-            "IdDofJ": 10,
-            "id": 9,
-            "k": 1600.0
-        },
-        {
-            "IdDofI": 10,
-            "IdDofJ": 11,
-            "id": 10,
-            "k": 1600.0
-        }
-    ],
-    "XSeismicWaveId": -1,
-    "XSeismicWaveScale": 0.0,
-    "YSeismicWaveId": -1,
-    "YSeismicWaveScale": 0.0,
-    "ZSeismicWaveId": -1,
-    "ZSeismicWaveScale": 0.0,
-    "cstep": 0,
-    "ctime": 0.0,
-    "dispControlDOFId": -1,
-    "dispControlEqn": -1,
-    "dispControlLoadId": -1,
-    "dofCount": 11,
-    "dofVec": [
+    "DOFCount": 11,
+    "DOFVec": [
         {
             "dir": 0,
             "id": 1,
@@ -152,6 +68,102 @@
             "mass": 1.0
         }
     ],
+    "Dashpot2DCount": 0,
+    "Dashpot2DVec": [],
+    "DashpotCount": 0,
+    "DashpotVec": [],
+    "FrameElastic2DCount": 0,
+    "FrameElastic2DVec": [],
+    "Inerter2DCount": 0,
+    "Inerter2DVec": [],
+    "InerterCount": 0,
+    "InerterVec": [],
+    "NodeCount": 0,
+    "NodeVec": [],
+    "NumDynamicSubSteps": 1,
+    "NumModesInherentDamping": -1,
+    "RayleighOmg1": 10.0,
+    "RayleighOmg2": 20.0,
+    "Spring2DCount": 0,
+    "Spring2DVec": [],
+    "SpringBilinearCount": 0,
+    "SpringBilinearVec": [],
+    "SpringCount": 10,
+    "SpringVec": [
+        {
+            "IdDofI": 1,
+            "IdDofJ": 2,
+            "id": 1,
+            "k": 1600.0
+        },
+        {
+            "IdDofI": 2,
+            "IdDofJ": 3,
+            "id": 2,
+            "k": 1600.0
+        },
+        {
+            "IdDofI": 3,
+            "IdDofJ": 4,
+            "id": 3,
+            "k": 1600.0
+        },
+        {
+            "IdDofI": 4,
+            "IdDofJ": 5,
+            "id": 4,
+            "k": 1600.0
+        },
+        {
+            "IdDofI": 5,
+            "IdDofJ": 6,
+            "id": 5,
+            "k": 1600.0
+        },
+        {
+            "IdDofI": 6,
+            "IdDofJ": 7,
+            "id": 6,
+            "k": 1600.0
+        },
+        {
+            "IdDofI": 7,
+            "IdDofJ": 8,
+            "id": 7,
+            "k": 1600.0
+        },
+        {
+            "IdDofI": 8,
+            "IdDofJ": 9,
+            "id": 8,
+            "k": 1600.0
+        },
+        {
+            "IdDofI": 9,
+            "IdDofJ": 10,
+            "id": 9,
+            "k": 1600.0
+        },
+        {
+            "IdDofI": 10,
+            "IdDofJ": 11,
+            "id": 10,
+            "k": 1600.0
+        }
+    ],
+    "TrussElastic2DCount": 0,
+    "TrussElastic2DVec": [],
+    "XSeismicWaveId": -1,
+    "XSeismicWaveScale": 0.0,
+    "YSeismicWaveId": -1,
+    "YSeismicWaveScale": 0.0,
+    "ZSeismicWaveId": -1,
+    "ZSeismicWaveScale": 0.0,
+    "cstep": 0,
+    "ctime": 0.0,
+    "dispControlDOFId": -1,
+    "dispControlEqn": -1,
+    "dispControlLoadId": -1,
     "dt": 0.02,
     "dynamicSolver": 2,
     "eigenVectorNormed": true,
