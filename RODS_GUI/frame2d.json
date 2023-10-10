@@ -218,6 +218,8 @@
             "mass": 0.005
         }
     ],
+    "Dashpot2DCount": 0,
+    "Dashpot2DVec": [],
     "DashpotCount": 0,
     "DashpotVec": [],
     "FrameElastic2DCount": 15,
@@ -328,6 +330,8 @@
             "id": 15
         }
     ],
+    "Inerter2DCount": 0,
+    "Inerter2DVec": [],
     "InerterCount": 0,
     "InerterVec": [],
     "NodeCount": 12,
@@ -493,6 +497,8 @@
     "NumModesInherentDamping": -1,
     "RayleighOmg1": 20.943951000000002,
     "RayleighOmg2": 62.831853,
+    "Spring2DCount": 0,
+    "Spring2DVec": [],
     "SpringBilinearCount": 0,
     "SpringBilinearVec": [],
     "SpringCount": 0,
@@ -510,7 +516,6 @@
     "dispControlDOFId": -1,
     "dispControlEqn": -1,
     "dispControlLoadId": -1,
-    "dofCount": 36,
     "dt": 0.02,
     "dynamicSolver": 2,
     "eigenVectorNormed": true,

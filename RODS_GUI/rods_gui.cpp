@@ -22,6 +22,11 @@ std::map<int, int> nodeIdMapIndex;
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+// #ifdef __GNUC__
+// #include <ft2build.h>
+// #include FT_FREETYPE_H
+// #endif
+
 float * wave_t_data = nullptr;
 float * wave_a_data = nullptr;
 
@@ -83,6 +88,7 @@ const char* dofResponse[4] = {"Displacement", "Velocity", "Acceleration", "ALL"}
 const char* eleResponse[3] = {"Force", "Deformation", "Force and Deformation"};
 const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
+const char* localAxis[3] = {"U1", "U2", "U3"};
 
 
 void RODS_GUI::createShader()
@@ -165,6 +171,7 @@ void RODS_GUI::setCamera(GLFWwindow* window)
     glfwGetFramebufferSize(window, &buffer_width, &buffer_height);
     // glm::mat4 projection = glm::mat4(1.0f);
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)buffer_width / (float)buffer_height, 0.1f, 100.0f);
+    // glm::mat4 projection = glm::ortho(0.0f, (float)buffer_width, (float)buffer_height, 0.0f, -1.0f, 1.0f);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
     glm::mat4 view = glm::mat4(1.0f);
     // view = glm::lookAt( glm::vec3(0.0f, 0.0f, 2.5f),
@@ -274,6 +281,9 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             if (ImGui::MenuItem("DOF Table"))
                 show_dof_table_window = true;
 
+            if (ImGui::MenuItem("Element1D Table"))
+                show_element1d_table_window = true;
+
             if (ImGui::MenuItem("Time History Curve"))
                 show_time_history_plot_window = true;
 
@@ -313,7 +323,7 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
         {
             auto fileName = ImGuiFileDialog::Instance()->GetFilePathName();
             save_to_json(fileName.c_str());
-            updateVars();
+            // updateVars();
         }
         ImGuiFileDialog::Instance()->Close();
     }
@@ -888,6 +898,7 @@ void RODS_GUI::element2dWindow()
         ImGui::Text("Selected Nodes: %d, %d", node_id_i, node_id_j);
 
         static float * params = new float[3]();
+        static int axis = 0;
 
         if (ele_type == 0)
         {
@@ -898,13 +909,42 @@ void RODS_GUI::element2dWindow()
                 num_ele = get_num_ele();
             }
         }
-
-        if (ele_type == 1)
+        else if (ele_type == 1)
         {
-            ImGui::InputFloat2("EA and EI", params);
+            ImGui::InputFloat2("EA, EI", params);
             if (ImGui::Button("Add Element"))
             {
                 num_frame_elastic_2d = add_frame_elastic_2d(ele_id++, node_id_i, node_id_j, params[0], params[1]);
+                num_ele = get_num_ele();
+            }
+        }
+        else if (ele_type == 2)
+        {
+            ImGui::InputFloat("k", params);
+            ImGui::Combo("Local Axis", &axis, localAxis, 3);
+            if (ImGui::Button("Add Element"))
+            {
+                num_spring_2d = add_spring_2d(ele_id++, node_id_i, node_id_j, params[0], axis);
+                num_ele = get_num_ele();
+            }
+        }
+        else if (ele_type == 3)
+        {
+            ImGui::InputFloat("c", params);
+            ImGui::Combo("Local Axis", &axis, localAxis, 3);
+            if (ImGui::Button("Add Element"))
+            {
+                num_dashpot_2d = add_dashpot_2d(ele_id++, node_id_i, node_id_j, params[0], axis);
+                num_ele = get_num_ele();
+            }
+        }
+        else if (ele_type == 4)
+        {
+            ImGui::InputFloat("m", params);
+            ImGui::Combo("Local Axis", &axis, localAxis, 3);
+            if (ImGui::Button("Add Element"))
+            {
+                num_inerter_2d = add_inerter_2d(ele_id++, node_id_i, node_id_j, params[0], axis);
                 num_ele = get_num_ele();
             }
         }
@@ -1806,7 +1846,7 @@ void RODS_GUI::element1dTableWindow()
     {
         ImGui::Begin("Element1D Table");
 
-        if (ImGui::BeginTable("Element1D Table", 4))
+        if (ImGui::BeginTable("Element1D Table", 5))
         {
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
@@ -1817,29 +1857,89 @@ void RODS_GUI::element1dTableWindow()
             ImGui::Text("DOFI");
             ImGui::TableNextColumn();
             ImGui::Text("DOFJ");
-            updateDOFList();
-            for (int row = 0; row < num_dof; row++)
+            ImGui::TableNextColumn();
+            ImGui::Text("Parameter");
+            
+            if (num_spring > 0)
             {
-                int id = dofList[row];
-                int dir;
-                double mass;
-                bool is_fixed;
-                get_dof_info(id, dir, mass, is_fixed);
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::Text("%d", id);
-                ImGui::TableNextColumn();
-                ImGui::Text("%s", direction[dir]);
-                ImGui::TableNextColumn();
-                ImGui::Text("%.3f", mass);
-                ImGui::TableNextColumn();
-                ImGui::Text(is_fixed ? "Yes":"No");
+                auto springs = new int [num_spring];
+                get_ids_spring(springs);
+                for (int row = 0; row < num_spring; row++)
+                {
+                    int id = springs[row];
+                    int i, j;
+                    double p;
+                    
+                    get_spring_info(id, i, j, p);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", id);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Spring");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", i);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", j);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("k = %.3f", p);
+                }
             }
+
+            if (num_dashpot > 0)
+            {
+                auto dashpots = new int [num_dashpot];
+                get_ids_dashpot(dashpots);
+                for (int row = 0; row < num_dashpot; row++)
+                {
+                    int id = dashpots[row];
+                    int i, j;
+                    double p;
+                    
+                    get_dashpot_info(id, i, j, p);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", id);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Dashpot");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", i);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", j);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("c = %.3f", p);
+                }
+            }
+
+            if (num_inerter > 0)
+            {
+                auto inerters = new int [num_inerter];
+                get_ids_inerter(inerters);
+                for (int row = 0; row < num_inerter; row++)
+                {
+                    int id = inerters[row];
+                    int i, j;
+                    double p;
+                    
+                    get_inerter_info(id, i, j, p);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", id);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Inerter");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", i);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", j);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("m = %.3f", p);
+                }
+            }
+            
             ImGui::EndTable();
         }
 
         if (ImGui::Button("Close"))
-            show_dof_table_window = false;
+            show_element1d_table_window = false;
 
         ImGui::End();
     }

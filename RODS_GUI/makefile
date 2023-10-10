@@ -30,7 +30,8 @@ LINUX_GL_LIBS = -lGL
 CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
 CXXFLAGS += -I../../glad/include -I../RODS
 CXXFLAGS += -g -Wall -Wformat
-LIBS = -lrods
+CXXFLAGS += `pkg-config --cflags freetype2`
+LIBS = -lrods -lfreetype
 
 ##---------------------------------------------------------------------
 ## OPENGL ES

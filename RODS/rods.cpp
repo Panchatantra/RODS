@@ -641,21 +641,6 @@ DLL_API size_t get_num_ele()
 	return ds->Elements.size();
 }
 
-DLL_API size_t get_num_spring()
-{
-    return ds->Springs.size();
-}
-
-DLL_API size_t get_num_dashpot()
-{
-    return ds->Dashpots.size();
-}
-
-DLL_API size_t get_num_inerter()
-{
-    return ds->Inerters.size();
-}
-
 DLL_API size_t get_num_wave()
 {
     return ds->Waves.size();
@@ -675,6 +660,14 @@ DLL_API size_t get_num_eqn()
 {
 	return ds->eqnCount;
 }
+
+GET_NUM(Spring, spring);
+GET_NUM(Dashpot, dashpot);
+GET_NUM(Inerter, inerter);
+
+GET_IDS(Spring, spring);
+GET_IDS(Dashpot, dashpot);
+GET_IDS(Inerter, inerter);
 
 GET_NUM(DOFX, dof_x);
 GET_NUM(DOFY, dof_y);

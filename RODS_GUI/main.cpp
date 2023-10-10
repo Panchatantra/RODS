@@ -169,6 +169,7 @@ int main(int, char**)
         RODS_GUI::solveSeismicWindow();
 
         RODS_GUI::dofTableWindow();
+        RODS_GUI::element1dTableWindow();
 
         RODS_GUI::assembleMatrixWindow();
         RODS_GUI::solveEigenWindow();

@@ -40,7 +40,9 @@ static int num_dashpot = 0;
 static int num_inerter = 0;
 static int num_truss_elastic_2d = 0;
 static int num_frame_elastic_2d = 0;
-
+static int num_spring_2d = 0;
+static int num_dashpot_2d = 0;
+static int num_inerter_2d = 0;
 
 static int num_eqn = 0;
 static int num_wave = 0;

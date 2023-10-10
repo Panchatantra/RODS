@@ -134,13 +134,18 @@ extern "C" {
 
 	DLL_API size_t get_num_line();
 	DLL_API size_t get_num_ele();
-	DLL_API size_t get_num_spring();
-	DLL_API size_t get_num_dashpot();
-	DLL_API size_t get_num_inerter();
 	DLL_API size_t get_num_wave();
 	DLL_API size_t get_num_dof_recorder();
 	DLL_API size_t get_num_ele_recorder();
 	DLL_API size_t get_num_eqn();
+
+	GET_NUM_DEF(spring);
+	GET_NUM_DEF(dashpot);
+	GET_NUM_DEF(inerter);
+
+	GET_IDS_DEF(spring);
+	GET_IDS_DEF(dashpot);
+	GET_IDS_DEF(inerter);
 
 	GET_NUM_DEF(dof_x);
 	GET_NUM_DEF(dof_y);
