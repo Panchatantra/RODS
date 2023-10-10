@@ -89,10 +89,10 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 	JSON_TO_ELEMENTS_3(SpringBilinear, k0, uy, alpha)
 
 	JSON_TO_ELEMENTS_NODE(TrussElastic2D, EA)
-	// JSON_TO_ELEMENTS_NODE_2(FrameElastic2D, EA, EI)
-	// JSON_TO_ELEMENTS_NODE_2(Spring2D, k, axis)
-	// JSON_TO_ELEMENTS_NODE_2(Dashpot2D, c, axis)
-	// JSON_TO_ELEMENTS_NODE_2(Inerter2D, m, axis)
+	JSON_TO_ELEMENTS_NODE_2(FrameElastic2D, EA, EI)
+	JSON_TO_ELEMENTS_NODE_2(Spring2D, k, axis)
+	JSON_TO_ELEMENTS_NODE_2(Dashpot2D, c, axis)
+	JSON_TO_ELEMENTS_NODE_2(Inerter2D, m, axis)
 }
 
 void DynamicSystem::saveToJSON(const char *fileName)
