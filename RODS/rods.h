@@ -142,10 +142,21 @@ extern "C" {
 	GET_NUM_DEF(spring);
 	GET_NUM_DEF(dashpot);
 	GET_NUM_DEF(inerter);
-
 	GET_IDS_DEF(spring);
 	GET_IDS_DEF(dashpot);
 	GET_IDS_DEF(inerter);
+
+	GET_NUM_DEF(spring_2d);
+	GET_NUM_DEF(dashpot_2d);
+	GET_NUM_DEF(inerter_2d);
+	GET_IDS_DEF(spring_2d);
+	GET_IDS_DEF(dashpot_2d);
+	GET_IDS_DEF(inerter_2d);
+
+	GET_NUM_DEF(truss_elastic_2d);
+	GET_NUM_DEF(frame_elastic_2d);
+	GET_IDS_DEF(truss_elastic_2d);
+	GET_IDS_DEF(frame_elastic_2d);
 
 	GET_NUM_DEF(dof_x);
 	GET_NUM_DEF(dof_y);
@@ -184,9 +195,15 @@ extern "C" {
 	DLL_API size_t get_period(double* P);
 
 	DLL_API void get_dof_info(const int id, int &dir, double &mass, bool &is_fixed);
+	DLL_API void get_node_info(const int id, int &dim, double *coords, int *dofs);
 	DLL_API void get_spring_info(const int id, int &i, int &j, double &k);
 	DLL_API void get_dashpot_info(const int id, int &i, int &j, double &c);
 	DLL_API void get_inerter_info(const int id, int &i, int &j, double &m);
+	DLL_API void get_spring_2d_info(const int id, int &i, int &j, double &k, int &la);
+	DLL_API void get_dashpot_2d_info(const int id, int &i, int &j, double &c, int &la);
+	DLL_API void get_inerter_2d_info(const int id, int &i, int &j, double &m, int &la);
+	DLL_API void get_truss_elastic_2d_info(const int id, int &i, int &j, double &EA);
+	DLL_API void get_frame_elastic_2d_info(const int id, int &i, int &j, double &EA, double &EI);
 
 	DLL_API bool get_use_rayleigh_damping();
 

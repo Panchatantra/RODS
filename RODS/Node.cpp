@@ -267,3 +267,13 @@ int Node::getIdDof(RODS::Direction dir)
 		break;
 	}
 }
+
+void Node::getIdsDof(int* ids)
+{
+	if (dofX != nullptr)  ids[0] = dofX->id;  else ids[0] = -1;
+	if (dofY != nullptr)  ids[1] = dofY->id;  else ids[1] = -1;
+	if (dofZ != nullptr)  ids[2] = dofZ->id;  else ids[2] = -1;
+	if (dofRX != nullptr) ids[3] = dofRX->id; else ids[3] = -1;
+	if (dofRY != nullptr) ids[4] = dofRY->id; else ids[4] = -1;
+	if (dofRZ != nullptr) ids[5] = dofRZ->id; else ids[5] = -1;
+}

@@ -39,6 +39,7 @@ public:
 	void setMass(const double m, const double I);
 
 	int getIdDof(RODS::Direction dir);
+	void getIdsDof(int *ids);
 
 	double x, y, z;
 	double x0, y0, z0;

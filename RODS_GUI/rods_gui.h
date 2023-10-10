@@ -21,7 +21,9 @@ static bool show_assemble_matrix_window = false;
 static bool show_solve_eigen_window = false;
 static bool show_solve_seismic_window = false;
 static bool show_dof_table_window = false;
+static bool show_node_table_window = false;
 static bool show_element1d_table_window = false;
+static bool show_element2d_table_window = false;
 static bool show_recorder_window = false;
 static bool show_time_history_plot_window = false;
 static bool show_dir_window = false;
@@ -61,7 +63,7 @@ static int num_dof_rz = 0;
 static int point_index = 0;
 static int dof_index = 0;
 
-static int draw_dim = 1;
+static int draw_dim = 2;
 static int draw_type = 1;
 
 static int mode_order = 1;
@@ -97,7 +99,9 @@ namespace RODS_GUI {
     void solveSeismicWindow();
 
     void dofTableWindow();
+    void nodeTableWindow();
     void element1dTableWindow();
+    void element2dTableWindow();
 
     void timeHistoryPlotWindow();
 

@@ -664,10 +664,21 @@ DLL_API size_t get_num_eqn()
 GET_NUM(Spring, spring);
 GET_NUM(Dashpot, dashpot);
 GET_NUM(Inerter, inerter);
-
 GET_IDS(Spring, spring);
 GET_IDS(Dashpot, dashpot);
 GET_IDS(Inerter, inerter);
+
+GET_NUM(Spring2D, spring_2d);
+GET_NUM(Dashpot2D, dashpot_2d);
+GET_NUM(Inerter2D, inerter_2d);
+GET_IDS(Spring2D, spring_2d);
+GET_IDS(Dashpot2D, dashpot_2d);
+GET_IDS(Inerter2D, inerter_2d);
+
+GET_NUM(TrussElastic2D, truss_elastic_2d);
+GET_NUM(FrameElastic2D, frame_elastic_2d);
+GET_IDS(TrussElastic2D, truss_elastic_2d);
+GET_IDS(FrameElastic2D, frame_elastic_2d);
 
 GET_NUM(DOFX, dof_x);
 GET_NUM(DOFY, dof_y);
@@ -851,6 +862,17 @@ DLL_API void get_dof_info(const int id, int & dir, double & mass, bool & is_fixe
 	is_fixed = dof->isFixed;
 }
 
+DLL_API void get_node_info(const int id, int &dim, double *coords, int *dofs)
+{
+    auto node = ds->Nodes.at(id);
+	dim = (int)node->dim;
+	coords[0] = node->x;
+	coords[1] = node->y;
+	coords[2] = node->z;
+
+	node->getIdsDof(dofs);
+}
+
 DLL_API void get_spring_info(const int id, int & i, int & j, double & k)
 {
 	auto ele = ds->Springs.at(id);
@@ -873,6 +895,50 @@ DLL_API void get_inerter_info(const int id, int & i, int & j, double & m)
 	i = ele->dofI->id;
 	j = ele->dofJ->id;
 	m = ele->m;
+}
+
+DLL_API void get_spring_2d_info(const int id, int & i, int & j, double & k, int &la)
+{
+	auto ele = ds->Spring2Ds.at(id);
+	i = ele->nodeI->id;
+	j = ele->nodeJ->id;
+	k = ele->k;
+	la = (int)ele->axis;
+}
+
+DLL_API void get_dashpot_2d_info(const int id, int & i, int & j, double & c, int &la)
+{
+	auto ele = ds->Dashpot2Ds.at(id);
+	i = ele->nodeI->id;
+	j = ele->nodeJ->id;
+	c = ele->c;
+	la = (int)ele->axis;
+}
+
+DLL_API void get_inerter_2d_info(const int id, int & i, int & j, double & m, int &la)
+{
+	auto ele = ds->Inerter2Ds.at(id);
+	i = ele->nodeI->id;
+	j = ele->nodeJ->id;
+	m = ele->m;
+	la = (int)ele->axis;
+}
+
+DLL_API void get_truss_elastic_2d_info(const int id, int &i, int &j, double &EA)
+{
+    auto ele = ds->TrussElastic2Ds.at(id);
+	i = ele->nodeI->id;
+	j = ele->nodeJ->id;
+	EA = ele->EA;
+}
+
+DLL_API void get_frame_elastic_2d_info(const int id, int &i, int &j, double &EA, double &EI)
+{
+    auto ele = ds->FrameElastic2Ds.at(id);
+	i = ele->nodeI->id;
+	j = ele->nodeJ->id;
+	EA = ele->EA;
+	EI = ele->EI;
 }
 
 DLL_API bool get_use_rayleigh_damping()

@@ -281,8 +281,14 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             if (ImGui::MenuItem("DOF Table"))
                 show_dof_table_window = true;
 
+            if (ImGui::MenuItem("Node Table"))
+                show_node_table_window = true;
+
             if (ImGui::MenuItem("Element1D Table"))
                 show_element1d_table_window = true;
+
+            if (ImGui::MenuItem("Element2D Table"))
+                show_element2d_table_window = true;
 
             if (ImGui::MenuItem("Time History Curve"))
                 show_time_history_plot_window = true;
@@ -1840,6 +1846,61 @@ void RODS_GUI::dofTableWindow()
     }
 }
 
+void RODS_GUI::nodeTableWindow()
+{
+    if (show_node_table_window)
+    {
+        ImGui::Begin("Node Table");
+
+        if (ImGui::BeginTable("Node Table", 4))
+        {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("ID");
+            ImGui::TableNextColumn();
+            ImGui::Text("Dimension");
+            ImGui::TableNextColumn();
+            ImGui::Text("Coordinates\n(X, Y, Z)");
+            ImGui::TableNextColumn();
+            ImGui::Text("DOF IDs\n(X, Y, Z, RX, RY, RZ)");
+
+            num_node = get_num_node();
+            if (num_node > 0)
+            {
+                auto nodes = new int [num_node];
+                get_ids_node(nodes);
+                for (int row = 0; row < num_node; row++)
+                {
+                    int id = nodes[row];
+                    int dim;
+                    double *coords = new double[3];
+                    int *dofs = new int[6];
+                    
+                    get_node_info(id, dim, coords, dofs);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", id);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", dim);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("(%.2f, %.2f, %.2f)", coords[0], coords[1], coords[2]);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("(%d, %d, %d, %d, %d, %d)",
+                                dofs[0], dofs[1], dofs[2],
+                                dofs[3], dofs[4], dofs[5]);
+                }
+            }
+            
+            ImGui::EndTable();
+        }
+
+        if (ImGui::Button("Close"))
+            show_node_table_window = false;
+
+        ImGui::End();
+    }
+}
+
 void RODS_GUI::element1dTableWindow()
 {
     if (show_element1d_table_window)
@@ -1860,6 +1921,7 @@ void RODS_GUI::element1dTableWindow()
             ImGui::TableNextColumn();
             ImGui::Text("Parameter");
             
+            num_spring = get_num_spring();
             if (num_spring > 0)
             {
                 auto springs = new int [num_spring];
@@ -1885,6 +1947,7 @@ void RODS_GUI::element1dTableWindow()
                 }
             }
 
+            num_dashpot = get_num_dashpot();
             if (num_dashpot > 0)
             {
                 auto dashpots = new int [num_dashpot];
@@ -1910,6 +1973,7 @@ void RODS_GUI::element1dTableWindow()
                 }
             }
 
+            num_inerter = get_num_inerter();
             if (num_inerter > 0)
             {
                 auto inerters = new int [num_inerter];
@@ -1940,6 +2004,166 @@ void RODS_GUI::element1dTableWindow()
 
         if (ImGui::Button("Close"))
             show_element1d_table_window = false;
+
+        ImGui::End();
+    }
+}
+
+void RODS_GUI::element2dTableWindow()
+{
+    if (show_element2d_table_window)
+    {
+        ImGui::Begin("Element2D Table");
+
+        if (ImGui::BeginTable("Element2D Table", 5))
+        {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("ID");
+            ImGui::TableNextColumn();
+            ImGui::Text("Type");
+            ImGui::TableNextColumn();
+            ImGui::Text("NodeI");
+            ImGui::TableNextColumn();
+            ImGui::Text("NodeJ");
+            ImGui::TableNextColumn();
+            ImGui::Text("Parameter");
+            
+            num_spring_2d = get_num_spring_2d();
+            if (num_spring_2d > 0)
+            {
+                auto spring_2ds = new int [num_spring_2d];
+                get_ids_spring_2d(spring_2ds);
+                for (int row = 0; row < num_spring_2d; row++)
+                {
+                    int id = spring_2ds[row];
+                    int i, j, la;
+                    double p;
+                    
+                    get_spring_2d_info(id, i, j, p, la);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", id);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Spring2D");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", i);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", j);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("k = %.3f", p);
+                }
+            }
+
+            num_dashpot_2d = get_num_dashpot_2d();
+            if (num_dashpot_2d > 0)
+            {
+                auto dashpot_2ds = new int [num_dashpot_2d];
+                get_ids_dashpot_2d(dashpot_2ds);
+                for (int row = 0; row < num_dashpot_2d; row++)
+                {
+                    int id = dashpot_2ds[row];
+                    int i, j, la;
+                    double p;
+                    
+                    get_dashpot_2d_info(id, i, j, p, la);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", id);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Dashpot2D");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", i);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", j);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("c = %.3f", p);
+                }
+            }
+
+            num_inerter_2d = get_num_inerter_2d();
+            if (num_inerter_2d > 0)
+            {
+                auto inerter_2ds = new int [num_inerter_2d];
+                get_ids_inerter_2d(inerter_2ds);
+                for (int row = 0; row < num_inerter_2d; row++)
+                {
+                    int id = inerter_2ds[row];
+                    int i, j, la;
+                    double p;
+                    
+                    get_inerter_2d_info(id, i, j, p, la);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", id);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("inerter2D");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", i);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", j);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("m = %.3f", p);
+                }
+            }
+
+            num_truss_elastic_2d = get_num_truss_elastic_2d();
+            if (num_truss_elastic_2d > 0)
+            {
+                auto truss_elastic_2ds = new int [num_truss_elastic_2d];
+                get_ids_truss_elastic_2d(truss_elastic_2ds);
+                for (int row = 0; row < num_truss_elastic_2d; row++)
+                {
+                    int id = truss_elastic_2ds[row];
+                    int i, j;
+                    double EA;
+                    
+                    get_truss_elastic_2d_info(id, i, j, EA);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", id);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("TrussElastic2D");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", i);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", j);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("EA = %.3e", EA);
+                }
+            }
+
+            num_frame_elastic_2d = get_num_frame_elastic_2d();
+            if (num_frame_elastic_2d > 0)
+            {
+                auto frame_elastic_2ds = new int [num_frame_elastic_2d];
+                get_ids_frame_elastic_2d(frame_elastic_2ds);
+                for (int row = 0; row < num_frame_elastic_2d; row++)
+                {
+                    int id = frame_elastic_2ds[row];
+                    int i, j;
+                    double EA, EI;
+                    
+                    get_frame_elastic_2d_info(id, i, j, EA, EI);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", id);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("FrameElastic2D");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", i);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", j);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("EA = %.3e\nEI = %.3e", EA, EI);
+                }
+            }
+            
+            ImGui::EndTable();
+        }
+
+        if (ImGui::Button("Close"))
+            show_element2d_table_window = false;
 
         ImGui::End();
     }
@@ -2197,7 +2421,7 @@ void RODS_GUI::draw_1d_s()
             if (num_dof>1)
                 h = H/(num_dof - 1);
 
-            float* vertices = new float[(size_t)num_dof*3];
+            GLfloat* vertices = new GLfloat[(size_t)num_dof*3];
 
             if (draw_type == 2 || draw_type == 22)
             {
@@ -2218,28 +2442,28 @@ void RODS_GUI::draw_1d_s()
             glBindVertexArray(VAO);
 
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, (size_t)num_dof*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, (size_t)num_dof*3*sizeof(GLfloat), vertices, GL_DYNAMIC_DRAW);
 
-            // glDrawArrays(GL_POINTS, 0, num_dof);
+            glDrawArrays(GL_POINTS, 0, num_dof);
 
-            // if (num_ele > 0) {
-            //     updatedofIdMapIndex();
-            //     int* indices = new int[(size_t)num_ele*2];
-            //     get_rod1d_dof_id(indices);
+            if (num_ele > 0) {
+                updatedofIdMapIndex();
+                GLint* indices = new GLint[(size_t)num_ele*2];
+                get_rod1d_dof_id(indices);
 
-            //     for (int i = 0; i < num_ele * 2; i++)
-            //     {
-            //         indices[i] = dofIdMapIndex.at(indices[i]);
-            //     }
+                for (int i = 0; i < num_ele * 2; i++)
+                {
+                    indices[i] = dofIdMapIndex.at(indices[i]);
+                }
 
-            //     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-            //     glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(GLint), indices, GL_DYNAMIC_DRAW);
 
-            //     glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
+                glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
 
-            //     delete[] indices;
-            // }
-            // delete[] vertices;
+                delete[] indices;
+            }
+            delete[] vertices;
         }
     }
 }
