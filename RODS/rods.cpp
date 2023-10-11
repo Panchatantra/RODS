@@ -668,6 +668,9 @@ GET_IDS(Spring, spring);
 GET_IDS(Dashpot, dashpot);
 GET_IDS(Inerter, inerter);
 
+GET_NUM(ROD1D, rod_1d);
+GET_IDS(ROD1D, rod_1d);
+
 GET_NUM(Spring2D, spring_2d);
 GET_NUM(Dashpot2D, dashpot_2d);
 GET_NUM(Inerter2D, inerter_2d);
@@ -781,6 +784,29 @@ DLL_API size_t get_node_coords(float * coords, const bool norm)
 			coords[3*i] = (float)x;
 			coords[3*i+1] = (float)y;
 			coords[3*i+2] = (float)z;
+			i++;
+		}
+	}
+	return n*3;
+}
+
+DLL_API size_t get_serial_dof_coords(float *coords)
+{
+    auto n = ds->DOFs.size();
+	size_t i = 0;
+	float H = 1.6f;
+	float h = 0.0f;
+	float H_0 = -0.8f;
+
+	if (n>1) h = H/(n - 1);
+
+	if (n>0)
+	{
+		for (auto it = ds->DOFs.begin(); it != ds->DOFs.end(); it++)
+		{
+			coords[3*i] = 0.0f;
+			coords[3*i+1] = 0.0f;
+			coords[3*i+2] = H_0 + h*i;
 			i++;
 		}
 	}

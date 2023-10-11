@@ -146,6 +146,9 @@ extern "C" {
 	GET_IDS_DEF(dashpot);
 	GET_IDS_DEF(inerter);
 
+	GET_NUM_DEF(rod_1d);
+	GET_IDS_DEF(rod_1d);
+
 	GET_NUM_DEF(spring_2d);
 	GET_NUM_DEF(dashpot_2d);
 	GET_NUM_DEF(inerter_2d);
@@ -186,6 +189,7 @@ extern "C" {
 
 	DLL_API size_t get_point_coord(float* pt, const bool norm=true);
 	DLL_API size_t get_node_coords(float* coords, const bool norm=true);
+	DLL_API size_t get_serial_dof_coords(float* coords);
 	DLL_API size_t get_line_point_id(int* id);
 	DLL_API size_t get_rod1d_dof_id(int* id);
 	DLL_API size_t get_rod2d_node_id(int* id);

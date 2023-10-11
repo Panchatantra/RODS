@@ -2421,43 +2421,65 @@ void RODS_GUI::draw_1d_s()
             if (num_dof>1)
                 h = H/(num_dof - 1);
 
-            GLfloat* vertices = new GLfloat[(size_t)num_dof*3];
+            float* vertices = new float[(size_t)num_dof*3];
+            float* colors = new float[(size_t)num_dof*3];
+
+            double max_res = 0.0;
+            double min_res = 0.0;
+            double peak_res = 1.0;
 
             if (draw_type == 2 || draw_type == 22)
             {
                 dof_response = new double[(size_t)num_dof];
                 get_dof_modal_response(dof_response, mode_order);
+                max_res = *std::max_element(dof_response, dof_response+num_dof);
+                min_res = *std::min_element(dof_response, dof_response+num_dof);
+                peak_res = fmax(max_res, -min_res);
             }
 
             for (int i = 0; i < num_dof; i++)
             {
                 vertices[3*i] = 0.0f;
-                if (draw_type == 2) vertices[3*i] += dof_response[i];
-                else if (draw_type == 22) vertices[3*i] += dof_response[i]*sinf(2.0*3.142/5.0*glfwGetTime());
+                colors[3*i] = H_0 + h*i;
+                if (draw_type == 2) 
+                {
+                    vertices[3*i] += dof_response[i]*scale_factor_dsp;
+                    colors[3*i] = dof_response[i]/peak_res;
+                }
+                else if (draw_type == 22)
+                {
+                    vertices[3*i] += dof_response[i]*scale_factor_dsp*sinf(2.0*3.142/5.0*glfwGetTime());
+                    colors[3*i] = dof_response[i]/peak_res*sinf(2.0*3.142/5.0*glfwGetTime());
+                }
                 vertices[3*i+1] = H_0 + h*i;
                 vertices[3*i+2] = 0.0f;
+                colors[3*i+1] = 0.0f;
+                colors[3*i+2] = 0.0f;
             }
 
             // glUseProgram(shaderProgram);
             glBindVertexArray(VAO);
 
+            glBindBuffer(GL_ARRAY_BUFFER, VBO_COLOR);
+            glBufferData(GL_ARRAY_BUFFER, num_dof*3*sizeof(float), colors, GL_DYNAMIC_DRAW);
+
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, (size_t)num_dof*3*sizeof(GLfloat), vertices, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, num_dof*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
 
             glDrawArrays(GL_POINTS, 0, num_dof);
 
             if (num_ele > 0) {
                 updatedofIdMapIndex();
-                GLint* indices = new GLint[(size_t)num_ele*2];
+                int* indices = new int[(size_t)num_ele*2];
                 get_rod1d_dof_id(indices);
 
-                for (int i = 0; i < num_ele * 2; i++)
+                for (int i = 0; i < num_ele*2; i++)
                 {
                     indices[i] = dofIdMapIndex.at(indices[i]);
                 }
 
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(GLint), indices, GL_DYNAMIC_DRAW);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
 
                 glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
 
