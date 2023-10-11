@@ -137,7 +137,9 @@ int main(int, char**)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     RODS_GUI::createShader();
+    RODS_GUI::createTextShader();
     RODS_GUI::buildVertex();
+    RODS_GUI::buildTextVertex();
     RODS_GUI::setCamera(window);
 
     // Main loop
@@ -207,6 +209,7 @@ int main(int, char**)
         RODS_GUI::draw_1d_s();
         RODS_GUI::draw_1d();
         RODS_GUI::draw_2d();
+        RODS_GUI::draw_text();
 
         glfwSwapBuffers(window);
     }
