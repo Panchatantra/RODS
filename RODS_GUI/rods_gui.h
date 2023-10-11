@@ -78,6 +78,7 @@ const size_t C_STR_LEN_S = 20;
 static unsigned int shaderProgram, textShaderProgram;
 static unsigned int VBO, VAO, EBO;
 static unsigned int VBO_COLOR;
+static unsigned int VAO_TEXT;
 static unsigned int VBO_TEXT;
 
 static int buffer_width, buffer_height;

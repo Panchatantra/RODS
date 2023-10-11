@@ -151,6 +151,8 @@
             "k": 1600.0
         }
     ],
+    "TVMDCount": 0,
+    "TVMDVec": [],
     "TrussElastic2DCount": 0,
     "TrussElastic2DVec": [],
     "XSeismicWaveId": -1,

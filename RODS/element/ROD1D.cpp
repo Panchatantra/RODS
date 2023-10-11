@@ -1,7 +1,8 @@
 #include "ROD1D.h"
 
 
-ROD1D::ROD1D()
+ROD1D::ROD1D() :
+	Element(0), dofI(nullptr), dofJ(nullptr)
 {
 }
 

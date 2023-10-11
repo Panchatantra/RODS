@@ -20,10 +20,8 @@ std::map<int, int> nodeIdMapIndex;
 
 std::map<GLchar, Character> Characters;
 
-#ifdef __GNUC__
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#endif
 
 float* wave_t_data = nullptr;
 float* wave_a_data = nullptr;
@@ -87,7 +85,21 @@ const char* eleResponse[3] = {"Force", "Deformation", "Force and Deformation"};
 const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
 const char* localAxis[3] = {"U1", "U2", "U3"};
-
+constexpr size_t num_ele_1d_type = 4;
+const char * Element1DTypes[num_ele_1d_type] = {
+                    "Spring",
+                    "Dashpot",
+                    "Inerter",
+                    "TVMD"
+                    };
+constexpr size_t num_ele_2d_type = 5;
+const char * Element2DTypes[num_ele_2d_type] = {
+                    "TrussElastic2D",
+                    "FrameElastic2D",
+                    "Spring2D",
+                    "Dashpot2D",
+                    "Inerter2D",
+                    };
 
 void RODS_GUI::createShader()
 {
@@ -104,7 +116,7 @@ void RODS_GUI::createShader()
 
     std::string vertexShaderSource_ = vShaderStream.str();
     std::string fragmentShaderSource_ = fShaderStream.str();
-    
+
     const char* vertexShaderSource = vertexShaderSource_.c_str();
     const char* fragmentShaderSource = fragmentShaderSource_.c_str();
 
@@ -138,7 +150,7 @@ void RODS_GUI::createShader()
     // delete shaders
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-    glUseProgram(shaderProgram);
+    //glUseProgram(shaderProgram);
 }
 
 void RODS_GUI::createTextShader()
@@ -156,7 +168,7 @@ void RODS_GUI::createTextShader()
 
     std::string vertexShaderSource_ = vShaderStream.str();
     std::string fragmentShaderSource_ = fShaderStream.str();
-    
+
     const char* vertexShaderSource = vertexShaderSource_.c_str();
     const char* fragmentShaderSource = fragmentShaderSource_.c_str();
 
@@ -243,7 +255,7 @@ void RODS_GUI::buildTextVertex()
         // load first 128 characters of ASCII set
         for (unsigned char c = 0; c < 128; c++)
         {
-            // Load character glyph 
+            // Load character glyph
             if (FT_Load_Char(face, c, FT_LOAD_RENDER))
             {
                 std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
@@ -286,8 +298,9 @@ void RODS_GUI::buildTextVertex()
 
     // configure VAO/VBO for texture quads
     // -----------------------------------
+    glGenVertexArrays(1, &VAO_TEXT);
     glGenBuffers(1, &VBO_TEXT);
-    glBindVertexArray(VAO);
+    glBindVertexArray(VAO_TEXT);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_TEXT);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
@@ -298,6 +311,7 @@ void RODS_GUI::buildTextVertex()
 
 void RODS_GUI::setCamera(GLFWwindow* window)
 {
+    glUseProgram(shaderProgram);
     glfwGetFramebufferSize(window, &buffer_width, &buffer_height);
     // glm::mat4 projection = glm::mat4(1.0f);
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)buffer_width / (float)buffer_height, 0.1f, 100.0f);
@@ -315,6 +329,7 @@ void RODS_GUI::setCamera(GLFWwindow* window)
     model = glm::translate(model, glm::vec3(0.0f,0.0f,-0.5f));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
 
+    glUseProgram(textShaderProgram);
     glm::mat4 text_projection = glm::ortho(0.0f, static_cast<float>(buffer_width), 0.0f, static_cast<float>(buffer_height));
     glUniformMatrix4fv(glGetUniformLocation(textShaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(text_projection));
 }
@@ -810,8 +825,8 @@ void RODS_GUI::element1dWindow()
         static int ele_id = 1;
         ImGui::InputInt("Element ID", &ele_id);
         static int ele_type = 0;
-        const char * Element1DTypes[3] = {"Spring", "Dashpot", "Inerter"};
-        ImGui::Combo("Element Type", &ele_type, Element1DTypes, 3);
+
+        ImGui::Combo("Element Type", &ele_type, Element1DTypes, num_ele_1d_type);
 
         static int dof_index_i = 0;
         static int dof_index_j = 0;
@@ -1007,14 +1022,7 @@ void RODS_GUI::element2dWindow()
         static int ele_id = 1;
         ImGui::InputInt("Element ID", &ele_id);
         static int ele_type = 0;
-        const char * Element2DTypes[5] = {
-                    "TrussElastic2D",
-                    "FrameElastic2D",
-                    "Spring2D",
-                    "Dashpot2D",
-                    "Inerter2D",
-                    };
-        ImGui::Combo("Element Type", &ele_type, Element2DTypes, 5);
+        ImGui::Combo("Element Type", &ele_type, Element2DTypes, num_ele_2d_type);
 
         static int node_item_index_i = 0;
         static int node_item_index_j = 0;
@@ -2008,7 +2016,7 @@ void RODS_GUI::nodeTableWindow()
                     int dim;
                     double *coords = new double[3];
                     int *dofs = new int[6];
-                    
+
                     get_node_info(id, dim, coords, dofs);
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -2023,7 +2031,7 @@ void RODS_GUI::nodeTableWindow()
                                 dofs[3], dofs[4], dofs[5]);
                 }
             }
-            
+
             ImGui::EndTable();
         }
 
@@ -2053,7 +2061,7 @@ void RODS_GUI::element1dTableWindow()
             ImGui::Text("DOFJ");
             ImGui::TableNextColumn();
             ImGui::Text("Parameter");
-            
+
             num_spring = get_num_spring();
             if (num_spring > 0)
             {
@@ -2064,7 +2072,7 @@ void RODS_GUI::element1dTableWindow()
                     int id = springs[row];
                     int i, j;
                     double p;
-                    
+
                     get_spring_info(id, i, j, p);
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -2090,7 +2098,7 @@ void RODS_GUI::element1dTableWindow()
                     int id = dashpots[row];
                     int i, j;
                     double p;
-                    
+
                     get_dashpot_info(id, i, j, p);
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -2116,7 +2124,7 @@ void RODS_GUI::element1dTableWindow()
                     int id = inerters[row];
                     int i, j;
                     double p;
-                    
+
                     get_inerter_info(id, i, j, p);
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -2131,7 +2139,7 @@ void RODS_GUI::element1dTableWindow()
                     ImGui::Text("m = %.3f", p);
                 }
             }
-            
+
             ImGui::EndTable();
         }
 
@@ -2161,7 +2169,7 @@ void RODS_GUI::element2dTableWindow()
             ImGui::Text("NodeJ");
             ImGui::TableNextColumn();
             ImGui::Text("Parameter");
-            
+
             num_spring_2d = get_num_spring_2d();
             if (num_spring_2d > 0)
             {
@@ -2172,7 +2180,7 @@ void RODS_GUI::element2dTableWindow()
                     int id = spring_2ds[row];
                     int i, j, la;
                     double p;
-                    
+
                     get_spring_2d_info(id, i, j, p, la);
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -2198,7 +2206,7 @@ void RODS_GUI::element2dTableWindow()
                     int id = dashpot_2ds[row];
                     int i, j, la;
                     double p;
-                    
+
                     get_dashpot_2d_info(id, i, j, p, la);
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -2224,7 +2232,7 @@ void RODS_GUI::element2dTableWindow()
                     int id = inerter_2ds[row];
                     int i, j, la;
                     double p;
-                    
+
                     get_inerter_2d_info(id, i, j, p, la);
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -2250,7 +2258,7 @@ void RODS_GUI::element2dTableWindow()
                     int id = truss_elastic_2ds[row];
                     int i, j;
                     double EA;
-                    
+
                     get_truss_elastic_2d_info(id, i, j, EA);
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -2276,7 +2284,7 @@ void RODS_GUI::element2dTableWindow()
                     int id = frame_elastic_2ds[row];
                     int i, j;
                     double EA, EI;
-                    
+
                     get_frame_elastic_2d_info(id, i, j, EA, EI);
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -2291,7 +2299,7 @@ void RODS_GUI::element2dTableWindow()
                     ImGui::Text("EA = %.3e\nEI = %.3e", EA, EI);
                 }
             }
-            
+
             ImGui::EndTable();
         }
 
@@ -2431,7 +2439,7 @@ void RODS_GUI::timeHistoryPlotWindow()
             wf.close();
             dof_id_ = dof_id;
         }
-        
+
         std::stringstream title;
         title << dofResponse[dof_response_type] << " response of DOF";
         std::stringstream legend;
@@ -2498,6 +2506,7 @@ void RODS_GUI::updateViewMatrix()
                         glm::vec3(0.0f, 0.0f, 0.0f),
                         glm::vec3(0.0f, 0.0f, 1.0f) );
     }
+    glUseProgram(shaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
 }
 
@@ -2574,7 +2583,7 @@ void RODS_GUI::draw_1d_s()
             {
                 vertices[3*i] = 0.0f;
                 colors[3*i] = H_0 + h*i;
-                if (draw_type == 2) 
+                if (draw_type == 2)
                 {
                     vertices[3*i] += dof_response[i]*scale_factor_dsp;
                     colors[3*i] = dof_response[i]/peak_res;
@@ -2590,14 +2599,14 @@ void RODS_GUI::draw_1d_s()
                 colors[3*i+2] = 0.0f;
             }
 
-            // glUseProgram(shaderProgram);
+            glUseProgram(shaderProgram);
             glBindVertexArray(VAO);
 
             glBindBuffer(GL_ARRAY_BUFFER, VBO_COLOR);
-            glBufferData(GL_ARRAY_BUFFER, num_dof*3*sizeof(float), colors, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, static_cast<size_t>(num_dof)*3*sizeof(float), colors, GL_DYNAMIC_DRAW);
 
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, num_dof*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, static_cast<size_t>(num_dof)*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
 
             glDrawArrays(GL_POINTS, 0, num_dof);
 
@@ -2612,13 +2621,15 @@ void RODS_GUI::draw_1d_s()
                 }
 
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<size_t>(num_ele)*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
 
-                glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
+                glDrawElements(GL_LINES, static_cast<size_t>(num_ele)*2, GL_UNSIGNED_INT, (void*)0);
 
                 delete[] indices;
             }
             delete[] vertices;
+            delete[] colors;
+            glBindVertexArray(0);
         }
     }
 }
@@ -2644,7 +2655,7 @@ void RODS_GUI::draw_1d()
                 else if (draw_type == 22) vertices[i] += node_response[i]*scale_factor_dsp*sinf(2.0*3.142/5.0*glfwGetTime());
             }
 
-            // glUseProgram(shaderProgram);
+            glUseProgram(shaderProgram);
             glBindVertexArray(VAO);
 
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -2715,7 +2726,7 @@ void RODS_GUI::draw_2d()
                 }
             }
 
-            // glUseProgram(shaderProgram);
+            glUseProgram(shaderProgram);
             glBindVertexArray(VAO);
 
             glBindBuffer(GL_ARRAY_BUFFER, VBO_COLOR);
@@ -2725,7 +2736,8 @@ void RODS_GUI::draw_2d()
 
             glDrawArrays(GL_POINTS, 0, num_node);
 
-            if (num_ele > 0) {
+            if (num_ele > 0)
+            {
                 updateNodeIdMapIndex();
                 int* indices = new int[(size_t)num_ele*2];
                 get_rod2d_node_id(indices);
@@ -2743,6 +2755,8 @@ void RODS_GUI::draw_2d()
                 delete[] indices;
             }
             delete[] vertices;
+            delete[] colors;
+            glBindVertexArray(0);
         }
     }
 }
@@ -2752,16 +2766,16 @@ void RODS_GUI::draw_text()
     glUseProgram(textShaderProgram);
     glUniform3f(glGetUniformLocation(textShaderProgram, "textColor"), 0.0f, 0.0f, 0.0f);
     glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(VAO);
+    glBindVertexArray(VAO_TEXT);
     std::string text = "RODS";
 
     float x = 10.0f;
     float y = 10.0f;
-    float scale = 45.0f;
+    float scale = 1.0f;
 
     // iterate through all characters
     std::string::const_iterator c;
-    for (c = text.begin(); c != text.end(); c++) 
+    for (c = text.begin(); c != text.end(); c++)
     {
         Character ch = Characters[*c];
 
@@ -2772,13 +2786,13 @@ void RODS_GUI::draw_text()
         float h = ch.Size.y * scale;
         // update VBO for each character
         float vertices[6][4] = {
-            { xpos,     ypos + h,   0.0f, 0.0f },            
+            { xpos,     ypos + h,   0.0f, 0.0f },
             { xpos,     ypos,       0.0f, 1.0f },
             { xpos + w, ypos,       1.0f, 1.0f },
 
             { xpos,     ypos + h,   0.0f, 0.0f },
             { xpos + w, ypos,       1.0f, 1.0f },
-            { xpos + w, ypos + h,   1.0f, 0.0f }           
+            { xpos + w, ypos + h,   1.0f, 0.0f }
         };
         // render glyph texture over quad
         glBindTexture(GL_TEXTURE_2D, ch.TextureID);

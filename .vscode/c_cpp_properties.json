@@ -7,6 +7,7 @@
                 "${default}",
                 "../glad/include",
                 "../glfw/include",
+                "../freetype/include",
                 "../armadillo/include",
                 "../glm",
                 "${workspaceFolder}/RODS",

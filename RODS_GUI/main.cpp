@@ -205,9 +205,9 @@ int main(int, char**)
             glfwMakeContextCurrent(backup_current_context);
         }
 
-        // RODS_GUI::draw_geo();
+        //RODS_GUI::draw_geo();
         RODS_GUI::draw_1d_s();
-        RODS_GUI::draw_1d();
+        //RODS_GUI::draw_1d();
         RODS_GUI::draw_2d();
         RODS_GUI::draw_text();
 

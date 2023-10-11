@@ -503,6 +503,8 @@
     "SpringBilinearVec": [],
     "SpringCount": 0,
     "SpringVec": [],
+    "TVMDCount": 0,
+    "TVMDVec": [],
     "TrussElastic2DCount": 0,
     "TrussElastic2DVec": [],
     "XSeismicWaveId": -1,

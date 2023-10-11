@@ -200,6 +200,8 @@
     "SpringBilinearVec": [],
     "SpringCount": 0,
     "SpringVec": [],
+    "TVMDCount": 0,
+    "TVMDVec": [],
     "TrussElastic2DCount": 11,
     "TrussElastic2DVec": [
         {
