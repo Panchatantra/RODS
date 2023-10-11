@@ -18,17 +18,15 @@ std::map<int, int> pointIdMapIndex;
 std::map<int, int> dofIdMapIndex;
 std::map<int, int> nodeIdMapIndex;
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+std::map<GLchar, Character> Characters;
 
-// #ifdef __GNUC__
-// #include <ft2build.h>
-// #include FT_FREETYPE_H
-// #endif
+#ifdef __GNUC__
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#endif
 
-float * wave_t_data = nullptr;
-float * wave_a_data = nullptr;
+float* wave_t_data = nullptr;
+float* wave_a_data = nullptr;
 
 float* t_data = nullptr;
 float* r_data = nullptr;
@@ -143,6 +141,58 @@ void RODS_GUI::createShader()
     glUseProgram(shaderProgram);
 }
 
+void RODS_GUI::createTextShader()
+{
+    std::ifstream vFile, fFile;
+    std::stringstream vShaderStream, fShaderStream;
+
+    vFile.open("text_vert.glsl");
+    vShaderStream << vFile.rdbuf();
+    vFile.close();
+
+    fFile.open("text_frag.glsl");
+    fShaderStream << fFile.rdbuf();
+    fFile.close();
+
+    std::string vertexShaderSource_ = vShaderStream.str();
+    std::string fragmentShaderSource_ = fShaderStream.str();
+    
+    const char* vertexShaderSource = vertexShaderSource_.c_str();
+    const char* fragmentShaderSource = fragmentShaderSource_.c_str();
+
+    int success;
+    char infoLog[512];
+    // vertex shader
+    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+    // fragment shader
+    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+    // link shaders
+    textShaderProgram = glCreateProgram();
+    glAttachShader(textShaderProgram, vertexShader);
+    glAttachShader(textShaderProgram, fragmentShader);
+    glLinkProgram(textShaderProgram);
+    // delete shaders
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+    // glUseProgram(textShaderProgram);
+}
+
 void RODS_GUI::buildVertex()
 {
     glGenVertexArrays(1, &VAO);
@@ -166,6 +216,86 @@ void RODS_GUI::buildVertex()
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
+void RODS_GUI::buildTextVertex()
+{
+    // FreeType
+    // --------
+    FT_Library ft;
+    // All functions return a value different than 0 whenever an error occurred
+    if (FT_Init_FreeType(&ft))
+    {
+        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+    }
+
+	std::string font_name = "./resource/FiraSans-Regular.ttf";
+	// load font as face
+    FT_Face face;
+    if (FT_New_Face(ft, font_name.c_str(), 0, &face)) {
+        std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+    }
+    else {
+        // set size to load glyphs as
+        FT_Set_Pixel_Sizes(face, 0, 48);
+
+        // disable byte-alignment restriction
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        // load first 128 characters of ASCII set
+        for (unsigned char c = 0; c < 128; c++)
+        {
+            // Load character glyph 
+            if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+            {
+                std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+                continue;
+            }
+            // generate texture
+            unsigned int texture;
+            glGenTextures(1, &texture);
+            glBindTexture(GL_TEXTURE_2D, texture);
+            glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                GL_RED,
+                face->glyph->bitmap.width,
+                face->glyph->bitmap.rows,
+                0,
+                GL_RED,
+                GL_UNSIGNED_BYTE,
+                face->glyph->bitmap.buffer
+            );
+            // set texture options
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            // now store character for later use
+            Character character = {
+                texture,
+                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+                static_cast<unsigned int>(face->glyph->advance.x)
+            };
+            Characters.insert(std::pair<char, Character>(c, character));
+        }
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+    // destroy FreeType once we're finished
+    FT_Done_Face(face);
+    FT_Done_FreeType(ft);
+
+    // configure VAO/VBO for texture quads
+    // -----------------------------------
+    glGenBuffers(1, &VBO_TEXT);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_TEXT);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
 void RODS_GUI::setCamera(GLFWwindow* window)
 {
     glfwGetFramebufferSize(window, &buffer_width, &buffer_height);
@@ -184,6 +314,9 @@ void RODS_GUI::setCamera(GLFWwindow* window)
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f,0.0f,-0.5f));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
+
+    glm::mat4 text_projection = glm::ortho(0.0f, static_cast<float>(buffer_width), 0.0f, static_cast<float>(buffer_height));
+    glUniformMatrix4fv(glGetUniformLocation(textShaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(text_projection));
 }
 
 void RODS_GUI::mainMenu(GLFWwindow* window)
@@ -2612,6 +2745,12 @@ void RODS_GUI::draw_2d()
             delete[] vertices;
         }
     }
+}
+
+void RODS_GUI::draw_text()
+{
+    glUseProgram(textShaderProgram);
+    
 }
 
 void RODS_GUI::updateDOFList()

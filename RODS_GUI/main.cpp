@@ -132,6 +132,10 @@ int main(int, char**)
     glPointSize(20);
     glLineWidth(10);
 
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     RODS_GUI::createShader();
     RODS_GUI::buildVertex();
     RODS_GUI::setCamera(window);
@@ -150,8 +154,6 @@ int main(int, char**)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        // ImGui::ShowDemoWindow();
 
         RODS_GUI::mainMenu(window);
         RODS_GUI::dirWindow();
@@ -203,7 +205,7 @@ int main(int, char**)
 
         // RODS_GUI::draw_geo();
         RODS_GUI::draw_1d_s();
-        // RODS_GUI::draw_1d();
+        RODS_GUI::draw_1d();
         RODS_GUI::draw_2d();
 
         glfwSwapBuffers(window);

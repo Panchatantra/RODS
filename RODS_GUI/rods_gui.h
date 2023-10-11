@@ -9,6 +9,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 static bool show_basic_info_window = true;
 static bool show_damping_window = false;
 static bool show_dof_window = false;
@@ -71,16 +75,26 @@ static int mode_order = 1;
 const size_t C_STR_LEN = 100;
 const size_t C_STR_LEN_S = 20;
 
-static unsigned int shaderProgram;
+static unsigned int shaderProgram, textShaderProgram;
 static unsigned int VBO, VAO, EBO;
 static unsigned int VBO_COLOR;
+static unsigned int VBO_TEXT;
 
 static int buffer_width, buffer_height;
 static float scale_factor_dsp = 1.0f;
 
+struct Character {
+    unsigned int TextureID; // ID handle of the glyph texture
+    glm::ivec2   Size;      // Size of glyph
+    glm::ivec2   Bearing;   // Offset from baseline to left/top of glyph
+    unsigned int Advance;   // Horizontal offset to advance to next glyph
+};
+
 namespace RODS_GUI {
     void createShader();
+    void createTextShader();
     void buildVertex();
+    void buildTextVertex();
     void setCamera(GLFWwindow* window);
     void mainMenu(GLFWwindow* window);
     void dirWindow();
@@ -112,6 +126,7 @@ namespace RODS_GUI {
     void draw_1d_s();
     void draw_1d();
     void draw_2d();
+    void draw_text();
 
     void updateDOFList();
     void genDofList();
