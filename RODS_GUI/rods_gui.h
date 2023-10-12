@@ -1,8 +1,5 @@
 #pragma once
 
-#if defined(__arm__)
-#define IMGUI_IMPL_OPENGL_ES2
-#endif
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif

@@ -19,17 +19,17 @@ void main()
     float dv = vmax - vmin;
 
     if (v < (vmin + 0.25 * dv)) {
-        r = 0;
-        g = 4 * (v - vmin) / dv;
+        r = 0.0;
+        g = 4.0 * (v - vmin) / dv;
     } else if (v < (vmin + 0.5 * dv)) {
-        r = 0;
-        b = 1 + 4 * (vmin + 0.25 * dv - v) / dv;
+        r = 0.0;
+        b = 1.0 + 4.0 * (vmin + 0.25 * dv - v) / dv;
     } else if (v < (vmin + 0.75 * dv)) {
-        r = 4 * (v - vmin - 0.5 * dv) / dv;
-        b = 0;
+        r = 4.0 * (v - vmin - 0.5 * dv) / dv;
+        b = 0.0;
     } else {
-        g = 1 + 4 * (vmin + 0.75 * dv - v) / dv;
-        b = 0;
+        g = 1.0 + 4.0 * (vmin + 0.75 * dv - v) / dv;
+        b = 0.0;
     }
 
     vertexColor = vec4(r, g, b, 1.0);

@@ -9,12 +9,9 @@
 #include <map>
 
 #define GL_SILENCE_DEPRECATION
-#if defined(__arm__)
-#define IMGUI_IMPL_OPENGL_ES2
-#endif
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <GLES2/gl2.h>
-#endif
+// #if defined(IMGUI_IMPL_OPENGL_ES2)
+// #include <GLES2/gl2.h>
+// #endif
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -42,10 +39,10 @@ int main(int, char**)
 
     // Decide GL+GLSL versions
 #if defined(IMGUI_IMPL_OPENGL_ES2)
-    // GL ES 2.0 + GLSL 100
-    const char* glsl_version = "#version 100";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    // GL ES 3.1 + GLSL 330
+    const char* glsl_version = "#version 330";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 #elif defined(__APPLE__)
     // GL 3.2 + GLSL 150
@@ -129,7 +126,9 @@ int main(int, char**)
         return -1;
     }
 
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
     glPointSize(20);
+#endif
     glLineWidth(10);
 
     glEnable(GL_CULL_FACE);
