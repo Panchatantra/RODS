@@ -79,18 +79,26 @@ std::string ele_recorders_str;
 
 const int dimension_dof_count[5] = {1, 3, 6, 2, 3};
 const char* dimension[5] = {"1D", "2D", "3D", "2D (W/O Rotate)", "3D (W/O Rotate)" };
+std::map<int, const char*> dimMapText = {
+                    {1, "1D"},
+                    {2, "2D"},
+                    {3, "3D"},
+                    {20, "2D (W/O Rotate)"},
+                    {30, "3D (W/O Rotate)"}
+                    };
 const char* direction[6] = {"X", "Y", "Z", "RX", "RY", "RZ"};
 const char* dofResponse[4] = {"Displacement", "Velocity", "Acceleration", "ALL"};
-const char* eleResponse[3] = {"Force", "Deformation", "Force and Deformation"};
+const char* eleResponse[3] = {"Force", "Deformation", "ALL"};
 const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
 const char* localAxis[3] = {"U1", "U2", "U3"};
-constexpr size_t num_ele_1d_type = 4;
+constexpr size_t num_ele_1d_type = 5;
 const char * Element1DTypes[num_ele_1d_type] = {
                     "Spring",
                     "Dashpot",
                     "Inerter",
-                    "TVMD"
+                    "TVMD",
+                    "SpringBilinear",
                     };
 constexpr size_t num_ele_2d_type = 5;
 const char * Element2DTypes[num_ele_2d_type] = {
@@ -830,7 +838,7 @@ void RODS_GUI::element1dWindow()
 
         static int dof_index_i = 0;
         static int dof_index_j = 0;
-        static double param[3] = {0.0, 0.0, 0.0};
+        static float param[3] = {0.0, 0.0, 0.0};
 
         static int dof_id_i = 0;
         static int dof_id_j = 0;
@@ -842,7 +850,7 @@ void RODS_GUI::element1dWindow()
         static int node_id_j = 0;
 
         static int ele_1d_ends_type = 1;
-        ImGui::Text("Type of Ends: ");
+        ImGui::Text("Type of Ends: "); ImGui::SameLine();
         ImGui::RadioButton("DOF", &ele_1d_ends_type, 1); ImGui::SameLine();
         ImGui::RadioButton("Node", &ele_1d_ends_type, 2);
 
@@ -916,7 +924,7 @@ void RODS_GUI::element1dWindow()
             {
             case 0:
             {
-                ImGui::InputDouble("Stiffness", param);
+                ImGui::InputFloat("Stiffness", param);
                 if (ImGui::Button("Add Element1D")) {
                     if (dof_id_i == dof_id_j)
                         ImGui::OpenPopup("Error");
@@ -930,7 +938,7 @@ void RODS_GUI::element1dWindow()
                 break;
             case 1:
             {
-                ImGui::InputDouble("Damping Coefficient", param);
+                ImGui::InputFloat("Damping Coefficient", param);
                 if (ImGui::Button("Add Element1D")) {
                     if (dof_id_i == dof_id_j)
                         ImGui::OpenPopup("Error");
@@ -944,13 +952,43 @@ void RODS_GUI::element1dWindow()
                 break;
             case 2:
             {
-                ImGui::InputDouble("Inertance", param);
+                ImGui::InputFloat("Inertance", param);
                 if (ImGui::Button("Add Element1D")) {
                     if (dof_id_i == dof_id_j)
                         ImGui::OpenPopup("Error");
                     else
                     {
                         num_inerter = add_inerter(ele_id++, dofList[dof_index_i], dofList[dof_index_j], param[0]);
+                        num_ele = get_num_ele();
+                    }
+                }
+            }
+                break;
+            case 3:
+            {
+                ImGui::InputFloat3("m_in, c, k", param);
+                if (ImGui::Button("Add Element1D")) {
+                    if (dof_id_i == dof_id_j)
+                        ImGui::OpenPopup("Error");
+                    else
+                    {
+                        num_tvmd = add_tvmd(ele_id++, dofList[dof_index_i], dofList[dof_index_j],
+                                                param[0], param[1], param[2]);
+                        num_ele = get_num_ele();
+                    }
+                }
+            }
+                break;
+            case 4:
+            {
+                ImGui::InputFloat3("k0, uy, alpha", param);
+                if (ImGui::Button("Add Element1D")) {
+                    if (dof_id_i == dof_id_j)
+                        ImGui::OpenPopup("Error");
+                    else
+                    {
+                        num_spring_bilinear = add_spring_bilinear(ele_id++, dofList[dof_index_i], dofList[dof_index_j],
+                                                param[0], param[1], param[2]);
                         num_ele = get_num_ele();
                     }
                 }
@@ -967,6 +1005,8 @@ void RODS_GUI::element1dWindow()
                     ImGui::CloseCurrentPopup();
                 ImGui::EndPopup();
             }
+
+            ImGui::Separator();
 
             if (ele_1d_ends_type == 1)
             {
@@ -2022,7 +2062,7 @@ void RODS_GUI::nodeTableWindow()
                     ImGui::TableNextColumn();
                     ImGui::Text("%d", id);
                     ImGui::TableNextColumn();
-                    ImGui::Text("%d", dim);
+                    ImGui::Text(dimMapText[dim]);
                     ImGui::TableNextColumn();
                     ImGui::Text("(%.2f, %.2f, %.2f)", coords[0], coords[1], coords[2]);
                     ImGui::TableNextColumn();
@@ -2469,7 +2509,6 @@ void RODS_GUI::drawModeWindow()
 
         ImGui::Text("Dimension: "); ImGui::SameLine();
         ImGui::RadioButton("1D (Serial DOFs)", &draw_dim, 1); ImGui::SameLine();
-        ImGui::RadioButton("1D", &draw_dim, 11); ImGui::SameLine();
         ImGui::RadioButton("2D", &draw_dim, 2); ImGui::SameLine();
         ImGui::RadioButton("3D", &draw_dim, 3);
         if (ImGui::Button("Update View"))
@@ -2634,60 +2673,9 @@ void RODS_GUI::draw_1d_s()
     }
 }
 
-void RODS_GUI::draw_1d()
-{
-    if (draw_dim == 11)
-    {
-        if (num_dof > 0)
-        {
-            float* vertices = new float[(size_t)num_node*3];
-            get_node_coords(vertices);
-
-            if (draw_type == 2 || draw_type == 22)
-            {
-                node_response = new double[(size_t)num_node*3];
-                get_node_modal_response(node_response, mode_order);
-            }
-
-            for (size_t i = 0; i < (size_t)num_node*3; i++)
-            {
-                if (draw_type == 2) vertices[i] += node_response[i]*scale_factor_dsp;
-                else if (draw_type == 22) vertices[i] += node_response[i]*scale_factor_dsp*sinf(2.0*3.142/5.0*glfwGetTime());
-            }
-
-            glUseProgram(shaderProgram);
-            glBindVertexArray(VAO);
-
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, (size_t)num_dof*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
-
-            glDrawArrays(GL_POINTS, 0, num_node);
-
-            if (num_ele > 0) {
-                updateNodeIdMapIndex();
-                int* indices = new int[(size_t)num_ele*2];
-                get_rod2d_node_id(indices);
-
-                for (int i = 0; i < num_ele * 2; i++)
-                {
-                    indices[i] = nodeIdMapIndex.at(indices[i]);
-                }
-
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
-
-                glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
-
-                delete[] indices;
-            }
-            delete[] vertices;
-        }
-    }
-}
-
 void RODS_GUI::draw_2d()
 {
-    if (draw_dim == 2)
+    if (draw_dim == 2 || draw_dim == 11)
     {
         if (num_node > 0)
         {
@@ -2740,8 +2728,11 @@ void RODS_GUI::draw_2d()
             {
                 updateNodeIdMapIndex();
                 int* indices = new int[(size_t)num_ele*2];
-                get_rod2d_node_id(indices);
-
+                if (draw_dim == 2)
+                    get_rod2d_node_id(indices);
+                else
+                    get_rod1d_node_id(indices);
+                
                 for (int i = 0; i < num_ele * 2; i++)
                 {
                     indices[i] = nodeIdMapIndex.at(indices[i]);
@@ -2764,7 +2755,7 @@ void RODS_GUI::draw_2d()
 void RODS_GUI::draw_text()
 {
     glUseProgram(textShaderProgram);
-    glUniform3f(glGetUniformLocation(textShaderProgram, "textColor"), 0.0f, 0.0f, 0.0f);
+    glUniform3f(glGetUniformLocation(textShaderProgram, "textColor"), 0.06f, 0.0f, 0.06f);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO_TEXT);
     std::string text = "RODS";

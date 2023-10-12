@@ -44,6 +44,8 @@ static int num_ele = 0;
 static int num_spring = 0;
 static int num_dashpot = 0;
 static int num_inerter = 0;
+static int num_tvmd = 0;
+static int num_spring_bilinear = 0;
 static int num_truss_elastic_2d = 0;
 static int num_frame_elastic_2d = 0;
 static int num_spring_2d = 0;
@@ -125,7 +127,6 @@ namespace RODS_GUI {
     void updateViewMatrix();
     void draw_geo();
     void draw_1d_s();
-    void draw_1d();
     void draw_2d();
     void draw_text();
 

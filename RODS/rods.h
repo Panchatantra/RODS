@@ -192,6 +192,7 @@ extern "C" {
 	DLL_API size_t get_serial_dof_coords(float* coords);
 	DLL_API size_t get_line_point_id(int* id);
 	DLL_API size_t get_rod1d_dof_id(int* id);
+	DLL_API size_t get_rod1d_node_id(int* id);
 	DLL_API size_t get_rod2d_node_id(int* id);
 	DLL_API void get_dof_modal_response(double *res, const int order=1);
 	DLL_API void get_node_modal_response(double *res, const int order=1);

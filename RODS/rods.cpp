@@ -845,6 +845,22 @@ DLL_API size_t get_rod1d_dof_id(int * id)
 	return n*2;
 }
 
+DLL_API size_t get_rod1d_node_id(int *id)
+{
+    auto n = ds->ROD1Ds.size();
+	size_t i = 0;
+	if (n > 0)
+	{
+		for (auto it = ds->ROD1Ds.begin(); it != ds->ROD1Ds.end(); it++)
+		{
+			id[i*2] = it->second->dofI->nodeId;
+			id[i*2+1] = it->second->dofJ->nodeId;
+			i++;
+		}
+	}
+	return n*2;
+}
+
 DLL_API size_t get_rod2d_node_id(int * id)
 {
 	auto n = ds->ROD2Ds.size();

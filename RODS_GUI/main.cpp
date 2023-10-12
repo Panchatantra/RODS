@@ -118,7 +118,7 @@ int main(int, char**)
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
 
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ImVec4 clear_color = ImVec4(0.933f, 1.0f, 0.933f, 1.0f);
 #if defined(IMGUI_IMPL_OPENGL_ES2)
     if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress))
 #else
