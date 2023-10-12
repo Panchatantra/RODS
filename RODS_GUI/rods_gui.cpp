@@ -92,6 +92,15 @@ const char* eleResponse[3] = {"Force", "Deformation", "ALL"};
 const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
 const char* localAxis[3] = {"U1", "U2", "U3"};
+constexpr size_t num_mat_type = 6;
+const char * MaterialTypes[num_mat_type] = {
+                    "Elastic",
+                    "Elastoplastic",
+                    "ConcreteTrilinear",
+                    "SteelBilinear",
+                    "CyclicHardenTrilinear",
+                    "SMABilinear"
+                    };
 constexpr size_t num_ele_1d_type = 5;
 const char * Element1DTypes[num_ele_1d_type] = {
                     "Spring",
@@ -413,7 +422,11 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             if (ImGui::MenuItem("Element2D"))
                 show_element2d_window = true;
 
-            if (ImGui::MenuItem("Element3D")) {}
+            if (ImGui::MenuItem("Element3D"))
+                show_element3d_window = true;
+
+            if (ImGui::MenuItem("Material"))
+                show_material_window = true;
 
             ImGui::EndMenu();
         }
@@ -739,6 +752,24 @@ void RODS_GUI::lineWindow()
             show_line_window = false;
         ImGui::End();
     }
+}
+
+void RODS_GUI::materialWindow()
+{
+        if (show_material_window)
+        {
+            ImGui::Begin("Material");
+
+            static int mat_id = 1;
+            ImGui::InputInt("ID", &mat_id);
+
+            static int mat_type = 0;
+            ImGui::Combo("Type", &mat_type, MaterialTypes, num_mat_type);
+
+            if (ImGui::Button("Close"))
+                show_line_window = false;
+            ImGui::End();
+        }
 }
 
 void RODS_GUI::waveWindow()

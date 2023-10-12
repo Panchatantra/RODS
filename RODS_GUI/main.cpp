@@ -167,6 +167,7 @@ int main(int, char**)
         RODS_GUI::element2dWindow();
         RODS_GUI::nodeWindow();
 
+        RODS_GUI::materialWindow();
         RODS_GUI::waveWindow();
         RODS_GUI::recorderWindow();
         RODS_GUI::solveSeismicWindow();
