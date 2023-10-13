@@ -706,6 +706,8 @@ GET_NUM(Node, node);
 GET_IDS(DOFRecorder, dof_recorder);
 GET_IDS(ElementRecorder, ele_recorder);
 
+GET_IDS(Wave, wave);
+
 DLL_API bool check_node_dof(const int node_id, const int dir)
 {
 	auto node = ds->Nodes.at(node_id);
@@ -981,6 +983,23 @@ DLL_API void get_frame_elastic_2d_info(const int id, int &i, int &j, double &EA,
 	j = ele->nodeJ->id;
 	EA = ele->EA;
 	EI = ele->EI;
+}
+
+DLL_API void get_wave_info(const int id, double &dt, int &nsteps, char *filePathName, size_t bs)
+{
+	auto wave = ds->Waves.at(id);
+	dt = wave->dt;
+	nsteps = wave->nsteps;
+#ifdef __GNUC__
+	strcpy(filePathName, wave->filePathName.c_str());
+#else
+	strcpy_s(filePathName, bs, wave->filePathName.c_str());
+#endif
+}
+
+DLL_API void get_wave_data(const int id, float *data)
+{
+    
 }
 
 DLL_API bool get_use_rayleigh_damping()

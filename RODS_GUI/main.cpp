@@ -176,6 +176,7 @@ int main(int, char**)
         RODS_GUI::nodeTableWindow();
         RODS_GUI::element1dTableWindow();
         RODS_GUI::element2dTableWindow();
+        RODS_GUI::waveTableWindow();
 
         RODS_GUI::assembleMatrixWindow();
         RODS_GUI::solveEigenWindow();

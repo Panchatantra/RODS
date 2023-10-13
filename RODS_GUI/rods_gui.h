@@ -27,6 +27,7 @@ static bool show_dof_table_window = false;
 static bool show_node_table_window = false;
 static bool show_element1d_table_window = false;
 static bool show_element2d_table_window = false;
+static bool show_wave_table_window = false;
 static bool show_recorder_window = false;
 static bool show_time_history_plot_window = false;
 static bool show_dir_window = false;
@@ -121,6 +122,7 @@ namespace RODS_GUI {
     void element1dTableWindow();
     void element2dTableWindow();
 
+    void waveTableWindow();
 
     void timeHistoryPlotWindow();
 
@@ -141,6 +143,7 @@ namespace RODS_GUI {
     void updateEleRecorderList();
     void genEleRecorderList();
     void updateWaveList();
+    void genWaveList();
     void updateEleList();
     void updatedofIdMapIndex();
     void updateNodeIdMapIndex();

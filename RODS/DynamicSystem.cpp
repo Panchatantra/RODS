@@ -83,6 +83,14 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 		}
 	}
 
+	auto j_array_Wave = model.at("WaveVec");
+	Wave WaveObj;
+	for (auto i = 0; i<model.at("WaveCount"); i++)
+	{
+		j_array_Wave[i].get_to(WaveObj);
+		addWave(WaveObj.id, WaveObj.dt, WaveObj.filePathName);
+	}
+
 	JSON_TO_ELEMENTS(Spring, k)
 	JSON_TO_ELEMENTS(Dashpot, c)
 	JSON_TO_ELEMENTS(Inerter, m)
@@ -128,6 +136,8 @@ void DynamicSystem::saveToJSON(const char *fileName)
 	ELEMENTS_TO_JSON(Spring2D)
 	ELEMENTS_TO_JSON(Dashpot2D)
 	ELEMENTS_TO_JSON(Inerter2D)
+
+	ELEMENTS_TO_JSON(Wave)
 
 	std::ofstream ofs(fileName);
 	ofs << std::setw(4) << model;
@@ -1472,6 +1482,18 @@ void DynamicSystem::addWave(const int id, const double dt, const vec &s)
 }
 
 void DynamicSystem::addWave(const int id, const double dt, const char* fileName)
+{
+	if (Waves.count(id) > 0)
+	{
+		cout << "Wave ID: " << id << " already exists! The wave will not be added." << endl;
+		return;
+	}
+
+	Wave *ts = new Wave(id, dt, fileName);
+	Waves[ts->id] = ts;
+}
+
+void DynamicSystem::addWave(const int id, const double dt, string fileName)
 {
 	if (Waves.count(id) > 0)
 	{

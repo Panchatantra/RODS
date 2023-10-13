@@ -4,6 +4,9 @@
 #include "Basis.h"
 #include <string>
 
+#include "json.hpp"
+using json = nlohmann::json;
+
 using namespace arma;
 
 /**
@@ -12,6 +15,7 @@ using namespace arma;
 class Wave : public Basis
 {
 public:
+	Wave();
 	Wave(const int id, const double dt);
 	Wave(const int id, const double dt, const vec &s);
 	Wave(const int id, const double dt, const char *filePathName);
@@ -30,4 +34,16 @@ public:
 	vec series;
 	std::string name;
 	std::string filePathName;
+
+	friend void to_json(json& jsonObj, const Wave& WaveObj) {
+		jsonObj["id"] = WaveObj.id;
+		jsonObj["filePathName"] = WaveObj.filePathName;
+		jsonObj["dt"] = WaveObj.dt;
+	}
+
+	friend void from_json(const json& jsonObj, Wave& WaveObj) {
+		jsonObj.at("id").get_to(WaveObj.id);
+		jsonObj.at("filePathName").get_to(WaveObj.filePathName);
+		jsonObj.at("dt").get_to(WaveObj.dt);
+	};
 };

@@ -809,6 +809,15 @@ public:
 	void addWave(const int id, const double dt, const char * fileName);
 
 	/**
+	 * @brief      Add a wave from a file (one column data file).
+	 *
+	 * @param[in]  id        The identifier
+	 * @param[in]  dt        The time interval
+	 * @param      fileName  The file name
+	 */
+	void addWave(const int id, const double dt, string fileName);
+
+	/**
 	 * @brief      Add a DOF Recorder.
 	 *
 	 * @param[in]  id        The identifier

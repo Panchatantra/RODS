@@ -7,6 +7,7 @@
 #include "rods_gui.h"
 #include "rods.h"
 
+#include <sys/stat.h>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -76,6 +77,9 @@ int* dof_recorders;
 std::string dof_recorders_str;
 int* ele_recorders;
 std::string ele_recorders_str;
+
+int* waves;
+std::string waves_str;
 
 const int dimension_dof_count[5] = {1, 3, 6, 2, 3};
 const char* dimension[5] = {"1D", "2D", "3D", "2D (W/O Rotate)", "3D (W/O Rotate)" };
@@ -459,6 +463,9 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             if (ImGui::MenuItem("Element2D Table"))
                 show_element2d_table_window = true;
 
+            if (ImGui::MenuItem("Wave Table"))
+                show_wave_table_window = true;
+
             if (ImGui::MenuItem("Time History Curve"))
                 show_time_history_plot_window = true;
 
@@ -779,7 +786,7 @@ void RODS_GUI::waveWindow()
         ImGui::Begin("Wave");
         static int wave_id = 1;
         ImGui::InputInt("Wave ID", &wave_id);
-        static double dt = 0.02;
+        static double dt = 0.005;
         ImGui::InputDouble("Time Interval", &dt);
         static int num_wave_steps;
         static std::string waveFilePathName;
@@ -787,13 +794,14 @@ void RODS_GUI::waveWindow()
 
         char workDir[C_STR_LEN];
         get_work_dir(workDir, C_STR_LEN);
-#ifdef __GNUC__
-        strcat(workDir, "/");
-#else
-        strcat_s(workDir, "/");
-#endif
+        std::string work_dir(workDir);
+        if (work_dir.back() != '/')
+        {
+            work_dir.push_back('/');
+        }
+
         if (ImGui::Button("Select File"))
-            ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", workDir);
+            ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", work_dir.c_str());
 
         if (ImGuiFileDialog::Instance()->Display("SelectFileDlgKey"))
         {
@@ -818,9 +826,21 @@ void RODS_GUI::waveWindow()
                     wf >> wave_a_data[i];
                 }
                 wf.close();
+
+                std::string waveFilePathName_ = work_dir + waveFileName;
+                struct stat buffer;
+                if ((stat(waveFilePathName_.c_str(), &buffer) != 0))
+                {
+                    wf.open(waveFilePathName);
+                    std::ofstream _wf(waveFilePathName_);
+                    _wf << wf.rdbuf();
+                    _wf.close();
+                    wf.close();
+                }
             }
             ImGuiFileDialog::Instance()->Close();
         }
+
         ImGui::SameLine();
         ImGui::Text("Wave File: %s", waveFileName.c_str());
         ImGui::SameLine();
@@ -844,11 +864,31 @@ void RODS_GUI::waveWindow()
             }
         }
         if (ImGui::Button("Add Wave")) {
-            char * waveFilePathName_ = &waveFilePathName[0];
-            num_wave = add_wave(wave_id++, dt, waveFilePathName_);
+            std::string waveFilePathName_ = work_dir + waveFileName;
+            num_wave = add_wave(wave_id++, dt, waveFilePathName_.c_str());
         }
 
         ImGui::SameLine();
+        if (ImGui::Button("Edit Wave"))
+        {
+            ImGui::OpenPopup("Edit Wave");
+            genWaveList();
+        }
+
+        if (num_wave > 0)
+        {
+            if (ImGui::BeginPopup("Edit Wave"))
+            {
+                static int wave_item_index = 0;
+                ImGui::Combo("Wave ID", &wave_item_index, waves_str.c_str());
+                if (ImGui::Button("Remove"))
+                {
+                    num_wave = remove_wave(waves[wave_item_index]);
+                }
+                ImGui::EndPopup();
+            }
+        }
+
         if (ImGui::Button("Close"))
             show_wave_window = false;
 
@@ -2381,6 +2421,70 @@ void RODS_GUI::element2dTableWindow()
     }
 }
 
+void RODS_GUI::waveTableWindow()
+{
+    if (show_wave_table_window)
+    {
+        ImGui::Begin("Wave Table");
+
+        if (ImGui::BeginTable("Element2D Table", 5))
+        {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("ID");
+            ImGui::TableNextColumn();
+            ImGui::Text("Time\nInerval");
+            ImGui::TableNextColumn();
+            ImGui::Text("Number\nof Steps");
+            ImGui::TableNextColumn();
+            ImGui::Text("File Path");
+            ImGui::TableNextColumn();
+            ImGui::Text("View");
+
+            num_wave = get_num_wave();
+            if (num_wave > 0)
+            {
+                waves = new int[num_wave];
+                get_ids_wave(waves);
+                for (int row = 0; row < num_wave; row++)
+                {
+                    int id = waves[row];
+                    double dt;
+                    int nsteps;
+                    char wave_file_path[C_STR_LEN];
+
+                    get_wave_info(id, dt, nsteps, wave_file_path, C_STR_LEN);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", id);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%.3f", dt);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", nsteps);
+                    ImGui::TableNextColumn();
+                    ImGui::Text(wave_file_path);
+                    ImGui::TableNextColumn();
+                    if (ImGui::Button("View"))
+                        ImGui::OpenPopup("View Wave");
+                    
+                    if (ImGui::BeginPopup("View Wave"))
+                    {
+                        // ImGui::PlotLines();
+                        ImGui::EndPopup();
+                    }
+                }
+            }
+            ImGui::EndTable();
+        }
+
+        if (ImGui::Button("Close"))
+            show_wave_table_window = false;
+
+        ImGui::End();
+    }
+    
+}
+
 void RODS_GUI::timeHistoryPlotWindow()
 {
     if (show_time_history_plot_window)
@@ -3043,6 +3147,22 @@ void RODS_GUI::updateWaveList()
         auto wave_str = new char[C_STR_LEN_S];
         snprintf(wave_str, C_STR_LEN_S, "%d", waveList[i]);
         waveStrList[i] = wave_str;
+    }
+}
+
+void RODS_GUI::genWaveList()
+{
+    num_wave = get_num_wave();
+    if (num_wave > 0)
+    {
+        waves = new int[num_wave];
+        get_ids_wave(waves);
+        waves_str.clear();
+        for (int i = 0; i < num_wave; i++)
+        {
+            waves_str.append(std::to_string(waves[i]));
+            waves_str.push_back('\0');
+        }
     }
 }
 

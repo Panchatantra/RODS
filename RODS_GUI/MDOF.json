@@ -155,6 +155,8 @@
     "TVMDVec": [],
     "TrussElastic2DCount": 0,
     "TrussElastic2DVec": [],
+    "WaveCount": 0,
+    "WaveVec": [],
     "XSeismicWaveId": -1,
     "XSeismicWaveScale": 0.0,
     "YSeismicWaveId": -1,

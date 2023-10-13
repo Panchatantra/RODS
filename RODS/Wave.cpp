@@ -1,5 +1,14 @@
 #include "Wave.h"
 
+Wave::Wave(): Basis(), dt(0.0), nsteps(0)
+{
+}
+
+Wave::Wave(const int id, const double dt) : Basis(id), dt(dt), nsteps(0)
+{
+	name = std::to_string(id);
+}
+
 Wave::Wave(const int id, const double dt, const vec &s):
 	Basis(id), nsteps((int)s.n_rows), dt(dt), series(vec(s))
 {
@@ -19,17 +28,11 @@ Wave::Wave(const int id, const double dt, const char* filePathName):
 Wave::Wave(const int id, const double dt, std::string file_path_name):
 	Basis(id), dt(dt)
 {
-	this->filePathName = filePathName;
+	this->filePathName = file_path_name;
 	name = this->filePathName.substr(this->filePathName.find_last_of("/\\") + 1);
 
 	series.load(this->filePathName, raw_ascii);
 	nsteps = (int)series.n_rows;
-}
-
-Wave::Wave(const int id, const double dt) :
-	Basis(id), dt(dt), nsteps(0)
-{
-	name = std::to_string(id);
 }
 
 Wave::~Wave()

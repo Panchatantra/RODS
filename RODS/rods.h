@@ -184,6 +184,8 @@ extern "C" {
 	GET_IDS_DEF(dof_recorder);
 	GET_IDS_DEF(ele_recorder);
 
+	GET_IDS_DEF(wave);
+
 	DLL_API bool check_node_dof(const int node_id, const int dir);
 	DLL_API int get_id_node_dof(const int node_id, const int dir);
 
@@ -209,6 +211,9 @@ extern "C" {
 	DLL_API void get_inerter_2d_info(const int id, int &i, int &j, double &m, int &la);
 	DLL_API void get_truss_elastic_2d_info(const int id, int &i, int &j, double &EA);
 	DLL_API void get_frame_elastic_2d_info(const int id, int &i, int &j, double &EA, double &EI);
+
+	DLL_API void get_wave_info(const int id, double &dt, int &nsteps, char *filePathName, size_t bs);
+	DLL_API void get_wave_data(const int id, float *data);
 
 	DLL_API bool get_use_rayleigh_damping();
 

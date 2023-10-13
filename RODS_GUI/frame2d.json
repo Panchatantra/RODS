@@ -507,6 +507,14 @@
     "TVMDVec": [],
     "TrussElastic2DCount": 0,
     "TrussElastic2DVec": [],
+    "WaveCount": 1,
+    "WaveVec": [
+        {
+            "dt": 0.005,
+            "filePathName": "./EQ-S-1.txt",
+            "id": 1
+        }
+    ],
     "XSeismicWaveId": -1,
     "XSeismicWaveScale": 0.0,
     "YSeismicWaveId": -1,
