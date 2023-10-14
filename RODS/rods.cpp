@@ -999,7 +999,13 @@ DLL_API void get_wave_info(const int id, double &dt, int &nsteps, char *filePath
 
 DLL_API void get_wave_data(const int id, float *data)
 {
-    
+    auto wave = ds->Waves.at(id);
+	auto val = wave->series.memptr();
+
+	for (auto i = 0; i < wave->nsteps; i++)
+	{
+		data[i] = static_cast<float>(val[i]);
+	}
 }
 
 DLL_API bool get_use_rayleigh_damping()

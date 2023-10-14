@@ -2466,10 +2466,12 @@ void RODS_GUI::waveTableWindow()
                     ImGui::TableNextColumn();
                     if (ImGui::Button("View"))
                         ImGui::OpenPopup("View Wave");
-                    
+
                     if (ImGui::BeginPopup("View Wave"))
                     {
-                        // ImGui::PlotLines();
+                        float *data = new float[nsteps];
+                        get_wave_data(id, data);
+                        ImGui::PlotLines("##", data, nsteps, 0, NULL, FLT_MAX, FLT_MAX, ImVec2(0, 200));
                         ImGui::EndPopup();
                     }
                 }
