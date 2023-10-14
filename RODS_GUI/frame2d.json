@@ -1,5 +1,51 @@
 {
     "DOFCount": 36,
+    "DOFRecorderCount": 1,
+    "DOFRecorderVec": [
+        {
+            "Dofs": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36
+            ],
+            "fileName": ".//RODS_dof_response.txt",
+            "id": 1,
+            "rtype": 5
+        }
+    ],
     "DOFVec": [
         {
             "dir": 0,
@@ -222,6 +268,8 @@
     "Dashpot2DVec": [],
     "DashpotCount": 0,
     "DashpotVec": [],
+    "ElementRecorderCount": 0,
+    "ElementRecorderVec": [],
     "FrameElastic2DCount": 15,
     "FrameElastic2DVec": [
         {

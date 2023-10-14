@@ -32,6 +32,7 @@ public:
 	 * @param[in]  rType     The Response type
 	 * @param      fileName  The record file name
 	 */
+	Recorder();
 	Recorder(const int id, RODS::Response rType, const char * fileName);
 	~Recorder();
 

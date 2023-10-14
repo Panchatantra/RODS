@@ -1,7 +1,12 @@
 #include "Recorder.h"
 
-Recorder::Recorder(const int id, RODS::Response rType, const char * fileName) :
-Basis(id), n(0), rtype(rType), fileName(fileName)
+Recorder::Recorder() :
+	Basis(), n(0), rtype(RODS::Response(0)), fileName("")
+{
+}
+
+Recorder::Recorder(const int id, RODS::Response rType, const char *fileName) :
+	Basis(id), n(0), rtype(rType), fileName(fileName)
 {
 }
 

@@ -1,5 +1,10 @@
 #include "ElementRecorder.h"
 
+ElementRecorder::ElementRecorder() :
+	Recorder()
+{
+}
+
 ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, RODS::Response rType, const char * fileName):
 	Recorder(id, rType, fileName), eles(eles)
 {
@@ -13,7 +18,8 @@ ElementRecorder::ElementRecorder(const int id, std::vector<Element *> eles, RODS
 	}
 }
 
-ElementRecorder::ElementRecorder(const int id, RODS::Response rType, const char* fileName): Recorder(id, rType, fileName)
+ElementRecorder::ElementRecorder(const int id, RODS::Response rType, const char *fileName) :
+	Recorder(id, rType, fileName)
 {
 }
 
@@ -82,7 +88,18 @@ void ElementRecorder::add_ele(Element* ele)
 	if (it == eles.end())
 	{
 		eles.push_back(ele);
-		n = static_cast<int>(eles.size());
+		Elements.push_back(ele->id);
+	}
+}
+
+void ElementRecorder::remove_ele(Element *ele)
+{
+	auto it = std::find(eles.begin(), eles.end(), ele);
+	if (it != eles.end())
+	{
+		eles.erase(it);
+		auto IT = Elements.begin() + (it - eles.begin());
+		Elements.erase(IT);
 	}
 }
 

@@ -1045,7 +1045,7 @@ DLL_API size_t remove_inerter(const int id)
 
 DLL_API size_t remove_wave(const int id)
 {
-    ds->Waves.erase(id);
+    ds->removeWave(id);
 	return ds->Waves.size();
 }
 

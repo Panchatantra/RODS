@@ -83,13 +83,9 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 		}
 	}
 
-	auto j_array_Wave = model.at("WaveVec");
-	Wave WaveObj;
-	for (auto i = 0; i<model.at("WaveCount"); i++)
-	{
-		j_array_Wave[i].get_to(WaveObj);
-		addWave(WaveObj.id, WaveObj.dt, WaveObj.filePathName);
-	}
+	JSON_TO_MEMBERS_2(Wave, dt, filePathName)
+	JSON_TO_MEMBERS_2(DOFRecorder, rtype, fileName)
+	JSON_TO_MEMBERS_2(ElementRecorder, rtype, fileName)
 
 	JSON_TO_ELEMENTS(Spring, k)
 	JSON_TO_ELEMENTS(Dashpot, c)
@@ -138,6 +134,8 @@ void DynamicSystem::saveToJSON(const char *fileName)
 	ELEMENTS_TO_JSON(Inerter2D)
 
 	ELEMENTS_TO_JSON(Wave)
+	ELEMENTS_TO_JSON(DOFRecorder)
+	ELEMENTS_TO_JSON(ElementRecorder)
 
 	std::ofstream ofs(fileName);
 	ofs << std::setw(4) << model;
@@ -1505,6 +1503,11 @@ void DynamicSystem::addWave(const int id, const double dt, string fileName)
 	Waves[ts->id] = ts;
 }
 
+void DynamicSystem::removeWave(const int id)
+{
+	Waves.erase(id);
+}
+
 void DynamicSystem::addDOFRecorder(const int id, int *dofIds, const int n, RODS::Response rType, const char * fileName)
 {
 	if (DOFRecorders.count(id) > 0)
@@ -1536,10 +1539,25 @@ void DynamicSystem::addDOFRecorder(const int id, RODS::Response rType, const cha
 	DOFRecorders[dr->id] = dr;
 }
 
+void DynamicSystem::addDOFRecorder(const int id, RODS::Response rType, string fileName)
+{
+	addDOFRecorder(id, rType, fileName.c_str());
+}
+
+void DynamicSystem::removeDOFRecorder(const int id)
+{
+	DOFRecorders.erase(id);
+}
+
 void DynamicSystem::addDOFToRecorder(const int dofId, const int rId)
 {
 	DOFRecorder *dr = DOFRecorders.at(rId);
 	dr->add_dof(DOFs.at(dofId));
+}
+
+void DynamicSystem::removeDOFFromRecorder(const int dofId, const int rId)
+{
+	DOFRecorders.at(rId)->remove_dof(DOFs.at(dofId));
 }
 
 void DynamicSystem::addElementRecorder(const int id, int * eleIds, const int n, RODS::Response rType, const char * fileName)
@@ -1573,10 +1591,25 @@ void DynamicSystem::addElementRecorder(const int id, RODS::Response rType, const
 	ElementRecorders[er->id] = er;
 }
 
+void DynamicSystem::addElementRecorder(const int id, RODS::Response rType, string fileName)
+{
+	addElementRecorder(id, rType, fileName.c_str());
+}
+
+void DynamicSystem::removeElementRecorder(const int id)
+{
+	ElementRecorders.erase(id);
+}
+
 void DynamicSystem::addElementToRecorder(const int eleId, const int rId)
 {
 	ElementRecorder *er = ElementRecorders.at(rId);
 	er->add_ele(Elements.at(eleId));
+}
+
+void DynamicSystem::removeElementFromRecorder(const int eleId, const int rId)
+{
+	ElementRecorders.at(rId)->remove_ele(Elements.at(eleId));
 }
 
 void DynamicSystem::setDofRecorderFileName(const int id, char* fileName)

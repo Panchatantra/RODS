@@ -368,18 +368,18 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
 
             char workDir[C_STR_LEN];
             get_work_dir(workDir, C_STR_LEN);
-#ifdef __GNUC__
-            strcat(workDir, "/");
-#else
-            strcat_s(workDir, "/");
-#endif
+            std::string work_dir(workDir);
+            if (work_dir.back() != '/')
+            {
+                work_dir.push_back('/');
+            }
             if (ImGui::MenuItem("Open")) {
-                ImGuiFileDialog::Instance()->OpenDialog("Open Model", "Select File", ".json", workDir);
+                ImGuiFileDialog::Instance()->OpenDialog("Open Model", "Select File", ".json", work_dir.c_str());
             }
 
             if (ImGui::MenuItem("Save")) {
                 ImGuiFileDialog::Instance()->OpenDialog("Save Model", "Select File Path",
-                                    ".json", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
+                                    ".json", work_dir.c_str(), "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
             }
 
             if (ImGui::MenuItem("Exit"))
@@ -1860,14 +1860,14 @@ void RODS_GUI::recorderWindow()
 
                 char workDir[C_STR_LEN];
                 get_work_dir(workDir, C_STR_LEN);
-#ifdef __GNUC__
-                strcat(workDir, "/");
-#else
-                strcat_s(workDir, "/");
-#endif
+                std::string work_dir(workDir);
+                if (work_dir.back() != '/')
+                {
+                    work_dir.push_back('/');
+                }
                 if (ImGui::Button("Set File for Recorder"))
                     ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
-                                    ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
+                                    ".*", work_dir.c_str(), "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
                 static std::string recorderFilePathName = "";
                 static char _recorderFilePathName[C_STR_LEN] = "r.txt";
                 ImGui::InputText("Recorder File", _recorderFilePathName, C_STR_LEN);
@@ -1933,14 +1933,15 @@ void RODS_GUI::recorderWindow()
 
                 char workDir[C_STR_LEN];
                 get_work_dir(workDir, C_STR_LEN);
-#ifdef __GNUC__
-                strcat(workDir, "/");
-#else
-                strcat_s(workDir, "/");
-#endif
+                std::string work_dir(workDir);
+                if (work_dir.back() != '/')
+                {
+                    work_dir.push_back('/');
+                }
+
                 if (ImGui::Button("Set File for Recorder"))
                     ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
-                                    ".*", workDir, "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
+                                    ".*", work_dir.c_str(), "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
                 static std::string recorderFilePathName = "";
                 static char _recorderFilePathName[C_STR_LEN] = "r.txt";
                 ImGui::InputText("Recorder File", _recorderFilePathName, C_STR_LEN);
@@ -2518,13 +2519,13 @@ void RODS_GUI::timeHistoryPlotWindow()
 
         char workDir[C_STR_LEN];
         get_work_dir(workDir, C_STR_LEN);
-#ifdef __GNUC__
-        strcat(workDir, "/");
-#else
-        strcat_s(workDir, "/");
-#endif
+        std::string work_dir(workDir);
+        if (work_dir.back() != '/')
+        {
+            work_dir.push_back('/');
+        }
         if (ImGui::Button("Select File"))
-            ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", workDir);
+            ImGuiFileDialog::Instance()->OpenDialog("SelectFileDlgKey", "Select File", ".txt,.dat,.*", work_dir.c_str());
 
         if (ImGuiFileDialog::Instance()->Display("SelectFileDlgKey"))
         {

@@ -519,6 +519,7 @@ copy /y ..\x64\DLLRelease\RODS.lib ..\x64\Release\</Command>
     <ClInclude Include="element\TVMD3D.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Load.h" />
+    <ClInclude Include="macro.h" />
     <ClInclude Include="material\ConcreteTrilinear.h" />
     <ClInclude Include="material\CyclicHardenTrilinear.h" />
     <ClInclude Include="material\Elastic.h" />

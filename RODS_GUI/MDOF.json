@@ -1,5 +1,7 @@
 {
     "DOFCount": 11,
+    "DOFRecorderCount": 0,
+    "DOFRecorderVec": [],
     "DOFVec": [
         {
             "dir": 0,
@@ -72,6 +74,8 @@
     "Dashpot2DVec": [],
     "DashpotCount": 0,
     "DashpotVec": [],
+    "ElementRecorderCount": 0,
+    "ElementRecorderVec": [],
     "FrameElastic2DCount": 0,
     "FrameElastic2DVec": [],
     "Inerter2DCount": 0,

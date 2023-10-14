@@ -816,6 +816,7 @@ public:
 	 * @param      fileName  The file name
 	 */
 	void addWave(const int id, const double dt, string fileName);
+	void removeWave(const int id);
 
 	/**
 	 * @brief      Add a DOF Recorder.
@@ -837,9 +838,12 @@ public:
 	* @param[in]  rType     The Response type
 	* @param      fileName  The record file name
 	*/
-	void addDOFRecorder(const int id, RODS::Response rType, const char * fileName);
+	void addDOFRecorder(const int id, RODS::Response rType, const char* fileName);
+	void addDOFRecorder(const int id, RODS::Response rType, string fileName);
+	void removeDOFRecorder(const int id);
 
 	void addDOFToRecorder(const int dofId, const int rId);
+	void removeDOFFromRecorder(const int dofId, const int rId);
 
 	/**
 	 * @brief      Add a Element Recorder.
@@ -852,9 +856,12 @@ public:
 	 */
 	void addElementRecorder(const int id, int *eleIds, const int n, RODS::Response rType, const char * fileName);
 
-	void addElementRecorder(const int id, RODS::Response rType, const char * fileName);
+	void addElementRecorder(const int id, RODS::Response rType, const char* fileName);
+	void addElementRecorder(const int id, RODS::Response rType, string fileName);
+	void removeElementRecorder(const int id);
 
 	void addElementToRecorder(const int eleId, const int rId);
+	void removeElementFromRecorder(const int eleId, const int rId);
 
 	void setDofRecorderFileName(const int id, char * fileName);
 	void setElementRecorderFileName(const int id, char * fileName);
