@@ -26,7 +26,7 @@ public:
 
 	friend void to_json(json& jsonObj, const DOFRecorder& DOFRecorderObj) {
 		jsonObj["id"] = DOFRecorderObj.id;
-		jsonObj["Dofs"] = DOFRecorderObj.DOFs;
+		jsonObj["DOFs"] = DOFRecorderObj.DOFs;
 		jsonObj["rtype"] = DOFRecorderObj.rtype;
 		jsonObj["fileName"] = DOFRecorderObj.fileName;
 	}

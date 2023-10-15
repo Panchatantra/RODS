@@ -3,7 +3,7 @@
     "DOFRecorderCount": 1,
     "DOFRecorderVec": [
         {
-            "Dofs": [
+            "DOFs": [
                 1,
                 2,
                 3,
@@ -41,7 +41,7 @@
                 35,
                 36
             ],
-            "fileName": ".//RODS_dof_response.txt",
+            "fileName": "./RODS_dof_response.txt",
             "id": 1,
             "rtype": 5
         }

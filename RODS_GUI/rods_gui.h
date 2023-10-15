@@ -29,6 +29,7 @@ static bool show_element1d_table_window = false;
 static bool show_element2d_table_window = false;
 static bool show_wave_table_window = false;
 static bool show_recorder_window = false;
+static bool show_recorder_table_window = false;
 static bool show_time_history_plot_window = false;
 static bool show_dir_window = false;
 static bool show_draw_mode_window = false;
@@ -52,6 +53,7 @@ static int num_spring_2d = 0;
 static int num_dashpot_2d = 0;
 static int num_inerter_2d = 0;
 
+static int num_mat_1d = 0;
 static int num_eqn = 0;
 static int num_wave = 0;
 static int num_dof_recorder = 0;
@@ -122,6 +124,7 @@ namespace RODS_GUI {
     void element1dTableWindow();
     void element2dTableWindow();
 
+    void recorderTableWindow();
     void waveTableWindow();
 
     void timeHistoryPlotWindow();

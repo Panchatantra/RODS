@@ -2054,7 +2054,15 @@ void DynamicSystem::solveComplexEigen()
 
 void DynamicSystem::recordAllDofResponse(const int id)
 {
-	string fileName = workDir + "/"  + name + "_dof_response.txt";
+	string fileName;
+	if (workDir.back() != '/')
+	{
+		fileName = workDir + "/" + name + "_dof_response.txt";
+	}
+	else
+	{
+		fileName = workDir + name + "_dof_response.txt";
+	}
 	addDOFRecorder(id, RODS::Response::ALL, fileName.c_str());
 
 	for (auto it = DOFs.begin(); it != DOFs.end(); it++)
@@ -2065,7 +2073,16 @@ void DynamicSystem::recordAllDofResponse(const int id)
 
 void DynamicSystem::recordAllEleResponse(const int id)
 {
-	string fileName = workDir + "/"  + name + "_ele_response.txt";
+	string fileName;
+	if (workDir.back() != '/')
+	{
+		fileName = workDir + "/" + name + "_ele_response.txt";
+	}
+	else
+	{
+		fileName = workDir + name + "_ele_response.txt";
+	}
+
 	addElementRecorder(id, RODS::Response::ALL, fileName.c_str());
 
 	for (auto it = ROD1Ds.begin(); it != ROD1Ds.end(); it++)

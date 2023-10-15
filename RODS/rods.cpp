@@ -423,6 +423,36 @@ DLL_API void export_modal_matrix_auto_name()
 	ds->exportModalMatrix((ds->workDir + "/" + ds->name + "_modal_matrix.txt").c_str());
 }
 
+DLL_API size_t add_mat_elastic(const int id, const double E0)
+{
+	ds->addMaterialElastic(id, E0);
+	return ds->Material1Ds.size();
+}
+
+DLL_API size_t add_mat_elastoplastic(const int id, const double E0, const double fy, const double alpha)
+{
+	ds->addMaterialElastoplastic(id, E0, fy, alpha);
+	return ds->Material1Ds.size();
+}
+
+DLL_API size_t add_mat_steel_bilinear(const int id, const double E0, const double fy, const double alpha, const double beta)
+{
+	ds->addMaterialSteelBilinear(id, E0, fy, alpha, beta);
+	return ds->Material1Ds.size();
+}
+
+DLL_API size_t add_mat_concrete_trilinear(const int id, const double E0, const double fc, const double epsilon_c, const double sigma_cr, const double sigma_u, const double epsilon_u)
+{
+	ds->addMaterialConcreteTrilinear(id, E0, fc, epsilon_c, sigma_cr, sigma_u, epsilon_u);
+	return ds->Material1Ds.size();
+}
+
+DLL_API size_t add_mat_cyclic_harden_trilinear(const int id, const double E, const double sigma1, const double alpha1, const double sigma2, const double alpha2)
+{
+	ds->addMaterialCyclicHardenTrilinear(id, E, sigma1, alpha1, sigma2, alpha2);
+	return ds->Material1Ds.size();
+}
+
 DLL_API size_t add_mat_sma_bilinear(const int id, const double E0, const double fy, const double alpha,
 	const double sigma_shift)
 {
@@ -983,6 +1013,42 @@ DLL_API void get_frame_elastic_2d_info(const int id, int &i, int &j, double &EA,
 	j = ele->nodeJ->id;
 	EA = ele->EA;
 	EI = ele->EI;
+}
+
+DLL_API void get_dof_recorder_info(const int id, int& response_type, int& n, char* file_name, size_t bs)
+{
+	auto recorder = ds->DOFRecorders.at(id);
+	response_type = static_cast<int>(recorder->rtype);
+	n = recorder->dofs.size();
+#ifdef __GNUC__
+	strcpy(file_name, recorder->fileName.c_str());
+#else
+	strcpy_s(file_name, bs, recorder->fileName.c_str());
+#endif
+}
+
+DLL_API void get_ele_recorder_info(const int id, int& response_type, int& n, char* file_name, size_t bs)
+{
+	auto recorder = ds->ElementRecorders.at(id);
+	response_type = static_cast<int>(recorder->rtype);
+	n = recorder->eles.size();
+#ifdef __GNUC__
+	strcpy(file_name, recorder->fileName.c_str());
+#else
+	strcpy_s(file_name, bs, recorder->fileName.c_str());
+#endif
+}
+
+DLL_API void get_dof_recorder_dofs(const int id, int* ids)
+{
+	auto recorder = ds->DOFRecorders.at(id);
+	recorder->get_dof_id(ids);
+}
+
+DLL_API void get_ele_recorder_eles(const int id, int* ids)
+{
+	auto recorder = ds->ElementRecorders.at(id);
+	recorder->get_ele_id(ids);
 }
 
 DLL_API void get_wave_info(const int id, double &dt, int &nsteps, char *filePathName, size_t bs)

@@ -87,7 +87,7 @@ int main(int, char**)
     //io.ConfigViewportsNoTaskBarIcon = true;
 
     // Setup Dear ImGui style
-    // ImGui::StyleColorsDark();
+    //ImGui::StyleColorsDark();
     ImGui::StyleColorsLight();
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
@@ -176,6 +176,7 @@ int main(int, char**)
         RODS_GUI::nodeTableWindow();
         RODS_GUI::element1dTableWindow();
         RODS_GUI::element2dTableWindow();
+        RODS_GUI::recorderTableWindow();
         RODS_GUI::waveTableWindow();
 
         RODS_GUI::assembleMatrixWindow();

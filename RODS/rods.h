@@ -118,6 +118,13 @@ extern "C" {
 	DLL_API void export_modal_matrix(const char * fileName);
 	DLL_API void export_modal_matrix_auto_name();
 
+	DLL_API size_t add_mat_elastic(const int id, const double E0);
+	DLL_API size_t add_mat_elastoplastic(const int id, const double E0, const double fy, const double alpha);
+	DLL_API size_t add_mat_steel_bilinear(const int id, const double E0, const double fy, const double alpha, const double beta);
+	DLL_API size_t add_mat_concrete_trilinear(const int id, const double E0, const double fc, const double epsilon_c,
+		const double sigma_cr, const double sigma_u, const double epsilon_u);
+	DLL_API size_t add_mat_cyclic_harden_trilinear(const int id, const double E, const double sigma1, const double alpha1,
+		const double sigma2, const double alpha2);
 	DLL_API size_t add_mat_sma_bilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift);
 
 	DLL_API double get_damping_ratio();
@@ -211,6 +218,12 @@ extern "C" {
 	DLL_API void get_inerter_2d_info(const int id, int &i, int &j, double &m, int &la);
 	DLL_API void get_truss_elastic_2d_info(const int id, int &i, int &j, double &EA);
 	DLL_API void get_frame_elastic_2d_info(const int id, int &i, int &j, double &EA, double &EI);
+
+	DLL_API void get_dof_recorder_info(const int id, int &response_type, int &n, char *file_name, size_t bs);
+	DLL_API void get_ele_recorder_info(const int id, int &response_type, int &n, char *file_name, size_t bs);
+
+	DLL_API void get_dof_recorder_dofs(const int id, int* ids);
+	DLL_API void get_ele_recorder_eles(const int id, int* ids);
 
 	DLL_API void get_wave_info(const int id, double &dt, int &nsteps, char *filePathName, size_t bs);
 	DLL_API void get_wave_data(const int id, float *data);

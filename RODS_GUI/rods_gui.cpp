@@ -463,6 +463,9 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             if (ImGui::MenuItem("Element2D Table"))
                 show_element2d_table_window = true;
 
+            if (ImGui::MenuItem("Recorder Table"))
+                show_recorder_table_window = true;
+
             if (ImGui::MenuItem("Wave Table"))
                 show_wave_table_window = true;
 
@@ -698,6 +701,9 @@ void RODS_GUI::basicInfoWindow()
         ImGui::Text("Number of Elements: %d", num_ele);
         ImGui::Text("Number of Equations: %d", num_eqn);
         ImGui::Separator();
+        ImGui::Text("Number of DOF Recorders: %d", num_dof_recorder);
+        ImGui::Text("Number of Element Recorders: %d", num_ele_recorder);
+        ImGui::Separator();
         ImGui::Text("Number of Waves: %d", num_wave);
         ImGui::Separator();
         if (ImGui::Button("Close"))
@@ -772,6 +778,42 @@ void RODS_GUI::materialWindow()
 
             static int mat_type = 0;
             ImGui::Combo("Type", &mat_type, MaterialTypes, num_mat_type);
+
+            static float params[6];
+
+            if (mat_type == 0)
+            {
+                ImGui::InputFloat("E0", params);
+                if (ImGui::Button("Add Material"))
+                    num_mat_1d = add_mat_elastic(mat_id++, params[0]);
+            }
+            else if (mat_type == 1)
+            {
+                ImGui::InputFloat3("E0,fy,alpha", params);
+                if (ImGui::Button("Add Material"))
+                    num_mat_1d = add_mat_elastoplastic(mat_id++, params[0], params[1], params[2]);
+            }
+            else if (mat_type == 2)
+            {
+                ImGui::InputFloat3("E0, fc, epsilon_c", params);
+                ImGui::InputFloat3("sigma_cr, sigma_u, epsilon_u", &params[3]);
+                if (ImGui::Button("Add Material"))
+                    num_mat_1d = add_mat_concrete_trilinear(mat_id++, params[0], params[1], params[2],
+                                                            params[3], params[4], params[5]);
+            }
+            else if (mat_type == 3)
+            {
+                ImGui::InputFloat4("E0,fy,alpha,beta", params);
+                if (ImGui::Button("Add Material"))
+                    num_mat_1d = add_mat_steel_bilinear(mat_id++, params[0], params[1], params[2], params[3]);
+            }
+            else if (mat_type == 4)
+            {
+                ImGui::InputFloat("E", params);
+                ImGui::InputFloat4("sigma1,alpha1,sigma2,alpha2", &params[1]);
+                if (ImGui::Button("Add Material"))
+                    num_mat_1d = add_mat_cyclic_harden_trilinear(mat_id++, params[0], params[1], params[2], params[3], params[4]);
+            }
 
             if (ImGui::Button("Close"))
                 show_line_window = false;
@@ -2422,6 +2464,93 @@ void RODS_GUI::element2dTableWindow()
     }
 }
 
+void RODS_GUI::recorderTableWindow()
+{
+        if (show_recorder_table_window)
+        {
+            ImGui::Begin("Recorder Table");
+            static int recorder_type = 1;
+            ImGui::Text("Recorder Type: ");
+            ImGui::RadioButton("DOF", &recorder_type, 1); ImGui::SameLine();
+            ImGui::RadioButton("Element", &recorder_type, 2);
+
+            if (recorder_type == 1)
+            {
+                if (ImGui::BeginTable("Recorder Table", 5))
+                {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("ID");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Response");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("File Path");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("DOF Count");
+                    ImGui::TableNextColumn();
+                    ImGui::Text("DOF IDs");
+
+                    num_dof_recorder = get_num_dof_recorder();
+                    if (num_dof_recorder > 0)
+                    {
+                        auto dof_recorders = new int[num_dof_recorder];
+                        get_ids_dof_recorder(dof_recorders);
+                        for (int row = 0; row < num_dof_recorder; row++)
+                        {
+                            int id = dof_recorders[row];
+                            int rt, nd;
+                            char fn[C_STR_LEN];
+
+                            get_dof_recorder_info(id, rt, nd, fn, C_STR_LEN);
+                            ImGui::TableNextRow();
+                            ImGui::TableNextColumn();
+                            ImGui::Text("%d", id);
+                            ImGui::TableNextColumn();
+                            ImGui::Text(dofResponse[rt]);
+                            ImGui::TableNextColumn();
+                            ImGui::Text(fn);
+                            ImGui::TableNextColumn();
+                            ImGui::Text("%d", nd);
+                            ImGui::TableNextColumn();
+                            if (ImGui::Button("View DOFs"))
+                                ImGui::OpenPopup("View DOFs");
+                            if (ImGui::BeginPopup("View DOFs"))
+                            {
+                                int *ids = new int[nd];
+                                get_dof_recorder_dofs(id, ids);
+                            }
+                        }
+                    }
+
+                    ImGui::EndTable();
+                }
+            }
+        else
+        {
+            if (ImGui::BeginTable("Recorder Table", 5))
+            {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("ID");
+                ImGui::TableNextColumn();
+                ImGui::Text("Response");
+                ImGui::TableNextColumn();
+                ImGui::Text("File Path");
+                ImGui::TableNextColumn();
+                ImGui::Text("Element Count");
+                ImGui::TableNextColumn();
+                ImGui::Text("Element IDs");
+
+                ImGui::EndTable();
+            }
+        }
+        if (ImGui::Button("Close"))
+            show_recorder_table_window = false;
+
+        ImGui::End();
+        }
+}
+
 void RODS_GUI::waveTableWindow()
 {
     if (show_wave_table_window)
@@ -2485,7 +2614,6 @@ void RODS_GUI::waveTableWindow()
 
         ImGui::End();
     }
-    
 }
 
 void RODS_GUI::timeHistoryPlotWindow()

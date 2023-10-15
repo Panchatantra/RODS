@@ -1,11 +1,11 @@
 #include "Element.h"
 #include <iostream>
 
-Element::Element(): nv(1)
+Element::Element(): Basis(), nv(1), force(nullptr), deformation(nullptr)
 {
 }
 
-Element::Element(const int id) : Basis(id), nv(1)
+Element::Element(const int id) : Basis(id), nv(1), force(nullptr), deformation(nullptr)
 {
 }
 
