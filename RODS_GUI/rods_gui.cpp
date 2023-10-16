@@ -93,6 +93,14 @@ std::map<int, const char*> dimMapText = {
 const char* direction[6] = {"X", "Y", "Z", "RX", "RY", "RZ"};
 const char* dofResponse[4] = {"Displacement", "Velocity", "Acceleration", "ALL"};
 const char* eleResponse[3] = {"Force", "Deformation", "ALL"};
+std::map<int, const char*> responseMapText = {
+                    {0, "Displacement"},
+                    {1, "Velocity"},
+                    {2, "Acceleration"},
+                    {3, "Force"},
+                    {4, "Deformation"},
+                    {5, "ALL"},
+                    };
 const char* dynamicSolver[4] = {"Newmark", "Newmark_NL",
                                 "StateSpace", "StateSpace_NL"};
 const char* localAxis[3] = {"U1", "U2", "U3"};
@@ -335,8 +343,9 @@ void RODS_GUI::setCamera(GLFWwindow* window)
     glUseProgram(shaderProgram);
     glfwGetFramebufferSize(window, &buffer_width, &buffer_height);
     // glm::mat4 projection = glm::mat4(1.0f);
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)buffer_width / (float)buffer_height, 0.1f, 100.0f);
-    // glm::mat4 projection = glm::ortho(0.0f, (float)buffer_width, (float)buffer_height, 0.0f, -1.0f, 1.0f);
+    // glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)buffer_width / (float)buffer_height, 0.1f, 100.0f);
+    float scale = (float)buffer_height / (float)buffer_width;
+    glm::mat4 projection = glm::ortho(-1.0f, 1.0f, -scale, scale, 0.1f, 100.0f);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
     glm::mat4 view = glm::mat4(1.0f);
     // view = glm::lookAt( glm::vec3(0.0f, 0.0f, 2.5f),
@@ -347,7 +356,7 @@ void RODS_GUI::setCamera(GLFWwindow* window)
                         glm::vec3(0.0f, 0.0f, 1.0f) );
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f,0.0f,-0.5f));
+    model = glm::translate(model, glm::vec3(0.0f,0.0f,-0.4f));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
 
     glUseProgram(textShaderProgram);
@@ -1958,7 +1967,10 @@ void RODS_GUI::recorderWindow()
             else
             {
                 if (ImGui::Button("Add DOF Recorder"))
+                {
                     record_all_dof_response(dof_recorder_id);
+                    num_dof_recorder = get_num_dof_recorder();
+                }
             }
         }
         else
@@ -2032,7 +2044,10 @@ void RODS_GUI::recorderWindow()
             else
             {
                 if (ImGui::Button("Add Element Recorder"))
+                {
                     record_all_ele_response(ele_recorder_id);
+                    num_ele_recorder = get_num_ele_recorder();
+                }
             }
         }
 
@@ -2466,65 +2481,71 @@ void RODS_GUI::element2dTableWindow()
 
 void RODS_GUI::recorderTableWindow()
 {
-        if (show_recorder_table_window)
+    if (show_recorder_table_window)
+    {
+        ImGui::Begin("Recorder Table");
+        static int recorder_type = 1;
+        ImGui::Text("Recorder Type: "); ImGui::SameLine();
+        ImGui::RadioButton("DOF", &recorder_type, 1); ImGui::SameLine();
+        ImGui::RadioButton("Element", &recorder_type, 2);
+
+        if (recorder_type == 1)
         {
-            ImGui::Begin("Recorder Table");
-            static int recorder_type = 1;
-            ImGui::Text("Recorder Type: ");
-            ImGui::RadioButton("DOF", &recorder_type, 1); ImGui::SameLine();
-            ImGui::RadioButton("Element", &recorder_type, 2);
-
-            if (recorder_type == 1)
+            if (ImGui::BeginTable("Recorder Table", 5))
             {
-                if (ImGui::BeginTable("Recorder Table", 5))
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("ID");
+                ImGui::TableNextColumn();
+                ImGui::Text("Response");
+                ImGui::TableNextColumn();
+                ImGui::Text("File Path");
+                ImGui::TableNextColumn();
+                ImGui::Text("DOF Count");
+                ImGui::TableNextColumn();
+                ImGui::Text("DOF IDs");
+
+                num_dof_recorder = get_num_dof_recorder();
+                if (num_dof_recorder > 0)
                 {
-                    ImGui::TableNextRow();
-                    ImGui::TableNextColumn();
-                    ImGui::Text("ID");
-                    ImGui::TableNextColumn();
-                    ImGui::Text("Response");
-                    ImGui::TableNextColumn();
-                    ImGui::Text("File Path");
-                    ImGui::TableNextColumn();
-                    ImGui::Text("DOF Count");
-                    ImGui::TableNextColumn();
-                    ImGui::Text("DOF IDs");
-
-                    num_dof_recorder = get_num_dof_recorder();
-                    if (num_dof_recorder > 0)
+                    auto dof_recorders = new int[num_dof_recorder];
+                    get_ids_dof_recorder(dof_recorders);
+                    for (int row = 0; row < num_dof_recorder; row++)
                     {
-                        auto dof_recorders = new int[num_dof_recorder];
-                        get_ids_dof_recorder(dof_recorders);
-                        for (int row = 0; row < num_dof_recorder; row++)
-                        {
-                            int id = dof_recorders[row];
-                            int rt, nd;
-                            char fn[C_STR_LEN];
+                        int id = dof_recorders[row];
+                        int rt, nd;
+                        char fn[C_STR_LEN];
 
-                            get_dof_recorder_info(id, rt, nd, fn, C_STR_LEN);
-                            ImGui::TableNextRow();
-                            ImGui::TableNextColumn();
-                            ImGui::Text("%d", id);
-                            ImGui::TableNextColumn();
-                            ImGui::Text(dofResponse[rt]);
-                            ImGui::TableNextColumn();
-                            ImGui::Text(fn);
-                            ImGui::TableNextColumn();
-                            ImGui::Text("%d", nd);
-                            ImGui::TableNextColumn();
-                            if (ImGui::Button("View DOFs"))
-                                ImGui::OpenPopup("View DOFs");
-                            if (ImGui::BeginPopup("View DOFs"))
+                        get_dof_recorder_info(id, rt, nd, fn, C_STR_LEN);
+                        ImGui::TableNextRow();
+                        ImGui::TableNextColumn();
+                        ImGui::Text("%d", id);
+                        ImGui::TableNextColumn();
+                        ImGui::Text(responseMapText.at(rt));
+                        ImGui::TableNextColumn();
+                        ImGui::Text(fn);
+                        ImGui::TableNextColumn();
+                        ImGui::Text("%d", nd);
+                        ImGui::TableNextColumn();
+                        if (ImGui::Button("View"))
+                            ImGui::OpenPopup("View DOFs");
+                        if (ImGui::BeginPopup("View DOFs"))
+                        {
+                            int *ids = new int[nd];
+                            get_dof_recorder_dofs(id, ids);
+                            ImGui::BeginListBox("##");
+                            for (int i = 0; i < nd; i++)
                             {
-                                int *ids = new int[nd];
-                                get_dof_recorder_dofs(id, ids);
+                                ImGui::Selectable(std::to_string(ids[i]).c_str());
                             }
+                            ImGui::EndListBox();
+                            ImGui::EndPopup();
                         }
                     }
-
-                    ImGui::EndTable();
                 }
+                ImGui::EndTable();
             }
+        }
         else
         {
             if (ImGui::BeginTable("Recorder Table", 5))
@@ -2541,14 +2562,53 @@ void RODS_GUI::recorderTableWindow()
                 ImGui::TableNextColumn();
                 ImGui::Text("Element IDs");
 
+                num_ele_recorder = get_num_ele_recorder();
+                if (num_ele_recorder > 0)
+                {
+                    auto ele_recorders = new int[num_ele_recorder];
+                    get_ids_ele_recorder(ele_recorders);
+                    for (int row = 0; row < num_ele_recorder; row++)
+                    {
+                        int id = ele_recorders[row];
+                        int rt, nd;
+                        char fn[C_STR_LEN];
+
+                        get_ele_recorder_info(id, rt, nd, fn, C_STR_LEN);
+                        ImGui::TableNextRow();
+                        ImGui::TableNextColumn();
+                        ImGui::Text("%d", id);
+                        ImGui::TableNextColumn();
+                        ImGui::Text(responseMapText.at(rt));
+                        ImGui::TableNextColumn();
+                        ImGui::Text(fn);
+                        ImGui::TableNextColumn();
+                        ImGui::Text("%d", nd);
+                        ImGui::TableNextColumn();
+                        if (ImGui::Button("View"))
+                            ImGui::OpenPopup("View Elements");
+                        if (ImGui::BeginPopup("View Elements"))
+                        {
+                            int *ids = new int[nd];
+                            get_ele_recorder_eles(id, ids);
+                            ImGui::BeginListBox("##");
+                            for (int i = 0; i < nd; i++)
+                            {
+                                ImGui::Selectable(std::to_string(ids[i]).c_str());
+                            }
+                            ImGui::EndListBox();
+                            ImGui::EndPopup();
+                        }
+                    }
+                }
                 ImGui::EndTable();
             }
         }
+
         if (ImGui::Button("Close"))
             show_recorder_table_window = false;
 
         ImGui::End();
-        }
+    }
 }
 
 void RODS_GUI::waveTableWindow()

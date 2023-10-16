@@ -84,8 +84,30 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 	}
 
 	JSON_TO_MEMBERS_2(Wave, dt, filePathName)
-	JSON_TO_MEMBERS_2(DOFRecorder, rtype, fileName)
-	JSON_TO_MEMBERS_2(ElementRecorder, rtype, fileName)
+
+	auto j_array_DOFRecorder = model.at("DOFRecorderVec");
+	DOFRecorder DOFRecorderObj;
+	for (auto i = 0; i<model.at("DOFRecorderCount"); i++)
+	{
+		j_array_DOFRecorder[i].get_to(DOFRecorderObj);
+		addDOFRecorder(DOFRecorderObj.id, DOFRecorderObj.rtype, DOFRecorderObj.fileName);
+		for (auto it = DOFRecorderObj.DOFs.begin(); it != DOFRecorderObj.DOFs.end(); it++)
+		{
+			addDOFToRecorder(*it, DOFRecorderObj.id);	
+		}
+	}
+
+	auto j_array_ElementRecorder = model.at("ElementRecorderVec");
+	ElementRecorder ElementRecorderObj;
+	for (auto i = 0; i<model.at("ElementRecorderCount"); i++)
+	{
+		j_array_ElementRecorder[i].get_to(ElementRecorderObj);
+		addElementRecorder(ElementRecorderObj.id, ElementRecorderObj.rtype, ElementRecorderObj.fileName);
+		for (auto it = ElementRecorderObj.Elements.begin(); it != ElementRecorderObj.Elements.end(); it++)
+		{
+			addElementToRecorder(*it, ElementRecorderObj.id);	
+		}
+	}
 
 	JSON_TO_ELEMENTS(Spring, k)
 	JSON_TO_ELEMENTS(Dashpot, c)
@@ -2085,7 +2107,7 @@ void DynamicSystem::recordAllEleResponse(const int id)
 
 	addElementRecorder(id, RODS::Response::ALL, fileName.c_str());
 
-	for (auto it = ROD1Ds.begin(); it != ROD1Ds.end(); it++)
+	for (auto it = Elements.begin(); it != Elements.end(); it++)
 	{
 		addElementToRecorder(it->second->id, id);
 	}

@@ -268,8 +268,31 @@
     "Dashpot2DVec": [],
     "DashpotCount": 0,
     "DashpotVec": [],
-    "ElementRecorderCount": 0,
-    "ElementRecorderVec": [],
+    "ElementRecorderCount": 1,
+    "ElementRecorderVec": [
+        {
+            "Elements": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ],
+            "fileName": "./RODS_ele_response.txt",
+            "id": 1,
+            "rtype": 5
+        }
+    ],
     "FrameElastic2DCount": 15,
     "FrameElastic2DVec": [
         {

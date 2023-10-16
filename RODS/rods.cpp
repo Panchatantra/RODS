@@ -809,9 +809,9 @@ DLL_API size_t get_node_coords(float * coords, const bool norm)
 					max_val_ = ds->zMax > -ds->zMin ? ds->zMax : -ds->zMin;
 					if (max_val_ > max_val) max_val = max_val_;
 				}
-				x /= max_val;
-				y /= max_val;
-				z /= max_val;
+				x /= max_val*1.2;
+				y /= max_val*1.2;
+				z /= max_val*1.2;
 			}
 			coords[3*i] = (float)x;
 			coords[3*i+1] = (float)y;
