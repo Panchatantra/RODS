@@ -2859,21 +2859,15 @@ void RODS_GUI::drawModeWindow()
                 double ypeak = fmax(ymax, -ymin);
                 double zpeak = fmax(zmax, -zmin);
 
-                translate_vec.x = (xpeak == 0.0) ? 0.0 : -(xmax + xmin)/xpeak/1.2;
-                translate_vec.y = (ypeak == 0.0) ? 0.0 : -(ymax + ymin)/ypeak/1.2;
-                translate_vec.z = (zpeak == 0.0) ? 0.0 : -(zmax + zmin)/zpeak/1.2;
-
-                std::cout << translate_vec.x << std::endl;
-                std::cout << translate_vec.y << std::endl;
-                std::cout << translate_vec.z << std::endl;
+                translate_vec.x = (xpeak != 0.0) ? -(xmax + xmin)/xpeak/1.2 : 0.0;
+                translate_vec.y = (ypeak != 0.0) ? -(ymax + ymin)/ypeak/1.2 : 0.0;
+                translate_vec.z = (zpeak != 0.0) ? -(zmax + zmin)/zpeak/1.2 : 0.0;
 
                 double scale = 1.0;
                 if (xpeak != 0.0) scale = fmax(scale, 2.0*xpeak/(xmax-xmin));
                 if (ypeak != 0.0) scale = fmax(scale, 2.0*ypeak/(ymax-ymin));
                 if (zpeak != 0.0) scale = fmax(scale, 2.0*zpeak/(zmax-zmin));
                 
-                std::cout << scale << std::endl;
-
                 scale_vec.x = scale;
                 scale_vec.y = scale;
                 scale_vec.z = scale;
