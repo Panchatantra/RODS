@@ -249,4 +249,10 @@ extern "C" {
 
 	DLL_API void load_from_json(const char * file_name);
 	DLL_API void save_to_json(const char * file_name);
+
+	DLL_API void get_coords_range(
+					double &xmax, double &xmin,
+					double &ymax, double &ymin,
+					double &zmax, double &zmin
+					);
 }

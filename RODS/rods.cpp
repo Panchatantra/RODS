@@ -1174,3 +1174,10 @@ DLL_API void save_to_json(const char *file_name)
 {
 	ds->saveToJSON(file_name);
 }
+
+DLL_API void get_coords_range(double &xmax, double &xmin, double &ymax, double &ymin, double &zmax, double &zmin)
+{
+    xmax = ds->xMax; xmin = ds->xMin;
+    ymax = ds->yMax; ymin = ds->yMin;
+    zmax = ds->zMax; zmin = ds->zMin;
+}

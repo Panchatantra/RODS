@@ -96,6 +96,7 @@ struct Character {
     unsigned int Advance;   // Horizontal offset to advance to next glyph
 };
 
+
 namespace RODS_GUI {
     void createShader();
     void createTextShader();
@@ -132,6 +133,8 @@ namespace RODS_GUI {
     void drawModeWindow();
 
     void updateViewMatrix();
+    void updateProjectionMatrix(GLFWwindow* window);
+    void updateModelMatrix();
     void draw_geo();
     void draw_1d_s();
     void draw_2d();
