@@ -85,30 +85,6 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 
 	JSON_TO_MEMBERS_2(Wave, dt, filePathName)
 
-	auto j_array_DOFRecorder = model.at("DOFRecorderVec");
-	DOFRecorder DOFRecorderObj;
-	for (auto i = 0; i<model.at("DOFRecorderCount"); i++)
-	{
-		j_array_DOFRecorder[i].get_to(DOFRecorderObj);
-		addDOFRecorder(DOFRecorderObj.id, DOFRecorderObj.rtype, DOFRecorderObj.fileName);
-		for (auto it = DOFRecorderObj.DOFs.begin(); it != DOFRecorderObj.DOFs.end(); it++)
-		{
-			addDOFToRecorder(*it, DOFRecorderObj.id);	
-		}
-	}
-
-	auto j_array_ElementRecorder = model.at("ElementRecorderVec");
-	ElementRecorder ElementRecorderObj;
-	for (auto i = 0; i<model.at("ElementRecorderCount"); i++)
-	{
-		j_array_ElementRecorder[i].get_to(ElementRecorderObj);
-		addElementRecorder(ElementRecorderObj.id, ElementRecorderObj.rtype, ElementRecorderObj.fileName);
-		for (auto it = ElementRecorderObj.Elements.begin(); it != ElementRecorderObj.Elements.end(); it++)
-		{
-			addElementToRecorder(*it, ElementRecorderObj.id);	
-		}
-	}
-
 	JSON_TO_ELEMENTS(Spring, k)
 	JSON_TO_ELEMENTS(Dashpot, c)
 	JSON_TO_ELEMENTS(Inerter, m)
@@ -120,6 +96,30 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 	JSON_TO_ELEMENTS_NODE_2(Spring2D, k, axis)
 	JSON_TO_ELEMENTS_NODE_2(Dashpot2D, c, axis)
 	JSON_TO_ELEMENTS_NODE_2(Inerter2D, m, axis)
+
+	auto j_array_DOFRecorder = model.at("DOFRecorderVec");
+	DOFRecorder DOFRecorderObj;
+	for (auto i = 0; i < model.at("DOFRecorderCount"); i++)
+	{
+		j_array_DOFRecorder[i].get_to(DOFRecorderObj);
+		addDOFRecorder(DOFRecorderObj.id, DOFRecorderObj.rtype, DOFRecorderObj.fileName);
+		for (auto it = DOFRecorderObj.DOFs.begin(); it != DOFRecorderObj.DOFs.end(); it++)
+		{
+			addDOFToRecorder(*it, DOFRecorderObj.id);
+		}
+	}
+
+	auto j_array_ElementRecorder = model.at("ElementRecorderVec");
+	ElementRecorder ElementRecorderObj;
+	for (auto i = 0; i < model.at("ElementRecorderCount"); i++)
+	{
+		j_array_ElementRecorder[i].get_to(ElementRecorderObj);
+		addElementRecorder(ElementRecorderObj.id, ElementRecorderObj.rtype, ElementRecorderObj.fileName);
+		for (auto it = ElementRecorderObj.Elements.begin(); it != ElementRecorderObj.Elements.end(); it++)
+		{
+			addElementToRecorder(*it, ElementRecorderObj.id);
+		}
+	}
 }
 
 void DynamicSystem::saveToJSON(const char *fileName)
