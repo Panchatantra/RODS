@@ -139,11 +139,19 @@ void RODS_GUI::createShader()
     std::ifstream vFile, fFile;
     std::stringstream vShaderStream, fShaderStream;
 
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
     vFile.open("vert.glsl");
+#else
+    vFile.open("vert_rp.glsl");
+#endif
     vShaderStream << vFile.rdbuf();
     vFile.close();
 
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
     fFile.open("frag.glsl");
+#else
+    fFile.open("frag_rp.glsl");
+#endif
     fShaderStream << fFile.rdbuf();
     fFile.close();
 
@@ -191,11 +199,19 @@ void RODS_GUI::createTextShader()
     std::ifstream vFile, fFile;
     std::stringstream vShaderStream, fShaderStream;
 
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
     vFile.open("text_vert.glsl");
+#else
+    vFile.open("text_vert_rp.glsl");
+#endif
     vShaderStream << vFile.rdbuf();
     vFile.close();
 
+#if !defined(IMGUI_IMPL_OPENGL_ES2)
     fFile.open("text_frag.glsl");
+#else
+    fFile.open("text_frag_rp.glsl");
+#endif
     fShaderStream << fFile.rdbuf();
     fFile.close();
 
