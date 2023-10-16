@@ -90,6 +90,7 @@
         "ranges": "cpp",
         "span": "cpp",
         "valarray": "cpp",
-        "glad.h": "c"
+        "glad.h": "c",
+        "armadillo": "cpp"
     }
 }

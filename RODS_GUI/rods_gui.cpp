@@ -806,17 +806,53 @@ void RODS_GUI::materialWindow()
             static int mat_type = 0;
             ImGui::Combo("Type", &mat_type, MaterialTypes, num_mat_type);
 
-            static float params[6];
+            static float params[6] = {2.0e5, 400.0, 0.02};
 
             if (mat_type == 0)
             {
                 ImGui::InputFloat("E0", params);
+                if (ImPlot::BeginPlot("Elastic Material", ImVec2(-1, 600)))
+                {
+                    float * epsilon = new float[3];
+                    epsilon[0] = -0.01f;
+                    epsilon[1] = 0.00f;
+                    epsilon[2] = 0.01f;
+                    float * sigma = new float[3];
+                    sigma[0] = -0.01f*params[0];
+                    sigma[1] = 0.00f*params[0];
+                    sigma[2] = 0.01f*params[0];
+                    ImPlot::SetupAxes("eps", "sig", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                    ImPlot::PlotLine("##", epsilon, sigma, 3);
+                    ImPlot::EndPlot();
+                }
                 if (ImGui::Button("Add Material"))
                     num_mat_1d = add_mat_elastic(mat_id++, params[0]);
             }
             else if (mat_type == 1)
             {
                 ImGui::InputFloat3("E0,fy,alpha", params);
+                if (ImPlot::BeginPlot("Elastic Material", ImVec2(-1, 600)))
+                {
+                    float f_y = params[1];
+                    float eps_y = params[1]/params[0];
+                    float f_u = f_y + (0.01 - eps_y)*params[2]*params[0];
+
+                    float * epsilon = new float[5];
+                    epsilon[0] = -0.01f;
+                    epsilon[1] = -eps_y;
+                    epsilon[2] = 0.00f;
+                    epsilon[3] = eps_y;
+                    epsilon[4] = 0.01f;
+                    float * sigma = new float[5];
+                    sigma[0] = -f_u;
+                    sigma[1] = -f_y;
+                    sigma[2] = 0.00f;
+                    sigma[3] = f_y;
+                    sigma[4] = f_u;
+                    ImPlot::SetupAxes("eps", "sig", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                    ImPlot::PlotLine("##", epsilon, sigma, 5);
+                    ImPlot::EndPlot();
+                }
                 if (ImGui::Button("Add Material"))
                     num_mat_1d = add_mat_elastoplastic(mat_id++, params[0], params[1], params[2]);
             }
@@ -843,7 +879,7 @@ void RODS_GUI::materialWindow()
             }
 
             if (ImGui::Button("Close"))
-                show_line_window = false;
+                show_material_window = false;
             ImGui::End();
         }
 }
