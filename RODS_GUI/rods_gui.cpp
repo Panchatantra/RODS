@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ctime>
 
 #include "imgui.h"
 #include "implot.h"
@@ -542,13 +543,13 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
 
 void RODS_GUI::dirWindow()
 {
-    static char workDir[C_STR_LEN] = "./";
+    static char workDir[C_STR_LEN] = ".";
     if (show_dir_window)
     {
         ImGui::Begin("Work Directory && Name", &show_dir_window);
 
         if (ImGui::Button("Select Directory"))
-            ImGuiFileDialog::Instance()->OpenDialog("ChooseDirDlgKey", "Choose a Directory", nullptr, "./");
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseDirDlgKey", "Choose a Directory", nullptr, workDir);
 
         if (ImGuiFileDialog::Instance()->Display("ChooseDirDlgKey"))
         {
@@ -716,6 +717,9 @@ void RODS_GUI::basicInfoWindow()
         char name[C_STR_LEN];
         get_name(name, C_STR_LEN);
         ImGui::Text("Model Name: %s", name);
+        char workDir[C_STR_LEN];
+        get_work_dir(workDir, C_STR_LEN);
+        ImGui::Text("Working Directory: %s", workDir);
         ImGui::Text("Inherent Damping Ratio: %.3f", get_damping_ratio());
         ImGui::Text("Use RayleighDamping: %s", get_use_rayleigh_damping() ? "True" : "False");
         ImGui::Separator();
@@ -1831,15 +1835,37 @@ void RODS_GUI::assembleMatrixWindow()
     {
         ImGui::Begin("Assemble", &show_assemble_matrix_window);
 
+        static time_t assemble_time;
+        static std::string assemble_time_str;
         if (ImGui::Button("Assemble Matrix"))
         {
             if (num_ele > 0)
+            {
                 num_eqn = assemble_matrix();
+                assemble_time = time(0);
+                tm local_time;
+                auto ltm = &local_time;
+                localtime_s(ltm, &assemble_time);
+                assemble_time_str.clear();
+                assemble_time_str.append(std::to_string(ltm->tm_hour));
+                assemble_time_str.append(" : ");
+                assemble_time_str.append(std::to_string(ltm->tm_min));
+                assemble_time_str.append(" : ");
+                assemble_time_str.append(std::to_string(ltm->tm_sec));
+            }
         }
 
         if (num_eqn > 0)
         {
-            ImGui::Text("Number of Equations: %d", num_eqn);
+            if (assemble_time_str.length() < 1)
+            {
+                ImGui::Text("Equations have not been assembled!");
+            }
+            else
+            {
+                ImGui::Text("Equations were assembled at %s", assemble_time_str);
+                ImGui::Text("Number of Equations: %d", num_eqn);
+            }
 
             static int matrix_type = 0;
             const char *matrixType[3] = {"Mass", "Stiffness", "Damping"};
@@ -1852,12 +1878,32 @@ void RODS_GUI::assembleMatrixWindow()
                 if (matrix_type == 0)
                 {
                     ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
-                    ImGui::BeginChild("ChildL", ImVec2(800, 500), false, window_flags);
-                    for (int i = 0; i < 100; i++)
-                        ImGui::Text("%04d: scrollable region", i);
+                    ImGui::BeginChild("ChildL", ImVec2(500, 300), false, window_flags);
+                    auto M_memptr = get_mass_matrix_memptr();
+                    std::string row;
+                    for (int i = 0; i < num_eqn; i++)
+                    {
+                        row.clear();
+                        for (int j = 0; j < num_eqn; j++)
+                        {
+                            row.append(std::to_string(M_memptr[j*num_eqn+i]));
+                            row.push_back('\t');
+                        }
+                        ImGui::Text(row.c_str());
+                    }
                     ImGui::EndChild();
                 }
-                ImGui::EndPopup();  
+                ImGui::EndPopup();
+            }
+
+            if (ImGui::Button("Export Matrix"))
+            {
+                if (matrix_type == 0)
+                    export_mass_matrix_auto_name();
+                else if (matrix_type == 1)
+                    export_stiff_matrix_auto_name();
+                else if (matrix_type == 2)
+                    export_damp_matrix_auto_name();
             }
         }
         else

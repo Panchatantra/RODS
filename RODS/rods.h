@@ -115,7 +115,7 @@ extern "C" {
 	DLL_API void export_gmsh(char * fileName);
 	DLL_API void export_modal_gmsh(char * fileName, const int order);
 	DLL_API void set_response_gmsh(char * fileName, const int interval);
-	DLL_API void export_modal_matrix(const char * fileName);
+	DLL_API void export_modal_matrix(const char * file_name);
 	DLL_API void export_modal_matrix_auto_name();
 
 	DLL_API size_t add_mat_elastic(const int id, const double E0);
@@ -193,10 +193,20 @@ extern "C" {
 
 	GET_IDS_DEF(wave);
 
+	DLL_API void export_physical_mass_matrix(const char* file_name);
 	DLL_API void export_mass_matrix(const char* file_name);
 	DLL_API void export_stiff_matrix(const char* file_name);
 	DLL_API void export_damp_matrix(const char* file_name);
 	DLL_API void export_period_vector(const char* file_name);
+
+	DLL_API void export_physical_mass_matrix_auto_name();
+	DLL_API void export_mass_matrix_auto_name();
+	DLL_API void export_stiff_matrix_auto_name();
+	DLL_API void export_damp_matrix_auto_name();
+	DLL_API void export_period_vector_auto_name();
+
+	DLL_API double* get_mass_matrix_memptr();
+
 
 	DLL_API bool check_node_dof(const int node_id, const int dir);
 	DLL_API int get_id_node_dof(const int node_id, const int dir);

@@ -413,6 +413,11 @@ DLL_API void set_response_gmsh(char* fileName, const int interval)
 	ds->setResponseGmsh(fileName, interval);
 }
 
+DLL_API void export_physical_mass_matrix(const char* file_name)
+{
+	ds->exportPhysicalMassMatrix(file_name);
+}
+
 DLL_API void export_mass_matrix(const char *file_name)
 {
     ds->exportMassMatrix(file_name);
@@ -433,6 +438,36 @@ DLL_API void export_period_vector(const char *file_name)
     ds->exportPeriodVector(file_name);
 }
 
+DLL_API void export_physical_mass_matrix_auto_name()
+{
+	ds->exportPhysicalMassMatrix();
+}
+
+DLL_API void export_mass_matrix_auto_name()
+{
+	ds->exportMassMatrix();
+}
+
+DLL_API void export_stiff_matrix_auto_name()
+{
+	ds->exportStiffMatrix();
+}
+
+DLL_API void export_damp_matrix_auto_name()
+{
+	ds->exportDampMatrix();
+}
+
+DLL_API void export_period_vector_auto_name()
+{
+	ds->exportPeriodVector();
+}
+
+DLL_API double* get_mass_matrix_memptr()
+{
+	return ds->M.memptr();
+}
+
 DLL_API void export_modal_matrix(const char *fileName)
 {
 	ds->exportModalMatrix(fileName);
@@ -440,7 +475,7 @@ DLL_API void export_modal_matrix(const char *fileName)
 
 DLL_API void export_modal_matrix_auto_name()
 {
-	ds->exportModalMatrix((ds->workDir + "/" + ds->name + "_modal_matrix.txt").c_str());
+	ds->exportModalMatrix();
 }
 
 DLL_API size_t add_mat_elastic(const int id, const double E0)

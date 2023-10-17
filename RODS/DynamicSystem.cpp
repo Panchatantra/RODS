@@ -14,7 +14,7 @@
 
 
 DynamicSystem::DynamicSystem(const double z) :
-	name("RODS"), workDir("./"),
+	name("RODS"), workDir("."),
 	zeta(z), eqnCount(0), dofCount(0), fixedDofCount(0), eigenVectorNormed(false),
 	dynamicSolver(RODS::DynamicSolver::StateSpace),
 	dt(0.02), ctime(0.0), nsteps(0), cstep(0),
@@ -3514,4 +3514,70 @@ void DynamicSystem::setName(const char *name)
 void DynamicSystem::setWorkDir(const char *dir)
 {
 	workDir = dir;
+}
+
+void DynamicSystem::exportPhysicalMassMatrix(const char* fileName)
+{
+	Mp.save(fileName, raw_ascii);
+}
+
+void DynamicSystem::exportPhysicalMassMatrix()
+{
+	std::string file_name = workDir + '/' + name + "_physical_mass_matrix.txt";
+	exportMassMatrix(file_name.c_str());
+}
+
+void DynamicSystem::exportMassMatrix(const char* fileName)
+{
+	M.save(fileName, raw_ascii);
+}
+
+void DynamicSystem::exportMassMatrix()
+{
+	std::string file_name = workDir + '/' + name + "_mass_matrix.txt";
+	exportMassMatrix(file_name.c_str());
+}
+
+void DynamicSystem::exportStiffMatrix(const char* fileName)
+{
+	K.save(fileName, raw_ascii);
+}
+
+void DynamicSystem::exportStiffMatrix()
+{
+	std::string file_name = workDir + '/' + name + "_stiff_matrix.txt";
+	exportStiffMatrix(file_name.c_str());
+}
+
+void DynamicSystem::exportDampMatrix(const char* fileName)
+{
+	C.save(fileName, raw_ascii);
+}
+
+void DynamicSystem::exportDampMatrix()
+{
+	std::string file_name = workDir + '/' + name + "_damp_matrix.txt";
+	exportDampMatrix(file_name.c_str());
+}
+
+void DynamicSystem::exportPeriodVector(const char* fileName)
+{
+	P.save(fileName, raw_ascii);
+}
+
+void DynamicSystem::exportPeriodVector()
+{
+	std::string file_name = workDir + '/' + name + "_period_vector.txt";
+	exportPeriodVector(file_name.c_str());
+}
+
+void DynamicSystem::exportModalMatrix(const char *fileName)
+{
+	Phi.save(fileName, raw_ascii);
+}
+
+void DynamicSystem::exportModalMatrix()
+{
+	std::string file_name = workDir + '/' + name + "_modal_matrix.txt";
+	exportModalMatrix(file_name.c_str());
 }
