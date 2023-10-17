@@ -397,9 +397,8 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             get_work_dir(workDir, C_STR_LEN);
             std::string work_dir(workDir);
             if (work_dir.back() != '/')
-            {
                 work_dir.push_back('/');
-            }
+
             if (ImGui::MenuItem("Open")) {
                 ImGuiFileDialog::Instance()->OpenDialog("Open Model", "Select File", ".json", work_dir.c_str());
             }
@@ -546,7 +545,7 @@ void RODS_GUI::dirWindow()
     static char workDir[C_STR_LEN] = "./";
     if (show_dir_window)
     {
-        ImGui::Begin("Work Directory && Name");
+        ImGui::Begin("Work Directory && Name", &show_dir_window);
 
         if (ImGui::Button("Select Directory"))
             ImGuiFileDialog::Instance()->OpenDialog("ChooseDirDlgKey", "Choose a Directory", nullptr, "./");
@@ -586,7 +585,7 @@ void RODS_GUI::dampingWindow()
 {
     if (show_damping_window)
     {
-        ImGui::Begin("Inherent Damping");
+        ImGui::Begin("Inherent Damping", &show_damping_window);
         static float zeta = 0.02f;
         ImGui::InputFloat("Damping Ratio", &zeta);
         if (ImGui::Button("Set Damping Ratio"))
@@ -624,7 +623,7 @@ void RODS_GUI::dofWindow()
 {
     if (show_dof_window)
     {
-        ImGui::Begin("DOF");
+        ImGui::Begin("DOF", &show_dof_window);
         static int dof_id = 1;
         ImGui::InputInt("DOF ID", &dof_id);
         static double mass = 1.0;
@@ -688,7 +687,7 @@ void RODS_GUI::pointWindow()
 {
     if (show_point_window)
     {
-        ImGui::Begin("Point");
+        ImGui::Begin("Point", &show_point_window);
         static int pt_id = 1;
         ImGui::InputInt("Point ID", &pt_id);
         static float coord[3] = {0.0, 0.0, 0.0};
@@ -713,7 +712,7 @@ void RODS_GUI::basicInfoWindow()
 {
     if (show_basic_info_window)
     {
-        ImGui::Begin("Basic Information");
+        ImGui::Begin("Basic Information", &show_basic_info_window);
         char name[C_STR_LEN];
         get_name(name, C_STR_LEN);
         ImGui::Text("Model Name: %s", name);
@@ -744,7 +743,7 @@ void RODS_GUI::lineWindow()
 {
     if (show_line_window)
     {
-        ImGui::Begin("Line");
+        ImGui::Begin("Line", &show_line_window);
         static int l_id = 1;
         static int p_id_i = 0;
         static int p_id_j = 0;
@@ -796,99 +795,99 @@ void RODS_GUI::lineWindow()
 
 void RODS_GUI::materialWindow()
 {
-        if (show_material_window)
+    if (show_material_window)
+    {
+        ImGui::Begin("Material", &show_material_window);
+
+        static int mat_id = 1;
+        ImGui::InputInt("ID", &mat_id);
+
+        static int mat_type = 0;
+        ImGui::Combo("Type", &mat_type, MaterialTypes, num_mat_type);
+
+        static float params[6] = {2.0e5, 400.0, 0.02};
+
+        if (mat_type == 0)
         {
-            ImGui::Begin("Material");
-
-            static int mat_id = 1;
-            ImGui::InputInt("ID", &mat_id);
-
-            static int mat_type = 0;
-            ImGui::Combo("Type", &mat_type, MaterialTypes, num_mat_type);
-
-            static float params[6] = {2.0e5, 400.0, 0.02};
-
-            if (mat_type == 0)
+            ImGui::InputFloat("E0", params);
+            if (ImPlot::BeginPlot("Elastic Material", ImVec2(-1, 600)))
             {
-                ImGui::InputFloat("E0", params);
-                if (ImPlot::BeginPlot("Elastic Material", ImVec2(-1, 600)))
-                {
-                    float * epsilon = new float[3];
-                    epsilon[0] = -0.01f;
-                    epsilon[1] = 0.00f;
-                    epsilon[2] = 0.01f;
-                    float * sigma = new float[3];
-                    sigma[0] = -0.01f*params[0];
-                    sigma[1] = 0.00f*params[0];
-                    sigma[2] = 0.01f*params[0];
-                    ImPlot::SetupAxes("eps", "sig", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-                    ImPlot::PlotLine("##", epsilon, sigma, 3);
-                    ImPlot::EndPlot();
-                }
-                if (ImGui::Button("Add Material"))
-                    num_mat_1d = add_mat_elastic(mat_id++, params[0]);
+                float * epsilon = new float[3];
+                epsilon[0] = -0.01f;
+                epsilon[1] = 0.00f;
+                epsilon[2] = 0.01f;
+                float * sigma = new float[3];
+                sigma[0] = -0.01f*params[0];
+                sigma[1] = 0.00f*params[0];
+                sigma[2] = 0.01f*params[0];
+                ImPlot::SetupAxes("eps", "sig", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                ImPlot::PlotLine("##", epsilon, sigma, 3);
+                ImPlot::EndPlot();
             }
-            else if (mat_type == 1)
-            {
-                ImGui::InputFloat3("E0,fy,alpha", params);
-                if (ImPlot::BeginPlot("Elastic Material", ImVec2(-1, 600)))
-                {
-                    float f_y = params[1];
-                    float eps_y = params[1]/params[0];
-                    float f_u = f_y + (0.01 - eps_y)*params[2]*params[0];
-
-                    float * epsilon = new float[5];
-                    epsilon[0] = -0.01f;
-                    epsilon[1] = -eps_y;
-                    epsilon[2] = 0.00f;
-                    epsilon[3] = eps_y;
-                    epsilon[4] = 0.01f;
-                    float * sigma = new float[5];
-                    sigma[0] = -f_u;
-                    sigma[1] = -f_y;
-                    sigma[2] = 0.00f;
-                    sigma[3] = f_y;
-                    sigma[4] = f_u;
-                    ImPlot::SetupAxes("eps", "sig", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-                    ImPlot::PlotLine("##", epsilon, sigma, 5);
-                    ImPlot::EndPlot();
-                }
-                if (ImGui::Button("Add Material"))
-                    num_mat_1d = add_mat_elastoplastic(mat_id++, params[0], params[1], params[2]);
-            }
-            else if (mat_type == 2)
-            {
-                ImGui::InputFloat3("E0, fc, epsilon_c", params);
-                ImGui::InputFloat3("sigma_cr, sigma_u, epsilon_u", &params[3]);
-                if (ImGui::Button("Add Material"))
-                    num_mat_1d = add_mat_concrete_trilinear(mat_id++, params[0], params[1], params[2],
-                                                            params[3], params[4], params[5]);
-            }
-            else if (mat_type == 3)
-            {
-                ImGui::InputFloat4("E0,fy,alpha,beta", params);
-                if (ImGui::Button("Add Material"))
-                    num_mat_1d = add_mat_steel_bilinear(mat_id++, params[0], params[1], params[2], params[3]);
-            }
-            else if (mat_type == 4)
-            {
-                ImGui::InputFloat("E", params);
-                ImGui::InputFloat4("sigma1,alpha1,sigma2,alpha2", &params[1]);
-                if (ImGui::Button("Add Material"))
-                    num_mat_1d = add_mat_cyclic_harden_trilinear(mat_id++, params[0], params[1], params[2], params[3], params[4]);
-            }
-
-            if (ImGui::Button("Close"))
-                show_material_window = false;
-            ImGui::End();
+            if (ImGui::Button("Add Material"))
+                num_mat_1d = add_mat_elastic(mat_id++, params[0]);
         }
+        else if (mat_type == 1)
+        {
+            ImGui::InputFloat3("E0,fy,alpha", params);
+            if (ImPlot::BeginPlot("Elastic Material", ImVec2(-1, 600)))
+            {
+                float f_y = params[1];
+                float eps_y = params[1]/params[0];
+                float f_u = f_y + (0.01 - eps_y)*params[2]*params[0];
+
+                float * epsilon = new float[5];
+                epsilon[0] = -0.01f;
+                epsilon[1] = -eps_y;
+                epsilon[2] = 0.00f;
+                epsilon[3] = eps_y;
+                epsilon[4] = 0.01f;
+                float * sigma = new float[5];
+                sigma[0] = -f_u;
+                sigma[1] = -f_y;
+                sigma[2] = 0.00f;
+                sigma[3] = f_y;
+                sigma[4] = f_u;
+                ImPlot::SetupAxes("eps", "sig", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                ImPlot::PlotLine("##", epsilon, sigma, 5);
+                ImPlot::EndPlot();
+            }
+            if (ImGui::Button("Add Material"))
+                num_mat_1d = add_mat_elastoplastic(mat_id++, params[0], params[1], params[2]);
+        }
+        else if (mat_type == 2)
+        {
+            ImGui::InputFloat3("E0, fc, epsilon_c", params);
+            ImGui::InputFloat3("sigma_cr, sigma_u, epsilon_u", &params[3]);
+            if (ImGui::Button("Add Material"))
+                num_mat_1d = add_mat_concrete_trilinear(mat_id++, params[0], params[1], params[2],
+                                                        params[3], params[4], params[5]);
+        }
+        else if (mat_type == 3)
+        {
+            ImGui::InputFloat4("E0,fy,alpha,beta", params);
+            if (ImGui::Button("Add Material"))
+                num_mat_1d = add_mat_steel_bilinear(mat_id++, params[0], params[1], params[2], params[3]);
+        }
+        else if (mat_type == 4)
+        {
+            ImGui::InputFloat("E", params);
+            ImGui::InputFloat4("sigma1,alpha1,sigma2,alpha2", &params[1]);
+            if (ImGui::Button("Add Material"))
+                num_mat_1d = add_mat_cyclic_harden_trilinear(mat_id++, params[0], params[1], params[2], params[3], params[4]);
+        }
+
+        if (ImGui::Button("Close"))
+            show_material_window = false;
+        ImGui::End();
+    }
 }
 
 void RODS_GUI::waveWindow()
 {
     if (show_wave_window)
     {
-        ImGui::Begin("Wave");
+        ImGui::Begin("Wave", &show_wave_window);
         static int wave_id = 1;
         ImGui::InputInt("Wave ID", &wave_id);
         static double dt = 0.005;
@@ -1005,7 +1004,7 @@ void RODS_GUI::element1dWindow()
 {
     if (show_element1d_window)
     {
-        ImGui::Begin("Element1D");
+        ImGui::Begin("Element1D", &show_element1d_window);
         static int ele_id = 1;
         ImGui::InputInt("Element ID", &ele_id);
         static int ele_type = 0;
@@ -1234,7 +1233,7 @@ void RODS_GUI::element2dWindow()
 {
     if (show_element2d_window)
     {
-        ImGui::Begin("Element 2D");
+        ImGui::Begin("Element 2D", &show_element2d_window);
         static int ele_id = 1;
         ImGui::InputInt("Element ID", &ele_id);
         static int ele_type = 0;
@@ -1323,7 +1322,7 @@ void RODS_GUI::nodeWindow()
 {
     if (show_node_window)
     {
-        ImGui::Begin("Node");
+        ImGui::Begin("Node", &show_node_window);
         static int node_id = 1;
         ImGui::InputInt("Node ID", &node_id);
         static int node_dim = 0;
@@ -1830,26 +1829,36 @@ void RODS_GUI::assembleMatrixWindow()
 {
     if (show_assemble_matrix_window)
     {
-        ImGui::Begin("Assemble");
-        static bool is_assembled = false;
+        ImGui::Begin("Assemble", &show_assemble_matrix_window);
 
         if (ImGui::Button("Assemble Matrix"))
         {
-            if (num_ele>0)
-            {
+            if (num_ele > 0)
                 num_eqn = assemble_matrix();
-                is_assembled = true;
-            }
-            else
-            {
-                is_assembled = false;
-            }
         }
 
-        if (is_assembled)
+        if (num_eqn > 0)
         {
-            ImGui::Text("Matrices are built!");
             ImGui::Text("Number of Equations: %d", num_eqn);
+
+            static int matrix_type = 0;
+            const char *matrixType[3] = {"Mass", "Stiffness", "Damping"};
+            ImGui::Combo("Matrix", &matrix_type, matrixType, 3);
+            if (ImGui::Button("View Matrix"))
+                ImGui::OpenPopup("View Matrix");
+
+            if (ImGui::BeginPopup("View Matrix"))
+            {
+                if (matrix_type == 0)
+                {
+                    ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
+                    ImGui::BeginChild("ChildL", ImVec2(800, 500), false, window_flags);
+                    for (int i = 0; i < 100; i++)
+                        ImGui::Text("%04d: scrollable region", i);
+                    ImGui::EndChild();
+                }
+                ImGui::EndPopup();  
+            }
         }
         else
         {

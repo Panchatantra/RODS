@@ -413,7 +413,27 @@ DLL_API void set_response_gmsh(char* fileName, const int interval)
 	ds->setResponseGmsh(fileName, interval);
 }
 
-DLL_API void export_modal_matrix(const char * fileName)
+DLL_API void export_mass_matrix(const char *file_name)
+{
+    ds->exportMassMatrix(file_name);
+}
+
+DLL_API void export_stiff_matrix(const char *file_name)
+{
+    ds->exportStiffMatrix(file_name);
+}
+
+DLL_API void export_damp_matrix(const char *file_name)
+{
+    ds->exportDampMatrix(file_name);
+}
+
+DLL_API void export_period_vector(const char *file_name)
+{
+    ds->exportPeriodVector(file_name);
+}
+
+DLL_API void export_modal_matrix(const char *fileName)
 {
 	ds->exportModalMatrix(fileName);
 }

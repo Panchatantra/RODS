@@ -193,6 +193,11 @@ extern "C" {
 
 	GET_IDS_DEF(wave);
 
+	DLL_API void export_mass_matrix(const char* file_name);
+	DLL_API void export_stiff_matrix(const char* file_name);
+	DLL_API void export_damp_matrix(const char* file_name);
+	DLL_API void export_period_vector(const char* file_name);
+
 	DLL_API bool check_node_dof(const int node_id, const int dir);
 	DLL_API int get_id_node_dof(const int node_id, const int dir);
 

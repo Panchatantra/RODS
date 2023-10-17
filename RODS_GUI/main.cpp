@@ -4,6 +4,9 @@
 #include "implot.h"
 #include "ImGuiFileDialog.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include <stdio.h>
 #include <fstream>
 #include <map>
@@ -73,6 +76,11 @@ int main(int, char**)
         return 1;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
+
+    GLFWimage images[1];
+    images[0].pixels = stbi_load("./resource/RODS.png", &images[0].width, &images[0].height, 0, 4);
+    glfwSetWindowIcon(window, 1, images);
+    stbi_image_free(images[0].pixels);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -184,6 +192,8 @@ int main(int, char**)
 
         RODS_GUI::timeHistoryPlotWindow();
         RODS_GUI::drawModeWindow();
+
+        ImGui::ShowDemoWindow();
 
         // ImPlot::ShowDemoWindow();
 

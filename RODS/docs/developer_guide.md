@@ -152,7 +152,7 @@
     * MSYS2
 
     ```shell
-    cd rods/RODS && make -j n  -f makefile_mingw
+    cd rods/RODS && make -j n -f makefile_mingw
     # 说明：n为并行编译的进程数
     ```
 
