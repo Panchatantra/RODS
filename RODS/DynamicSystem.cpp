@@ -97,6 +97,10 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 	JSON_TO_ELEMENTS_NODE_2(Dashpot2D, c, axis)
 	JSON_TO_ELEMENTS_NODE_2(Inerter2D, m, axis)
 
+	JSON_TO_ELEMENTS_NODE(TrussElastic3D, EA)
+	JSON_TO_ELEMENTS_NODE_4(FrameElastic3D, EA, EIy, EIz, GIp)
+	JSON_TO_ELEMENTS_NODE_2(Spring3D, k, axis)
+
 	auto j_array_DOFRecorder = model.at("DOFRecorderVec");
 	DOFRecorder DOFRecorderObj;
 	for (auto i = 0; i < model.at("DOFRecorderCount"); i++)
@@ -154,6 +158,10 @@ void DynamicSystem::saveToJSON(const char *fileName)
 	ELEMENTS_TO_JSON(Spring2D)
 	ELEMENTS_TO_JSON(Dashpot2D)
 	ELEMENTS_TO_JSON(Inerter2D)
+
+	ELEMENTS_TO_JSON(TrussElastic3D)
+	ELEMENTS_TO_JSON(FrameElastic3D)
+	ELEMENTS_TO_JSON(Spring3D)
 
 	ELEMENTS_TO_JSON(Wave)
 	ELEMENTS_TO_JSON(DOFRecorder)

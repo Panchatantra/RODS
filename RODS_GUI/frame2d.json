@@ -401,6 +401,8 @@
             "id": 15
         }
     ],
+    "FrameElastic3DCount": 0,
+    "FrameElastic3DVec": [],
     "Inerter2DCount": 0,
     "Inerter2DVec": [],
     "InerterCount": 0,
@@ -578,6 +580,8 @@
     "TVMDVec": [],
     "TrussElastic2DCount": 0,
     "TrussElastic2DVec": [],
+    "TrussElastic3DCount": 0,
+    "TrussElastic3DVec": [],
     "WaveCount": 1,
     "WaveVec": [
         {

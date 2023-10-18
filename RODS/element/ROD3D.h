@@ -11,6 +11,7 @@ class ROD3D :
 public:
 	ROD3D();
 	ROD3D(const int id, Node * nodeI, Node * nodeJ);
+	ROD3D(const int id, Node * nodeI, Node * nodeJ, RODS::LocalAxis axis);
 	~ROD3D();
 
 	virtual void buildMatrix() {}

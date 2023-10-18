@@ -1,7 +1,12 @@
 #include "Spring3D.h"
 
-Spring3D::Spring3D(const int id, Node * nodeI, Node * nodeJ, double k, RODS::LocalAxis axis) :
-	ROD3D(id, nodeI, nodeJ), k(k), ue(0.0), f(0.0)
+Spring3D::Spring3D() :
+	ROD3D(), k(0.0), ue(0.0), f(0.0)
+{
+}
+
+Spring3D::Spring3D(const int id, Node *nodeI, Node *nodeJ, double k, RODS::LocalAxis axis) :
+	ROD3D(id, nodeI, nodeJ, axis), k(k), ue(0.0), f(0.0)
 {
 	if (axis == RODS::LocalAxis::U1)
 	{
