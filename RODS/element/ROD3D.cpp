@@ -1,6 +1,11 @@
 #include "ROD3D.h"
 
-ROD3D::ROD3D(const int id, Node * nodeI, Node * nodeJ):
+ROD3D::ROD3D() :
+	Element(), nodeI(nullptr), nodeJ(nullptr)
+{
+}
+
+ROD3D::ROD3D(const int id, Node *nodeI, Node *nodeJ) :
 	Element(id), nodeI(nodeI), nodeJ(nodeJ)
 {
 	double dx = nodeJ->x0 - nodeI->x0;

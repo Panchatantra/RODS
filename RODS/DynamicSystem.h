@@ -344,6 +344,7 @@ public:
 	void mapDofNode(const int id_d, const int id_nd);
 
 	bool checkDuplicateMaterial1D(const int matId);
+
 	void addMaterialElastic(const int id, const double E0);
 
 	/**
@@ -396,6 +397,8 @@ public:
 	void addMaterialCyclicHardenTrilinear(const int id, const double E, const double sigma1, const double alpha1,
 											const double sigma2, const double alpha2);
 
+	void removeMaterial1D(const int id);
+	
 	/**
 	 * @brief      Add a fiber.
 	 *

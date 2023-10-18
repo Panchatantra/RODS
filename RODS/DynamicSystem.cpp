@@ -945,6 +945,11 @@ void DynamicSystem::addMaterialCyclicHardenTrilinear(const int id, const double 
 	}
 }
 
+void DynamicSystem::removeMaterial1D(const int id)
+{
+	Material1Ds.erase(id);
+}
+
 void DynamicSystem::addFiber(const int id, const int matId, const double A, const double y, const double z)
 {
 	if (Fibers.count(id) == 0)

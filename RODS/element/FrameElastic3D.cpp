@@ -1,16 +1,21 @@
 #include "FrameElastic3D.h"
 
-FrameElastic3D::FrameElastic3D(const int id, Node * nodeI, Node * nodeJ, const double EA,
-					const double EIy, const double EIz, const double GIp):
+FrameElastic3D::FrameElastic3D() :
+	ROD3D(), EA(0.0), EIy(0.0), EIz(0.0), GIp(0.0)
+{
+}
+
+FrameElastic3D::FrameElastic3D(const int id, Node *nodeI, Node *nodeJ, const double EA,
+							const double EIy, const double EIz, const double GIp) :
 	ROD3D(id, nodeI, nodeJ), EA(EA), EIy(EIy), EIz(EIz), GIp(GIp)
 {
 	k = mat({
 				{EA/L,  0.0,     0.0,     0.0,     0.0,     0.0  },
 				{ 0.0,  GIp/L,   0.0,     0.0,     0.0,     0.0  },
 				{ 0.0,  0.0,   4*EIy/L, 2*EIy/L,   0.0,     0.0  },
-			  	{ 0.0,  0.0,   2*EIy/L, 4*EIy/L,   0.0,     0.0  },
+				{ 0.0,  0.0,   2*EIy/L, 4*EIy/L,   0.0,     0.0  },
 				{ 0.0,  0.0,     0.0,     0.0,   4*EIz/L, 2*EIz/L},
-			  	{ 0.0,  0.0,     0.0,     0.0,   2*EIz/L, 4*EIz/L}
+				{ 0.0,  0.0,     0.0,     0.0,   2*EIz/L, 4*EIz/L}
 			});
 
 	T = mat({

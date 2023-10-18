@@ -9,6 +9,7 @@ class ROD3D :
 	public Element
 {
 public:
+	ROD3D();
 	ROD3D(const int id, Node * nodeI, Node * nodeJ);
 	~ROD3D();
 
@@ -32,4 +33,7 @@ public:
 	double lzx;
 	double lzy;
 	double lzz;
+
+	int IdNodeI, IdNodeJ;
+	RODS::LocalAxis axis;
 };

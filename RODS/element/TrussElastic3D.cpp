@@ -1,6 +1,12 @@
 #include "TrussElastic3D.h"
 
-TrussElastic3D::TrussElastic3D(const int id, Node * nodeI, Node * nodeJ, const double EA):
+TrussElastic3D::TrussElastic3D() :
+	ROD3D(), EA(0.0), ue(0.0), f(0.0)
+{
+}
+
+TrussElastic3D::TrussElastic3D(const int id, Node *nodeI, Node *nodeJ,
+								const double EA) :
 	ROD3D(id, nodeI, nodeJ), EA(EA), ue(0.0), f(0.0)
 {
 	T = rowvec({ -lxx, -lxy, -lxz, lxx, lxy, lxz });

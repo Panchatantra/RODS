@@ -463,6 +463,11 @@ DLL_API void export_period_vector_auto_name()
 	ds->exportPeriodVector();
 }
 
+DLL_API double* get_physical_mass_matrix_memptr()
+{
+	return ds->Mp.memptr();
+}
+
 DLL_API double* get_mass_matrix_memptr()
 {
 	return ds->M.memptr();
@@ -1245,4 +1250,16 @@ DLL_API void get_coords_range(double &xmax, double &xmin, double &ymax, double &
     xmax = ds->xMax; xmin = ds->xMin;
     ymax = ds->yMax; ymin = ds->yMin;
     zmax = ds->zMax; zmin = ds->zMin;
+}
+
+DLL_API void get_mat1d_eps_sig(const int id, double* strain, double* stress, int& n)
+{
+	auto mat1d = ds->Material1Ds.at(id);
+	
+	for (int i = 0; i < n; i++)
+	{
+		mat1d->setStrain(&strain[i]);
+		mat1d->getResponse(true);
+		stress[i] = mat1d->sigma;
+	}
 }

@@ -809,12 +809,12 @@ void RODS_GUI::materialWindow()
         static int mat_type = 0;
         ImGui::Combo("Type", &mat_type, MaterialTypes, num_mat_type);
 
-        static float params[6] = {2.0e5, 400.0, 0.02};
+        static float params[6] = {2.0e5, 400.0, 0.02, 0.5};
 
         if (mat_type == 0)
         {
             ImGui::InputFloat("E0", params);
-            if (ImPlot::BeginPlot("Elastic Material", ImVec2(-1, 600)))
+            if (ImPlot::BeginPlot("Material", ImVec2(-1, 600)))
             {
                 float * epsilon = new float[3];
                 epsilon[0] = -0.01f;
@@ -834,7 +834,7 @@ void RODS_GUI::materialWindow()
         else if (mat_type == 1)
         {
             ImGui::InputFloat3("E0,fy,alpha", params);
-            if (ImPlot::BeginPlot("Elastic Material", ImVec2(-1, 600)))
+            if (ImPlot::BeginPlot("Material", ImVec2(-1, 600)))
             {
                 float f_y = params[1];
                 float eps_y = params[1]/params[0];
@@ -861,15 +861,56 @@ void RODS_GUI::materialWindow()
         }
         else if (mat_type == 2)
         {
-            ImGui::InputFloat3("E0, fc, epsilon_c", params);
-            ImGui::InputFloat3("sigma_cr, sigma_u, epsilon_u", &params[3]);
+            static float params_conc[6] = {3.0e4, 30.0, 0.002, 12.0, 25.5, 0.0033};
+            ImGui::InputFloat3("E0, fc, epsilon_c", params_conc);
+            ImGui::InputFloat3("sigma_cr, sigma_u, epsilon_u", &params_conc[3]);
+            if (ImPlot::BeginPlot("Material", ImVec2(-1, 600)))
+            {
+                float * epsilon = new float[5];
+                epsilon[0] = -params_conc[5]*0.1f;
+                epsilon[1] = 0.00f;
+                epsilon[2] = params_conc[3]/params_conc[0];
+                epsilon[3] = params_conc[2];
+                epsilon[4] = params_conc[5];
+                float * sigma = new float[5];
+                sigma[0] = 0.00f;
+                sigma[1] = 0.00f;
+                sigma[2] = params_conc[3];
+                sigma[3] = params_conc[1];
+                sigma[4] = params_conc[4];
+                ImPlot::SetupAxes("eps", "sig", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                ImPlot::PlotLine("##", epsilon, sigma, 5);
+                ImPlot::EndPlot();
+            }
             if (ImGui::Button("Add Material"))
-                num_mat_1d = add_mat_concrete_trilinear(mat_id++, params[0], params[1], params[2],
-                                                        params[3], params[4], params[5]);
+                num_mat_1d = add_mat_concrete_trilinear(mat_id++, params_conc[0], params_conc[1], params_conc[2],
+                                                        params_conc[3], params_conc[4], params_conc[5]);
         }
         else if (mat_type == 3)
         {
-            ImGui::InputFloat4("E0,fy,alpha,beta", params);
+            ImGui::InputFloat4("E0, fy, alpha, beta", params);
+            if (ImPlot::BeginPlot("Material", ImVec2(-1, 600)))
+            {
+                float f_y = params[1];
+                float eps_y = params[1]/params[0];
+                float f_u = f_y + (0.01 - eps_y)*params[2]*params[0];
+
+                float * epsilon = new float[5];
+                epsilon[0] = -0.01f;
+                epsilon[1] = -eps_y;
+                epsilon[2] = 0.00f;
+                epsilon[3] = eps_y;
+                epsilon[4] = 0.01f;
+                float * sigma = new float[5];
+                sigma[0] = -f_u;
+                sigma[1] = -f_y;
+                sigma[2] = 0.00f;
+                sigma[3] = f_y;
+                sigma[4] = f_u;
+                ImPlot::SetupAxes("eps", "sig", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                ImPlot::PlotLine("##", epsilon, sigma, 5);
+                ImPlot::EndPlot();
+            }
             if (ImGui::Button("Add Material"))
                 num_mat_1d = add_mat_steel_bilinear(mat_id++, params[0], params[1], params[2], params[3]);
         }
@@ -1873,7 +1914,7 @@ void RODS_GUI::assembleMatrixWindow()
             }
             else
             {
-                ImGui::Text("Equations were assembled at");
+                ImGui::Text("Equations were assembled at"); ImGui::SameLine();
                 ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), assemble_time_str.c_str());
                 ImGui::Text("Number of Equations: %d", num_eqn);
             }

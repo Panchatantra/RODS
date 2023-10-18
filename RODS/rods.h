@@ -205,10 +205,10 @@ extern "C" {
 	DLL_API void export_damp_matrix_auto_name();
 	DLL_API void export_period_vector_auto_name();
 
+	DLL_API double* get_physical_mass_matrix_memptr();
 	DLL_API double* get_mass_matrix_memptr();
 	DLL_API double* get_stiff_matrix_memptr();
 	DLL_API double* get_damp_matrix_memptr();
-
 
 	DLL_API bool check_node_dof(const int node_id, const int dir);
 	DLL_API int get_id_node_dof(const int node_id, const int dir);
@@ -272,4 +272,6 @@ extern "C" {
 					double &ymax, double &ymin,
 					double &zmax, double &zmin
 					);
+
+	DLL_API void get_mat1d_eps_sig(const int id, double *strain, double *stress, int &n);
 }
