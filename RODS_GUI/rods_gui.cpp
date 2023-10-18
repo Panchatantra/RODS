@@ -1843,15 +1843,25 @@ void RODS_GUI::assembleMatrixWindow()
             {
                 num_eqn = assemble_matrix();
                 assemble_time = time(0);
+#ifdef __GNUC__
+                auto ltm = localtime(&assemble_time);
+#else
                 tm local_time;
                 auto ltm = &local_time;
                 localtime_s(ltm, &assemble_time);
+#endif
                 assemble_time_str.clear();
                 assemble_time_str.append(std::to_string(ltm->tm_hour));
-                assemble_time_str.append(" : ");
+                assemble_time_str.push_back(':');
                 assemble_time_str.append(std::to_string(ltm->tm_min));
-                assemble_time_str.append(" : ");
+                assemble_time_str.push_back(':');
                 assemble_time_str.append(std::to_string(ltm->tm_sec));
+                assemble_time_str.append(", ");
+                assemble_time_str.append(std::to_string(ltm->tm_year+1900));
+                assemble_time_str.push_back('-');
+                assemble_time_str.append(std::to_string(ltm->tm_mon + 1));
+                assemble_time_str.push_back('-');
+                assemble_time_str.append(std::to_string(ltm->tm_mday));
             }
         }
 
@@ -1863,39 +1873,76 @@ void RODS_GUI::assembleMatrixWindow()
             }
             else
             {
-                ImGui::Text("Equations were assembled at %s", assemble_time_str);
+                ImGui::Text("Equations were assembled at");
+                ImGui::TextColored(ImVec4(1.0, 0.0, 0.0, 1.0), assemble_time_str.c_str());
                 ImGui::Text("Number of Equations: %d", num_eqn);
             }
 
             static int matrix_type = 0;
             const char *matrixType[3] = {"Mass", "Stiffness", "Damping"};
             ImGui::Combo("Matrix", &matrix_type, matrixType, 3);
+            static bool display_entire_matrix = false;
+            ImGui::Checkbox("Display Entire Matrix", &display_entire_matrix);
+            static int matrix_range[4] = {1, 6, 1 ,6};
+            if (!display_entire_matrix)
+            {
+                ImGui::InputInt4("##", matrix_range); ImGui::SameLine(); ImGui::Text("Matrix Range");
+                ImGui::SetItemTooltip("Number of the starting row, ending row, starting column, ending column.");
+            }
+
             if (ImGui::Button("View Matrix"))
                 ImGui::OpenPopup("View Matrix");
 
             if (ImGui::BeginPopup("View Matrix"))
             {
+                double *mat_memptr = nullptr;
                 if (matrix_type == 0)
                 {
-                    ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
-                    ImGui::BeginChild("ChildL", ImVec2(500, 300), false, window_flags);
-                    auto M_memptr = get_mass_matrix_memptr();
-                    std::string row;
-                    for (int i = 0; i < num_eqn; i++)
-                    {
-                        row.clear();
-                        for (int j = 0; j < num_eqn; j++)
-                        {
-                            row.append(std::to_string(M_memptr[j*num_eqn+i]));
-                            row.push_back('\t');
-                        }
-                        ImGui::Text(row.c_str());
-                    }
-                    ImGui::EndChild();
+                    mat_memptr = get_mass_matrix_memptr();
                 }
+                else if (matrix_type == 1)
+                {
+                    mat_memptr = get_stiff_matrix_memptr();
+                }
+                else if (matrix_type == 2)
+                {
+                    mat_memptr = get_damp_matrix_memptr();
+                }
+
+                int row_begin, row_end;
+                int col_begin, col_end;
+
+                if (display_entire_matrix)
+                {
+                    row_begin = 0;
+                    row_end = num_eqn;
+                    col_begin = 0;
+                    col_end = num_eqn;
+                }
+                else
+                {
+                    row_begin = matrix_range[0]-1;
+                    row_end = matrix_range[1];
+                    col_begin = matrix_range[2]-1;
+                    col_end = matrix_range[3];
+                }
+                
+                ImGui::BeginTable("Matrix", col_end-col_begin, 
+                        ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable);
+                for (int i = row_begin; i < row_end; i++)
+                {
+                    ImGui::TableNextRow();
+                    for (int j = col_begin; j < col_end; j++)
+                    {
+                        ImGui::TableNextColumn();
+                        ImGui::Text(std::to_string(mat_memptr[j*num_eqn+i]).c_str());
+                    }
+                }
+                ImGui::EndTable();
                 ImGui::EndPopup();
             }
 
+            ImGui::SameLine();
             if (ImGui::Button("Export Matrix"))
             {
                 if (matrix_type == 0)

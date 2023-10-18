@@ -468,6 +468,16 @@ DLL_API double* get_mass_matrix_memptr()
 	return ds->M.memptr();
 }
 
+DLL_API double *get_stiff_matrix_memptr()
+{
+    return ds->K.memptr();
+}
+
+DLL_API double *get_damp_matrix_memptr()
+{
+    return ds->C.memptr();
+}
+
 DLL_API void export_modal_matrix(const char *fileName)
 {
 	ds->exportModalMatrix(fileName);
