@@ -376,6 +376,8 @@
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>.;.\material;.\section;.\element;.\recorder;..\..\armadillo\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
