@@ -94,6 +94,8 @@
     "Spring2DVec": [],
     "SpringBilinearCount": 0,
     "SpringBilinearVec": [],
+    "Spring3DCount": 0,
+    "Spring3DVec": [],
     "SpringCount": 10,
     "SpringVec": [
         {

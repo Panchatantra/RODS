@@ -130,7 +130,14 @@ const char * Element2DTypes[num_ele_2d_type] = {
                     "Dashpot2D",
                     "Inerter2D",
                     };
-
+constexpr size_t num_ele_3d_type = 5;
+const char * Element3DTypes[num_ele_3d_type] = {
+                    "TrussElastic3D",
+                    "FrameElastic3D",
+                    "Spring3D",
+                    "Dashpot3D",
+                    "Inerter3D",
+                    };
 glm::vec3 translate_vec(0.0f);
 glm::vec3 scale_vec(1.0f);
 
@@ -1358,6 +1365,96 @@ void RODS_GUI::element2dWindow()
 
         if (ImGui::Button("Close"))
             show_element2d_window = false;
+
+        ImGui::End();
+    }
+}
+
+void RODS_GUI::element3dWindow()
+{
+    if (show_element3d_window)
+    {
+        ImGui::Begin("Element 3D", &show_element3d_window);
+        static int ele_id = 1;
+        ImGui::InputInt("Element ID", &ele_id);
+        static int ele_type = 0;
+        ImGui::Combo("Element Type", &ele_type, Element3DTypes, num_ele_3d_type);
+
+        static int node_item_index_i = 0;
+        static int node_item_index_j = 0;
+        static int node_id_i = 0;
+        static int node_id_j = 0;
+        if (ImGui::Button("Select Nodes"))
+            ImGui::OpenPopup("Select Nodes");
+        if (ImGui::BeginPopup("Select Nodes"))
+        {
+            genNodeList();
+            if (num_node > 1)
+            {
+                ImGui::Combo("Node I", &node_item_index_i, nodes_str.c_str());
+                ImGui::Combo("Node J", &node_item_index_j, nodes_str.c_str());
+                node_id_i = nodes[node_item_index_i];
+                node_id_j = nodes[node_item_index_j];
+            }
+            ImGui::EndPopup();
+        }
+        ImGui::Text("Selected Nodes: %d, %d", node_id_i, node_id_j);
+
+        static float * params = new float[4]();
+        static int axis = 0;
+
+        if (ele_type == 0)
+        {
+            ImGui::InputFloat("EA", params);
+            if (ImGui::Button("Add Element"))
+            {
+                num_truss_elastic_3d = add_truss_elastic_3d(ele_id++, node_id_i, node_id_j, params[0]);
+                num_ele = get_num_ele();
+            }
+        }
+        else if (ele_type == 1)
+        {
+            ImGui::InputFloat4("EA, EIy, EIz, GIp", params);
+            if (ImGui::Button("Add Element"))
+            {
+                num_frame_elastic_3d = add_frame_elastic_3d(ele_id++, node_id_i, node_id_j,
+                                            params[0], params[1], params[2], params[3]);
+                num_ele = get_num_ele();
+            }
+        }
+        else if (ele_type == 2)
+        {
+            ImGui::InputFloat("k", params);
+            ImGui::Combo("Local Axis", &axis, localAxis, 3);
+            if (ImGui::Button("Add Element"))
+            {
+                num_spring_3d = add_spring_3d(ele_id++, node_id_i, node_id_j, params[0], axis);
+                num_ele = get_num_ele();
+            }
+        }
+        else if (ele_type == 3)
+        {
+            ImGui::InputFloat("c", params);
+            ImGui::Combo("Local Axis", &axis, localAxis, 3);
+            if (ImGui::Button("Add Element"))
+            {
+                num_dashpot_3d = add_dashpot_3d(ele_id++, node_id_i, node_id_j, params[0], axis);
+                num_ele = get_num_ele();
+            }
+        }
+        else if (ele_type == 4)
+        {
+            ImGui::InputFloat("m", params);
+            ImGui::Combo("Local Axis", &axis, localAxis, 3);
+            if (ImGui::Button("Add Element"))
+            {
+                num_inerter_3d = add_inerter_3d(ele_id++, node_id_i, node_id_j, params[0], axis);
+                num_ele = get_num_ele();
+            }
+        }
+
+        if (ImGui::Button("Close"))
+            show_element3d_window = false;
 
         ImGui::End();
     }
@@ -2674,6 +2771,10 @@ void RODS_GUI::element2dTableWindow()
 
         ImGui::End();
     }
+}
+
+void RODS_GUI::element3dTableWindow()
+{
 }
 
 void RODS_GUI::recorderTableWindow()

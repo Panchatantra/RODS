@@ -1210,6 +1210,7 @@ DLL_API void record_all_ele_response(const int id)
 DLL_API void set_name(const char * name)
 {
 	ds->setName(name);
+	cout << "Model name is set to be " << ds->name << "." << endl;
 }
 
 DLL_API void get_name(char * name, const size_t size)

@@ -173,6 +173,7 @@ int main(int, char**)
         RODS_GUI::basicInfoWindow();
         RODS_GUI::element1dWindow();
         RODS_GUI::element2dWindow();
+        RODS_GUI::element3dWindow();
         RODS_GUI::nodeWindow();
 
         RODS_GUI::materialWindow();
@@ -204,6 +205,13 @@ int main(int, char**)
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        //RODS_GUI::draw_geo();
+        RODS_GUI::draw_1d_s();
+        //RODS_GUI::draw_1d();
+        RODS_GUI::draw_2d();
+        RODS_GUI::draw_text();
+
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // Update and Render additional Platform Windows
@@ -216,12 +224,6 @@ int main(int, char**)
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(backup_current_context);
         }
-
-        //RODS_GUI::draw_geo();
-        RODS_GUI::draw_1d_s();
-        //RODS_GUI::draw_1d();
-        RODS_GUI::draw_2d();
-        RODS_GUI::draw_text();
 
         glfwSwapBuffers(window);
     }

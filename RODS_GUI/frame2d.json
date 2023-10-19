@@ -403,6 +403,8 @@
     ],
     "FrameElastic3DCount": 0,
     "FrameElastic3DVec": [],
+    "Spring3DCount": 0,
+    "Spring3DVec": [],
     "Inerter2DCount": 0,
     "Inerter2DVec": [],
     "InerterCount": 0,

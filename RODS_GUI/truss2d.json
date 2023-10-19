@@ -310,5 +310,7 @@
     "yMin": 0.0,
     "zMax": 3000.0,
     "zMin": 0.0,
-    "zeta": 0.05
+    "zeta": 0.05,
+    "Spring3DCount": 0,
+    "Spring3DVec": []
 }

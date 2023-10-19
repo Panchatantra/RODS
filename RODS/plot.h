@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static inline void plot(char *fileName, int col)
+static inline void gnuplot(char *fileName, int col)
 {
 #ifdef _WIN32
     FILE* gp = _popen("gnuplot.exe", "w");

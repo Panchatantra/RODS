@@ -52,6 +52,11 @@ static int num_frame_elastic_2d = 0;
 static int num_spring_2d = 0;
 static int num_dashpot_2d = 0;
 static int num_inerter_2d = 0;
+static int num_truss_elastic_3d = 0;
+static int num_frame_elastic_3d = 0;
+static int num_spring_3d = 0;
+static int num_dashpot_3d = 0;
+static int num_inerter_3d = 0;
 
 static int num_mat_1d = 0;
 static int num_eqn = 0;
@@ -114,6 +119,7 @@ namespace RODS_GUI {
     void waveWindow();
     void element1dWindow();
     void element2dWindow();
+    void element3dWindow();
     void nodeWindow();
     void assembleMatrixWindow();
     void solveEigenWindow();
@@ -124,6 +130,7 @@ namespace RODS_GUI {
     void nodeTableWindow();
     void element1dTableWindow();
     void element2dTableWindow();
+    void element3dTableWindow();
 
     void recorderTableWindow();
     void waveTableWindow();
