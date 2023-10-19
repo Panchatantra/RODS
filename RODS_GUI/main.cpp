@@ -143,6 +143,8 @@ int main(int, char**)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // glEnable(GL_DEPTH_TEST);
+
     RODS_GUI::createShader();
     RODS_GUI::createTextShader();
     RODS_GUI::buildVertex();
@@ -192,11 +194,9 @@ int main(int, char**)
         RODS_GUI::solveEigenWindow();
 
         RODS_GUI::timeHistoryPlotWindow();
-        RODS_GUI::drawModeWindow();
+        RODS_GUI::drawModeWindow(window);
 
-        ImGui::ShowDemoWindow();
-
-        // ImPlot::ShowDemoWindow();
+        // ImGui::ShowDemoWindow();
 
         // Rendering
         ImGui::Render();
@@ -210,6 +210,7 @@ int main(int, char**)
         RODS_GUI::draw_1d_s();
         //RODS_GUI::draw_1d();
         RODS_GUI::draw_2d();
+        RODS_GUI::draw_3d();
         RODS_GUI::draw_text();
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -3125,7 +3125,7 @@ void RODS_GUI::timeHistoryPlotWindow()
     }
 }
 
-void RODS_GUI::drawModeWindow()
+void RODS_GUI::drawModeWindow(GLFWwindow* window)
 {
     if (show_draw_mode_window)
     {
@@ -3133,12 +3133,16 @@ void RODS_GUI::drawModeWindow()
 
         ImGui::Text("Dimension: "); ImGui::SameLine();
         ImGui::RadioButton("1D (Serial DOFs)", &draw_dim, 1); ImGui::SameLine();
+        ImGui::RadioButton("1D", &draw_dim, 11); ImGui::SameLine();
         ImGui::RadioButton("2D", &draw_dim, 2); ImGui::SameLine();
         ImGui::RadioButton("3D", &draw_dim, 3);
         if (ImGui::Button("Update View"))
+        {
             updateViewMatrix();
+            updateProjectionMatrix(window);
+        }
 
-        if (draw_dim == 2)
+        if (draw_dim == 2 || draw_dim == 3)
         {
             ImGui::SameLine();
             if (ImGui::Button("Auto Fit"))
@@ -3163,7 +3167,7 @@ void RODS_GUI::drawModeWindow()
                 if (xpeak != 0.0) scale = fmax(scale, 2.0*xpeak/(xmax-xmin));
                 if (ypeak != 0.0) scale = fmax(scale, 2.0*ypeak/(ymax-ymin));
                 if (zpeak != 0.0) scale = fmax(scale, 2.0*zpeak/(zmax-zmin));
-                
+
                 scale_vec.x = scale;
                 scale_vec.y = scale;
                 scale_vec.z = scale;
@@ -3203,6 +3207,12 @@ void RODS_GUI::updateViewMatrix()
                         glm::vec3(0.0f, 0.0f, 0.0f),
                         glm::vec3(0.0f, 0.0f, 1.0f) );
     }
+    else if (draw_dim == 3)
+    {
+        view = glm::lookAt( glm::vec3(-1.0f, -1.0f, 0.0f),
+                        glm::vec3(0.0f, 0.0f, 0.0f),
+                        glm::vec3(0.0f, 0.0f, 1.0f) );
+    }
     glUseProgram(shaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
 }
@@ -3211,7 +3221,7 @@ void RODS_GUI::updateProjectionMatrix(GLFWwindow *window)
 {
     glfwGetFramebufferSize(window, &buffer_width, &buffer_height);
     glm::mat4 projection = glm::mat4(1.0f);
-    if (draw_dim == 1 || draw_dim == 2)
+    if (draw_dim == 1 || draw_dim == 11 || draw_dim == 2)
     {
         float scale = (float)buffer_height / (float)buffer_width;
         projection = glm::ortho(-2.0f, 2.0f, -2.0f*scale, 2.0f*scale, 0.1f, 10.0f);
@@ -3333,7 +3343,8 @@ void RODS_GUI::draw_1d_s()
 
             glDrawArrays(GL_POINTS, 0, num_dof);
 
-            if (num_ele > 0) {
+            num_rod_1d = get_num_rod_1d();
+            if (num_rod_1d > 0) {
                 updatedofIdMapIndex();
                 int* indices = new int[(size_t)num_ele*2];
                 get_rod1d_dof_id(indices);
@@ -3408,7 +3419,9 @@ void RODS_GUI::draw_2d()
 
             glDrawArrays(GL_POINTS, 0, num_node);
 
-            if (num_ele > 0)
+            num_rod_1d = get_num_rod_1d();
+            num_rod_2d = get_num_rod_2d();
+            if ((draw_dim == 2 && num_rod_2d > 0) || (draw_dim == 11 && num_rod_1d > 0))
             {
                 updateNodeIdMapIndex();
                 int* indices = new int[(size_t)num_ele*2];
@@ -3416,7 +3429,84 @@ void RODS_GUI::draw_2d()
                     get_rod2d_node_id(indices);
                 else
                     get_rod1d_node_id(indices);
-                
+
+                for (int i = 0; i < num_ele * 2; i++)
+                {
+                    indices[i] = nodeIdMapIndex.at(indices[i]);
+                }
+
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (size_t)num_ele*2*sizeof(int), indices, GL_DYNAMIC_DRAW);
+
+                glDrawElements(GL_LINES, 2*num_ele, GL_UNSIGNED_INT, (void*)0);
+
+                delete[] indices;
+            }
+            delete[] vertices;
+            delete[] colors;
+            glBindVertexArray(0);
+        }
+    }
+}
+
+void RODS_GUI::draw_3d()
+{
+    if (draw_dim == 3)
+    {
+        if (num_node > 0)
+        {
+            float* vertices = new float[(size_t)num_node*3];
+            get_node_coords(vertices);
+            float* colors = new float[(size_t)num_node*3];
+
+            double max_res = 0.0;
+            double min_res = 0.0;
+            double peak_res = 1.0;
+
+            if (draw_type == 2 || draw_type == 22)
+            {
+                node_response = new double[(size_t)num_node*3];
+                get_node_modal_response(node_response, mode_order);
+                max_res = *std::max_element(node_response, node_response+num_node*3);
+                min_res = *std::min_element(node_response, node_response+num_node*3);
+                peak_res = fmax(max_res, -min_res);
+            }
+
+            for (size_t i = 0; i < (size_t)num_node*3; i++)
+            {
+                if (draw_type == 2)
+                {
+                    vertices[i] += node_response[i]*scale_factor_dsp;
+                    colors[i] = node_response[i]/peak_res;
+                }
+                else if (draw_type == 22)
+                {
+                    vertices[i] += node_response[i]*scale_factor_dsp*sinf(2.0*3.142/5.0*glfwGetTime());
+                    colors[i] = node_response[i]/peak_res*sinf(2.0*3.142/5.0*glfwGetTime());
+                }
+                else
+                {
+                    colors[i] = vertices[i];
+                }
+            }
+
+            glUseProgram(shaderProgram);
+            glBindVertexArray(VAO);
+
+            glBindBuffer(GL_ARRAY_BUFFER, VBO_COLOR);
+            glBufferData(GL_ARRAY_BUFFER, (size_t)num_node*3*sizeof(float), colors, GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, (size_t)num_node*3*sizeof(float), vertices, GL_DYNAMIC_DRAW);
+
+            glDrawArrays(GL_POINTS, 0, num_node);
+
+            num_rod_3d = get_num_rod_3d();
+            if (num_rod_3d > 0)
+            {
+                updateNodeIdMapIndex();
+                int* indices = new int[(size_t)num_ele*2];
+                get_rod3d_node_id(indices);
+
                 for (int i = 0; i < num_ele * 2; i++)
                 {
                     indices[i] = nodeIdMapIndex.at(indices[i]);

@@ -42,6 +42,9 @@ static int num_dof = 0;
 static int num_point = 0;
 static int num_line = 0;
 static int num_ele = 0;
+static int num_rod_1d = 0;
+static int num_rod_2d = 0;
+static int num_rod_3d = 0;
 static int num_spring = 0;
 static int num_dashpot = 0;
 static int num_inerter = 0;
@@ -137,7 +140,7 @@ namespace RODS_GUI {
 
     void timeHistoryPlotWindow();
 
-    void drawModeWindow();
+    void drawModeWindow(GLFWwindow* window);
 
     void updateViewMatrix();
     void updateProjectionMatrix(GLFWwindow* window);
@@ -145,6 +148,7 @@ namespace RODS_GUI {
     void draw_geo();
     void draw_1d_s();
     void draw_2d();
+    void draw_3d();
     void draw_text();
 
     void updateDOFList();

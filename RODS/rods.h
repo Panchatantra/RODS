@@ -168,6 +168,12 @@ extern "C" {
 	GET_IDS_DEF(truss_elastic_2d);
 	GET_IDS_DEF(frame_elastic_2d);
 
+	GET_NUM_DEF(rod_2d);
+	GET_IDS_DEF(rod_2d);
+
+	GET_NUM_DEF(rod_3d);
+	GET_IDS_DEF(rod_3d);
+
 	GET_NUM_DEF(dof_x);
 	GET_NUM_DEF(dof_y);
 	GET_NUM_DEF(dof_z);
@@ -220,6 +226,7 @@ extern "C" {
 	DLL_API size_t get_rod1d_dof_id(int* id);
 	DLL_API size_t get_rod1d_node_id(int* id);
 	DLL_API size_t get_rod2d_node_id(int* id);
+	DLL_API size_t get_rod3d_node_id(int* id);
 	DLL_API void get_dof_modal_response(double *res, const int order=1);
 	DLL_API void get_node_modal_response(double *res, const int order=1);
 

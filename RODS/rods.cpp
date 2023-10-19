@@ -783,6 +783,12 @@ GET_NUM(FrameElastic2D, frame_elastic_2d);
 GET_IDS(TrussElastic2D, truss_elastic_2d);
 GET_IDS(FrameElastic2D, frame_elastic_2d);
 
+GET_NUM(ROD2D, rod_2d);
+GET_IDS(ROD2D, rod_2d);
+
+GET_NUM(ROD3D, rod_3d);
+GET_IDS(ROD3D, rod_3d);
+
 GET_NUM(DOFX, dof_x);
 GET_NUM(DOFY, dof_y);
 GET_NUM(DOFZ, dof_z);
@@ -977,6 +983,22 @@ DLL_API size_t get_rod2d_node_id(int * id)
 		}
 	}
 	return n*2;
+}
+
+DLL_API size_t get_rod3d_node_id(int* id)
+{
+	auto n = ds->ROD3Ds.size();
+	size_t i = 0;
+	if (n > 0)
+	{
+		for (auto it = ds->ROD3Ds.begin(); it != ds->ROD3Ds.end(); it++)
+		{
+			id[i * 2] = it->second->nodeI->id;
+			id[i * 2 + 1] = it->second->nodeJ->id;
+			i++;
+		}
+	}
+	return n * 2;
 }
 
 DLL_API void get_dof_modal_response(double * res, const int order)
