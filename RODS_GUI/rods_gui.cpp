@@ -3206,10 +3206,8 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
                 ymax /= peak * 1.2; ymin /= peak * 1.2;
                 zmax /= peak * 1.2; zmin /= peak * 1.2;
 
-                std::cout << xmax << "\t" << ymax << "\t" << zmax << std::endl;
-                std::cout << xmin << "\t" << ymin << "\t" << zmin << std::endl;
-
                 std::vector<glm::vec4> profile_points;
+
                 auto PVM = projection*view;
 
                 profile_points.push_back(PVM * glm::vec4( xmax, ymax, zmax, 1.0));
@@ -3220,6 +3218,10 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
                 profile_points.push_back(PVM * glm::vec4( xmin, ymax, zmin, 1.0));
                 profile_points.push_back(PVM * glm::vec4( xmax, ymin, zmin, 1.0));
                 profile_points.push_back(PVM * glm::vec4( xmin, ymin, zmin, 1.0));
+
+                xmax = 0.0; xmin = 0.0;
+                ymax = 0.0; ymin = 0.0;
+                zmax = 0.0; zmin = 0.0;
 
                 for (auto &p : profile_points)
                 {
@@ -3238,7 +3240,7 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
                 
                 translate_vec.x = -(xmax + xmin)/2.0;
                 translate_vec.y = -(ymax + ymin)/2.0;
-                translate_vec.z = -(zmax + zmin)/2.0;
+                translate_vec.z = 0.0;
 
                 t[0] = translate_vec.x;
                 t[1] = translate_vec.y;
@@ -3246,9 +3248,11 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
 
                 double scale = fmin(2.0/(xmax - xmin), 2.0/(ymax - ymin));
 
+                std::cout << scale << std::endl;
+
                 scale_vec.x = scale;
                 scale_vec.y = scale;
-                scale_vec.z = scale;
+                scale_vec.z = 1.0;
 
                 s[0] = scale_vec.x;
                 s[1] = scale_vec.y;
