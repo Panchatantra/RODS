@@ -104,8 +104,6 @@ struct Character {
     unsigned int Advance;   // Horizontal offset to advance to next glyph
 };
 
-glm::mat4 projection, view, model;
-
 namespace RODS_GUI {
     void createShader();
     void createTextShader();

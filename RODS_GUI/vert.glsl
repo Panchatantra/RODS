@@ -8,7 +8,7 @@ out vec4 vertexColor;
 
 void main()
 {
-    gl_Position = projection * view * model * vec4(position, 1.0);
+    gl_Position = model * projection * view * vec4(position, 1.0);
     float v = length(color);
     float r = 1.0;
     float g = 1.0;

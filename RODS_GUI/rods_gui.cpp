@@ -141,6 +141,7 @@ const char * Element3DTypes[num_ele_3d_type] = {
 glm::vec3 translate_vec(0.0f);
 glm::vec3 scale_vec(1.0f);
 
+glm::mat4 projection, view, model;
 
 void RODS_GUI::createShader()
 {
@@ -3140,7 +3141,7 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
         static float v[3] = {-1.0f, -1.0f, 0.0f};
         ImGui::InputFloat3("View Vector", v);
         
-        if (ImGui::Button("Update View"))
+        if (ImGui::Button("Update View Matrix"))
         {
             updateViewMatrix(glm::vec3(v[0], v[1], v[2]));
             updateProjectionMatrix(window);
@@ -3148,7 +3149,6 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
 
         if (draw_dim == 2)
         {
-            ImGui::SameLine();
             if (ImGui::Button("Auto Fit"))
             {
                 double xmax, xmin;
@@ -3181,7 +3181,11 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
         }
         else if (draw_dim == 3)
         {
-            ImGui::SameLine();
+            static float t[3];
+            ImGui::InputFloat3("Translate Vector", t);
+            static float s[3] = { 1.0f, 1.0f, 1.0f };
+            ImGui::InputFloat3("Scale Vector", s);
+
             if (ImGui::Button("Auto Fit"))
             {
                 double xmax, xmin;
@@ -3196,26 +3200,26 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
                 double xpeak = fmax(xmax, -xmin);
                 double ypeak = fmax(ymax, -ymin);
                 double zpeak = fmax(zmax, -zmin);
+                double peak = fmax(fmax(xpeak, ypeak), zpeak);
 
-                xmax /= xpeak; xmin /= xpeak;
-                ymax /= ypeak; ymin /= ypeak;
-                zmax /= zpeak; zmin /= zpeak;
+                xmax /= peak * 1.2; xmin /= peak * 1.2;
+                ymax /= peak * 1.2; ymin /= peak * 1.2;
+                zmax /= peak * 1.2; zmin /= peak * 1.2;
 
-                xpeak = 1.0;
-                ypeak = 1.0;
-                zpeak = 1.0;
+                std::cout << xmax << "\t" << ymax << "\t" << zmax << std::endl;
+                std::cout << xmin << "\t" << ymin << "\t" << zmin << std::endl;
 
                 std::vector<glm::vec4> profile_points;
-                auto PVM = projection * view;
+                auto PVM = projection*view;
 
                 profile_points.push_back(PVM * glm::vec4( xmax, ymax, zmax, 1.0));
-                profile_points.push_back(PVM * glm::vec4(-xmax, ymax, zmax, 1.0));
-                profile_points.push_back(PVM * glm::vec4( xmax,-ymax, zmax, 1.0));
-                profile_points.push_back(PVM * glm::vec4(-xmax,-ymax, zmax, 1.0));
-                profile_points.push_back(PVM * glm::vec4( xmax, ymax,-zmax, 1.0));
-                profile_points.push_back(PVM * glm::vec4(-xmax, ymax,-zmax, 1.0));
-                profile_points.push_back(PVM * glm::vec4( xmax,-ymax,-zmax, 1.0));
-                profile_points.push_back(PVM * glm::vec4(-xmax,-ymax,-zmax, 1.0));
+                profile_points.push_back(PVM * glm::vec4( xmin, ymax, zmax, 1.0));
+                profile_points.push_back(PVM * glm::vec4( xmax, ymin, zmax, 1.0));
+                profile_points.push_back(PVM * glm::vec4( xmin, ymin, zmax, 1.0));
+                profile_points.push_back(PVM * glm::vec4( xmax, ymax, zmin, 1.0));
+                profile_points.push_back(PVM * glm::vec4( xmin, ymax, zmin, 1.0));
+                profile_points.push_back(PVM * glm::vec4( xmax, ymin, zmin, 1.0));
+                profile_points.push_back(PVM * glm::vec4( xmin, ymin, zmin, 1.0));
 
                 for (auto &p : profile_points)
                 {
@@ -3232,48 +3236,38 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
                 std::cout << xmax << "\t" << ymax << "\t"  << zmax << std::endl;
                 std::cout << xmin << "\t" << ymin << "\t"  << zmin << std::endl;
                 
-                translate_vec.x = -(xmax + xmin)/xpeak/2;
-                translate_vec.y = -(ymax + ymin)/ypeak/2;
-                translate_vec.z = -(zmax + zmin)/zpeak/2;
-                translate_vec.z = 0.0;
+                translate_vec.x = -(xmax + xmin)/2.0;
+                translate_vec.y = -(ymax + ymin)/2.0;
+                translate_vec.z = -(zmax + zmin)/2.0;
 
-                std::cout << translate_vec.x << "\t" << translate_vec.y << "\t"  << translate_vec.z << std::endl;
+                t[0] = translate_vec.x;
+                t[1] = translate_vec.y;
+                t[2] = translate_vec.z;
 
-                auto tv = glm::inverse(PVM) * glm::vec4(translate_vec, 1.0);
-                translate_vec.x = tv.x;
-                translate_vec.y = tv.y;
-                translate_vec.z = tv.z;
-
-                std::cout << translate_vec.x << "\t" << translate_vec.y << "\t"  << translate_vec.z << std::endl;
-
-                double scale = 1.0;
-                if (xpeak != 0.0) scale = fmax(scale, 2.0*xpeak/(xmax-xmin));
-                if (ypeak != 0.0) scale = fmax(scale, 2.0*ypeak/(ymax-ymin));
-                if (zpeak != 0.0) scale = fmax(scale, 2.0*zpeak/(zmax-zmin));
+                double scale = fmin(2.0/(xmax - xmin), 2.0/(ymax - ymin));
 
                 scale_vec.x = scale;
                 scale_vec.y = scale;
                 scale_vec.z = scale;
 
-                std::cout << scale << std::endl;
+                s[0] = scale_vec.x;
+                s[1] = scale_vec.y;
+                s[2] = scale_vec.z;
 
                 updateModelMatrix();
             }
-        }
 
-        static float t[3];
-        ImGui::InputFloat3("Translate Vector", t);
-        static float s[3] = {1.0f, 1.0f, 1.0f};
-        ImGui::InputFloat3("Scale Vector", s);
-        if (ImGui::Button("Move & Scale"))
-        {
-            translate_vec.x = t[0];
-            translate_vec.y = t[1];
-            translate_vec.z = t[2];
-            scale_vec.x = s[0];
-            scale_vec.y = s[1];
-            scale_vec.z = s[2];
-            updateModelMatrix();
+            ImGui::SameLine();
+            if (ImGui::Button("Move & Scale"))
+            {
+                translate_vec.x = t[0];
+                translate_vec.y = t[1];
+                translate_vec.z = t[2];
+                scale_vec.x = s[0];
+                scale_vec.y = s[1];
+                scale_vec.z = s[2];
+                updateModelMatrix();
+            }
         }
 
         ImGui::Text("Draw: "); ImGui::SameLine();
