@@ -372,16 +372,16 @@ void RODS_GUI::setCamera(GLFWwindow* window)
     glfwGetFramebufferSize(window, &buffer_width, &buffer_height);
     // glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)buffer_width / (float)buffer_height, 0.1f, 100.0f);
     float scale = (float)buffer_height / (float)buffer_width;
-    glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -2.0f*scale, 2.0f*scale, 0.0f, 10.0f);
+    projection = glm::ortho(-2.0f, 2.0f, -2.0f*scale, 2.0f*scale, 0.0f, 10.0f);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 
-    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::mat4(1.0f);
     view = glm::lookAt( glm::vec3(0.0f, -1.0f, 0.0f),
                         glm::vec3(0.0f, 0.0f, 0.0f),
                         glm::vec3(0.0f, 0.0f, 1.0f) );
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
 
-    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::mat4(1.0f);
     // model = glm::translate(model, glm::vec3(0.0f,0.0f,-0.4f));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
 
@@ -2107,7 +2107,7 @@ void RODS_GUI::solveEigenWindow()
 {
     if (show_solve_eigen_window)
     {
-        ImGui::Begin("Solve Eigen");
+        ImGui::Begin("Solve Eigen", &show_solve_eigen_window);
 
         static bool eigen_solved = false;
 
@@ -3129,20 +3129,24 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
 {
     if (show_draw_mode_window)
     {
-        ImGui::Begin("Drawing Mode");
+        ImGui::Begin("Drawing Mode", &show_draw_mode_window);
 
         ImGui::Text("Dimension: "); ImGui::SameLine();
         ImGui::RadioButton("1D (Serial DOFs)", &draw_dim, 1); ImGui::SameLine();
         ImGui::RadioButton("1D", &draw_dim, 11); ImGui::SameLine();
         ImGui::RadioButton("2D", &draw_dim, 2); ImGui::SameLine();
         ImGui::RadioButton("3D", &draw_dim, 3);
+        
+        static float v[3] = {-1.0f, -1.0f, 0.0f};
+        ImGui::InputFloat3("View Vector", v);
+        
         if (ImGui::Button("Update View"))
         {
-            updateViewMatrix();
+            updateViewMatrix(glm::vec3(v[0], v[1], v[2]));
             updateProjectionMatrix(window);
         }
 
-        if (draw_dim == 2 || draw_dim == 3)
+        if (draw_dim == 2)
         {
             ImGui::SameLine();
             if (ImGui::Button("Auto Fit"))
@@ -3175,6 +3179,102 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
                 updateModelMatrix();
             }
         }
+        else if (draw_dim == 3)
+        {
+            ImGui::SameLine();
+            if (ImGui::Button("Auto Fit"))
+            {
+                double xmax, xmin;
+                double ymax, ymin;
+                double zmax, zmin;
+                get_coords_range(
+                    xmax, xmin,
+					ymax, ymin,
+					zmax, zmin
+                );
+
+                double xpeak = fmax(xmax, -xmin);
+                double ypeak = fmax(ymax, -ymin);
+                double zpeak = fmax(zmax, -zmin);
+
+                xmax /= xpeak; xmin /= xpeak;
+                ymax /= ypeak; ymin /= ypeak;
+                zmax /= zpeak; zmin /= zpeak;
+
+                xpeak = 1.0;
+                ypeak = 1.0;
+                zpeak = 1.0;
+
+                std::vector<glm::vec4> profile_points;
+                auto PVM = projection * view;
+
+                profile_points.push_back(PVM * glm::vec4( xmax, ymax, zmax, 1.0));
+                profile_points.push_back(PVM * glm::vec4(-xmax, ymax, zmax, 1.0));
+                profile_points.push_back(PVM * glm::vec4( xmax,-ymax, zmax, 1.0));
+                profile_points.push_back(PVM * glm::vec4(-xmax,-ymax, zmax, 1.0));
+                profile_points.push_back(PVM * glm::vec4( xmax, ymax,-zmax, 1.0));
+                profile_points.push_back(PVM * glm::vec4(-xmax, ymax,-zmax, 1.0));
+                profile_points.push_back(PVM * glm::vec4( xmax,-ymax,-zmax, 1.0));
+                profile_points.push_back(PVM * glm::vec4(-xmax,-ymax,-zmax, 1.0));
+
+                for (auto &p : profile_points)
+                {
+                    if (p.x > xmax) xmax = p.x;
+                    else if (p.x < xmin) xmin = p.x;
+
+                    if (p.y > ymax) ymax = p.y;
+                    else if (p.y < ymin) ymin = p.y;
+
+                    if (p.z > zmax) zmax = p.z;
+                    else if (p.z < zmin) zmin = p.z;
+                }
+
+                std::cout << xmax << "\t" << ymax << "\t"  << zmax << std::endl;
+                std::cout << xmin << "\t" << ymin << "\t"  << zmin << std::endl;
+                
+                translate_vec.x = -(xmax + xmin)/xpeak/2;
+                translate_vec.y = -(ymax + ymin)/ypeak/2;
+                translate_vec.z = -(zmax + zmin)/zpeak/2;
+                translate_vec.z = 0.0;
+
+                std::cout << translate_vec.x << "\t" << translate_vec.y << "\t"  << translate_vec.z << std::endl;
+
+                auto tv = glm::inverse(PVM) * glm::vec4(translate_vec, 1.0);
+                translate_vec.x = tv.x;
+                translate_vec.y = tv.y;
+                translate_vec.z = tv.z;
+
+                std::cout << translate_vec.x << "\t" << translate_vec.y << "\t"  << translate_vec.z << std::endl;
+
+                double scale = 1.0;
+                if (xpeak != 0.0) scale = fmax(scale, 2.0*xpeak/(xmax-xmin));
+                if (ypeak != 0.0) scale = fmax(scale, 2.0*ypeak/(ymax-ymin));
+                if (zpeak != 0.0) scale = fmax(scale, 2.0*zpeak/(zmax-zmin));
+
+                scale_vec.x = scale;
+                scale_vec.y = scale;
+                scale_vec.z = scale;
+
+                std::cout << scale << std::endl;
+
+                updateModelMatrix();
+            }
+        }
+
+        static float t[3];
+        ImGui::InputFloat3("Translate Vector", t);
+        static float s[3] = {1.0f, 1.0f, 1.0f};
+        ImGui::InputFloat3("Scale Vector", s);
+        if (ImGui::Button("Move & Scale"))
+        {
+            translate_vec.x = t[0];
+            translate_vec.y = t[1];
+            translate_vec.z = t[2];
+            scale_vec.x = s[0];
+            scale_vec.y = s[1];
+            scale_vec.z = s[2];
+            updateModelMatrix();
+        }
 
         ImGui::Text("Draw: "); ImGui::SameLine();
         ImGui::RadioButton("Geometry", &draw_type, 0); ImGui::SameLine();
@@ -3182,8 +3282,8 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
         ImGui::RadioButton("Mode Shape", &draw_type, 2); ImGui::SameLine();
         ImGui::RadioButton("Mode Shape (Animated)", &draw_type, 22);
         ImGui::RadioButton("Static Response", &draw_type, 3);
-        ImGui::RadioButton("Dynamic Response", &draw_type, 4);ImGui::SameLine();
-        ImGui::RadioButton("Dynamic Response", &draw_type, 44);
+        ImGui::RadioButton("Dynamic Response (Single Step)", &draw_type, 4);ImGui::SameLine();
+        ImGui::RadioButton("Dynamic Response (Animation)", &draw_type, 44);
 
         if (ImGui::Button("Close"))
             show_draw_mode_window = false;
@@ -3192,9 +3292,9 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
     }
 }
 
-void RODS_GUI::updateViewMatrix()
+void RODS_GUI::updateViewMatrix(glm::vec3 v)
 {
-    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::mat4(1.0f);
     if (draw_dim == 1)
     {
         view = glm::lookAt( glm::vec3(0.0f, 0.0f, 1.0f),
@@ -3209,7 +3309,7 @@ void RODS_GUI::updateViewMatrix()
     }
     else if (draw_dim == 3)
     {
-        view = glm::lookAt( glm::vec3(-1.0f, -1.0f, 0.0f),
+        view = glm::lookAt( v,
                         glm::vec3(0.0f, 0.0f, 0.0f),
                         glm::vec3(0.0f, 0.0f, 1.0f) );
     }
@@ -3220,7 +3320,7 @@ void RODS_GUI::updateViewMatrix()
 void RODS_GUI::updateProjectionMatrix(GLFWwindow *window)
 {
     glfwGetFramebufferSize(window, &buffer_width, &buffer_height);
-    glm::mat4 projection = glm::mat4(1.0f);
+    projection = glm::mat4(1.0f);
     if (draw_dim == 1 || draw_dim == 11 || draw_dim == 2)
     {
         float scale = (float)buffer_height / (float)buffer_width;
@@ -3236,7 +3336,7 @@ void RODS_GUI::updateProjectionMatrix(GLFWwindow *window)
 
 void RODS_GUI::updateModelMatrix()
 {
-    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::mat4(1.0f);
     model = glm::translate(model, translate_vec);
     model = glm::scale(model, scale_vec);
     glUseProgram(shaderProgram);
