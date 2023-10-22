@@ -3208,8 +3208,15 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
 
                 std::vector<glm::vec4> profile_points;
 
-                auto PVM = projection*view;
+                auto PVM = projection * view;
+                auto view_val = glm::value_ptr(view);
 
+                for (int i = 0; i < 16; i++)
+                {
+                    std::cout << view_val[i] << "\t";
+                    if (i%4 == 3) std::cout << std::endl;
+                }
+                
                 profile_points.push_back(PVM * glm::vec4( xmax, ymax, zmax, 1.0));
                 profile_points.push_back(PVM * glm::vec4( xmin, ymax, zmax, 1.0));
                 profile_points.push_back(PVM * glm::vec4( xmax, ymin, zmax, 1.0));
@@ -3235,12 +3242,12 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
                     else if (p.z < zmin) zmin = p.z;
                 }
 
-                std::cout << xmax << "\t" << ymax << "\t"  << zmax << std::endl;
-                std::cout << xmin << "\t" << ymin << "\t"  << zmin << std::endl;
+                std::cout << "max: (" << xmax << ", " << ymax << ", "  << zmax << ")" << std::endl;
+                std::cout << "min: (" << xmin << ", " << ymin << ", "  << zmin << ")" << std::endl;
                 
-                translate_vec.x = -(xmax + xmin)/2.0;
-                translate_vec.y = -(ymax + ymin)/2.0;
-                translate_vec.z = 0.0;
+                // translate_vec.x = -(xmax + xmin)/2.0;
+                // translate_vec.y = -(ymax + ymin)/2.0;
+                // translate_vec.z = 0.0;
 
                 t[0] = translate_vec.x;
                 t[1] = translate_vec.y;
@@ -3250,9 +3257,9 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
 
                 std::cout << scale << std::endl;
 
-                scale_vec.x = scale;
-                scale_vec.y = scale;
-                scale_vec.z = 1.0;
+                // scale_vec.x = scale;
+                // scale_vec.y = scale;
+                // scale_vec.z = scale;
 
                 s[0] = scale_vec.x;
                 s[1] = scale_vec.y;
@@ -3310,6 +3317,7 @@ void RODS_GUI::updateViewMatrix(glm::vec3 v)
         view = glm::lookAt( v,
                         glm::vec3(0.0f, 0.0f, 0.0f),
                         glm::vec3(0.0f, 0.0f, 1.0f) );
+        // view = glm::translate(view, v);
     }
     glUseProgram(shaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
@@ -3335,8 +3343,8 @@ void RODS_GUI::updateProjectionMatrix(GLFWwindow *window)
 void RODS_GUI::updateModelMatrix()
 {
     model = glm::mat4(1.0f);
-    model = glm::translate(model, translate_vec);
     model = glm::scale(model, scale_vec);
+    model = glm::translate(model, translate_vec);
     glUseProgram(shaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
 }
