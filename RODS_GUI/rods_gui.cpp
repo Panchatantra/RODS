@@ -393,8 +393,173 @@ void RODS_GUI::setCamera(GLFWwindow* window)
 
 void RODS_GUI::mainMenu(GLFWwindow* window)
 {
-    if (ImGui::BeginMainMenuBar())
+    if (show_main_menu)
     {
+        if (ImGui::BeginMainMenuBar())
+        {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("New")) {
+                    clear();
+                    initVars();
+                }
+
+                char workDir[C_STR_LEN];
+                get_work_dir(workDir, C_STR_LEN);
+                std::string work_dir(workDir);
+                if (work_dir.back() != '/')
+                    work_dir.push_back('/');
+
+                if (ImGui::MenuItem("Open")) {
+                    ImGuiFileDialog::Instance()->OpenDialog("Open Model", "Select File", ".json", work_dir.c_str());
+                }
+
+                if (ImGui::MenuItem("Save")) {
+                    ImGuiFileDialog::Instance()->OpenDialog("Save Model", "Select File Path",
+                                        ".json", work_dir.c_str(), "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
+                }
+
+                if (ImGui::MenuItem("Exit"))
+                    glfwSetWindowShouldClose(window, true);
+
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Set"))
+            {
+                if (ImGui::MenuItem("Work Directory && Name"))
+                    show_dir_window = true;
+
+                if (ImGui::MenuItem("Inherent Damping"))
+                    show_damping_window = true;
+
+                if (ImGui::MenuItem("Drawing Mode"))
+                    show_draw_mode_window = true;
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Geometry"))
+            {
+                if (ImGui::MenuItem("Point"))
+                    show_point_window = true;
+
+                if (ImGui::MenuItem("Line"))
+                    show_line_window = true;
+
+                if (ImGui::MenuItem("Triangle")) {}
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Model"))
+            {
+                if (ImGui::MenuItem("DOF"))
+                    show_dof_window = true;
+
+                if (ImGui::MenuItem("Node"))
+                    show_node_window = true;
+
+                if (ImGui::MenuItem("Element1D"))
+                    show_element1d_window = true;
+
+                if (ImGui::MenuItem("Element2D"))
+                    show_element2d_window = true;
+
+                if (ImGui::MenuItem("Element3D"))
+                    show_element3d_window = true;
+
+                if (ImGui::MenuItem("Material"))
+                    show_material_window = true;
+
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Input/Output"))
+            {
+                if (ImGui::MenuItem("Wave"))
+                    show_wave_window = true;
+
+                if (ImGui::MenuItem("Recorder"))
+                    show_recorder_window = true;
+
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("View"))
+            {
+                if (ImGui::MenuItem("Basic Info"))
+                    show_basic_info_window = true;
+
+                if (ImGui::MenuItem("DOF Table"))
+                    show_dof_table_window = true;
+
+                if (ImGui::MenuItem("Node Table"))
+                    show_node_table_window = true;
+
+                if (ImGui::MenuItem("Element1D Table"))
+                    show_element1d_table_window = true;
+
+                if (ImGui::MenuItem("Element2D Table"))
+                    show_element2d_table_window = true;
+
+                if (ImGui::MenuItem("Recorder Table"))
+                    show_recorder_table_window = true;
+
+                if (ImGui::MenuItem("Wave Table"))
+                    show_wave_table_window = true;
+
+                if (ImGui::MenuItem("Time History Curve"))
+                    show_time_history_plot_window = true;
+
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Solve"))
+            {
+                if (ImGui::MenuItem("Assemble Matrix"))
+                    show_assemble_matrix_window = true;
+
+                if (ImGui::MenuItem("Solve Eigen"))
+                    show_solve_eigen_window = true;
+
+                if (ImGui::MenuItem("Solve Seisimc"))
+                    show_solve_seismic_window = true;
+
+                ImGui::EndMenu();
+            }
+            ImGui::EndMainMenuBar();
+        }
+
+        if (ImGuiFileDialog::Instance()->Display("Open Model"))
+        {
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                auto fileName = ImGuiFileDialog::Instance()->GetFilePathName();
+                load_from_json(fileName.c_str());
+                updateVars();
+            }
+            ImGuiFileDialog::Instance()->Close();
+        }
+
+        if (ImGuiFileDialog::Instance()->Display("Save Model"))
+        {
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                auto fileName = ImGuiFileDialog::Instance()->GetFilePathName();
+                save_to_json(fileName.c_str());
+                // updateVars();
+            }
+            ImGuiFileDialog::Instance()->Close();
+        }
+    }
+}
+
+void RODS_GUI::menuWindow(GLFWwindow *window)
+{
+    if (show_menu_window)
+    {
+        ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_MenuBar);
+
+        ImGui::BeginMenuBar();
+
         if (ImGui::BeginMenu("File"))
         {
             if (ImGui::MenuItem("New")) {
@@ -422,6 +587,7 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
 
             ImGui::EndMenu();
         }
+
         if (ImGui::BeginMenu("Set"))
         {
             if (ImGui::MenuItem("Work Directory && Name"))
@@ -523,29 +689,32 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
 
             ImGui::EndMenu();
         }
-        ImGui::EndMainMenuBar();
-    }
 
-    if (ImGuiFileDialog::Instance()->Display("Open Model"))
-    {
-        if (ImGuiFileDialog::Instance()->IsOk())
-        {
-            auto fileName = ImGuiFileDialog::Instance()->GetFilePathName();
-            load_from_json(fileName.c_str());
-            updateVars();
-        }
-        ImGuiFileDialog::Instance()->Close();
-    }
+        ImGui::EndMenuBar();
 
-    if (ImGuiFileDialog::Instance()->Display("Save Model"))
-    {
-        if (ImGuiFileDialog::Instance()->IsOk())
+        if (ImGuiFileDialog::Instance()->Display("Open Model"))
         {
-            auto fileName = ImGuiFileDialog::Instance()->GetFilePathName();
-            save_to_json(fileName.c_str());
-            // updateVars();
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                auto fileName = ImGuiFileDialog::Instance()->GetFilePathName();
+                load_from_json(fileName.c_str());
+                updateVars();
+            }
+            ImGuiFileDialog::Instance()->Close();
         }
-        ImGuiFileDialog::Instance()->Close();
+
+        if (ImGuiFileDialog::Instance()->Display("Save Model"))
+        {
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                auto fileName = ImGuiFileDialog::Instance()->GetFilePathName();
+                save_to_json(fileName.c_str());
+                // updateVars();
+            }
+            ImGuiFileDialog::Instance()->Close();
+        }
+
+        ImGui::End();
     }
 }
 
@@ -3137,10 +3306,10 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
         ImGui::RadioButton("1D", &draw_dim, 11); ImGui::SameLine();
         ImGui::RadioButton("2D", &draw_dim, 2); ImGui::SameLine();
         ImGui::RadioButton("3D", &draw_dim, 3);
-        
-        static float v[3] = {-1.0f, -1.0f, 0.0f};
-        ImGui::InputFloat3("View Vector", v);
-        
+
+        static float v[3] = {0.0f, -1.0f, 0.0f};
+        ImGui::InputFloat3("Viewer Position", v);
+
         if (ImGui::Button("Update View Matrix"))
         {
             updateViewMatrix(glm::vec3(v[0], v[1], v[2]));
@@ -3206,17 +3375,13 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
                 ymax /= peak * 1.2; ymin /= peak * 1.2;
                 zmax /= peak * 1.2; zmin /= peak * 1.2;
 
+                std::cout << "max: (" << xmax << ", " << ymax << ", " << zmax << ")" << std::endl;
+                std::cout << "min: (" << xmin << ", " << ymin << ", " << zmin << ")" << std::endl;
+
                 std::vector<glm::vec4> profile_points;
 
                 auto PVM = projection * view;
-                auto view_val = glm::value_ptr(view);
 
-                for (int i = 0; i < 16; i++)
-                {
-                    std::cout << view_val[i] << "\t";
-                    if (i%4 == 3) std::cout << std::endl;
-                }
-                
                 profile_points.push_back(PVM * glm::vec4( xmax, ymax, zmax, 1.0));
                 profile_points.push_back(PVM * glm::vec4( xmin, ymax, zmax, 1.0));
                 profile_points.push_back(PVM * glm::vec4( xmax, ymin, zmax, 1.0));
@@ -3230,40 +3395,46 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
                 ymax = 0.0; ymin = 0.0;
                 zmax = 0.0; zmin = 0.0;
 
+                double x, y, z;
+
                 for (auto &p : profile_points)
                 {
-                    if (p.x > xmax) xmax = p.x;
-                    else if (p.x < xmin) xmin = p.x;
+                    x = p.x/p.w;
+                    if (x > xmax) xmax = x;
+                    else if (x < xmin) xmin = x;
 
-                    if (p.y > ymax) ymax = p.y;
-                    else if (p.y < ymin) ymin = p.y;
+                    y = p.y/p.w;
+                    if (y > ymax) ymax = y;
+                    else if (y < ymin) ymin = y;
 
-                    if (p.z > zmax) zmax = p.z;
-                    else if (p.z < zmin) zmin = p.z;
+                    z = p.z/p.w;
+                    if (z > zmax) zmax = z;
+                    else if (z < zmin) zmin = z;
                 }
 
-                std::cout << "max: (" << xmax << ", " << ymax << ", "  << zmax << ")" << std::endl;
-                std::cout << "min: (" << xmin << ", " << ymin << ", "  << zmin << ")" << std::endl;
-                
-                // translate_vec.x = -(xmax + xmin)/2.0;
-                // translate_vec.y = -(ymax + ymin)/2.0;
-                // translate_vec.z = 0.0;
+                // std::cout << "max: (" << xmax << ", " << ymax << ", "  << zmax << ")" << std::endl;
+                // std::cout << "min: (" << xmin << ", " << ymin << ", "  << zmin << ")" << std::endl;
+
+
+                double scale = fmin(1.8/(xmax - xmin), 1.8/(ymax - ymin));
+
+                std::cout << scale << std::endl;
+
+                scale_vec.x = scale;
+                scale_vec.y = scale;
+                scale_vec.z = 1.0;
+
+                s[0] = scale;
+                s[1] = scale;
+                s[2] = scale;
+
+                translate_vec.x = -(xmax + xmin)/2.0*scale;
+                translate_vec.y = -(ymax + ymin)/2.0*scale;
+                translate_vec.z = 0.0;
 
                 t[0] = translate_vec.x;
                 t[1] = translate_vec.y;
                 t[2] = translate_vec.z;
-
-                double scale = fmin(2.0/(xmax - xmin), 2.0/(ymax - ymin));
-
-                std::cout << scale << std::endl;
-
-                // scale_vec.x = scale;
-                // scale_vec.y = scale;
-                // scale_vec.z = scale;
-
-                s[0] = scale_vec.x;
-                s[1] = scale_vec.y;
-                s[2] = scale_vec.z;
 
                 updateModelMatrix();
             }
@@ -3317,7 +3488,6 @@ void RODS_GUI::updateViewMatrix(glm::vec3 v)
         view = glm::lookAt( v,
                         glm::vec3(0.0f, 0.0f, 0.0f),
                         glm::vec3(0.0f, 0.0f, 1.0f) );
-        // view = glm::translate(view, v);
     }
     glUseProgram(shaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
@@ -3343,8 +3513,8 @@ void RODS_GUI::updateProjectionMatrix(GLFWwindow *window)
 void RODS_GUI::updateModelMatrix()
 {
     model = glm::mat4(1.0f);
-    model = glm::scale(model, scale_vec);
     model = glm::translate(model, translate_vec);
+    model = glm::scale(model, scale_vec);
     glUseProgram(shaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
 }

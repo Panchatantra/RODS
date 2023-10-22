@@ -167,6 +167,7 @@ int main(int, char**)
         ImGui::NewFrame();
 
         RODS_GUI::mainMenu(window);
+        RODS_GUI::menuWindow(window);
         RODS_GUI::dirWindow();
         RODS_GUI::dampingWindow();
         RODS_GUI::dofWindow();
@@ -205,6 +206,10 @@ int main(int, char**)
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
 
         //RODS_GUI::draw_geo();
         RODS_GUI::draw_1d_s();
@@ -212,6 +217,8 @@ int main(int, char**)
         RODS_GUI::draw_2d();
         RODS_GUI::draw_3d();
         RODS_GUI::draw_text();
+
+        glDisable(GL_DEPTH_TEST);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
