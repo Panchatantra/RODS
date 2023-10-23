@@ -36,6 +36,7 @@ static bool show_draw_mode_window = false;
 static bool show_node_window = false;
 static bool show_menu_window = true;
 static bool show_main_menu = false;
+static bool display_node_id = false;
 
 // static bool use_rayleigh_damping = true;
 // static bool use_mode_orthogonal_damping = false;
@@ -111,6 +112,8 @@ namespace RODS_GUI {
     void createTextShader();
     void buildVertex();
     void buildTextVertex();
+    void readConfig();
+    void saveConfig();
     void setCamera(GLFWwindow* window);
     void mainMenu(GLFWwindow* window);
     void menuWindow(GLFWwindow* window);
@@ -152,6 +155,14 @@ namespace RODS_GUI {
     void draw_2d();
     void draw_3d();
     void draw_text();
+
+    void getWindowBufferSize(GLFWwindow* window);
+    void mapNormDevCoord2ScreenCoord(float &x, float &y);
+    void render_text(const std::string text,
+                    const float loc_x, const float loc_y,
+                    const float scale);
+
+    void drawNodeIds(GLFWwindow* window);
 
     void updateDOFList();
     void genDofList();

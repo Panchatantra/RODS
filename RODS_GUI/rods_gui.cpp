@@ -8,6 +8,9 @@
 #include "rods_gui.h"
 #include "rods.h"
 
+#include "json.hpp"
+using json = nlohmann::json;
+
 #include <sys/stat.h>
 #include <string>
 #include <iostream>
@@ -365,6 +368,26 @@ void RODS_GUI::buildTextVertex()
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+void RODS_GUI::readConfig()
+{
+    std::ifstream ifs("rods_gui_config.json");
+	json config;
+	ifs >> config;
+	ifs.close();
+
+    draw_dim = config["draw_dim"];
+}
+
+void RODS_GUI::saveConfig()
+{
+    json config;
+    config["draw_dim"] = draw_dim;
+
+    std::ofstream ofs("rods_gui_config.json");
+	ofs << std::setw(4) << config;
+	ofs.close();
 }
 
 void RODS_GUI::setCamera(GLFWwindow* window)
@@ -3452,6 +3475,8 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
             }
         }
 
+        ImGui::Checkbox("Display Node ID", &display_node_id);
+
         ImGui::Text("Draw: "); ImGui::SameLine();
         ImGui::RadioButton("Geometry", &draw_type, 0); ImGui::SameLine();
         ImGui::RadioButton("Model", &draw_type, 1);
@@ -3849,6 +3874,111 @@ void RODS_GUI::draw_text()
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void RODS_GUI::getWindowBufferSize(GLFWwindow *window)
+{
+    glfwGetFramebufferSize(window, &buffer_width, &buffer_height);
+}
+
+void RODS_GUI::mapNormDevCoord2ScreenCoord(float &x, float &y)
+{
+    x = (x+1.0f)*(buffer_width/2.0f);
+    y = (y+1.0f)*(buffer_height/2.0f);
+}
+
+void RODS_GUI::render_text(const std::string text, const float loc_x, const float loc_y, const float scale)
+{
+    glUseProgram(textShaderProgram);
+    glUniform3f(glGetUniformLocation(textShaderProgram, "textColor"), 0.06f, 0.0f, 0.06f);
+    glActiveTexture(GL_TEXTURE0);
+    glBindVertexArray(VAO_TEXT);
+
+    auto x = loc_x;
+    auto y = loc_y;
+
+    // iterate through all characters
+    std::string::const_iterator c;
+    for (c = text.begin(); c != text.end(); c++)
+    {
+        Character ch = Characters[*c];
+
+        float xpos = x + ch.Bearing.x * scale;
+        float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+
+        float w = ch.Size.x * scale;
+        float h = ch.Size.y * scale;
+        // update VBO for each character
+        float vertices[6][4] = {
+            { xpos,     ypos + h,   0.0f, 0.0f },
+            { xpos,     ypos,       0.0f, 1.0f },
+            { xpos + w, ypos,       1.0f, 1.0f },
+
+            { xpos,     ypos + h,   0.0f, 0.0f },
+            { xpos + w, ypos,       1.0f, 1.0f },
+            { xpos + w, ypos + h,   1.0f, 0.0f }
+        };
+        // render glyph texture over quad
+        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+        // update content of VBO memory
+        glBindBuffer(GL_ARRAY_BUFFER, VBO_TEXT);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        // render quad
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+        x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+    }
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void RODS_GUI::drawNodeIds(GLFWwindow *window)
+{
+    if (display_node_id)
+    {
+        //getWindowBufferSize(window);
+        num_node = get_num_node();
+        nodes = new int[num_node];
+        get_ids_node(nodes);
+        auto mpv = model*projection*view;
+        glm::vec4 c(1.0f);
+        float loc_x = 0.0, loc_y = 0.0;
+        int id = 0;
+        double coords[3] = {0.0f, 0.0f, 0.0f};
+        int dofs[6] = {0, 0, 0, 0, 0, 0};
+
+        double xmax, xmin;
+        double ymax, ymin;
+        double zmax, zmin;
+        get_coords_range(
+            xmax, xmin,
+            ymax, ymin,
+            zmax, zmin
+        );
+
+        double xpeak = fmax(xmax, -xmin);
+        double ypeak = fmax(ymax, -ymin);
+        double zpeak = fmax(zmax, -zmin);
+        double peak = fmax(fmax(xpeak, ypeak), zpeak);
+
+        for (int i = 0; i < num_node; i++)
+        {
+            int dim;
+            id = nodes[i];
+            get_node_info(id, dim, coords, dofs);
+            c.x = coords[0]/(peak*1.2);
+            c.y = coords[1]/(peak*1.2);
+            c.z = coords[2]/(peak*1.2);
+            c.w = 1.0f;
+            c = mpv*c;
+            loc_x = c.x/c.w;
+            loc_y = c.y/c.w;
+            mapNormDevCoord2ScreenCoord(loc_x, loc_y);
+            render_text(std::to_string(id), loc_x+10.0f, loc_y-10.0f, 1.0f);
+        }
+    }
 }
 
 void RODS_GUI::updateDOFList()
