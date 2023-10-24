@@ -165,7 +165,7 @@ $$
 
 主节点的面内位移 $u_{m,x}, u_{m,y}, r_{m, z}$
 任意从节点的面内位移 $u_{i,x}, u_{i,y}, r_{i, z}$
-任意从节点与主节点的距离 $\Delta x_i, \Delta y_i$
+任意从节点与主节点的坐标差 $\Delta x_i, \Delta y_i$
 
 $$
 \begin{array}{ccl}
