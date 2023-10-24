@@ -36,7 +36,7 @@ $$
 \boldsymbol{A \ddot{u}} = \boldsymbol{0}
 $$
 
-## 惩罚因子法
+## 惩罚函数法
 
 惩罚权重矩阵
 
@@ -163,22 +163,63 @@ $$
 
 ## 刚性隔板约束
 
-主节点的面内位移 $u_{m,x}, u_{m,y}, r_{m, z}$
-任意从节点的面内位移 $u_{i,x}, u_{i,y}, r_{i, z}$
-任意从节点与主节点的坐标差 $\Delta x_i, \Delta y_i$
+主节点的面内位移
 
 $$
+\begin{pmatrix}
+    u_{m,x} & u_{m,y} & r_{m, z}
+\end{pmatrix}
+$$
+
+任意从节点的面内位移
+
+$$
+\begin{pmatrix}
+    u_{i,x} & u_{i,y} & r_{i, z}
+\end{pmatrix}
+$$
+
+任意从节点与主节点的坐标差
+
+$$\begin{pmatrix}
+    \Delta x_i\\
+    \Delta y_i
+\end{pmatrix} = \begin{pmatrix}
+    x_i - x_m\\
+    y_i - y_m
+\end{pmatrix}
+$$
+
+任意从节点的平面内位移响应
+$$
 \begin{array}{ccl}
-    u_{i,x} &=& u_{m,x} - r_{m, z}*\Delta y_i\\
-    u_{i,y} &=& u_{m,y} + r_{m, z}*\Delta x_i\\
+    u_{i,x} &=& u_{m,x} - r_{m, z} \Delta y_i\\
+    u_{i,y} &=& u_{m,y} + r_{m, z} \Delta x_i\\
     r_{i,z} &=& r_{m, z}\\
 \end{array}
 $$
 
+约束矩阵
+
 $$
-T_i = \begin{pmatrix}
+\boldsymbol{A}_i = \begin{pmatrix}
+   1 & 0 & -\Delta y_i & -1 & 0 & 0\\
+   0 & 1 &  \Delta x_i & 0 & -1 & 0\\
+   0 & 0 & 1 & 0 & 0 & -1\\
+\end{pmatrix}
+$$
+
+约束矩阵的组装
+
+将从属节点排序。每个从属节点对应一个 $3 \times 6$ 约束矩阵。
+
+自由度转换矩阵
+$$
+\boldsymbol{T}_i = \begin{pmatrix}
    1 & 0 & -\Delta y_i\\
    0 & 1 & \Delta x_i\\
    0 & 0 & 1\\
 \end{pmatrix}
 $$
+
+体系原自由度共有 $n$ 个，活动自由度共有 $n_a$ 个，主自由度有 $n_m$ 个，从属自由度共有 $n_s$ 个，则转换矩阵的维度为 $ n \times (n - n_s) $

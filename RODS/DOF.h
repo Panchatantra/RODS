@@ -109,6 +109,7 @@ public:
 	RODS::Direction dir; ///< Direction
 	vector<Load *> loads; ///< loads
 	bool isFixed; ///< if the DOF is fixed
+    int consEqnId; ///< The identifier of the DOF in system equations
 
 	double dsp; ///< displacement of the DOF
 	double vel; ///< velocity of the DOF

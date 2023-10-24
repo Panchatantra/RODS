@@ -393,6 +393,7 @@ copy /y ..\x64\DLLRelease\RODS.lib ..\x64\Release\</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Basis.cpp" />
+    <ClCompile Include="Constraint.cpp" />
     <ClCompile Include="DOF.cpp" />
     <ClCompile Include="element\BeamElastic2D.cpp" />
     <ClCompile Include="element\Dashpot.cpp" />
@@ -460,6 +461,7 @@ copy /y ..\x64\DLLRelease\RODS.lib ..\x64\Release\</Command>
     <ClCompile Include="recorder\Recorder.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="DynamicSystem.cpp" />
+    <ClCompile Include="RigidDiagram.cpp" />
     <ClCompile Include="RODS.cpp" />
     <ClCompile Include="section\Fiber.cpp" />
     <ClCompile Include="section\Section.cpp" />
@@ -469,6 +471,7 @@ copy /y ..\x64\DLLRelease\RODS.lib ..\x64\Release\</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Basis.h" />
+    <ClInclude Include="Constraint.h" />
     <ClInclude Include="DOF.h" />
     <ClInclude Include="element\BeamElastic2D.h" />
     <ClInclude Include="element\Dashpot.h" />
@@ -538,6 +541,7 @@ copy /y ..\x64\DLLRelease\RODS.lib ..\x64\Release\</Command>
     <ClInclude Include="recorder\DOFRecorder.h" />
     <ClInclude Include="recorder\ElementRecorder.h" />
     <ClInclude Include="recorder\Recorder.h" />
+    <ClInclude Include="RigidDiagram.h" />
     <ClInclude Include="RODS.h" />
     <ClInclude Include="section\Fiber.h" />
     <ClInclude Include="section\Section.h" />
