@@ -6,6 +6,7 @@
 #include "DOF.h"
 #include "Node.h"
 #include "Line.h"
+#include "RigidDiagram.h"
 #include "element/Spring.h"
 #include "element/SpringBilinear.h"
 #include "element/SpringBoucWen.h"
@@ -869,6 +870,9 @@ public:
 	void setDofRecorderFileName(const int id, char * fileName);
 	void setElementRecorderFileName(const int id, char * fileName);
 
+	void addRigidDiagram(const int id, const int masterNodeId);
+	void addRigidDiagram(const int id, const int masterNodeId, int *slaveNodeIds, int numSlaveNodes);
+
 	/**
 	 * @brief      Sets the circular frequencies for Rayleigh damping.
 	 *
@@ -1173,6 +1177,8 @@ public:
 	std::map<int, DOFRecorder *> DOFRecorders; ///< DOFRecorders in the system
 	std::map<int, ElementRecorder *> ElementRecorders; ///< ElementRecorders in the system
 
+	std::map<int, RigidDiagram *> RigidDiagrams; ///< RigidDiagrams in the system
+
 	mat Mp; 		///< The physical mass matrix
 	mat K0; 		///< The initial stiffness matrix
 	mat K; 			///< The tangent stiffness matrix
@@ -1193,6 +1199,10 @@ public:
 	uvec fixedIds;	///< The identifiers of fixed DOFs
 	vec dsp0;		///< The backup of displacement vector
 	vec p;			///< The dynamic load vector
+
+	mat T;			///< The DOF transfer matrix;
+	mat A;			///< The DOF transfer matrix;
+	mat W;			///< The penalty weight matrix;
 
 	string name;    ///< name of the model
 	string workDir;	///< the working directory

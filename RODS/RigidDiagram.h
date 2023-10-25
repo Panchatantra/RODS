@@ -30,6 +30,7 @@ public:
 	 * @param[in]  master_node   The master_node
 	 */
 	RigidDiagram(const int id, Node *master_node);
+	RigidDiagram(const int id, Node *master_node, vector<Node *> nodes);
 
 	~RigidDiagram();
 
@@ -46,6 +47,8 @@ public:
 	 * @param      node  The Node
 	 */
 	void addSlaveNode(Node *node);
+
+	void addSlaveNode(vector<Node *> nodes);
 
 	void assembleConstraintMatrix(mat &A);
 

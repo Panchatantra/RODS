@@ -20,7 +20,7 @@ void Truss2D::buildMatrix()
 void Truss2D::getResponse(const bool update)
 {
 	u = vec( { nodeI->dofX->dsp, nodeI->dofZ->dsp,
-				 nodeJ->dofX->dsp, nodeJ->dofZ->dsp } );
+				nodeJ->dofX->dsp, nodeJ->dofZ->dsp } );
 
 	ue = 0.0;
 	for (size_t i = 0; i < 4; i++)

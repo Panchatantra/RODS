@@ -1657,6 +1657,38 @@ void DynamicSystem::setElementRecorderFileName(const int id, char* fileName)
 	ElementRecorders.at(id)->setFileName(fileName);
 }
 
+void DynamicSystem::addRigidDiagram(const int id, const int masterNodeId)
+{
+	if (RigidDiagrams.count(id) > 0)
+	{
+		cout << "RigidDiagram ID: " << id << " already exists! The recorder will not be added." << endl;
+		return;
+	}
+
+	auto masterNode = Nodes.at(masterNodeId);
+	RigidDiagram *rd = new RigidDiagram(id, masterNode);
+	RigidDiagrams[rd->id] = rd;
+}
+
+void DynamicSystem::addRigidDiagram(const int id, const int masterNodeId, int *slaveNodeIds, int numSlaveNodes)
+{
+	if (RigidDiagrams.count(id) > 0)
+	{
+		cout << "RigidDiagram ID: " << id << " already exists! The recorder will not be added." << endl;
+		return;
+	}
+
+	vector<Node *> slaveNodes;
+	for (int i = 0; i < numSlaveNodes; i++)
+	{
+		slaveNodes.push_back(Nodes.at(slaveNodeIds[i]));
+	}
+
+	auto masterNode = Nodes.at(masterNodeId);
+	RigidDiagram *rd = new RigidDiagram(id, masterNode, slaveNodes);
+	RigidDiagrams[rd->id] = rd;
+}
+
 void DynamicSystem::setRayleighDamping(const double omg1, const double omg2)
 {
 	useRayleighDamping = true;

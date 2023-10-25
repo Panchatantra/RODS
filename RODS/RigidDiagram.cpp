@@ -10,8 +10,15 @@ RigidDiagram::RigidDiagram() :
 RigidDiagram::RigidDiagram(const int id, Node *master_node) :
 	Constraint(id)
 {
-	masterNodeId = master_node->id;
-	masterNode = master_node;
+	setMasterNode(master_node);
+}
+
+RigidDiagram::RigidDiagram(const int id, Node *master_node,
+							vector<Node *> nodes) :
+	Constraint(id)
+{
+	setMasterNode(master_node);
+	addSlaveNode(nodes);
 }
 
 RigidDiagram::~RigidDiagram()
@@ -31,6 +38,14 @@ void RigidDiagram::addSlaveNode(Node *node)
 		slaveNodes[node->id] = node;
 	}
 	numSlaveNodes = slaveNodes.size();
+}
+
+void RigidDiagram::addSlaveNode(vector<Node *> nodes)
+{
+	for (auto &node : nodes)
+	{
+		addSlaveNode(node);
+	}
 }
 
 void RigidDiagram::assembleConstraintMatrix(mat &A)
