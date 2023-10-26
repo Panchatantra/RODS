@@ -877,6 +877,7 @@ public:
 
 	void assembleConstraintMatrix();
 	void applyConstraint();
+	void setPenaltyWeight(double w);
 
 	/**
 	 * @brief      Sets the circular frequencies for Rayleigh damping.

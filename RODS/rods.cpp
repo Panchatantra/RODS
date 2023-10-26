@@ -1304,3 +1304,8 @@ DLL_API size_t add_slave_node_to_rigid_diagram(const int id, const int slaveNode
     ds->addSlaveNodeToRigidDiagram(id, slaveNodeId);
 	return ds->RigidDiagrams.at(id)->numSlaveNodes;
 }
+
+DLL_API void set_penalty_weight(double w)
+{
+	ds->setPenaltyWeight(w);
+}

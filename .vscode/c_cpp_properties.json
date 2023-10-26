@@ -1,35 +1,14 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**",
-                "${default}",
+                "../RODS/**",
                 "../glad/include",
                 "../glfw/include",
                 "../freetype/include",
                 "../armadillo/include",
-                "../glm",
-                "${workspaceFolder}/RODS",
-                "C:/Program Files (x86)/Intel/oneAPI/mkl/2023.1.0/include",
-                "/usr/local/include/freetype2",
-                "/usr/include/libpng16"
-            ],
-            "defines": [],
-            "compilerPath": "/usr/bin/clang-10",
-            "cStandard": "c17",
-            "cppStandard": "c++14",
-            "intelliSenseMode": "linux-clang-x64"
-        },
-        {
-            "name": "Win32",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "${default}",
-                "../glad/include",
-                "../glfw/include",
-                "../armadillo/include",
-                "${workspaceFolder}/RODS",
+                "../RODS/RODS",
                 "C:/Program Files (x86)/Intel/oneAPI/mkl/2023.1.0/include"
             ],
             "defines": [
@@ -38,10 +17,63 @@
                 "_UNICODE"
             ],
             "windowsSdkVersion": "10.0.22000.0",
-            "compilerPath": "cl.exe",
+            "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.36.32532/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c23",
+            "cppStandard": "c++23",
+            "intelliSenseMode": "windows-msvc-x64",
+            "compilerPathInCppPropertiesJson": "cl.exe",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "../RODS/**",
+                    "../glad/include",
+                    "../glfw/include",
+                    "../freetype/include",
+                    "../armadillo/include",
+                    "../RODS/RODS",
+                    "C:/Program Files (x86)/Intel/oneAPI/mkl/2023.1.0/include",
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "../RODS/**",
+                "../glad/include",
+                "../glfw/include",
+                "../freetype/include",
+                "../armadillo/include",
+                "../glm",
+                "../RODS/RODS",
+                "C:/Program Files (x86)/Intel/oneAPI/mkl/2023.1.0/include",
+                "/usr/local/include/freetype2",
+                "/usr/include/libpng16"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
             "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "windows-msvc-x64"
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64",
+            "compilerPathInCppPropertiesJson": "/usr/bin/clang-10",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "../RODS/**",
+                    "../glad/include",
+                    "../glfw/include",
+                    "../freetype/include",
+                    "../armadillo/include",
+                    "../glm",
+                    "../RODS/RODS",
+                    "C:/Program Files (x86)/Intel/oneAPI/mkl/2023.1.0/include",
+                    "/usr/local/include/freetype2",
+                    "/usr/include/libpng16",
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
         }
     ],
     "version": 4

@@ -1723,8 +1723,8 @@ void DynamicSystem::assembleConstraintMatrix()
 			}
 			vec w(constraintCount, fill::value(penaltyWeight));
 			mat W = diagmat(w);
-			AWA = A.t()*W*A.t();
-		}		
+			AWA = A.t()*W*A;
+		}
 	}
 }
 
@@ -1738,6 +1738,11 @@ void DynamicSystem::applyConstraint()
 			K = K + AWA;
 		}
 	}
+}
+
+void DynamicSystem::setPenaltyWeight(double w)
+{
+	penaltyWeight = w;
 }
 
 void DynamicSystem::setRayleighDamping(const double omg1, const double omg2)
