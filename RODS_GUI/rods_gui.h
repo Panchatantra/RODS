@@ -180,7 +180,6 @@ namespace RODS_GUI {
 
     void glDeleteAll();
 
-    void sdof_model();
     void initVars();
     void updateVars();
 

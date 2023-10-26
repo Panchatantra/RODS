@@ -872,6 +872,11 @@ public:
 
 	void addRigidDiagram(const int id, const int masterNodeId);
 	void addRigidDiagram(const int id, const int masterNodeId, int *slaveNodeIds, int numSlaveNodes);
+	void addSlaveNodeToRigidDiagram(const int id, const int slaveNodeId);
+	void setMasterNodeOfRigidDiagram(const int id, const int masterNodeId);
+
+	void assembleConstraintMatrix();
+	void applyConstraint();
 
 	/**
 	 * @brief      Sets the circular frequencies for Rayleigh damping.
@@ -1080,12 +1085,10 @@ public:
 	void exportModalMatrix(const char* fileName);
 	void exportModalMatrix();
 
-	/// The map from a DOF identifier to its equation number
-	std::map<int, int> dofMapEqn;
-	/// The map from a equation number to its DOF identifier
-	std::map<int, int> eqnMapDof;
-	/// The map from a DOF identifier to its master Node identifier
-	std::map<int, int> dofMapNode;
+	std::map<int, int> dofMapEqn;	///< The map from a DOF identifier to its equation number
+	std::map<int, int> eqnMapDof;	///< The map from a equation number to its DOF identifier
+	std::map<int, int> dofMapNode;	///< The map from a DOF identifier to its master Node identifier
+	std::map<int, int> dofMapConsEqn;	///< The map from a DOF identifier to its master Node identifier
 
 	std::map<int, Node *> Nodes; 			///< Nodes
 	std::map<int, Point *> Points; 			///< Points
@@ -1105,23 +1108,15 @@ public:
 	std::map<int, DOF*> DOFRYs; 			///< DOFs
 	std::map<int, DOF*> DOFRZs; 			///< DOFs
 
-	/// The elements for assembling #Mp
-	std::map<int, Element *> physicalMassElements;
-	/// The elements for assembling #M other than #Mp
-	std::map<int, Element *> inertialMassElements;
-	/// The elements for assembling #K0 and #K
-	std::map<int, Element *> linearElasticElements;
-	/// The elements for assembling #C
-	std::map<int, Element *> linearDampingElements;
-	/// The elements for assembling #q only
-	std::map<int, Element *> nonlinearElements;
-	/// The elements for assembling #q and #K
-	std::map<int, Element *> nonlinearTangentElements;
-	/// The elements for assembling #q and #K0
-	std::map<int, Element *> nonlinearSecantElements;
-	/// The elements for assembling #q, #K0 and #K
-	std::map<int, Element *> nonlinearInitialTangentElements;
-
+	std::map<int, Element *> physicalMassElements;	///< The elements for assembling #Mp	
+	std::map<int, Element *> inertialMassElements;	///< The elements for assembling #M other than #Mp	
+	std::map<int, Element *> linearElasticElements;	///< The elements for assembling #K0 and #K	
+	std::map<int, Element *> linearDampingElements;	///< The elements for assembling #C	
+	std::map<int, Element *> nonlinearElements;	///< The elements for assembling #q only	
+	std::map<int, Element *> nonlinearTangentElements;	///< The elements for assembling #q and #K	
+	std::map<int, Element *> nonlinearSecantElements;	///< The elements for assembling #q and #K0	
+	std::map<int, Element *> nonlinearInitialTangentElements;	///< The elements for assembling #q, #K0 and #K
+	
 	std::map<int, Spring *> Springs; ///< Springs in the system
 	std::map<int, SpringBilinear *> SpringBilinears; ///< SpringBilinears in the system
 	std::map<int, SpringNonlinear *> SpringNonlinears; ///< SpringNonlinears in the system
@@ -1202,7 +1197,9 @@ public:
 
 	mat T;			///< The DOF transfer matrix;
 	mat A;			///< The DOF transfer matrix;
-	mat W;			///< The penalty weight matrix;
+	mat AWA;			///< The DOF transfer matrix;
+	double penaltyWeight;			///< The penalty weight;
+	int constraintCount;
 
 	string name;    ///< name of the model
 	string workDir;	///< the working directory
@@ -1237,7 +1234,7 @@ public:
 	int dispControlLoadId;		///< The identifier of load pattern for displacement control DOF
 	int dispControlEqn;			///< The equation number of displacement control DOF
 
-	double tol;  ///< The tolerance for convergence check
+	double tol;  	///< The tolerance for convergence check
 	size_t maxIter; ///< The maximum iterations before converged
 
 	string gmshFileName;

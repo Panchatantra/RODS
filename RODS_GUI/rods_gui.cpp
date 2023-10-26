@@ -4255,40 +4255,6 @@ void RODS_GUI::glDeleteAll()
     glDeleteProgram(shaderProgram);
 }
 
-void RODS_GUI::sdof_model()
-{
-    set_name("SDOF");
-    set_work_dir("D:/Develop/RODS/RODS/x64/Release");
-
-    set_damping_ratio(0.02);
-    set_rayleigh_damping(10.0, 20.0);
-
-    add_dof_x(1, 1.0);
-    num_dof = add_dof_x(2, 1.0);
-    fix_dof(1);
-
-    add_spring(1,1,2,100.0);
-    add_dashpot(2,1,2,0.4);
-
-    num_ele = get_num_ele();
-
-    assemble_matrix();
-
-    record_all_dof_response(1);
-    record_all_ele_response(1);
-
-    char rfn[C_STR_LEN] = "D:/Develop/RODS/RODS/x64/Release/disp.txt";
-    num_dof_recorder = add_dof_recorder(2,0,rfn);
-    add_dof_to_recorder(2,2);
-
-    char wfn[C_STR_LEN] = "D:/Develop/RODS/RODS/x64/Release/EQ-S-1.txt";
-    num_wave = add_wave(1, 0.005, wfn);
-
-    set_dynamic_solver(0);
-    active_ground_motion(0,1,1.0);
-    solve_seismic_response();
-}
-
 void RODS_GUI::initVars()
 {
     num_dof = 0;

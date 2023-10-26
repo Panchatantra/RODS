@@ -5,9 +5,6 @@
 #include <vector>
 #include <map>
 
-#include "json.hpp"
-using json = nlohmann::json;
-
 using namespace std;
 
 #include <armadillo>
@@ -42,7 +39,7 @@ public:
 	void setMasterNode(Node *node);
 
 	/**
-	 * @brief      Adds a Node.
+	 * @brief      Adds a slave Node.
 	 *
 	 * @param      node  The Node
 	 */
@@ -50,13 +47,29 @@ public:
 
 	void addSlaveNode(vector<Node *> nodes);
 
+	void removeSlaveNode(const int id);
+
+	void setSlaveNodeConsEqn(int &eqn);
+
 	void assembleConstraintMatrix(mat &A);
 
 	int masterNodeId;
 	Node *masterNode;
 	int numSlaveNodes;
 	map<int, Node *> slaveNodes;
+	vector<int> slaveNodeIds;
 
 	mat::fixed<3, 6> A_i;
 
+	friend void to_json(json& jsonObj, const RigidDiagram& RigidDiagramObj) {
+		jsonObj["id"] = RigidDiagramObj.id;
+		jsonObj["masterNodeId"] = RigidDiagramObj.masterNodeId;
+		jsonObj["slaveNodeIds"] = RigidDiagramObj.slaveNodeIds;
+	}
+
+	friend void from_json(const json& jsonObj, RigidDiagram& RigidDiagramObj) {
+		jsonObj.at("id").get_to(RigidDiagramObj.id);
+		jsonObj.at("masterNodeId").get_to(RigidDiagramObj.masterNodeId);
+		jsonObj.at("slaveNodeIds").get_to(RigidDiagramObj.slaveNodeIds);
+	};
 };

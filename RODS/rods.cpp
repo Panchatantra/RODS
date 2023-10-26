@@ -1286,3 +1286,21 @@ DLL_API void get_mat1d_eps_sig(const int id, double* strain, double* stress, int
 		stress[i] = mat1d->sigma;
 	}
 }
+
+DLL_API size_t add_rigid_diagram(const int id, const int masterNodeId)
+{
+    ds->addRigidDiagram(id, masterNodeId);
+	return ds->RigidDiagrams.size();
+}
+
+DLL_API size_t add_rigid_diagram_with_slave_nodes(const int id, const int masterNodeId, int *slaveNodeIds, int numSlaveNodes)
+{
+    ds->addRigidDiagram(id, masterNodeId, slaveNodeIds, numSlaveNodes);
+	return ds->RigidDiagrams.size();
+}
+
+DLL_API size_t add_slave_node_to_rigid_diagram(const int id, const int slaveNodeId)
+{
+    ds->addSlaveNodeToRigidDiagram(id, slaveNodeId);
+	return ds->RigidDiagrams.at(id)->numSlaveNodes;
+}

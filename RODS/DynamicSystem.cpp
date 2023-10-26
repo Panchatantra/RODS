@@ -26,6 +26,7 @@ DynamicSystem::DynamicSystem(const double z) :
 	dispControlDOFId(-1), dispControlLoadId(-1), dispControlEqn(-1),
 	tol(1e-6), maxIter(20),
 	exportGmshInterval(-1),
+	penaltyWeight(1.0e12), constraintCount(0),
 	xMax(0.0), xMin(0.0), yMax(0.0), yMin(0.0), zMax(0.0), zMin(0.0)
 {
 }
@@ -1689,6 +1690,49 @@ void DynamicSystem::addRigidDiagram(const int id, const int masterNodeId, int *s
 	RigidDiagrams[rd->id] = rd;
 }
 
+void DynamicSystem::addSlaveNodeToRigidDiagram(const int id, const int slaveNodeId)
+{
+	auto rd = RigidDiagrams.at(id);
+	auto slaveNode = Nodes.at(slaveNodeId);
+	rd->addSlaveNode(slaveNode);
+}
+
+void DynamicSystem::setMasterNodeOfRigidDiagram(const int id, const int masterNodeId)
+{
+	auto rd = RigidDiagrams.at(id);
+	auto masterNode = Nodes.at(masterNodeId);
+	rd->setMasterNode(masterNode);
+}
+
+void DynamicSystem::assembleConstraintMatrix()
+{
+	if (RigidDiagrams.size() > 0)
+	{
+		constraintCount = 0;
+		for (auto &rigidDiagramPair : RigidDiagrams)
+		{
+			rigidDiagramPair.second->setSlaveNodeConsEqn(constraintCount);
+		}
+		A = zeros<mat>(constraintCount, eqnCount);
+		for (auto &rigidDiagramPair : RigidDiagrams)
+		{
+			rigidDiagramPair.second->assembleConstraintMatrix(A);
+		}
+		vec w(constraintCount, fill::value(penaltyWeight));
+		mat W = diagmat(w);
+		AWA = A.t()*W*A.t();
+	}
+}
+
+void DynamicSystem::applyConstraint()
+{
+	if (RigidDiagrams.size() > 0)
+	{
+		K0 = K0 + AWA;
+		K = K + AWA;
+	}
+}
+
 void DynamicSystem::setRayleighDamping(const double omg1, const double omg2)
 {
 	useRayleighDamping = true;
@@ -1757,13 +1801,12 @@ void DynamicSystem::activeGroundMotion(RODS::Direction dir, const int waveId, co
 
 void DynamicSystem::buildDofEqnMap()
 {
-	std::map<int, DOF *>::iterator it;
 	eqnCount = 0;
 	fixedDofCount = 0;
 	dofMapEqn.clear();
 	eqnMapDof.clear();
 
-	for (it = DOFs.begin(); it != DOFs.end(); it++)
+	for (auto it = DOFs.begin(); it != DOFs.end(); it++)
 	{
 		DOF *d = it->second;
 		if ((d->isFixed)) fixedDofCount += 1;
@@ -1790,6 +1833,9 @@ void DynamicSystem::assembleMatrix()
 	{
 		buildInherentDampingMatrix();
 	}
+
+	assembleConstraintMatrix();
+	applyConstraint();
 
 	applyLoad();
 
@@ -1998,6 +2044,11 @@ void DynamicSystem::reassembleStiffnessMatrix()
 	K.shed_cols(fixedIds);
 	K.shed_rows(fixedIds);
 
+	if (RigidDiagrams.size() > 0)
+	{
+		K = K + AWA;
+	}
+	
 	for (auto it = dofMapEqn.begin(); it != dofMapEqn.end(); ++it)
 	{
 		DOFs.at(it->first)->eqnId = it->second;
@@ -2053,6 +2104,7 @@ void DynamicSystem::buildRayleighDampingMatrix(const double omg1, const double o
 		double a0 = zeta * 2.0*omg1*omg2 / (omg1 + omg2);
 		double a1 = zeta * 2.0 / (omg1 + omg2);
 		C += a0 * Mp + a1 * K;
+		//To do: stiffness matrix exclude links
 	}
 }
 
@@ -2090,16 +2142,16 @@ void DynamicSystem::solveEigen()
 
 	eig_sym(K, M, omg, Phi);
 
-	//mat L = chol(M, "lower");
-	//mat L_i = L.i();
-	//mat A = L_i*K*L_i.t();
+	// mat L = chol(M, "lower");
+	// mat L_i = L.i();
+	// mat A = L_i*K*L_i.t();
 
-	//vec omg_;
-	//mat Phi_;
-	//
-	//eig_sym(omg_, Phi_, A);
-	//omg = sqrt(omg_);
-	//Phi = solve(L.t(), Phi_);
+	// vec omg_;
+	// mat Phi_;
+	
+	// eig_sym(omg_, Phi_, A);
+	// omg = sqrt(omg_);
+	// Phi = solve(L.t(), Phi_);
 
 	eigenVectorNormed = true;
 

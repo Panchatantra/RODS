@@ -13,6 +13,15 @@
 
 #include "macro.h"
 
+enum direction {
+	X, 		///< Direction X
+	Y, 		///< Direction Y
+	Z, 		///< Direction Z
+	RX, 	///< Direction RX
+	RY, 	///< Direction RY
+	RZ 		///< Direction RZ
+};
+
 extern "C" {
 
 	DLL_API void clear();
@@ -281,4 +290,8 @@ extern "C" {
 					);
 
 	DLL_API void get_mat1d_eps_sig(const int id, double *strain, double *stress, int &n);
+
+	DLL_API size_t add_rigid_diagram(const int id, const int masterNodeId);
+	DLL_API size_t add_rigid_diagram_with_slave_nodes(const int id, const int masterNodeId, int *slaveNodeIds, int numSlaveNodes);
+	DLL_API size_t add_slave_node_to_rigid_diagram(const int id, const int slaveNodeId);
 }

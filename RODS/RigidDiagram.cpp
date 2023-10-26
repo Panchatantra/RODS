@@ -36,6 +36,7 @@ void RigidDiagram::addSlaveNode(Node *node)
 	if (slaveNodes.count(node->id) == 0)
 	{
 		slaveNodes[node->id] = node;
+		slaveNodeIds.push_back(node->id);
 	}
 	numSlaveNodes = slaveNodes.size();
 }
@@ -45,6 +46,25 @@ void RigidDiagram::addSlaveNode(vector<Node *> nodes)
 	for (auto &node : nodes)
 	{
 		addSlaveNode(node);
+	}
+}
+
+void RigidDiagram::removeSlaveNode(const int id)
+{
+	slaveNodes.erase(id);
+	auto it = std::find(slaveNodeIds.begin(), slaveNodeIds.end(), id);
+	if (it != slaveNodeIds.end())
+		slaveNodeIds.erase(it);
+	numSlaveNodes = slaveNodes.size();
+}
+
+void RigidDiagram::setSlaveNodeConsEqn(int &eqn)
+{
+	for (auto &node_pair : slaveNodes)
+	{
+		node_pair.second->dofX->consEqnId = eqn++;
+		node_pair.second->dofY->consEqnId = eqn++;
+		node_pair.second->dofRZ->consEqnId = eqn++;
 	}
 }
 
