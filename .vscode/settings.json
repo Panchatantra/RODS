@@ -92,5 +92,6 @@
         "valarray": "cpp",
         "glad.h": "c",
         "armadillo": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": false
 }

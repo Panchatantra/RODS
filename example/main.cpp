@@ -348,11 +348,22 @@ void example_frame3d_rods()
 			add_frame_elastic_3d(i + 1, ni, nj, EA_b, EI_by, EI_bz, GIp_b);
 		}
 	}
+
+	int masterNodeId = 17;
+	int numSlaveNodes = 8;
+	int slaveNodes[8] = {4,5,6,16,18,28,29,30};
+	add_rigid_diagram_with_slave_nodes(1, masterNodeId, slaveNodes, numSlaveNodes);
+
+	assemble_matrix();
+	solve_eigen();
+
+	print_info();
 }
 
 int main()
 {
-	example_truss_rods();
+	// example_truss_rods();
 	// example_wall_RODS();
+	example_frame3d_rods();
 	return 0;
 }

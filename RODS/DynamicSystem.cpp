@@ -1713,14 +1713,18 @@ void DynamicSystem::assembleConstraintMatrix()
 		{
 			rigidDiagramPair.second->setSlaveNodeConsEqn(constraintCount);
 		}
-		A = zeros<mat>(constraintCount, eqnCount);
-		for (auto &rigidDiagramPair : RigidDiagrams)
+
+		if (constraintCount > 0)
 		{
-			rigidDiagramPair.second->assembleConstraintMatrix(A);
-		}
-		vec w(constraintCount, fill::value(penaltyWeight));
-		mat W = diagmat(w);
-		AWA = A.t()*W*A.t();
+			A = zeros<mat>(constraintCount, eqnCount);
+			for (auto &rigidDiagramPair : RigidDiagrams)
+			{
+				rigidDiagramPair.second->assembleConstraintMatrix(A);
+			}
+			vec w(constraintCount, fill::value(penaltyWeight));
+			mat W = diagmat(w);
+			AWA = A.t()*W*A.t();
+		}		
 	}
 }
 
@@ -1728,8 +1732,11 @@ void DynamicSystem::applyConstraint()
 {
 	if (RigidDiagrams.size() > 0)
 	{
-		K0 = K0 + AWA;
-		K = K + AWA;
+		if (constraintCount > 0)
+		{
+			K0 = K0 + AWA;
+			K = K + AWA;
+		}
 	}
 }
 
