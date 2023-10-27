@@ -872,7 +872,8 @@ public:
 
 	void addRigidDiagram(const int id, const int masterNodeId);
 	void addRigidDiagram(const int id, const int masterNodeId, int *slaveNodeIds, int numSlaveNodes);
-	void addSlaveNodeToRigidDiagram(const int id, const int slaveNodeId);
+	void addSlaveNodeToRigidDiagram(const int slaveNodeId, const int rigidDiagramId);
+	void addSlaveNodesToRigidDiagram(vector<int> slaveNodeIds, const int rigidDiagramId);
 	void setMasterNodeOfRigidDiagram(const int id, const int masterNodeId);
 
 	void assembleConstraintMatrix();
@@ -1067,7 +1068,7 @@ public:
 	/**
 	 * @brief      Prints the basic information of the system.
 	 */
-	void printInfo();
+	void printInfo(const int max_order=12);
 
 	void setCurrentTime(double ctime);
 	void setName(const char * name);
@@ -1280,6 +1281,7 @@ public:
 		zMax,
 		xMin,
 		yMin,
-		zMin
+		zMin,
+		penaltyWeight
 		);
 };

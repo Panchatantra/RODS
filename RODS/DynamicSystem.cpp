@@ -125,6 +125,15 @@ void DynamicSystem::loadFromJSON(const char *fileName)
 			addElementToRecorder(*it, ElementRecorderObj.id);
 		}
 	}
+
+	auto j_array_RigidDiagram = model.at("RigidDiagramVec");
+	RigidDiagram RigidDiagramObj;
+	for (auto i = 0; i < model.at("RigidDiagramCount"); i++)
+	{
+		j_array_RigidDiagram[i].get_to(RigidDiagramObj);
+		addRigidDiagram(RigidDiagramObj.id, RigidDiagramObj.masterNodeId);
+		addSlaveNodesToRigidDiagram(RigidDiagramObj.slaveNodeIds, RigidDiagramObj.id);
+	}
 }
 
 void DynamicSystem::saveToJSON(const char *fileName)
@@ -167,6 +176,7 @@ void DynamicSystem::saveToJSON(const char *fileName)
 	ELEMENTS_TO_JSON(Wave)
 	ELEMENTS_TO_JSON(DOFRecorder)
 	ELEMENTS_TO_JSON(ElementRecorder)
+	ELEMENTS_TO_JSON(RigidDiagram)
 
 	std::ofstream ofs(fileName);
 	ofs << std::setw(4) << model;
@@ -1690,11 +1700,19 @@ void DynamicSystem::addRigidDiagram(const int id, const int masterNodeId, int *s
 	RigidDiagrams[rd->id] = rd;
 }
 
-void DynamicSystem::addSlaveNodeToRigidDiagram(const int id, const int slaveNodeId)
+void DynamicSystem::addSlaveNodeToRigidDiagram(const int slaveNodeId, const int rigidDiagramId)
 {
-	auto rd = RigidDiagrams.at(id);
+	auto rd = RigidDiagrams.at(rigidDiagramId);
 	auto slaveNode = Nodes.at(slaveNodeId);
 	rd->addSlaveNode(slaveNode);
+}
+
+void DynamicSystem::addSlaveNodesToRigidDiagram(vector<int> slaveNodeIds, const int rigidDiagramId)
+{
+	for (auto &slaveNodeId : slaveNodeIds)
+	{
+		addSlaveNodeToRigidDiagram(slaveNodeId, rigidDiagramId);
+	}
 }
 
 void DynamicSystem::setMasterNodeOfRigidDiagram(const int id, const int masterNodeId)
@@ -1722,6 +1740,13 @@ void DynamicSystem::assembleConstraintMatrix()
 				rigidDiagramPair.second->assembleConstraintMatrix(A);
 			}
 			vec w(constraintCount, fill::value(penaltyWeight));
+			for (int i = 0; i < constraintCount; i++)
+			{
+				if (i%3 == 2)
+				{
+					w(i) *= 3000;
+				}
+			}
 			mat W = diagmat(w);
 			AWA = A.t()*W*A;
 		}
@@ -3580,7 +3605,7 @@ void DynamicSystem::saveResponse()
 	}
 }
 
-void DynamicSystem::printInfo()
+void DynamicSystem::printInfo(const int max_order)
 {
 	cout << "=================================================" << endl;
 	cout << "            RRRR    OOO   DDD    SSS             " << endl;
@@ -3598,10 +3623,11 @@ void DynamicSystem::printInfo()
 	cout << "Number of Equations: " << eqnCount << endl;
 
 	int nModes = (int)P.n_rows;
+	int np = min(nModes, max_order);
 	if (nModes > 0)
 	{
-		cout << "Number of Modes:" << nModes << endl;
-		for (int i = 0; i < nModes; i++)
+		cout << "Number of Modes:" << np << endl;
+		for (int i = 0; i < np; i++)
 		{
 			cout << "Mode " << i + 1 << ", T = " << P(i) << endl;
 		}

@@ -348,17 +348,28 @@ void example_frame3d_rods()
 		}
 	}
 
-	int masterNodeId = 17;
-	int numSlaveNodes = 8;
-	int slaveNodes[8] = {4,5,6,16,18,28,29,30};
-	add_rigid_diagram_with_slave_nodes(1, masterNodeId, slaveNodes, numSlaveNodes);
+	int masterNodeId_1 = 17;
+	int numSlaveNodes_1 = 8;
+	int slaveNodes_1[8] = {4,5,6,16,18,28,29,30};
+	add_rigid_diagram_with_slave_nodes(1, masterNodeId_1, slaveNodes_1, numSlaveNodes_1);
 
-	set_penalty_weight(1.0e7);
+	int masterNodeId_2 = 20;
+	int numSlaveNodes_2 = 8;
+	int slaveNodes_2[8] = {7,8,9,19,21,31,32,33};
+	add_rigid_diagram_with_slave_nodes(2, masterNodeId_2, slaveNodes_2, numSlaveNodes_2);
+
+	int masterNodeId_3 = 23;
+	int numSlaveNodes_3 = 8;
+	int slaveNodes_3[8] = {10,11,12,22,24,34,35,36};
+	add_rigid_diagram_with_slave_nodes(3, masterNodeId_3, slaveNodes_3, numSlaveNodes_3);
+
+	set_penalty_weight(1.0e3);
 
 	assemble_matrix();
 	solve_eigen();
 
 	print_info();
+	save_to_json("frame3d.json");
 }
 
 int main()

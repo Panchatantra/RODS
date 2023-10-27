@@ -89,9 +89,9 @@ DLL_API size_t solve_seismic_response(const int nsub) {
 	return ds->cstep;
 }
 
-DLL_API void print_info()
+DLL_API void print_info(const int num_modes)
 {
-	ds->printInfo();
+	ds->printInfo(num_modes);
 }
 
 DLL_API void export_gmsh(char* fileName)
@@ -1299,10 +1299,10 @@ DLL_API size_t add_rigid_diagram_with_slave_nodes(const int id, const int master
 	return ds->RigidDiagrams.size();
 }
 
-DLL_API size_t add_slave_node_to_rigid_diagram(const int id, const int slaveNodeId)
+DLL_API size_t add_slave_node_to_rigid_diagram(const int slaveNodeId, const int rigidDiagramId)
 {
-    ds->addSlaveNodeToRigidDiagram(id, slaveNodeId);
-	return ds->RigidDiagrams.at(id)->numSlaveNodes;
+    ds->addSlaveNodeToRigidDiagram(slaveNodeId, rigidDiagramId);
+	return ds->RigidDiagrams.at(rigidDiagramId)->numSlaveNodes;
 }
 
 DLL_API void set_penalty_weight(double w)

@@ -11,8 +11,8 @@ using namespace std;
 using namespace arma;
 
 /**
- * @brief      The Degree-Of-Freedom.
- * @details    DOF is the basic unit for analysis in RODS.
+ * @brief      The RigidDiagram Class.
+ * @details    
  */
 class RigidDiagram : public Constraint
 {
@@ -32,16 +32,16 @@ public:
 	~RigidDiagram();
 
 	/**
-	 * @brief      Adds a Node.
+	 * @brief      Set the master Node.
 	 *
-	 * @param      node  The Node
+	 * @param      node  The ptr to the master Node.
 	 */
 	void setMasterNode(Node *node);
 
 	/**
-	 * @brief      Adds a slave Node.
+	 * @brief      Add a slave Node.
 	 *
-	 * @param      node  The Node
+	 * @param      node  The ptr to the slave Node.
 	 */
 	void addSlaveNode(Node *node);
 
