@@ -20,6 +20,7 @@ static bool show_material_window = false;
 static bool show_element1d_window = false;
 static bool show_element2d_window = false;
 static bool show_element3d_window = false;
+static bool show_rigid_diagram_window = false;
 static bool show_assemble_matrix_window = false;
 static bool show_solve_eigen_window = false;
 static bool show_solve_seismic_window = false;
@@ -129,6 +130,7 @@ namespace RODS_GUI {
     void element2dWindow();
     void element3dWindow();
     void nodeWindow();
+    void rigidDiagramWindow();
     void assembleMatrixWindow();
     void solveEigenWindow();
     void recorderWindow();

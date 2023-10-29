@@ -1740,13 +1740,6 @@ void DynamicSystem::assembleConstraintMatrix()
 				rigidDiagramPair.second->assembleConstraintMatrix(A);
 			}
 			vec w(constraintCount, fill::value(penaltyWeight));
-			for (int i = 0; i < constraintCount; i++)
-			{
-				if (i%3 == 2)
-				{
-					w(i) *= 3000;
-				}
-			}
 			mat W = diagmat(w);
 			AWA = A.t()*W*A;
 		}

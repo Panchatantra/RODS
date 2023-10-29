@@ -2438,7 +2438,7 @@
     "maxIter": 20,
     "name": "RODS",
     "nsteps": 0,
-    "penaltyWeight": 1000.0,
+    "penaltyWeight": 10000.0,
     "tol": 1e-06,
     "useRayleighDamping": true,
     "workDir": ".",

@@ -656,6 +656,13 @@ void RODS_GUI::menuWindow(GLFWwindow *window)
             if (ImGui::MenuItem("Material"))
                 show_material_window = true;
 
+            if (ImGui::BeginMenu("Constraint"))
+            {
+                if (ImGui::MenuItem("Rigid Diagram"))
+                    show_rigid_diagram_window = true;
+                ImGui::EndMenu();
+            }
+
             ImGui::EndMenu();
         }
 
@@ -2155,6 +2162,22 @@ void RODS_GUI::nodeWindow()
 
         if (ImGui::Button("Close"))
             show_node_window = false;
+
+        ImGui::End();
+    }
+}
+
+void RODS_GUI::rigidDiagramWindow()
+{
+    if (show_rigid_diagram_window)
+    {
+        ImGui::Begin("Rigid Diagram", &show_rigid_diagram_window);
+
+        static int rigid_diagram_id = 1;
+        ImGui::InputInt("Rigid Diagram ID", &rigid_diagram_id);
+
+        if (ImGui::Button("Close"))
+            show_rigid_diagram_window = false;
 
         ImGui::End();
     }

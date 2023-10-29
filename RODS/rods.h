@@ -120,7 +120,7 @@ extern "C" {
 	DLL_API size_t add_ele_to_recorder(const int eleId, const int rId);
 	DLL_API void set_dynamic_solver(const int s);
 	DLL_API size_t solve_seismic_response(const int nsub = 1);
-	DLL_API void print_info(const int num_modes = 12);
+	DLL_API void print_info(const int num_modes);
 	DLL_API void export_gmsh(char * fileName);
 	DLL_API void export_modal_gmsh(char * fileName, const int order);
 	DLL_API void set_response_gmsh(char * fileName, const int interval);

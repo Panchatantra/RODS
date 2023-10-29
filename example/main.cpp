@@ -363,12 +363,12 @@ void example_frame3d_rods()
 	int slaveNodes_3[8] = {10,11,12,22,24,34,35,36};
 	add_rigid_diagram_with_slave_nodes(3, masterNodeId_3, slaveNodes_3, numSlaveNodes_3);
 
-	set_penalty_weight(1.0e3);
+	set_penalty_weight(1.0e4);
 
 	assemble_matrix();
 	solve_eigen();
 
-	print_info();
+	print_info(20);
 	save_to_json("frame3d.json");
 }
 

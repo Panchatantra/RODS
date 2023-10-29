@@ -180,6 +180,7 @@ int main(int, char**)
         RODS_GUI::element2dWindow();
         RODS_GUI::element3dWindow();
         RODS_GUI::nodeWindow();
+        RODS_GUI::rigidDiagramWindow();
 
         RODS_GUI::materialWindow();
         RODS_GUI::waveWindow();
