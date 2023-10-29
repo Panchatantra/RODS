@@ -368,7 +368,7 @@ void example_frame3d_rods()
 	assemble_matrix();
 	solve_eigen();
 
-	print_info(20);
+	print_info(30);
 	save_to_json("frame3d.json");
 }
 
