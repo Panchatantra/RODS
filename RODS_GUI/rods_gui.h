@@ -70,6 +70,7 @@ static int num_eqn = 0;
 static int num_wave = 0;
 static int num_dof_recorder = 0;
 static int num_ele_recorder = 0;
+static int num_rigid_diagram = 0;
 
 static int num_node = 0;
 static int num_mat = 0;

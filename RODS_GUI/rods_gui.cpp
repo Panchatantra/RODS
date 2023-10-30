@@ -2173,8 +2173,36 @@ void RODS_GUI::rigidDiagramWindow()
     {
         ImGui::Begin("Rigid Diagram", &show_rigid_diagram_window);
 
+        static double penalty_weight = 1e4;
+        ImGui::InputDouble("Penalty Weight", &penalty_weight);
+        if (ImGui::Button("Set Penalty Weight"))
+        {
+            set_penalty_weight(penalty_weight);
+        }
+
         static int rigid_diagram_id = 1;
-        ImGui::InputInt("Rigid Diagram ID", &rigid_diagram_id);
+        ImGui::InputInt("ID", &rigid_diagram_id);
+
+        static int node_index = 0;
+        static int master_node_id = 0;
+        if (ImGui::Button("Select Master Node"))
+            ImGui::OpenPopup("Master Node");
+
+        if (ImGui::BeginPopup("Master Node"))
+        {
+            genNodeList();
+            ImGui::Combo("Master Node", &node_index, nodes_str.c_str());
+            master_node_id = nodes[node_index];
+            ImGui::EndPopup();
+        }
+
+        ImGui::SameLine();
+        ImGui::Text("Selected Node: %d", master_node_id);
+
+        if (ImGui::Button("Add Rigid Diagram"))
+        {
+            num_rigid_diagram = add_rigid_diagram(rigid_diagram_id++, master_node_id);
+        }
 
         if (ImGui::Button("Close"))
             show_rigid_diagram_window = false;

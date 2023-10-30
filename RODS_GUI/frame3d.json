@@ -1,7 +1,10 @@
 {
     "DOFCount": 216,
+    "penaltyWeight": 1.0e4,
     "DOFRecorderCount": 0,
     "DOFRecorderVec": [],
+    "RigidDiagramCount": 0,
+    "RigidDiagramVec": [],
     "DOFVec": [
         {
             "dir": 0,
