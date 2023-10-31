@@ -200,7 +200,7 @@ int main(int, char**)
         RODS_GUI::timeHistoryPlotWindow();
         RODS_GUI::drawModeWindow(window);
 
-        // ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
 
         // Rendering
         ImGui::Render();

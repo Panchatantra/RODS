@@ -2199,6 +2199,41 @@ void RODS_GUI::rigidDiagramWindow()
         ImGui::SameLine();
         ImGui::Text("Selected Node: %d", master_node_id);
 
+        // std::vector<bool> selected(num_node);
+
+        bool *selected = new bool[num_node];
+
+        if (ImGui::Button("Select Slave Nodes"))
+            ImGui::OpenPopup("Slave Nodes");
+        
+        if (ImGui::BeginPopup("Slave Nodes"))
+        {
+            genNodeList();
+            for (int i = 0; i < num_node; i++)
+            {
+                if ((i+1)%10 != 0)
+                {
+                    ImGui::SameLine();
+                }
+                // ImGui::PushID(i);
+                auto label = std::to_string(nodes[i]).c_str();
+                if (ImGui::Selectable(label, selected[i], ImGuiSelectableFlags_DontClosePopups, ImVec2(50, 50)))
+                {
+                    if (!ImGui::GetIO().KeyCtrl)    // Clear selection when CTRL is not held
+                        memset(selected, 0, sizeof(selected));
+                    selected[i] ^= 1;
+                }
+                // ImGui::PopID();
+            }
+            if (ImGui::Button("Confirm"))
+            {
+                
+            }
+            
+            ImGui::EndPopup();
+        }
+
+
         if (ImGui::Button("Add Rigid Diagram"))
         {
             num_rigid_diagram = add_rigid_diagram(rigid_diagram_id++, master_node_id);
