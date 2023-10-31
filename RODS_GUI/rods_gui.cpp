@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <ctime>
 
+#ifdef _MSC_VER
+#pragma warning (disable: 4996)     // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen
+#endif
+
 #include "imgui.h"
 #include "implot.h"
 #include "ImGuiFileDialog.h"
@@ -2199,13 +2203,12 @@ void RODS_GUI::rigidDiagramWindow()
         ImGui::SameLine();
         ImGui::Text("Selected Node: %d", master_node_id);
 
-        // std::vector<bool> selected(num_node);
-
-        bool *selected = new bool[num_node];
+        static std::vector<bool> selected(num_node);
+        static std::vector<int> slave_node_ids;
 
         if (ImGui::Button("Select Slave Nodes"))
             ImGui::OpenPopup("Slave Nodes");
-        
+
         if (ImGui::BeginPopup("Slave Nodes"))
         {
             genNodeList();
@@ -2215,28 +2218,53 @@ void RODS_GUI::rigidDiagramWindow()
                 {
                     ImGui::SameLine();
                 }
-                // ImGui::PushID(i);
-                auto label = std::to_string(nodes[i]).c_str();
-                if (ImGui::Selectable(label, selected[i], ImGuiSelectableFlags_DontClosePopups, ImVec2(50, 50)))
+                char buf[32];
+                sprintf(buf, "%d", nodes[i]);
+                if (ImGui::Selectable(buf, selected[i], ImGuiSelectableFlags_DontClosePopups, ImVec2(50, 50)))
                 {
                     if (!ImGui::GetIO().KeyCtrl)    // Clear selection when CTRL is not held
-                        memset(selected, 0, sizeof(selected));
-                    selected[i] ^= 1;
+                        // memset(selected, 0, sizeof(selected));
+                        selected.assign(num_node, false);
+                    selected[i] = selected[i]^true;
                 }
-                // ImGui::PopID();
             }
             if (ImGui::Button("Confirm"))
             {
-                
+                slave_node_ids.clear();
+                for (int i = 0; i < num_node; i++)
+                {
+                    if (selected[i])
+                    {
+                        slave_node_ids.push_back(nodes[i]);
+                    }
+                }
+                ImGui::CloseCurrentPopup();
             }
-            
             ImGui::EndPopup();
         }
 
+        ImGui::SameLine();
+        std::string selected_nodes_str = "";
+        for (auto &node_id : slave_node_ids)
+        {
+            selected_nodes_str.append(std::to_string(node_id));
+            selected_nodes_str.push_back(',');
+            selected_nodes_str.push_back(' ');
+        }
+        ImGui::Text("Selected Nodes: %s", selected_nodes_str.c_str());
 
         if (ImGui::Button("Add Rigid Diagram"))
         {
-            num_rigid_diagram = add_rigid_diagram(rigid_diagram_id++, master_node_id);
+            if (slave_node_ids.size() > 0)
+            {
+                num_rigid_diagram = add_rigid_diagram_with_slave_nodes(
+                                        rigid_diagram_id++, master_node_id,
+                                        slave_node_ids.data(), slave_node_ids.size());
+            }
+            else
+            {
+                num_rigid_diagram = add_rigid_diagram(rigid_diagram_id++, master_node_id);
+            }
         }
 
         if (ImGui::Button("Close"))
