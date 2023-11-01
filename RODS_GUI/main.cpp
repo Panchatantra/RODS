@@ -141,15 +141,17 @@ int main(int, char**)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    RODS_GUI::readConfig();
+
     RODS_GUI::createShader();
     RODS_GUI::createTextShader();
     RODS_GUI::buildVertex();
     RODS_GUI::buildTextVertex();
-    // RODS_GUI::updateProjectionMatrix(window);
-    // RODS_GUI::updateViewMatrix(glm::vec3(0.0f, -1.0f, 0.0f));
-    // RODS_GUI::updateModelMatrix();
-    RODS_GUI::setCamera(window);
-    RODS_GUI::readConfig();
+    RODS_GUI::updateProjectionMatrix(window);
+    RODS_GUI::updateViewMatrix(glm::vec3(-0.5f, -1.0f, 0.5f));
+    RODS_GUI::updateModelMatrix();
+    RODS_GUI::setTextProjectionMatrix();
+    // RODS_GUI::setCamera(window);
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -207,16 +209,16 @@ int main(int, char**)
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
-        // glClear(GL_DEPTH_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT);
 
-        // glEnable(GL_DEPTH_TEST);
-        // glDepthFunc(GL_LEQUAL);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
 
         //RODS_GUI::draw_geo();
         // RODS_GUI::draw_1d_s();
         // RODS_GUI::draw_2d();
         RODS_GUI::draw_3d();
-        // glDisable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);
         RODS_GUI::draw_text();
         RODS_GUI::drawNodeIds(window);
 

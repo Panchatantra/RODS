@@ -152,6 +152,7 @@ namespace RODS_GUI {
 
     void updateViewMatrix(glm::vec3 v);
     void updateProjectionMatrix(GLFWwindow* window);
+    void setTextProjectionMatrix();
     void updateModelMatrix();
     void draw_geo();
     void draw_1d_s();

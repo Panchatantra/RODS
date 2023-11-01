@@ -3632,6 +3632,13 @@ void RODS_GUI::updateProjectionMatrix(GLFWwindow *window)
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 }
 
+void RODS_GUI::setTextProjectionMatrix()
+{
+    glUseProgram(textShaderProgram);
+    glm::mat4 text_projection = glm::ortho(0.0f, static_cast<float>(buffer_width), 0.0f, static_cast<float>(buffer_height));
+    glUniformMatrix4fv(glGetUniformLocation(textShaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(text_projection));
+}
+
 void RODS_GUI::updateModelMatrix()
 {
     model = glm::mat4(1.0f);
