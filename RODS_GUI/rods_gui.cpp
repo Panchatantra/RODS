@@ -767,11 +767,7 @@ void RODS_GUI::dirWindow()
             if (ImGuiFileDialog::Instance()->IsOk())
             {
                 auto pathName = ImGuiFileDialog::Instance()->GetCurrentPath();
-#ifdef __GNUC__
                 strcpy(workDir, pathName.c_str());
-#else
-                strcpy_s(workDir, C_STR_LEN, pathName.c_str());
-#endif
             }
             ImGuiFileDialog::Instance()->Close();
         }
@@ -2288,13 +2284,8 @@ void RODS_GUI::assembleMatrixWindow()
             {
                 num_eqn = assemble_matrix();
                 assemble_time = time(0);
-#ifdef __GNUC__
                 auto ltm = localtime(&assemble_time);
-#else
-                tm local_time;
-                auto ltm = &local_time;
-                localtime_s(ltm, &assemble_time);
-#endif
+
                 assemble_time_str.clear();
                 assemble_time_str.append(std::to_string(ltm->tm_hour));
                 assemble_time_str.push_back(':');
@@ -2528,11 +2519,7 @@ void RODS_GUI::recorderWindow()
                     if (ImGuiFileDialog::Instance()->IsOk())
                     {
                         recorderFilePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-#ifdef __GNUC__
                         strcpy(_recorderFilePathName, recorderFilePathName.c_str());
-#else
-                        strcpy_s(_recorderFilePathName, C_STR_LEN, recorderFilePathName.c_str());
-#endif
                     }
                     ImGuiFileDialog::Instance()->Close();
                 }
@@ -2605,11 +2592,7 @@ void RODS_GUI::recorderWindow()
                     if (ImGuiFileDialog::Instance()->IsOk())
                     {
                         recorderFilePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-#ifdef __GNUC__
                         strcpy(_recorderFilePathName, recorderFilePathName.c_str());
-#else
-                        strcpy_s(_recorderFilePathName, C_STR_LEN, recorderFilePathName.c_str());
-#endif
                     }
                     ImGuiFileDialog::Instance()->Close();
                 }
