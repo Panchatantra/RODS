@@ -2202,28 +2202,28 @@ void RODS_GUI::rigidDiagramWindow()
         static std::vector<bool> selected(num_node);
         static std::vector<int> slave_node_ids;
 
-        if (ImGui::Button("Select Slave Nodes"))
+        if (ImGui::Button("Select Slave Nodes") && num_node > 1)
             ImGui::OpenPopup("Slave Nodes");
 
         if (ImGui::BeginPopup("Slave Nodes"))
         {
             genNodeList();
+            ImGui::TextDisabled("Press Ctrl Key and hold on for multi-selection.");
             for (int i = 0; i < num_node; i++)
             {
-                if ((i+1)%10 != 0)
-                {
-                    ImGui::SameLine();
-                }
                 char buf[32];
                 sprintf(buf, "%d", nodes[i]);
                 if (ImGui::Selectable(buf, selected[i], ImGuiSelectableFlags_DontClosePopups, ImVec2(50, 50)))
                 {
-                    if (!ImGui::GetIO().KeyCtrl)    // Clear selection when CTRL is not held
-                        // memset(selected, 0, sizeof(selected));
+                    if (!ImGui::GetIO().KeyCtrl)
                         selected.assign(num_node, false);
                     selected[i] = selected[i]^true;
                 }
+                ImGui::SameLine();
+                if ((i+1)%10 == 0)
+                    ImGui::NewLine();
             }
+            ImGui::NewLine();
             if (ImGui::Button("Confirm"))
             {
                 slave_node_ids.clear();
@@ -2240,12 +2240,20 @@ void RODS_GUI::rigidDiagramWindow()
         }
 
         ImGui::SameLine();
-        std::string selected_nodes_str = "";
+        std::string selected_nodes_str = "\n";
+        size_t i = 0;
+        auto num_slave_node_ids = slave_node_ids.size();
         for (auto &node_id : slave_node_ids)
         {
             selected_nodes_str.append(std::to_string(node_id));
-            selected_nodes_str.push_back(',');
-            selected_nodes_str.push_back(' ');
+            i++;
+            if (i < num_slave_node_ids)
+            {
+                selected_nodes_str.push_back(',');
+                selected_nodes_str.push_back(' ');
+                if (i%10 == 0)
+                    selected_nodes_str.push_back('\n');
+            }
         }
         ImGui::Text("Selected Nodes: %s", selected_nodes_str.c_str());
 
