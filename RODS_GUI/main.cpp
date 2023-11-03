@@ -61,6 +61,8 @@ int main(int, char**)
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
 
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
     // Create window with graphics context
     // auto monitor = glfwGetPrimaryMonitor();
     // const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -79,6 +81,8 @@ int main(int, char**)
     images[0].pixels = stbi_load("./resource/RODS.png", &images[0].width, &images[0].height, 0, 4);
     glfwSetWindowIcon(window, 1, images);
     stbi_image_free(images[0].pixels);
+
+    // glEnable(GL_MULTISAMPLE);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();

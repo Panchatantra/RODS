@@ -154,6 +154,8 @@ namespace RODS_GUI {
     void updateProjectionMatrix(GLFWwindow* window);
     void setTextProjectionMatrix();
     void updateModelMatrix();
+    void autoFitScreen();
+    void captureScreen(const char* filePath, GLFWwindow* window);
     void draw_geo();
     void draw_1d_s();
     void draw_2d();

@@ -12,6 +12,9 @@
 #include "rods_gui.h"
 #include "rods.h"
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 #include "json.hpp"
 using json = nlohmann::json;
 
@@ -446,6 +449,11 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
                                         ".json", work_dir.c_str(), "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
                 }
 
+                if (ImGui::MenuItem("Capture Screen")) {
+                    ImGuiFileDialog::Instance()->OpenDialog("Capture Screen", "Select File Path",
+                                        ".png", work_dir.c_str(), "", 1, nullptr, 0);
+                }
+
                 if (ImGui::MenuItem("Exit"))
                     glfwSetWindowShouldClose(window, true);
 
@@ -576,6 +584,16 @@ void RODS_GUI::mainMenu(GLFWwindow* window)
             }
             ImGuiFileDialog::Instance()->Close();
         }
+
+        if (ImGuiFileDialog::Instance()->Display("Capture Screen"))
+        {
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                auto filePath = ImGuiFileDialog::Instance()->GetFilePathName();
+                RODS_GUI::captureScreen(filePath.c_str(), window);
+            }
+            ImGuiFileDialog::Instance()->Close();
+        }
     }
 }
 
@@ -607,6 +625,11 @@ void RODS_GUI::menuWindow(GLFWwindow *window)
             if (ImGui::MenuItem("Save")) {
                 ImGuiFileDialog::Instance()->OpenDialog("Save Model", "Select File Path",
                                     ".json", work_dir.c_str(), "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
+            }
+
+            if (ImGui::MenuItem("Capture Screen")) {
+                    ImGuiFileDialog::Instance()->OpenDialog("Capture Screen", "Select File Path",
+                                        ".png", work_dir.c_str(), "", 1, nullptr, 0);
             }
 
             if (ImGui::MenuItem("Exit"))
@@ -733,6 +756,7 @@ void RODS_GUI::menuWindow(GLFWwindow *window)
                 auto fileName = ImGuiFileDialog::Instance()->GetFilePathName();
                 load_from_json(fileName.c_str());
                 updateVars();
+                RODS_GUI::autoFitScreen();
             }
             ImGuiFileDialog::Instance()->Close();
         }
@@ -744,6 +768,16 @@ void RODS_GUI::menuWindow(GLFWwindow *window)
                 auto fileName = ImGuiFileDialog::Instance()->GetFilePathName();
                 save_to_json(fileName.c_str());
                 // updateVars();
+            }
+            ImGuiFileDialog::Instance()->Close();
+        }
+
+        if (ImGuiFileDialog::Instance()->Display("Capture Screen"))
+        {
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                auto filePath = ImGuiFileDialog::Instance()->GetFilePathName();
+                RODS_GUI::captureScreen(filePath.c_str(), window);
             }
             ImGuiFileDialog::Instance()->Close();
         }
@@ -3435,7 +3469,7 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
         ImGui::RadioButton("2D", &draw_dim, 2); ImGui::SameLine();
         ImGui::RadioButton("3D", &draw_dim, 3);
 
-        static float v[3] = {0.0f, -1.0f, 0.0f};
+        static float v[3] = {-0.5f, -1.0f, 0.5f};
         ImGui::InputFloat3("Viewer Position", v);
 
         if (ImGui::Button("Update View Matrix"))
@@ -3539,10 +3573,6 @@ void RODS_GUI::drawModeWindow(GLFWwindow* window)
                     if (z > zmax) zmax = z;
                     else if (z < zmin) zmin = z;
                 }
-
-                // std::cout << "max: (" << xmax << ", " << ymax << ", "  << zmax << ")" << std::endl;
-                // std::cout << "min: (" << xmin << ", " << ymin << ", "  << zmin << ")" << std::endl;
-
 
                 double scale = fmin(1.8/(xmax - xmin), 1.8/(ymax - ymin));
 
@@ -3654,6 +3684,89 @@ void RODS_GUI::updateModelMatrix()
     model = glm::scale(model, scale_vec);
     glUseProgram(shaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
+}
+
+void RODS_GUI::autoFitScreen()
+{
+    double xmax, xmin;
+    double ymax, ymin;
+    double zmax, zmin;
+    get_coords_range(
+        xmax, xmin,
+        ymax, ymin,
+        zmax, zmin
+    );
+
+    double xpeak = fmax(xmax, -xmin);
+    double ypeak = fmax(ymax, -ymin);
+    double zpeak = fmax(zmax, -zmin);
+    double peak = fmax(fmax(xpeak, ypeak), zpeak);
+
+    xmax /= peak * 1.2; xmin /= peak * 1.2;
+    ymax /= peak * 1.2; ymin /= peak * 1.2;
+    zmax /= peak * 1.2; zmin /= peak * 1.2;
+
+    std::vector<glm::vec4> profile_points;
+
+    auto PVM = projection * view;
+
+    profile_points.push_back(PVM * glm::vec4( xmax, ymax, zmax, 1.0));
+    profile_points.push_back(PVM * glm::vec4( xmin, ymax, zmax, 1.0));
+    profile_points.push_back(PVM * glm::vec4( xmax, ymin, zmax, 1.0));
+    profile_points.push_back(PVM * glm::vec4( xmin, ymin, zmax, 1.0));
+    profile_points.push_back(PVM * glm::vec4( xmax, ymax, zmin, 1.0));
+    profile_points.push_back(PVM * glm::vec4( xmin, ymax, zmin, 1.0));
+    profile_points.push_back(PVM * glm::vec4( xmax, ymin, zmin, 1.0));
+    profile_points.push_back(PVM * glm::vec4( xmin, ymin, zmin, 1.0));
+
+    xmax = 0.0; xmin = 0.0;
+    ymax = 0.0; ymin = 0.0;
+    zmax = 0.0; zmin = 0.0;
+
+    double x, y, z;
+
+    for (auto &p : profile_points)
+    {
+        x = p.x/p.w;
+        if (x > xmax) xmax = x;
+        else if (x < xmin) xmin = x;
+
+        y = p.y/p.w;
+        if (y > ymax) ymax = y;
+        else if (y < ymin) ymin = y;
+
+        z = p.z/p.w;
+        if (z > zmax) zmax = z;
+        else if (z < zmin) zmin = z;
+    }
+
+    double scale = fmin(1.8/(xmax - xmin), 1.8/(ymax - ymin));
+
+    scale_vec.x = scale;
+    scale_vec.y = scale;
+    scale_vec.z = 1.0;
+
+    translate_vec.x = -(xmax + xmin)/2.0*scale;
+    translate_vec.y = -(ymax + ymin)/2.0*scale;
+    translate_vec.z = 0.0;
+
+    updateModelMatrix();
+}
+
+void RODS_GUI::captureScreen(const char *filePath, GLFWwindow *window)
+{
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    GLsizei nrChannels = 3;
+    GLsizei stride = nrChannels * width;
+    stride += (stride % 4) ? (4 - stride % 4) : 0;
+    GLsizei bufferSize = stride * height;
+    std::vector<char> buffer(bufferSize);
+    glPixelStorei(GL_PACK_ALIGNMENT, 4);
+    glReadBuffer(GL_FRONT);
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer.data());
+    stbi_flip_vertically_on_write(true);
+    stbi_write_png(filePath, width, height, nrChannels, buffer.data(), stride);
 }
 
 void RODS_GUI::draw_geo()
