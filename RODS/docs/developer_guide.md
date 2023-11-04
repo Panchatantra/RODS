@@ -109,13 +109,17 @@
 
 # 编译过程
 
-1. 启动命令行窗口，建立开发文件夹，例如
+1. 启动命令行窗口，建立开发文件夹（这里以 Develop 文件夹作为开发文件夹）
 
     ```shell
-    mkdir  ~/Develop
+    mkdir Develop && cd Develop
     ```
 
-2. 下载 armadillo 源代码，解压至开发文件夹（MSYS2 不需要）
+2. 下载 armadillo 源代码，解压至开发文件夹（MSYS2 不需要），目录结构为
+
+- Develop
+  - armadillo
+    - include
 
 3. 编译 RODS_GUI 尚需下载 glfw (Linux 系统不需要) 、glad 及 freetype，目录结构为
 
@@ -140,7 +144,7 @@
     git clone https://gitee.com/rods/rods.git
     ```
 
-2. 编译
+5. 编译
 * 使用 Visual Studio：打开RODS.sln，点击生成解决方案即可。运行程序需要将以下 dll 文件复制到生成程序所在文件夹或将 dll 文件所在文件夹加入系统 Path。
   * libiomo5md.dll
   * mkl_core.X.dll

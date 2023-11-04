@@ -7,63 +7,62 @@
 #include "material/SMABilinear.h"
 #include "material/CyclicHardenTrilinear.h"
 
-// #include "plot.h"
 #include "rods.h"
 
 using namespace std;
 
-//void example_sdof()
-//{
-//	double m = 800.0;
-//	double k = m*400.0;
-//	double zeta = 0.02;
-//	double c = 2.0*zeta*sqrt(m*k);
-//
-//	DynamicSystem *ds = new DynamicSystem(0.02);
-//
-//	ds->setRayleighDamping(2.0*PI/0.3142, 2.0*PI/0.1);
-//	//ds->setNumModesInherentDamping(1);
-//
-//	ds->addDOF(0, m, FIXED);
-//	ds->addDOF(1, m);
-//
-//	ds->addSpring(0, 0, 1, k);
-//	ds->addDashpot(1, 0, 1, c);
-//
-//	ds->assembleMatrix();
-//
-//	ds->solveEigen();
-//	ds->P.print("Natural Periods:");
-//
-//	//ds->solveStochasticSeismicResponse();
-//	//ds->dsp.print("StochasticSeismicResponse:");
-//	//cout << "AnalyticalSolution: " << sqrt(PI / 4 / ds->omg(0) / zeta) / ds->omg(0) << endl;
-//
-//	double dt = 0.01;
-//	int nsteps = 1000;
-//	vec t = linspace(0.0, dt*(nsteps - 1), nsteps);
-//	double Omg = 1 * ds->omg(0);
-//	vec ag = arma::sin(Omg*t);
-//	ds->addWave(1, dt, ag);
-//
-//	char eq[] = "data/EQ-S-1.txt";
-//	ds->addWave(2, 0.005, eq);
-//
-//	int nrd = 2;
-//	int *dofIds = new int[nrd] { 0, 1 };
-//	char dispOutput[] = "data/disp0.dat";
-//	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
-//
-//	int nre = 2;
-//	int *eleIds = new int[nre] { 0, 1 };
-//	char eleOutput[] = "data/force0.dat";
-//	ds->addElementRecorder(0, eleIds, nre, RODS::Response::FORCE, eleOutput);
-//
-//	int ts = 2;
-//	ds->setDynamicSolver(RODS::DynamicSolver::Newmark);
-//	ds->activeGroundMotion(RODS::Direction::X, ts, 4000.0);
-//	ds->solveSeismicResponse(1);
-//}
+void example_sdof()
+{
+	double m = 800.0;
+	double k = m*400.0;
+	double zeta = 0.02;
+	double c = 2.0*zeta*sqrt(m*k);
+
+	DynamicSystem *ds = new DynamicSystem(0.02);
+
+	ds->setRayleighDamping(2.0*PI/0.3142, 2.0*PI/0.1);
+	//ds->setNumModesInherentDamping(1);
+
+	ds->addDOF(0, m, FIXED);
+	ds->addDOF(1, m);
+
+	ds->addSpring(0, 0, 1, k);
+	ds->addDashpot(1, 0, 1, c);
+
+	ds->assembleMatrix();
+
+	ds->solveEigen();
+	ds->P.print("Natural Periods:");
+
+	//ds->solveStochasticSeismicResponse();
+	//ds->dsp.print("StochasticSeismicResponse:");
+	//cout << "AnalyticalSolution: " << sqrt(PI / 4 / ds->omg(0) / zeta) / ds->omg(0) << endl;
+
+	double dt = 0.01;
+	int nsteps = 1000;
+	vec t = linspace(0.0, dt*(nsteps - 1), nsteps);
+	double Omg = 1 * ds->omg(0);
+	vec ag = arma::sin(Omg*t);
+	ds->addWave(1, dt, ag);
+
+	char eq[] = "data/EQ-S-1.txt";
+	ds->addWave(2, 0.005, eq);
+
+	int nrd = 2;
+	int *dofIds = new int[nrd] { 0, 1 };
+	char dispOutput[] = "data/disp0.dat";
+	ds->addDOFRecorder(0, dofIds, nrd, RODS::Response::DISP, dispOutput);
+
+	int nre = 2;
+	int *eleIds = new int[nre] { 0, 1 };
+	char eleOutput[] = "data/force0.dat";
+	ds->addElementRecorder(0, eleIds, nre, RODS::Response::FORCE, eleOutput);
+
+	int ts = 2;
+	ds->setDynamicSolver(RODS::DynamicSolver::Newmark);
+	ds->activeGroundMotion(RODS::Direction::X, ts, 4000.0);
+	ds->solveSeismicResponse(1);
+}
 
 // void example_sdof_inerter_system()
 // {
@@ -2170,7 +2169,7 @@ void example_frame3D()
 
 int main()
 {
-	//example_sdof();
+	example_sdof();
 	//example_sdof_inerter_system();
 	//example_sdof_inerter_system_nl();
 	//example_sdof_bl();
@@ -2180,7 +2179,7 @@ int main()
 	//example_truss();
 	//example_truss_RODS();
 	//example_frame();
-	example_frame3D();
+	//example_frame3D();
 	//example_cantilever();
 	//example_wall();
 	//example_wall_RODS();
