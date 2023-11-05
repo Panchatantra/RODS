@@ -2237,12 +2237,14 @@ void RODS_GUI::rigidDiagramWindow()
         static std::vector<int> slave_node_ids;
 
         if (ImGui::Button("Select Slave Nodes") && num_node > 1)
+        {
             ImGui::OpenPopup("Slave Nodes");
+            genNodeList();
+        }
 
         if (ImGui::BeginPopup("Slave Nodes"))
         {
-            genNodeList();
-            ImGui::TextDisabled("Press Ctrl Key and hold on for multi-selection.");
+            ImGui::TextDisabled("Press and hold on Ctrl Key for multi-selection.");
             for (int i = 0; i < num_node; i++)
             {
                 char buf[32];
@@ -2547,9 +2549,7 @@ void RODS_GUI::recorderWindow()
                 get_work_dir(workDir, C_STR_LEN);
                 std::string work_dir(workDir);
                 if (work_dir.back() != '/')
-                {
                     work_dir.push_back('/');
-                }
                 if (ImGui::Button("Set File for Recorder"))
                     ImGuiFileDialog::Instance()->OpenDialog("RecorderFileDlgKey", "Select File Path",
                                     ".*", work_dir.c_str(), "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
@@ -2679,6 +2679,161 @@ void RODS_GUI::recorderWindow()
 
         if (ImGui::Button("Close"))
             show_recorder_window = false;
+
+        ImGui::End();
+    }
+}
+
+void RODS_GUI::dofRecorderWindow()
+{
+    if (show_dof_recorder_window)
+    {
+        ImGui::Begin("DOF Recorder", &show_dof_recorder_window);
+
+        static bool record_all = 0;
+        ImGui::Checkbox("Record All", &record_all);
+
+        static int dof_recorder_id = 1;
+        ImGui::InputInt("Recorder ID", &dof_recorder_id);
+
+        if (!record_all)
+        {
+            static int response_type = 0;
+            ImGui::Combo("Response Type", &response_type, dofResponse, 4);
+
+            char workDir[C_STR_LEN];
+            get_work_dir(workDir, C_STR_LEN);
+            std::string work_dir(workDir);
+            if (work_dir.back() != '/')
+                work_dir.push_back('/');
+            if (ImGui::Button("Set File for Recorder"))
+                ImGuiFileDialog::Instance()->OpenDialog("Recorder File", "Select File Path",
+                                ".*", work_dir.c_str(), "", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite);
+
+            static std::string recorderFilePathName = "";
+            static char _recorderFilePathName[C_STR_LEN] = "res.txt";
+            ImGui::InputText("Recorder File", _recorderFilePathName, C_STR_LEN);
+
+            if (ImGuiFileDialog::Instance()->Display("Recorder File"))
+            {
+                if (ImGuiFileDialog::Instance()->IsOk())
+                {
+                    recorderFilePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+                    strcpy(_recorderFilePathName, recorderFilePathName.c_str());
+                }
+                ImGuiFileDialog::Instance()->Close();
+            }
+
+            if (ImGui::Button("Select Nodes"))
+            {
+                ImGui::OpenPopup("Select Nodes");
+                genNodeList();
+            }
+
+            static std::vector<bool> selected;
+            static std::vector<int> node_ids;
+
+            if (ImGui::BeginPopup("Select Nodes"))
+            {
+                ImGui::TextDisabled("Press and hold on Ctrl Key for multi-selection.");
+                for (int i = 0; i < num_node; i++)
+                {
+                    char buf[32];
+                    sprintf(buf, "%d", nodes[i]);
+                    if (ImGui::Selectable(buf, selected[i], ImGuiSelectableFlags_DontClosePopups, ImVec2(50, 50)))
+                    {
+                        if (!ImGui::GetIO().KeyCtrl)
+                            selected.assign(num_node, false);
+                        selected[i] = selected[i]^true;
+                    }
+                    ImGui::SameLine();
+                    if ((i+1)%10 == 0)
+                        ImGui::NewLine();
+                }
+                ImGui::NewLine();
+                if (ImGui::Button("Confirm"))
+                {
+                    node_ids.clear();
+                    for (int i = 0; i < num_node; i++)
+                    {
+                        if (selected[i])
+                        {
+                            node_ids.push_back(nodes[i]);
+                        }
+                    }
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+
+            ImGui::SameLine();
+            std::string selected_nodes_str = "\n";
+            size_t i = 0;
+            auto num_node_ids = node_ids.size();
+            for (auto &node_id : node_ids)
+            {
+                selected_nodes_str.append(std::to_string(node_id));
+                i++;
+                if (i < num_node_ids)
+                {
+                    selected_nodes_str.push_back(',');
+                    selected_nodes_str.push_back(' ');
+                    if (i%10 == 0)
+                        selected_nodes_str.push_back('\n');
+                }
+            }
+            ImGui::Text("Selected Nodes: %s", selected_nodes_str.c_str());
+
+            if (ImGui::Button("Add DOF Recorder"))
+            {
+                if (num_node_ids > 0)
+                {
+                    if (response_type < 3)
+                        num_dof_recorder = add_dof_recorder(dof_recorder_id++, response_type, _recorderFilePathName);
+                    else
+                        num_dof_recorder = add_dof_recorder(dof_recorder_id++, 5, _recorderFilePathName);
+                }
+                else
+                {
+                    if (response_type < 3)
+                        num_dof_recorder = add_dof_recorder(dof_recorder_id++, response_type, _recorderFilePathName);
+                    else
+                        num_dof_recorder = add_dof_recorder(dof_recorder_id++, 5, _recorderFilePathName);
+                }
+            }
+
+            if (num_dof_recorder > 0 && num_dof > 0)
+            {
+                ImGui::Separator();
+
+                if (ImGui::Button("Select DOF"))
+                    ImGui::OpenPopup("Select DOF");
+
+                if (ImGui::BeginPopup("Select DOF"))
+                {
+                    genDofList();
+                    updateDOFRecorderList();
+                    static int dof_index = 0;
+                    static int dof_recorder_index = 0;
+                    ImGui::Combo("DOF", &dof_index, dofs_str.c_str());
+                    ImGui::Combo("DOF Recorder", &dof_recorder_index, dofRecorderStrList, num_dof_recorder);
+                    if (ImGui::Button("Add"))
+                        add_dof_to_recorder(dofList[dof_index], dofRecorderList[dof_recorder_index]);
+                    ImGui::EndPopup();
+                }
+            }
+        }
+        else
+        {
+            if (ImGui::Button("Add DOF Recorder"))
+            {
+                record_all_dof_response(dof_recorder_id);
+                num_dof_recorder = get_num_dof_recorder();
+            }
+        }
+
+        if (ImGui::Button("Close"))
+            show_dof_recorder_window = false;
 
         ImGui::End();
     }

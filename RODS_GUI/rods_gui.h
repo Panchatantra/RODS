@@ -30,6 +30,8 @@ static bool show_element1d_table_window = false;
 static bool show_element2d_table_window = false;
 static bool show_wave_table_window = false;
 static bool show_recorder_window = false;
+static bool show_dof_recorder_window = false;
+static bool show_ele_recorder_window = false;
 static bool show_recorder_table_window = false;
 static bool show_time_history_plot_window = false;
 static bool show_dir_window = false;
@@ -135,6 +137,8 @@ namespace RODS_GUI {
     void assembleMatrixWindow();
     void solveEigenWindow();
     void recorderWindow();
+    void dofRecorderWindow();
+    void eleRecorderWindow();
     void solveSeismicWindow();
 
     void dofTableWindow();

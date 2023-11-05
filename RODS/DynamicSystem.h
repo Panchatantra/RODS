@@ -847,6 +847,10 @@ public:
 	void removeDOFRecorder(const int id);
 
 	void addDOFToRecorder(const int dofId, const int rId);
+	void addDOFsToRecorder(int *dofIds, const int numDofs, const int rId);
+	void addNodeToRecorder(const int nodeId, const int rId);
+	void addNodesToRecorder(int * nodeIds, const int numNodes, const int rId);
+	void addNodeDOFToRecorder(const int nodeId, RODS::Direction dir, const int rId);
 	void removeDOFFromRecorder(const int dofId, const int rId);
 
 	/**
@@ -865,6 +869,7 @@ public:
 	void removeElementRecorder(const int id);
 
 	void addElementToRecorder(const int eleId, const int rId);
+	void addElementsToRecorder(int *eleIds, const int numEle, const int rId);
 	void removeElementFromRecorder(const int eleId, const int rId);
 
 	void setDofRecorderFileName(const int id, char * fileName);

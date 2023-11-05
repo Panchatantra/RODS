@@ -1601,6 +1601,44 @@ void DynamicSystem::addDOFToRecorder(const int dofId, const int rId)
 	dr->add_dof(DOFs.at(dofId));
 }
 
+void DynamicSystem::addDOFsToRecorder(int *dofIds, const int numDofs, const int rId)
+{
+	for (int i = 0; i < numDofs; i++)
+	{
+		addDOFToRecorder(dofIds[i], rId);
+	}
+}
+
+void DynamicSystem::addNodeToRecorder(const int nodeId, const int rId)
+{
+	int dofIds[6];
+	Nodes.at(nodeId)->getIdsDof(dofIds);
+	for (int i = 0; i < 6; i++)
+	{
+		if (dofIds[i] >= 0)
+		{
+			addDOFToRecorder(dofIds[i], rId);
+		}
+	}
+}
+
+void DynamicSystem::addNodesToRecorder(int *nodeIds, const int numNodes, const int rId)
+{
+	for (int i = 0; i < numNodes; i++)
+	{
+		addNodeToRecorder(nodeIds[i], rId);
+	}
+}
+
+void DynamicSystem::addNodeDOFToRecorder(const int nodeId, RODS::Direction dir, const int rId)
+{
+	auto dofId = Nodes.at(nodeId)->getIdDof(dir);
+	if (dofId >= 0)
+	{
+		addDOFToRecorder(dofId, rId);
+	}
+}
+
 void DynamicSystem::removeDOFFromRecorder(const int dofId, const int rId)
 {
 	DOFRecorders.at(rId)->remove_dof(DOFs.at(dofId));
@@ -1651,6 +1689,14 @@ void DynamicSystem::addElementToRecorder(const int eleId, const int rId)
 {
 	ElementRecorder *er = ElementRecorders.at(rId);
 	er->add_ele(Elements.at(eleId));
+}
+
+void DynamicSystem::addElementsToRecorder(int *eleIds, const int numEle, const int rId)
+{
+	for (int i = 0; i < numEle; i++)
+	{
+		addElementToRecorder(eleIds[i], rId);
+	}
 }
 
 void DynamicSystem::removeElementFromRecorder(const int eleId, const int rId)
