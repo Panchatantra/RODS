@@ -26,7 +26,7 @@ DynamicSystem::DynamicSystem(const double z) :
 	dispControlDOFId(-1), dispControlLoadId(-1), dispControlEqn(-1),
 	tol(1e-6), maxIter(20),
 	exportGmshInterval(-1),
-	penaltyWeight(1.0e12), constraintCount(0),
+	penaltyWeight(1.0e3), constraintCount(0),
 	xMax(0.0), xMin(0.0), yMax(0.0), yMin(0.0), zMax(0.0), zMin(0.0)
 {
 }
@@ -3755,3 +3755,4 @@ void DynamicSystem::exportModalMatrix()
 	std::string file_name = workDir + '/' + name + "_modal_matrix.txt";
 	exportModalMatrix(file_name.c_str());
 }
+

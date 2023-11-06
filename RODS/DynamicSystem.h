@@ -1205,15 +1205,13 @@ public:
 	mat T;			///< The DOF transfer matrix;
 	mat A;			///< The DOF transfer matrix;
 	mat AWA;			///< The DOF transfer matrix;
-	double penaltyWeight;			///< The penalty weight;
-	int constraintCount;
 
 	string name;    ///< name of the model
 	string workDir;	///< the working directory
 
     double zeta;				///< The inherent damping ratio
     int eqnCount;				///< The number of equations
-    size_t dofCount;			///< The number of DOFs
+    int dofCount;				///< The number of DOFs
     int fixedDofCount;			///< The number of fixed DOFs
     bool eigenVectorNormed;		///< If the eigen vectors are normed
 
@@ -1242,11 +1240,14 @@ public:
 	int dispControlEqn;			///< The equation number of displacement control DOF
 
 	double tol;  	///< The tolerance for convergence check
-	size_t maxIter; ///< The maximum iterations before converged
+	int maxIter; 	///< The maximum iterations before converged
 
 	string gmshFileName;
 	std::ofstream gmshFile;
 	int exportGmshInterval;
+
+	double penaltyWeight;			///< The penalty weight;
+	int constraintCount;
 
 	double xMax, xMin;
 	double yMax, yMin;

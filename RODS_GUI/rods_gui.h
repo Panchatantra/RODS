@@ -17,6 +17,7 @@ static bool show_point_window = false;
 static bool show_line_window = false;
 static bool show_wave_window = false;
 static bool show_material_window = false;
+static bool show_section_window = false;
 static bool show_element1d_window = false;
 static bool show_element2d_window = false;
 static bool show_element3d_window = false;

@@ -671,17 +671,30 @@ void RODS_GUI::menuWindow(GLFWwindow *window)
             if (ImGui::MenuItem("Node"))
                 show_node_window = true;
 
-            if (ImGui::MenuItem("Element1D"))
-                show_element1d_window = true;
+            if (ImGui::BeginMenu("Element"))
+            {
+                if (ImGui::MenuItem("Element1D"))
+                    show_element1d_window = true;
 
-            if (ImGui::MenuItem("Element2D"))
-                show_element2d_window = true;
+                if (ImGui::MenuItem("Element2D"))
+                    show_element2d_window = true;
 
-            if (ImGui::MenuItem("Element3D"))
-                show_element3d_window = true;
+                if (ImGui::MenuItem("Element3D"))
+                    show_element3d_window = true;
 
-            if (ImGui::MenuItem("Material"))
-                show_material_window = true;
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Constitutive Relation"))
+            {
+                if (ImGui::MenuItem("Material"))
+                    show_material_window = true;
+
+                if (ImGui::MenuItem("Section"))
+                    show_section_window = true;
+
+                ImGui::EndMenu();
+            }
 
             if (ImGui::BeginMenu("Constraint"))
             {
