@@ -2,6 +2,10 @@
 #define DLLEXPORT
 #endif
 
+#ifdef _MSC_VER
+#pragma warning (disable: 4996)     // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen
+#endif
+
 #include "rods.h"
 #include "DynamicSystem.h"
 
@@ -1112,11 +1116,7 @@ DLL_API void get_dof_recorder_info(const int id, int& response_type, int& n, cha
 	auto recorder = ds->DOFRecorders.at(id);
 	response_type = static_cast<int>(recorder->rtype);
 	n = recorder->dofs.size();
-#ifdef __GNUC__
 	strcpy(file_name, recorder->fileName.c_str());
-#else
-	strcpy_s(file_name, bs, recorder->fileName.c_str());
-#endif
 }
 
 DLL_API void get_ele_recorder_info(const int id, int& response_type, int& n, char* file_name, size_t bs)
@@ -1124,11 +1124,7 @@ DLL_API void get_ele_recorder_info(const int id, int& response_type, int& n, cha
 	auto recorder = ds->ElementRecorders.at(id);
 	response_type = static_cast<int>(recorder->rtype);
 	n = recorder->eles.size();
-#ifdef __GNUC__
 	strcpy(file_name, recorder->fileName.c_str());
-#else
-	strcpy_s(file_name, bs, recorder->fileName.c_str());
-#endif
 }
 
 DLL_API void get_dof_recorder_dofs(const int id, int* ids)
@@ -1148,11 +1144,7 @@ DLL_API void get_wave_info(const int id, double &dt, int &nsteps, char *filePath
 	auto wave = ds->Waves.at(id);
 	dt = wave->dt;
 	nsteps = wave->nsteps;
-#ifdef __GNUC__
 	strcpy(filePathName, wave->filePathName.c_str());
-#else
-	strcpy_s(filePathName, bs, wave->filePathName.c_str());
-#endif
 }
 
 DLL_API void get_wave_data(const int id, float *data)
@@ -1237,11 +1229,7 @@ DLL_API void set_name(const char * name)
 
 DLL_API void get_name(char * name, const size_t size)
 {
-#ifdef __GNUC__
 	strcpy(name, ds->name.c_str());
-#else
-	strcpy_s(name, size, ds->name.c_str());
-#endif
 }
 
 DLL_API void set_work_dir(const char * workDir)
@@ -1251,11 +1239,7 @@ DLL_API void set_work_dir(const char * workDir)
 
 DLL_API void get_work_dir(char * workDir, const size_t size)
 {
-#ifdef __GNUC__
 	strcpy(workDir, ds->workDir.c_str());
-#else
-	strcpy_s(workDir, size, ds->workDir.c_str());
-#endif
 }
 
 DLL_API void load_from_json(const char *file_name)
