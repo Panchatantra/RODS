@@ -33,6 +33,7 @@
     * Intel oneAPI Base Toolkit
         > Intel oneAPI 安装选项：
 ![Intel安装选项](install_intel.png)
+        > *PS：需要安装 Visual studio integration*
 
     * Reshaper C++插件（建议，可选）
 
@@ -145,7 +146,7 @@
     ```
 
 5. 编译
-* 使用 Visual Studio：打开RODS.sln，点击生成解决方案即可。运行程序需要将以下 dll 文件复制到生成程序所在文件夹或将 dll 文件所在文件夹加入系统 Path。
+* 使用 Visual Studio：打开RODS.sln，选择 RODS 项目。修改编译配置为 Release（可执行文件）或 DLLRelease（动态链接库），点击“生成”->“生成 RODS”（或者直接按快捷键 Ctrl+B）。运行程序需要将以下 dll 文件复制到生成程序所在文件夹或将 dll 文件所在文件夹加入系统 Path。
   * libiomo5md.dll
   * mkl_core.X.dll
   * mkl_def.X.dll
@@ -170,7 +171,7 @@
     #   install：编译成动态链接库并复制到 /usr/local/lib 文件夹
     ```
 
-6. 生成帮助文档（MSYS2 或 Linux）
+1. 生成帮助文档（MSYS2 或 Linux）
 
     ```shell
     doxygen
