@@ -364,3 +364,5 @@ RODS/html/
 
 RODS/python/*_dof_response.txt
 RODS/python/*_ele_response.txt
+
+RODS_LUA/rods_lua
