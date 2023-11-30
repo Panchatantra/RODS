@@ -111,12 +111,12 @@ extern "C" {
 	DLL_API size_t add_wave(const int id, const double dt, const char* fileName);
 	DLL_API size_t assemble_matrix();
 	DLL_API size_t solve_eigen();
-	DLL_API size_t add_dof_recorder_with_dofs(const int id, int *dofIds, const int n, const int rType, char * fileName);
-	DLL_API size_t add_dof_recorder(const int id, const int rType, char * fileName);
+	DLL_API size_t add_dof_recorder_with_dofs(const int id, int *dofIds, const int n, const int rType, const char * fileName);
+	DLL_API size_t add_dof_recorder(const int id, const int rType, const char * fileName);
 	DLL_API size_t add_dof_to_recorder(const int dofId, const int rId);
 	DLL_API size_t add_node_dof_to_recorder(const int nodeId, const int dir, const int rId);
-	DLL_API size_t add_ele_recorder_with_eles(const int id, int *eleIds, const int n, const int rType, char * fileName);
-	DLL_API size_t add_ele_recorder(const int id, const int rType, char * fileName);
+	DLL_API size_t add_ele_recorder_with_eles(const int id, int *eleIds, const int n, const int rType, const char * fileName);
+	DLL_API size_t add_ele_recorder(const int id, const int rType, const char * fileName);
 	DLL_API size_t add_ele_to_recorder(const int eleId, const int rId);
 	DLL_API void set_dynamic_solver(const int s);
 	DLL_API size_t solve_seismic_response(const int nsub = 1);

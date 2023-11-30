@@ -366,3 +366,5 @@ RODS/python/*_dof_response.txt
 RODS/python/*_ele_response.txt
 
 RODS_LUA/rods_lua
+RODS_LUA/*.txt
+RODS_LUA/*.json

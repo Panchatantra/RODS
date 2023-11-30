@@ -74,12 +74,12 @@ DLL_API size_t solve_eigen()
 	return ds->eqnCount;
 }
 
-DLL_API size_t add_dof_recorder_with_dofs(const int id, int *dofIds, const int n, const int rType, char * fileName) {
+DLL_API size_t add_dof_recorder_with_dofs(const int id, int *dofIds, const int n, const int rType, const char * fileName) {
 	ds->addDOFRecorder(id, dofIds, n, RODS::Response(rType), fileName);
 	return ds->DOFRecorders.size();
 }
 
-DLL_API size_t add_ele_recorder_with_eles(const int id, int *eleIds, const int n, const int rType, char * fileName) {
+DLL_API size_t add_ele_recorder_with_eles(const int id, int *eleIds, const int n, const int rType, const char * fileName) {
 	ds->addElementRecorder(id, eleIds, n, RODS::Response(rType), fileName);
 	return ds->ElementRecorders.size();
 }
@@ -295,7 +295,7 @@ DLL_API size_t add_inerter_3d(const int id, const int ni, const int nj, const do
 	return ds->Inerter3Ds.size();
 }
 
-DLL_API size_t add_dof_recorder(const int id, const int rType, char* fileName)
+DLL_API size_t add_dof_recorder(const int id, const int rType, const char* fileName)
 {
 	ds->addDOFRecorder(id, RODS::Response(rType), fileName);
 	return ds->DOFRecorders.size();
@@ -307,7 +307,7 @@ DLL_API size_t add_dof_to_recorder(const int dofId, const int rId)
 	return ds->DOFRecorders.size();
 }
 
-DLL_API size_t add_ele_recorder(const int id, const int rType, char* fileName)
+DLL_API size_t add_ele_recorder(const int id, const int rType, const char* fileName)
 {
 	ds->addElementRecorder(id, RODS::Response(rType), fileName);
 	return ds->ElementRecorders.size(); 
@@ -1224,7 +1224,6 @@ DLL_API void record_all_ele_response(const int id)
 DLL_API void set_name(const char * name)
 {
 	ds->setName(name);
-	cout << "Model name is set to be " << ds->name << "." << endl;
 }
 
 DLL_API void get_name(char * name, const size_t size)
