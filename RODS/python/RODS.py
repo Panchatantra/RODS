@@ -279,6 +279,7 @@ solve_seismic_response.restype = c_size_t
 solve_seismic_response.argtypes = [c_int]
 
 print_info = RODSDLL.print_info
+print_info.argtypes = [c_int]
 clear = RODSDLL.clear
 
 export_gmsh = RODSDLL.export_gmsh

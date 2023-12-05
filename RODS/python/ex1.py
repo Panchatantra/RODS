@@ -54,7 +54,7 @@ RODS.assemble_matrix()
 RODS.solve_eigen()
 
 # 打印基本信息和模态分析结果
-RODS.print_info()
+RODS.print_info(1)
 
 # 添加地震波
 dt = 0.005

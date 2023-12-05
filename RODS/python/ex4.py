@@ -89,7 +89,7 @@ for nI, nJ, nP, nQ in elementConnect:
 
 RODS.assemble_matrix()
 RODS.solve_eigen()
-RODS.print_info()
+RODS.print_info(48)
 
 gmsh_file = "wall2d.msh".encode()
 RODS.export_gmsh(gmsh_file)

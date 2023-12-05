@@ -1,39 +1,17 @@
 {
-    "DashpotCount": 1,
-    "DashpotVec": [
+    "DOFCount": 2,
+    "DOFRecorderCount": 1,
+    "DOFRecorderVec": [
         {
-            "IdDofI": 0,
-            "IdDofJ": 1,
-            "c": 2.0,
-            "id": 1
-        }
-    ],
-    "NumDynamicSubSteps": 1,
-    "NumModesInherentDamping": -1,
-    "RayleighOmg1": 10.0,
-    "RayleighOmg2": 20.0,
-    "SpringCount": 1,
-    "SpringVec": [
-        {
-            "IdDofI": 0,
-            "IdDofJ": 1,
+            "DOFs": [
+                1
+            ],
+            "fileName": "sdof_disp.txt",
             "id": 0,
-            "k": 2500.0
+            "rtype": 0
         }
     ],
-    "XSeismicWaveId": 0,
-    "XSeismicWaveScale": 1.0,
-    "YSeismicWaveId": -1,
-    "YSeismicWaveScale": 0.0,
-    "ZSeismicWaveId": -1,
-    "ZSeismicWaveScale": 0.0,
-    "cstep": 8191,
-    "ctime": 40.9550000000025,
-    "dispControlDOFId": -1,
-    "dispControlEqn": -1,
-    "dispControlLoadId": -1,
-    "dofCount": 2,
-    "dofVec": [
+    "DOFVec": [
         {
             "dir": 0,
             "id": 0,
@@ -47,8 +25,87 @@
             "mass": 1.0
         }
     ],
+    "Dashpot2DCount": 0,
+    "Dashpot2DVec": [],
+    "DashpotCount": 1,
+    "DashpotVec": [
+        {
+            "IdDofI": 0,
+            "IdDofJ": 1,
+            "c": 2.0,
+            "id": 1
+        }
+    ],
+    "ElementRecorderCount": 1,
+    "ElementRecorderVec": [
+        {
+            "Elements": [
+                0,
+                1
+            ],
+            "fileName": "sdof_force.txt",
+            "id": 0,
+            "rtype": 3
+        }
+    ],
+    "FrameElastic2DCount": 0,
+    "FrameElastic2DVec": [],
+    "FrameElastic3DCount": 0,
+    "FrameElastic3DVec": [],
+    "Inerter2DCount": 0,
+    "Inerter2DVec": [],
+    "InerterCount": 0,
+    "InerterVec": [],
+    "NodeCount": 0,
+    "NodeVec": [],
+    "NumDynamicSubSteps": 1,
+    "NumModesInherentDamping": -1,
+    "RayleighOmg1": 10.0,
+    "RayleighOmg2": 20.0,
+    "RigidDiagramCount": 0,
+    "RigidDiagramVec": [],
+    "Spring2DCount": 0,
+    "Spring2DVec": [],
+    "Spring3DCount": 0,
+    "Spring3DVec": [],
+    "SpringBilinearCount": 0,
+    "SpringBilinearVec": [],
+    "SpringCount": 1,
+    "SpringVec": [
+        {
+            "IdDofI": 0,
+            "IdDofJ": 1,
+            "id": 0,
+            "k": 2500.0
+        }
+    ],
+    "TVMDCount": 0,
+    "TVMDVec": [],
+    "TrussElastic2DCount": 0,
+    "TrussElastic2DVec": [],
+    "TrussElastic3DCount": 0,
+    "TrussElastic3DVec": [],
+    "WaveCount": 1,
+    "WaveVec": [
+        {
+            "dt": 0.005,
+            "filePathName": "EQ-S-1.txt",
+            "id": 0
+        }
+    ],
+    "XSeismicWaveId": 0,
+    "XSeismicWaveScale": 1.0,
+    "YSeismicWaveId": -1,
+    "YSeismicWaveScale": 0.0,
+    "ZSeismicWaveId": -1,
+    "ZSeismicWaveScale": 0.0,
+    "cstep": 8191,
+    "ctime": 40.9550000000025,
+    "dispControlDOFId": -1,
+    "dispControlEqn": -1,
+    "dispControlLoadId": -1,
     "dt": 0.005,
-    "dynamicSolver": 2,
+    "dynamicSolver": 0,
     "eigenVectorNormed": true,
     "eqnCount": 1,
     "exportGmshInterval": -1,
@@ -56,9 +113,10 @@
     "maxIter": 20,
     "name": "SDOF",
     "nsteps": 8192,
+    "penaltyWeight": 1000.0,
     "tol": 1e-06,
     "useRayleighDamping": true,
-    "workDir": "./",
+    "workDir": ".",
     "xMax": 0.0,
     "xMin": 0.0,
     "yMax": 0.0,

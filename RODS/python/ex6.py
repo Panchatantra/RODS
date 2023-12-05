@@ -43,7 +43,7 @@ RODS.assemble_matrix()
 RODS.solve_eigen()
 
 # 打印基本信息和模态分析结果
-RODS.print_info()
+RODS.print_info(n)
 
 P = RODS.get_period()
 

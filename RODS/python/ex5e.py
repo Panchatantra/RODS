@@ -54,7 +54,7 @@ for frameId, ni, nj, st in frameInfo:
 
 RODS.assemble_matrix()
 RODS.solve_eigen()
-RODS.print_info()
+RODS.print_info(12)
 
 gmsh_file = "frame3d.msh".encode()
 RODS.export_gmsh(gmsh_file)

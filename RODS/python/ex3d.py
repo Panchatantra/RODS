@@ -101,7 +101,7 @@ RODS.add_spring_bilinear_2d(103, 8, 11, k0, uy, alpha, U)
 
 RODS.assemble_matrix()
 RODS.solve_eigen()
-RODS.print_info()
+RODS.print_info(27)
 
 gmsh_file = "frame2d_damped.msh".encode()
 RODS.export_gmsh(gmsh_file)

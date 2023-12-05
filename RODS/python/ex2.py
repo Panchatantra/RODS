@@ -48,7 +48,7 @@ for ni, nj in elementConnect:
 
 RODS.assemble_matrix()
 RODS.solve_eigen()
-RODS.print_info()
+RODS.print_info(10)
 
 gmsh_file = b"truss2d.msh"
 RODS.export_gmsh(gmsh_file)

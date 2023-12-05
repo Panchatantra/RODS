@@ -82,7 +82,7 @@ for ni, nj, st in elementConnect:
 
 RODS.assemble_matrix()
 RODS.solve_eigen()
-RODS.print_info()
+RODS.print_info(27)
 
 gmsh_file = "frame2d.msh".encode()
 RODS.export_gmsh(gmsh_file)

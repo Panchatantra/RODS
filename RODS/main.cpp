@@ -404,73 +404,73 @@ void example_sdof()
 //	system(R"(gnuplot -e "set term pdf; set output 'data/mat.pdf'; plot 'data/mat.txt' using 1:2 with line")");
 //}
 //
-//void example_truss()
-//{
-//	DynamicSystem *ds = new DynamicSystem();
-//
-//	double mass = 0.01;
-//	double E = 206.0;
-//	double A = 2148.84937505542;
-//	double EA = E*A;
-//
-//	const int nnd = 7;
-//	const int ne = 11;
-//
-//	double nodeCoord[nnd][2]{
-//		{-4500 , 0},
-//		{-1500 , 0},
-//		{1500  , 0},
-//		{4500  , 0},
-//		{-3000 , 3000},
-//		{0     , 3000},
-//		{3000  , 3000}
-//	};
-//
-//	double x = 0, z = 0;
-//
-//	for (int i = 0; i < nnd; i++)
-//	{
-//		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
-//		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
-//
-//		x = nodeCoord[i][0];
-//		z = nodeCoord[i][1];
-//		ds->addNode(i + 1, x, z, 2 * i + 1, 2 * i + 2, -1);
-//	}
-//
-//	ds->fixNode(1);
-//	ds->fixNode(4);
-//
-//	int elementConnect[ne][2]{
-//		{1, 2},
-//		{2, 3},
-//		{3, 4},
-//		{5, 6},
-//		{6, 7},
-//		{1, 5},
-//		{2, 6},
-//		{3, 7},
-//		{2, 5},
-//		{3, 6},
-//		{4, 7}
-//	};
-//
-//	int ni = 0, nj = 0;
-//	for (int i = 0; i < ne; i++)
-//	{
-//		ni = elementConnect[i][0];
-//		nj = elementConnect[i][1];
-//		ds->addTrussElastic2D(i + 1, ni, nj, EA);
-//	}
-//
-//	ds->assembleMatrix();
-//	ds->solveEigen();
-//
-//	char gmshFile[] = "truss.msh";
-//	ds->exportGmsh(gmshFile);
-//
-//	ds->printInfo();
-//}
+void example_truss()
+{
+	DynamicSystem *ds = new DynamicSystem();
+
+	double mass = 0.01;
+	double E = 206.0;
+	double A = 2148.84937505542;
+	double EA = E*A;
+
+	const int nnd = 7;
+	const int ne = 11;
+
+	double nodeCoord[nnd][2]{
+		{-4500 , 0},
+		{-1500 , 0},
+		{1500  , 0},
+		{4500  , 0},
+		{-3000 , 3000},
+		{0     , 3000},
+		{3000  , 3000}
+	};
+
+	double x = 0, z = 0;
+
+	for (int i = 0; i < nnd; i++)
+	{
+		ds->addDOF(2 * i + 1, RODS::Direction::X, mass);
+		ds->addDOF(2 * i + 2, RODS::Direction::Z, mass);
+
+		x = nodeCoord[i][0];
+		z = nodeCoord[i][1];
+		ds->addNode(i + 1, x, z, 2 * i + 1, 2 * i + 2, -1);
+	}
+
+	ds->fixNode(1);
+	ds->fixNode(4);
+
+	int elementConnect[ne][2]{
+		{1, 2},
+		{2, 3},
+		{3, 4},
+		{5, 6},
+		{6, 7},
+		{1, 5},
+		{2, 6},
+		{3, 7},
+		{2, 5},
+		{3, 6},
+		{4, 7}
+	};
+
+	int ni = 0, nj = 0;
+	for (int i = 0; i < ne; i++)
+	{
+		ni = elementConnect[i][0];
+		nj = elementConnect[i][1];
+		ds->addTrussElastic2D(i + 1, ni, nj, EA);
+	}
+
+	ds->assembleMatrix();
+	ds->solveEigen();
+
+	char gmshFile[] = "truss.msh";
+	ds->exportGmsh(gmshFile);
+
+	ds->printInfo();
+}
 
 //void example_frame()
 //{
@@ -2169,14 +2169,14 @@ void example_frame3D()
 
 int main()
 {
-	example_sdof();
+	//example_sdof();
 	//example_sdof_inerter_system();
 	//example_sdof_inerter_system_nl();
 	//example_sdof_bl();
 	//example_shear_building();
 	//example_shear_building_spis2();
 	//test_material();
-	//example_truss();
+	example_truss();
 	//example_truss_RODS();
 	//example_frame();
 	//example_frame3D();
