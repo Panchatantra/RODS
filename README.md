@@ -1,5 +1,7 @@
 # RODS
 
+![RODS ICON](RODS_GUI/resource/RODS.png)
+
 **R**esponse solver for **O**scillated **D**ynamic **S**ystem based on finite element method
 
 ## About the name
