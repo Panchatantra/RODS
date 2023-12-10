@@ -6,6 +6,12 @@ SectionFrame2D::SectionFrame2D() :
 {
 }
 
+SectionFrame2D::SectionFrame2D(const int id) :
+	Section(id), A(0.0), yc(0.0),
+	nv(3), strain(nullptr), force(nullptr)
+{
+}
+
 SectionFrame2D::SectionFrame2D(const int id, vector<Fiber *> fibers):
 	Section(id), A(0.0), yc(0.0),
 	nv(3), strain(nullptr), force(nullptr)
@@ -98,4 +104,17 @@ void SectionFrame2D::getInitialStiffness()
 
 	k0(1,0) = k0(0,1);
 	k = k0;
+}
+
+void SectionFrame2D::addFiber(Fiber *fiber)
+{
+	fibers.push_back(fiber->copy());
+}
+
+void SectionFrame2D::addFibers(vector<Fiber *> fibers)
+{
+	for (auto it=fibers.begin(); it!=fibers.end(); ++it)
+	{
+		this->fibers.push_back((*it)->copy());
+	}
 }

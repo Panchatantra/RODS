@@ -16,6 +16,7 @@ class SectionFrame2D : public Section
 {
 public:
 	SectionFrame2D();
+	SectionFrame2D(const int id);
 	SectionFrame2D(const int id, vector<Fiber *> fibers);
 	~SectionFrame2D();
 
@@ -26,6 +27,9 @@ public:
 
 	void getSectionCentroid();
 	void getInitialStiffness();
+
+	void addFiber(Fiber *fiber);
+	void addFibers(vector<Fiber *> fibers);
 
 	vector<Fiber *> fibers;
 	mat::fixed<2,2> k, k0;

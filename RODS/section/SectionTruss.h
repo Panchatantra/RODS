@@ -13,6 +13,7 @@ class SectionTruss : public Section
 {
 public:
 	SectionTruss();
+	SectionTruss(const int id);
 	SectionTruss(const int id, vector<Fiber *> fibers);
 	~SectionTruss();
 
@@ -20,6 +21,9 @@ public:
 	void getResponse(const bool update = false) override;
 
 	SectionTruss *copy() override {return new SectionTruss(id, fibers);};
+
+	void addFiber(Fiber *fiber);
+	void addFibers(vector<Fiber *> fibers);
 
 	vector<Fiber *> fibers;
 	double k, epsilon, f;

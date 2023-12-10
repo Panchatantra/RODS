@@ -200,6 +200,30 @@ add_quad4_elastic = RODSDLL.add_quad4_elastic
 add_quad4_elastic.restype = c_size_t
 add_quad4_elastic.argtypes = [c_int, c_int, c_int, c_int, c_int, c_double, c_double, c_double]
 
+add_mat_elastic = RODSDLL.add_mat_elastic
+add_mat_elastic.restype = c_size_t
+add_mat_elastic.argtypes = [c_int, c_double]
+
+add_mat_elastoplastic = RODSDLL.add_mat_elastoplastic
+add_mat_elastoplastic.restype = c_size_t
+add_mat_elastoplastic.argtypes = [c_int, c_double, c_double, c_double]
+
+add_mat_steel_bilinear = RODSDLL.add_mat_steel_bilinear
+add_mat_steel_bilinear.restype = c_size_t
+add_mat_steel_bilinear.argtypes = [c_int, c_double, c_double, c_double, c_double]
+
+add_mat_concrete_trilinear = RODSDLL.add_mat_concrete_trilinear
+add_mat_concrete_trilinear.restype = c_size_t
+add_mat_concrete_trilinear.argtypes = [c_int, c_double, c_double, c_double, c_double, c_double, c_double]
+
+add_mat_cyclic_harden_trilinear = RODSDLL.add_mat_cyclic_harden_trilinear
+add_mat_cyclic_harden_trilinear.restype = c_size_t
+add_mat_cyclic_harden_trilinear.argtypes = [c_int, c_double, c_double, c_double, c_double, c_double]
+
+add_mat_sma_bilinear = RODSDLL.add_mat_sma_bilinear
+add_mat_sma_bilinear.restype = c_size_t
+add_mat_sma_bilinear.argtypes = [c_int, c_double, c_double, c_double, c_double]
+
 add_wave = RODSDLL.add_wave
 add_wave.restype = c_size_t
 add_wave.argtypes = [c_int, c_double, c_char_p]
@@ -308,3 +332,33 @@ save_to_json.argtypes = [c_char_p]
 
 load_from_json = RODSDLL.load_from_json
 load_from_json.argtypes = [c_char_p]
+
+export_physical_mass_matrix = RODSDLL.export_mass_matrix
+export_physical_mass_matrix.argtype = [c_char_p]
+
+export_mass_matrix = RODSDLL.export_mass_matrix
+export_mass_matrix.argtype = [c_char_p]
+
+export_stiff_matrix = RODSDLL.export_stiff_matrix
+export_stiff_matrix.argtype = [c_char_p]
+
+export_damp_matrix = RODSDLL.export_damp_matrix
+export_damp_matrix.argtype = [c_char_p]
+
+export_period_vector = RODSDLL.export_period_vector
+export_period_vector.argtype = [c_char_p]
+
+add_rigid_diagram = RODSDLL.add_rigid_diagram
+add_rigid_diagram.restype = c_size_t
+add_rigid_diagram.argtype = [c_int, c_int]
+
+add_rigid_diagram_with_slave_nodes = RODSDLL.add_rigid_diagram_with_slave_nodes
+add_rigid_diagram_with_slave_nodes.restype = c_size_t
+add_rigid_diagram_with_slave_nodes.argtype = [c_int, c_int, c_int, c_int]
+
+add_slave_node_to_rigid_diagram = RODSDLL.add_slave_node_to_rigid_diagram
+add_slave_node_to_rigid_diagram.restype = c_size_t
+add_slave_node_to_rigid_diagram.argtype = [c_int, c_int]
+
+set_penalty_weight = RODSDLL.set_penalty_weight
+set_penalty_weight.argtype = [c_double]

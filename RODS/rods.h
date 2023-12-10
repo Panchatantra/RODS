@@ -135,6 +135,11 @@ extern "C" {
 	DLL_API size_t add_mat_cyclic_harden_trilinear(const int id, const double E, const double sigma1, const double alpha1,
 		const double sigma2, const double alpha2);
 	DLL_API size_t add_mat_sma_bilinear(const int id, const double E0, const double fy, const double alpha, const double sigma_shift);
+	DLL_API size_t add_fiber(const int id, const int matId, const double A, const double y, const double z);
+	DLL_API size_t add_section_truss(const int id);
+	DLL_API size_t add_fiber_to_section_truss(const int fiberId, const int sectionId);
+	DLL_API size_t add_section_frame2d(const int id);
+	DLL_API size_t add_fiber_to_section_frame2d(const int fiberId, const int sectionId);
 
 	DLL_API double get_damping_ratio();
 	DLL_API size_t get_num_dof();

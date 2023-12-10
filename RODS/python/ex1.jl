@@ -1,3 +1,6 @@
+include("RODS.jl")
+using .RODS
+
 set_name("SDOF")
 set_damping_ratio(0.02)
 set_rayleigh_damping(10.0, 20.0)
@@ -16,7 +19,7 @@ spring_id = 0
 add_spring(spring_id, fixed_dof_id, free_dof_id, k)
 
 zeta = 0.02
-c = 2.0*zeta*math.sqrt(m*k)
+c = 2.0*zeta*sqrt(m*k)
 dashpot_id = 1
 add_dashpot(dashpot_id, fixed_dof_id, free_dof_id, c)
 
@@ -30,16 +33,16 @@ wave_file = "EQ-S-1.txt"
 add_wave(wave_id, dt, wave_file)
 
 dof_recorder_id = 0
-add_dof_recorder(dof_recorder_id, 0, "sdof_disp.txt")
+add_dof_recorder(dof_recorder_id, DISP, "sdof_disp.txt")
 add_dof_to_recorder(free_dof_id, dof_recorder_id)
 ele_recorder_id = 0
-add_ele_recorder(dof_recorder_id, 3, "sdof_force.txt")
+add_ele_recorder(dof_recorder_id, FORCE, "sdof_force.txt")
 add_ele_to_recorder(spring_id, ele_recorder_id)
 add_ele_to_recorder(dashpot_id, ele_recorder_id)
 
-set_dynamic_solver(0)
+set_dynamic_solver(Newmark)
 scaling_factor = 1.0
-active_ground_motion(0, wave_id, scaling_factor)
+active_ground_motion(X, wave_id, scaling_factor)
 n_sub_step = 1
 solve_seismic_response(n_sub_step)
 

@@ -534,6 +534,36 @@ DLL_API size_t add_mat_sma_bilinear(const int id, const double E0, const double 
 	return ds->Material1Ds.size();
 }
 
+DLL_API size_t add_fiber(const int id, const int matId, const double A, const double y, const double z)
+{
+    ds->addFiber(id, matId, A, y, z);
+	return ds->Fibers.size();
+}
+
+DLL_API size_t add_section_truss(const int id)
+{
+    ds->addSectionTruss(id);
+	return ds->SectionTrusss.size();
+}
+
+DLL_API size_t add_fiber_to_section_truss(const int fiberId, const int sectionId)
+{
+    ds->addFiberToSectionTruss(fiberId, sectionId);
+	return ds->SectionTrusss.at(sectionId)->fibers.size();
+}
+
+DLL_API size_t add_section_frame2d(const int id)
+{
+    ds->addSectionFrame2D(id);
+	return ds->SectionFrame2Ds.size();
+}
+
+DLL_API size_t add_fiber_to_section_frame2d(const int fiberId, const int sectionId)
+{
+	ds->addFiberToSectionFrame2D(fiberId, sectionId);
+	return ds->SectionFrame2Ds.at(sectionId)->fibers.size();
+}
+
 DLL_API size_t add_spring_nonlinear_2d(const int id, const int ni, const int nj, const int matId, const int localAxis)
 {
 	ds->addSpringNonlinear2D(id, ni, nj, matId, RODS::LocalAxis(localAxis));

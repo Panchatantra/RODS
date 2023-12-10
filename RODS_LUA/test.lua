@@ -1,1 +1,0 @@
-set_name("rods_model")

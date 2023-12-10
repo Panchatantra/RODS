@@ -1,12 +1,30 @@
+module RODS
+
+export set_name, print_info, set_damping_ratio, set_rayleigh_damping, add_dof_x
+export fix_dof, add_spring, add_dashpot, assemble_matrix, solve_eigen, add_wave
+export add_dof_recorder, add_dof_to_recorder, add_ele_recorder, add_ele_to_recorder
+export set_dynamic_solver, active_ground_motion, solve_seismic_response
+export save_to_json
+
 using Libdl
 
 if Sys.iswindows()
-    RODS = Libdl.dlopen("./RODS.dll")
+    RODS_DL = Libdl.dlopen("./RODS.dll")
 elseif Sys.islinux()
-    RODS = Libdl.dlopen("librods.so")
+    RODS_DL = Libdl.dlopen("librods.so")
 end
 
-@enum Response begin
+macro exported_enum(T, syms...)
+    return esc(quote
+        @enum($T, $(syms...))
+        export $T
+        for inst in Symbol.(instances($T))
+            eval($(Expr(:quote, :(export $(Expr(:$, :inst))))))
+        end
+    end)
+end
+
+@exported_enum Response begin
     DISP = 0
     VEL = 1
     ACC = 2
@@ -15,14 +33,14 @@ end
     ALL = 5
 end
 
-@enum DynamicSolver begin
+@exported_enum DynamicSolver begin
     Newmark = 0
     Newmark_NL = 1
     StateSpace = 2
     StateSpace_NL = 3
 end
 
-@enum Direction begin
+@exported_enum Direction begin
     X = 0
     Y = 1
     Z = 2
@@ -31,24 +49,25 @@ end
     RZ = 5
 end
 
-set_name_ = Libdl.dlsym(RODS, :set_name)
-print_info_ = Libdl.dlsym(RODS, :print_info)
-set_damping_ratio_ = Libdl.dlsym(RODS, :set_damping_ratio)
-set_rayleigh_damping_ = Libdl.dlsym(RODS, :set_rayleigh_damping)
-add_dof_x_ = Libdl.dlsym(RODS, :add_dof_x)
-fix_dof_ = Libdl.dlsym(RODS, :fix_dof)
-add_spring_ = Libdl.dlsym(RODS, :add_spring)
-add_dashpot_ = Libdl.dlsym(RODS, :add_dashpot)
-assemble_matrix_ = Libdl.dlsym(RODS, :assemble_matrix)
-solve_eigen_ = Libdl.dlsym(RODS, :solve_eigen)
-add_wave_ = Libdl.dlsym(RODS, :add_wave)
-add_dof_recorder_ = Libdl.dlsym(RODS, :add_dof_recorder)
-add_dof_to_recorder_ = Libdl.dlsym(RODS, :add_dof_to_recorder)
-add_ele_recorder_ = Libdl.dlsym(RODS, :add_ele_recorder)
-add_ele_to_recorder_ = Libdl.dlsym(RODS, :add_ele_to_recorder)
-set_dynamic_solver_ = Libdl.dlsym(RODS, :set_dynamic_solver)
-active_ground_motion_ = Libdl.dlsym(RODS, :active_ground_motion)
-solve_seismic_response_ = Libdl.dlsym(RODS, :solve_seismic_response)
+set_name_ = Libdl.dlsym(RODS_DL, :set_name)
+print_info_ = Libdl.dlsym(RODS_DL, :print_info)
+set_damping_ratio_ = Libdl.dlsym(RODS_DL, :set_damping_ratio)
+set_rayleigh_damping_ = Libdl.dlsym(RODS_DL, :set_rayleigh_damping)
+add_dof_x_ = Libdl.dlsym(RODS_DL, :add_dof_x)
+fix_dof_ = Libdl.dlsym(RODS_DL, :fix_dof)
+add_spring_ = Libdl.dlsym(RODS_DL, :add_spring)
+add_dashpot_ = Libdl.dlsym(RODS_DL, :add_dashpot)
+assemble_matrix_ = Libdl.dlsym(RODS_DL, :assemble_matrix)
+solve_eigen_ = Libdl.dlsym(RODS_DL, :solve_eigen)
+add_wave_ = Libdl.dlsym(RODS_DL, :add_wave)
+add_dof_recorder_ = Libdl.dlsym(RODS_DL, :add_dof_recorder)
+add_dof_to_recorder_ = Libdl.dlsym(RODS_DL, :add_dof_to_recorder)
+add_ele_recorder_ = Libdl.dlsym(RODS_DL, :add_ele_recorder)
+add_ele_to_recorder_ = Libdl.dlsym(RODS_DL, :add_ele_to_recorder)
+set_dynamic_solver_ = Libdl.dlsym(RODS_DL, :set_dynamic_solver)
+active_ground_motion_ = Libdl.dlsym(RODS_DL, :active_ground_motion)
+solve_seismic_response_ = Libdl.dlsym(RODS_DL, :solve_seismic_response)
+save_to_json_ = Libdl.dlsym(RODS_DL, :save_to_json)
 
 function set_name(name::AbstractString)
     @ccall $set_name_(name::Cstring)::Cvoid
@@ -120,4 +139,10 @@ end
 
 function solve_seismic_response(nsub::Int=1)
     @ccall $solve_seismic_response_(nsub::Cint)::Cvoid
+end
+
+function save_to_json(fileName::AbstractString)
+    @ccall $save_to_json_(fileName::Cstring)::Cvoid
+end
+
 end

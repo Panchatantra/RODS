@@ -989,7 +989,14 @@ void DynamicSystem::addSectionTruss(const int id, int* fiberIds, const int nFibe
 		vector<Fiber *> fibers(0);
 		for (int i = 0; i < nFibers; ++i)
 		{
-			fibers.push_back(Fibers.at(fiberIds[i]));
+			if (Fibers.count(fiberIds[i]) == 0)
+			{
+				cout << "Fiber ID: " << fiberIds[i] << " does not exist! The fiber will not be added." << endl;
+			}
+			else
+			{
+				fibers.push_back(Fibers.at(fiberIds[i]));
+			}
 		}
 		SectionTruss *sec = new SectionTruss(id, fibers);
 		Sections[id] = sec;
@@ -999,6 +1006,38 @@ void DynamicSystem::addSectionTruss(const int id, int* fiberIds, const int nFibe
 	{
 		cout << "Section ID: " << id << " already exists! The section will not be added." << endl;
 	}
+}
+
+void DynamicSystem::addSectionTruss(const int id)
+{
+	if (Sections.count(id) == 0)
+	{
+		SectionTruss *sec = new SectionTruss(id);
+		Sections[id] = sec;
+		SectionTrusss[id] = sec;
+	}
+	else
+	{
+		cout << "Section ID: " << id << " already exists! The section will not be added." << endl;
+	}
+}
+
+void DynamicSystem::addFiberToSectionTruss(const int fiberId, const int sectionId)
+{
+	if (Sections.count(sectionId) == 0)
+	{
+		cout << "Section ID: " << sectionId << " does not exist! The fiber will not be added." << endl;
+		return;
+	}
+	if (Fibers.count(fiberId) == 0)
+	{
+		cout << "Fiber ID: " << fiberId << " does not exist! The fiber will not be added." << endl;
+		return;
+	}
+
+	Fiber *fiber = Fibers[fiberId];
+	SectionTruss *sec = SectionTrusss[sectionId];
+	sec->addFiber(fiber);
 }
 
 void DynamicSystem::addSectionFrame2D(const int id, int* fiberIds, const int nFibers)
@@ -1018,6 +1057,38 @@ void DynamicSystem::addSectionFrame2D(const int id, int* fiberIds, const int nFi
 	{
 		cout << "Section ID: " << id << " already exists! The section will not be added." << endl;
 	}
+}
+
+void DynamicSystem::addSectionFrame2D(const int id)
+{
+	if (Sections.count(id) == 0)
+	{
+		SectionFrame2D *sec = new SectionFrame2D(id);
+		Sections[id] = sec;
+		SectionFrame2Ds[id] = sec;
+	}
+	else
+	{
+		cout << "Section ID: " << id << " already exists! The section will not be added." << endl;
+	}
+}
+
+void DynamicSystem::addFiberToSectionFrame2D(const int fiberId, const int sectionId)
+{
+	if (Sections.count(sectionId) == 0)
+	{
+		cout << "Section ID: " << sectionId << " does not exist! The fiber will not be added." << endl;
+		return;
+	}
+	if (Fibers.count(fiberId) == 0)
+	{
+		cout << "Fiber ID: " << fiberId << " does not exist! The fiber will not be added." << endl;
+		return;
+	}
+
+	Fiber *fiber = Fibers[fiberId];
+	SectionFrame2D *sec = SectionFrame2Ds[sectionId];
+	sec->addFiber(fiber);
 }
 
 bool DynamicSystem::addElement(Element * e)

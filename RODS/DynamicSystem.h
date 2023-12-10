@@ -419,6 +419,8 @@ public:
 	 * @param[in]  nFibers   The number of fibers
 	 */
 	void addSectionTruss(const int id, int *fiberIds, const int nFibers);
+	void addSectionTruss(const int id);
+	void addFiberToSectionTruss(const int fiberId, const int sectionId);
 
 	/**
 	 * @brief      Add a fiber-based frame section.
@@ -428,6 +430,8 @@ public:
 	 * @param[in]  nFibers   The number of fibers
 	 */
 	void addSectionFrame2D(const int id, int *fiberIds, const int nFibers);
+	void addSectionFrame2D(const int id);
+	void addFiberToSectionFrame2D(const int fiberId, const int sectionId);
 
 	bool addElement(Element *e);
 
