@@ -49,6 +49,12 @@ end
     RZ = 5
 end
 
+@exported_enum LocalAxis begin
+    U1 = 0
+    U2 = 1
+    U3 = 2
+end
+
 set_name_ = Libdl.dlsym(RODS_DL, :set_name)
 print_info_ = Libdl.dlsym(RODS_DL, :print_info)
 set_damping_ratio_ = Libdl.dlsym(RODS_DL, :set_damping_ratio)
@@ -68,6 +74,7 @@ set_dynamic_solver_ = Libdl.dlsym(RODS_DL, :set_dynamic_solver)
 active_ground_motion_ = Libdl.dlsym(RODS_DL, :active_ground_motion)
 solve_seismic_response_ = Libdl.dlsym(RODS_DL, :solve_seismic_response)
 save_to_json_ = Libdl.dlsym(RODS_DL, :save_to_json)
+load_from_json_ = Libdl.dlsym(RODS_DL, :load_from_json)
 
 function set_name(name::AbstractString)
     @ccall $set_name_(name::Cstring)::Cvoid
@@ -143,6 +150,10 @@ end
 
 function save_to_json(fileName::AbstractString)
     @ccall $save_to_json_(fileName::Cstring)::Cvoid
+end
+
+function load_from_json(fileName::AbstractString)
+    @ccall $load_from_json_(fileName::Cstring)::Cvoid
 end
 
 end

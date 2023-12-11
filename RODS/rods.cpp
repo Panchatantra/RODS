@@ -1054,6 +1054,11 @@ DLL_API size_t get_period(double* P)
 	return ds->eqnCount;
 }
 
+DLL_API double get_period_by_order(int i)
+{
+    return ds->P(i);
+}
+
 DLL_API void get_dof_info(const int id, int & dir, double & mass, bool & is_fixed)
 {
 	auto dof = ds->DOFs.at(id);

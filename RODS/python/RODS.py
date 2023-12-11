@@ -319,13 +319,13 @@ get_period_ = RODSDLL.get_period
 get_period_.restype = c_size_t
 get_period_.argtypes = [POINTER(c_double)]
 
+def create_array_double(n):
+    return (c_double * n)()
+
 def get_period():
     P = create_array_double(get_num_eqn())
     get_period_(P)
     return list(P)
-
-def create_array_double(n):
-    return (c_double * n)()
 
 save_to_json = RODSDLL.save_to_json
 save_to_json.argtypes = [c_char_p]

@@ -245,6 +245,7 @@ extern "C" {
 	DLL_API void get_node_modal_response(double *res, const int order=1);
 
 	DLL_API size_t get_period(double* P);
+	DLL_API double get_period_by_order(int i);
 
 	DLL_API void get_dof_info(const int id, int &dir, double &mass, bool &is_fixed);
 	DLL_API void get_node_info(const int id, int &dim, double *coords, int *dofs);
