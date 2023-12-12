@@ -11,12 +11,12 @@ add_dof_x(free_dof_id, m)
 
 fix_dof(fixed_dof_id)
 
-k = m*2500.0
+k = m * 2500.0
 spring_id = 0
 add_spring(spring_id, fixed_dof_id, free_dof_id, k)
 
 zeta = 0.02
-c = 2.0*zeta*math.sqrt(m*k)
+c = 2.0 * zeta * math.sqrt(m * k)
 dashpot_id = 1
 add_dashpot(dashpot_id, fixed_dof_id, free_dof_id, c)
 

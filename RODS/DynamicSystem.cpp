@@ -496,7 +496,20 @@ void DynamicSystem::addDofLoad(const int dofId, const int loadId)
 	DOFs.at(dofId)->addLoad(Loads.at(loadId));
 }
 
-void DynamicSystem::exportGmsh(char * fileName)
+void DynamicSystem::addNodeLoad(const int nodeId, const RODS::Direction dir, const int loadId)
+{
+	auto dofId = Nodes.at(nodeId)->getIdDof(dir);
+	if (dofId >= 0)
+	{
+		addDofLoad(dofId, loadId);
+	}
+	else
+	{
+		cout << "Node ID: " << nodeId << " does not have a DOF in direction: " << (int)dir << endl;
+	}
+}
+
+void DynamicSystem::exportGmsh(char *fileName)
 {
 	std::ofstream outFile;
 	outFile.open(fileName, ios::out);

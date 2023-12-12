@@ -240,7 +240,7 @@ public:
 
 	/**
 	 * @brief      Free a DOF of a Node.
-	 * 
+	 *
 	 * @param nodeId  The node identifier
 	 * @param dir     The Direction to be free
 	 */
@@ -267,6 +267,14 @@ public:
 	 * @param[in]  loadId  The Load identifier
 	 */
 	void addDofLoad(const int dofId, const int loadId);
+
+	/**
+	 * @brief      Add a Load to a Node.
+	 *
+	 * @param[in]  nodeId  The Node identifier
+	 * @param[in]  loadId  The Load identifier
+	 */
+	void addNodeLoad(const int nodeId, const RODS::Direction dir, const int loadId);
 
 	/**
 	 * @brief      Export the FEM model as GMSH format.
@@ -313,7 +321,16 @@ public:
 	 */
 	void addDOF(const int id, RODS::Direction dir, const double m=0.0, const bool fixed=false);
 
+	/**
+	 * @brief      Remove a DOF.
+	 *
+	 * @param[in]  id     The identifier
+	 */
 	void removeDOF(const int id);
+
+	/**
+	 * @brief      Gets the next DOF identifier.
+	 */
 	int getNextDofId();
 
 	/**

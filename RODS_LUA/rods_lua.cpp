@@ -274,6 +274,113 @@ lua_to##ARG_7_TYPE(L, 7),\
 lua_to##ARG_8_TYPE(L, 8)\
 )); return 1;}
 
+// Lua function wrapper macros: nine variables, no return values
+#define LUA_WRAP_9(FUNC,\
+ARG_1_TYPE,\
+ARG_2_TYPE,\
+ARG_3_TYPE,\
+ARG_4_TYPE,\
+ARG_5_TYPE,\
+ARG_6_TYPE,\
+ARG_7_TYPE,\
+ARG_8_TYPE,\
+ARG_9_TYPE\
+)\
+static int lua_##FUNC(lua_State *L) {\
+FUNC(\
+lua_to##ARG_1_TYPE(L, 1),\
+lua_to##ARG_2_TYPE(L, 2),\
+lua_to##ARG_3_TYPE(L, 3),\
+lua_to##ARG_4_TYPE(L, 4),\
+lua_to##ARG_5_TYPE(L, 5),\
+lua_to##ARG_6_TYPE(L, 6),\
+lua_to##ARG_7_TYPE(L, 7),\
+lua_to##ARG_8_TYPE(L, 8),\
+lua_to##ARG_9_TYPE(L, 9)\
+); return 0;}
+
+// Lua function wrapper macros: nine variables, with return values
+#define LUA_WRAP_9_R(FUNC,\
+ARG_1_TYPE,\
+ARG_2_TYPE,\
+ARG_3_TYPE,\
+ARG_4_TYPE,\
+ARG_5_TYPE,\
+ARG_6_TYPE,\
+ARG_7_TYPE,\
+ARG_8_TYPE,\
+ARG_9_TYPE,\
+RET_TYPE\
+)\
+static int lua_##FUNC(lua_State *L) {\
+lua_push##RET_TYPE(L, FUNC(\
+lua_to##ARG_1_TYPE(L, 1),\
+lua_to##ARG_2_TYPE(L, 2),\
+lua_to##ARG_3_TYPE(L, 3),\
+lua_to##ARG_4_TYPE(L, 4),\
+lua_to##ARG_5_TYPE(L, 5),\
+lua_to##ARG_6_TYPE(L, 6),\
+lua_to##ARG_7_TYPE(L, 7),\
+lua_to##ARG_8_TYPE(L, 8),\
+lua_to##ARG_9_TYPE(L, 9)\
+)); return 1;}
+
+// Lua function wrapper macros: ten variables, no return values
+#define LUA_WRAP_10(FUNC,\
+ARG_1_TYPE,\
+ARG_2_TYPE,\
+ARG_3_TYPE,\
+ARG_4_TYPE,\
+ARG_5_TYPE,\
+ARG_6_TYPE,\
+ARG_7_TYPE,\
+ARG_8_TYPE,\
+ARG_9_TYPE,\
+ARG_10_TYPE\
+)\
+static int lua_##FUNC(lua_State *L) {\
+FUNC(\
+lua_to##ARG_1_TYPE(L, 1),\
+lua_to##ARG_2_TYPE(L, 2),\
+lua_to##ARG_3_TYPE(L, 3),\
+lua_to##ARG_4_TYPE(L, 4),\
+lua_to##ARG_5_TYPE(L, 5),\
+lua_to##ARG_6_TYPE(L, 6),\
+lua_to##ARG_7_TYPE(L, 7),\
+lua_to##ARG_8_TYPE(L, 8),\
+lua_to##ARG_9_TYPE(L, 9),\
+lua_to##ARG_10_TYPE(L, 10)\
+); return 0;}
+
+// Lua function wrapper macros: ten variables, with return values
+#define LUA_WRAP_10_R(FUNC,\
+ARG_1_TYPE,\
+ARG_2_TYPE,\
+ARG_3_TYPE,\
+ARG_4_TYPE,\
+ARG_5_TYPE,\
+ARG_6_TYPE,\
+ARG_7_TYPE,\
+ARG_8_TYPE,\
+ARG_9_TYPE,\
+ARG_10_TYPE,\
+RET_TYPE\
+)\
+static int lua_##FUNC(lua_State *L) {\
+lua_push##RET_TYPE(L, FUNC(\
+lua_to##ARG_1_TYPE(L, 1),\
+lua_to##ARG_2_TYPE(L, 2),\
+lua_to##ARG_3_TYPE(L, 3),\
+lua_to##ARG_4_TYPE(L, 4),\
+lua_to##ARG_5_TYPE(L, 5),\
+lua_to##ARG_6_TYPE(L, 6),\
+lua_to##ARG_7_TYPE(L, 7),\
+lua_to##ARG_8_TYPE(L, 8),\
+lua_to##ARG_9_TYPE(L, 9),\
+lua_to##ARG_10_TYPE(L, 10)\
+)); return 1;}
+
+
 #define LUA_REG(FUNC) lua_register(L, #FUNC, lua_##FUNC);
 
 #define lua_register_integer(L,n,i) (lua_pushinteger(L, (i)), lua_setglobal(L, (n)))
@@ -289,10 +396,17 @@ LUA_WRAP_1(set_num_modes_inherent_damping, integer)
 LUA_WRAP_2_R(add_dof_x, integer, number, integer)
 LUA_WRAP_3_R(add_dof, integer, integer, number, integer)
 LUA_WRAP_1(fix_dof, integer)
+LUA_WRAP_3_R(add_node_1d, integer, number, integer, integer)
+LUA_WRAP_6_R(add_node_2d, integer, number, number, integer, integer, integer, integer)
+LUA_WRAP_10_R(add_node_3d, integer, number, number, number, integer, integer, integer,
+                            integer, integer, integer, integer)
 
 LUA_WRAP_4_R(add_spring, integer, integer, integer, number, integer)
 LUA_WRAP_4_R(add_dashpot, integer, integer, integer, number, integer)
-
+LUA_WRAP_4_R(add_inerter, integer, integer, integer, number, integer)
+LUA_WRAP_6_R(add_tvmd, integer, integer, integer, number, number, number, integer)
+LUA_WRAP_5_R(add_dashpot_exp, integer, integer, integer, number, number, integer)
+LUA_WRAP_6_R(add_dashpot_maxwell, integer, integer, integer, number, number, number, integer)
 LUA_WRAP_6_R(add_spring_bilinear, number, number, number, number, number, number, integer)
 
 LUA_WRAP_0_R(assemble_matrix, integer)
@@ -305,6 +419,9 @@ LUA_WRAP_3_R(add_dof_recorder, integer, integer, string, integer)
 LUA_WRAP_2_R(add_dof_to_recorder, integer, integer, integer)
 LUA_WRAP_3_R(add_ele_recorder, integer, integer, string, integer)
 LUA_WRAP_2_R(add_ele_to_recorder, integer, integer, integer)
+
+LUA_WRAP_1(record_all_dof_response, number)
+LUA_WRAP_1(record_all_ele_response, number)
 
 LUA_WRAP_1(set_dynamic_solver, integer)
 LUA_WRAP_3(active_ground_motion, integer, integer, number)
@@ -373,9 +490,16 @@ int main(int argc, char* argv[])
     LUA_REG(add_dof_x)
     LUA_REG(add_dof)
     LUA_REG(fix_dof)
+    LUA_REG(add_node_1d)
+    LUA_REG(add_node_2d)
+    LUA_REG(add_node_3d)
 
     LUA_REG(add_spring)
     LUA_REG(add_dashpot)
+    LUA_REG(add_inerter)
+    LUA_REG(add_tvmd)
+    LUA_REG(add_dashpot_exp)
+    LUA_REG(add_dashpot_maxwell)
     LUA_REG(add_spring_bilinear)
 
     LUA_REG(assemble_matrix)
@@ -387,6 +511,10 @@ int main(int argc, char* argv[])
     LUA_REG(add_dof_to_recorder)
     LUA_REG(add_ele_recorder)
     LUA_REG(add_ele_to_recorder)
+
+    LUA_REG(record_all_dof_response)
+    LUA_REG(record_all_ele_response)
+
     LUA_REG(set_dynamic_solver)
     LUA_REG(active_ground_motion)
     LUA_REG(solve_seismic_response)
